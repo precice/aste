@@ -2,11 +2,19 @@
 #include <mpi.h>
 #include <boost/program_options.hpp>
 
+#include "utils/prettyprint.hpp"
+
 using namespace std;
 
+/// A single vertex, holding it's coordinates
 using Vertex = std::vector<double>;
+
+/// The serialized mesh
 using Mesh = std::vector<Vertex>;
-using Mesh3D = std::vector<std::vector<Vertex>>;
+
+/// The data, living at each mesh node
+using Data = std::vector<double>;
+
 using OptionMap = boost::program_options::variables_map;
 
 
@@ -51,7 +59,7 @@ OptionMap getOptions(int argc, char *argv[])
   return vm;  
 }
 
-void printOptions(OptionMap options)
+void printOptions(const OptionMap &options)
 {
   int MPIrank = 0, MPIsize = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &MPIrank);
@@ -68,6 +76,26 @@ void printOptions(OptionMap options)
   std::cout << "Mesh Size             : " << options["x"].as<double>() << ", " << options["y"].as<double>()<< std::endl;
   std::cout << "Mesh Elements         : " << options["nx"].as<int>() << ", " << options["ny"].as<int>()<< std::endl;
 }
+
+void printMesh(const Mesh &mesh, const Data &data)
+{
+  int MPIrank = 0, MPIsize = 0;
+  MPI_Comm_rank(MPI_COMM_WORLD, &MPIrank);
+  MPI_Comm_size(MPI_COMM_WORLD, &MPIsize);
+  int rank = 0;
+  while (rank < MPIsize) {
+    if (MPIrank == rank) {
+      std::cout << "==== MESH FOR RANK " << MPIrank << ", SIZE = " << mesh.size() << " ====" << std::endl;
+      for (size_t i = 0; i < mesh.size(); i++)
+        std::cout << "[" << mesh[i] << "]" << " = " << data[i] << std::endl;
+      std::cout << std::flush;
+    }
+    rank++;
+  }
+   
+  MPI_Barrier(MPI_COMM_WORLD);
+}
+
 
 
 // Partitions range in equal chunks

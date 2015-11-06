@@ -29,7 +29,7 @@ cppdefines = [ ]
 
 libs = [ 
     'precice',
-    'python2.7',
+#    'python2.7',
     'petsc' if env["petsc"] else '', 
     'boost_system',
     'boost_filesystem',

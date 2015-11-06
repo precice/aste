@@ -29,15 +29,14 @@ Mesh getMyMesh(OptionMap options, int MPIrank, int MPIsize)
       mesh.push_back(v);
     }
   }
-
   return partition(mesh, MPIsize)[MPIrank];
 }
 
 
 /// Fills a vector with data values
-std::vector<double> getData(Mesh& mesh)
+Data getData(Mesh& mesh)
 {
-  std::vector<double> data;
+  Data data;
   for (auto &v : mesh) {
     data.emplace_back(v[0] + v[1]);
   }
@@ -63,9 +62,13 @@ int main(int argc, char *argv[])
   int dataID = interface.getDataID(options["data"].as<std::string>(), meshID);
 
   Mesh mesh = getMyMesh(options, MPIrank, MPIsize);
-  auto data = getData(mesh);
-  cout << mesh << endl;
-  cout << data << endl;
+  Data data;
+  if (participant == "A")
+    data = getData(mesh);
+  else
+    data = Data(mesh.size(), 0);
+  
+  // printMesh(mesh, data);
   std::vector<int> vertexIDs;
   
   size_t localN = mesh.size();
@@ -85,15 +88,20 @@ int main(int argc, char *argv[])
   }
 
   while (interface.isCouplingOngoing()) {
-    interface.writeBlockScalarData(dataID, localN, vertexIDs.data(), data.data());
+    if (participant == "A" and not data.empty()) {
+      interface.writeBlockScalarData(dataID, localN, vertexIDs.data(), data.data());
+      // cout << "Rank = " << MPIrank << " A Wrote data = " << data << endl;
+    }
 
     interface.advance(1);
-    
-    interface.readBlockScalarData(dataID, localN, vertexIDs.data(), data.data());
+    if (participant == "B") {
+      interface.readBlockScalarData(dataID, localN, vertexIDs.data(), data.data());
+    // cout << "Rank = " << MPIrank << " B Read data = " << data << endl;
+    }
   }
   interface.finalize();
 
-
+  // printMesh(mesh, data);
   
   MPI_Finalize();
 
