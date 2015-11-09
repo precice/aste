@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#set -e
+
+rm convergence-*
+rm iterations-*
+rm postProcessingInfo.txt
+rm EventTimings.log
+rm core
+rm config.log
+rm vgcore*
+rm precice_checkpoint_*
+rm log.*
+rm iterations_*

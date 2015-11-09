@@ -10,5 +10,4 @@ Eventtimings.log
 *.log
 postProcessing.txt
 aste
-clean
 .sconsign.dblite
