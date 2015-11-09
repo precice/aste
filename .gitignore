@@ -4,3 +4,11 @@
 *.pyc
 *.o
 a.out
+iterations-*.txt
+convergence-*.txt
+Eventtimings.log
+*.log
+postProcessing.txt
+aste
+clean
+.sconsign.dblite

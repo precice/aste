@@ -28,7 +28,8 @@ OptionMap getOptions(int argc, char *argv[])
     ("precice-config,x", po::value<std::string>()->default_value("precice.xml"), "preCICE configuratio file")
     ("participant,p", po::value<std::string>()->required(), "Participant Name")
     ("mesh", po::value<std::string>()->required(), "Mesh Name")
-    ("data", po::value<std::string>()->default_value("Data"), "Data Name")
+    ("data1", po::value<std::string>()->default_value("Data1"), "Data1 Name")
+    ("data2", po::value<std::string>()->default_value("Data2"), "Data2 Name")
     ("x", po::value<double>()->default_value(10), "X Mesh size")
     ("y", po::value<double>()->default_value(10), "Y Mesh size")
     ("nx", po::value<int>()->default_value(10), "Number of elements in y-direction")
@@ -72,7 +73,8 @@ void printOptions(const OptionMap &options)
   std::cout << "Running as MPI rank   : " << MPIrank << " of " << MPIsize << std::endl;
   std::cout << "preCICE configuration : " << options["precice-config"].as<std::string>() << std::endl;
   std::cout << "Mesh Name             : " << options["mesh"].as<std::string>() << std::endl;
-  std::cout << "Data Name             : " << options["data"].as<std::string>() << std::endl;
+  std::cout << "Data Name             : " << options["data1"].as<std::string>() << std::endl;
+  std::cout << "Data Name             : " << options["data2"].as<std::string>() << std::endl;
   std::cout << "Mesh Size             : " << options["x"].as<double>() << ", " << options["y"].as<double>()<< std::endl;
   std::cout << "Mesh Elements         : " << options["nx"].as<int>() << ", " << options["ny"].as<int>()<< std::endl;
 }

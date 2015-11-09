@@ -35,7 +35,7 @@
     </mesh>
 
     
-    <m2n:sockets from="A" to="B" network="lo" exchange-directory="."  distribution-type="gather-scatter" />
+    <m2n:sockets from="A" to="B" port="0" network="lo" exchange-directory="."  distribution-type="gather-scatter" />
 
     <participant name="A">
       <use-mesh name="MeshA" provide="yes" />
@@ -46,10 +46,8 @@
       <mapping:nearest-neighbor direction="read" from="MeshB" to="MeshA" constraint="consistent" />
       <mapping:nearest-neighbor direction="write" from="MeshA" to="MeshB" constraint="conservative" />
 
-      <!--<mapping:nearest-neighbor constraint="conservative" direction="write" from="MeshA" to="MeshB" />-->
-      <!-- <mapping:petrbf-gaussian shape-parameter="10" solver-rtol="1e-9" constraint="conservative" direction="write" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
-      <!-- <mapping:rbf-gaussian shape-parameter="10" constraint="conservative" direction="write" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
       <master:mpi/>
+      <!--ver:sockets exchange-directory="./"/>-->
     </participant>
     
     <participant name="B">
@@ -57,10 +55,9 @@
       <use-mesh name="MeshB" provide="yes" />
       <write-data name="Data1" mesh="MeshB" />
       <read-data name="Data2" mesh="MeshB" />
-      <!-- <mapping:nearest-neighbor constraint="consistent" direction="read" from="MeshA" to="MeshB" /> -->
-      <!-- <mapping:rbf-gaussian shape-parameter="10" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
-      <!-- <mapping:petrbf-gaussian shape-parameter="10" solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
+
       <master:mpi/>
+      <!--ver:sockets exchange-directory="./"/>-->
     </participant>
 
     
@@ -82,12 +79,12 @@
 <!--        <data name="Data2" mesh="MeshB" />-->
         <initial-relaxation value="0.001" enforce="false"/>
         <max-used-iterations value="50"/>
-        <timestep-reused value="0" />
+        <timesteps-reused value="0" />
         <filter type="QR1" limit="1e-14" />
-        <preconditioner type="residual-sum" />
+        <preconditioner type="constant" />
       </post-processing:IQN-ILS>
 
-    </coupling-scheme:serial-explicit>
+    </coupling-scheme:serial-implicit>
     
   </solver-interface>
   
