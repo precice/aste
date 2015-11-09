@@ -81,9 +81,9 @@ do
 	mpirun -np ${PROCS} ./aste -x ${FILE} -p B --mesh MeshB --x ${N} --y ${N} --nx ${N} --ny ${N} > log.B 2>&1 
 
         if [ ${COPY} = 1 ]; then
-            cp EventTimings.txt ${DEST_DIR}/eventTimings_${DESCRIPTION}.txt
-	    cp log.A ${DEST_DIR}/log.A_${DESCRIPTION}.txt
-	    cp log.B ${DEST_DIR}/log.B_${DESCRIPTION}.txt
+            cp EventTimings.log ${DEST_DIR}/eventTimings_${DESCRIPTION}.log
+	    cp log.A ${DEST_DIR}/log.A_${DESCRIPTION}
+	    cp log.B ${DEST_DIR}/log.B_${DESCRIPTION}
         fi
     done
 done
