@@ -126,9 +126,6 @@ int main(int argc, char *argv[])
       data1 = getData(mesh);
     }
     
-    if(MPIrank == 0)
-      std::cout<<"new Data: \n"<<data1<<"\n\n"<<data2<<std::endl;
-
     // write data
     if (participant == "A") {
       interface.writeBlockScalarData(data2ID, localN, vertexIDs.data(), data2.data());
