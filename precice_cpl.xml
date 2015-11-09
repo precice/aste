@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+
+<precice-configuration>
+
+  <log-filter target="debug" component="" switch="off" />
+  <!-- <log-filter target="debug" component="precice::mapping" switch="on" /> -->
+  <!-- <log-filter target="debug" component="precice::impl::SolverInterfaceImpl" switch="on" /> -->
+
+  <!-- <log-filter target="debug" component="precice::geometry" switch="on" /> -->
+  <!-- <log-filter target="debug" component="precice::mesh" switch="on" /> -->
+  <!-- <log-filter target="debug" component="precice::geometry::BroadcastFilterDecomposition" switch="on" /> -->
+  <!-- <log-filter target="debug" component="precice::impl::SolverInterfaceImpl" switch="on" /> -->
+  <log-filter target="info"  component="" switch="on"/>
+
+  
+  <log-output column-separator=" | " log-time-stamp="no" 
+              log-time-stamp-human-readable="yes" log-machine-name="no" 
+              log-message-type="no" log-trace="yes" />
+  
+  <solver-interface dimensions="2">
+    
+    <!-- Data fields that are exchanged between the solvers -->
+    <data:scalar name="Data1" />
+    <data:scalar name="Data2" />
+
+    <!-- A common mesh that uses these data fields -->
+    <mesh name="MeshA" flip-normals="no">
+      <use-data name="Data1" />
+      <use-data name="Data2" />
+    </mesh>
+
+    <mesh name="MeshB" flip-normals="no">
+      <use-data name="Data1" />
+      <use-data name="Data2" />
+    </mesh>
+
+    
+    <m2n:sockets from="A" to="B" network="lo" exchange-directory="."  distribution-type="gather-scatter" />
+
+    <participant name="A">
+      <use-mesh name="MeshA" provide="yes" />
+      <use-mesh name="MeshB" provide="no" from="B" />
+      <write-data name="Data2" mesh="MeshA" />
+      <read-data name="Data1" mesh="MeshA" />
+
+      <mapping:nearest-neighbor direction="read" from="MeshB" to="MeshA" constraint="consistent" />
+      <mapping:nearest-neighbor direction="write" from="MeshA" to="MeshB" constraint="conservative" />
+
+      <!--<mapping:nearest-neighbor constraint="conservative" direction="write" from="MeshA" to="MeshB" />-->
+      <!-- <mapping:petrbf-gaussian shape-parameter="10" solver-rtol="1e-9" constraint="conservative" direction="write" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
+      <!-- <mapping:rbf-gaussian shape-parameter="10" constraint="conservative" direction="write" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
+      <master:mpi/>
+    </participant>
+    
+    <participant name="B">
+      <!--<use-mesh name="MeshA" provide="no" from="A" />-->
+      <use-mesh name="MeshB" provide="yes" />
+      <write-data name="Data1" mesh="MeshB" />
+      <read-data name="Data2" mesh="MeshB" />
+      <!-- <mapping:nearest-neighbor constraint="consistent" direction="read" from="MeshA" to="MeshB" /> -->
+      <!-- <mapping:rbf-gaussian shape-parameter="10" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
+      <!-- <mapping:petrbf-gaussian shape-parameter="10" solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
+      <master:mpi/>
+    </participant>
+
+    
+    <coupling-scheme:serial-implicit>
+      <participants first="A" second="B" />
+      <max-time value="1.0" />
+      <timestep-length value="0.1" />
+      <max-iterations value="100" />
+      <extrapolation-order value="2" />
+
+      <exchange data="Data1" mesh="MeshB" from="B" to="A" />
+      <exchange data="Data2" mesh="MeshB" from="A" to="B" />
+
+      <min-iteration-convergence-measure min-iterations="5" data="Data1" mesh="MeshB" suffices="0" level="0" />
+      <min-iteration-convergence-measure min-iterations="5" data="Data2" mesh="MeshB" suffices="0" level="0" />
+
+      <post-processing:IQN-ILS>
+        <data name="Data1" mesh="MeshB" />
+<!--        <data name="Data2" mesh="MeshB" />-->
+        <initial-relaxation value="0.001" enforce="false"/>
+        <max-used-iterations value="50"/>
+        <timestep-reused value="0" />
+        <filter type="QR1" limit="1e-14" />
+        <preconditioner type="residual-sum" />
+      </post-processing:IQN-ILS>
+
+    </coupling-scheme:serial-explicit>
+    
+  </solver-interface>
+  
+</precice-configuration>
