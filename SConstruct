@@ -3,6 +3,7 @@ import os, sys
 vars = Variables(None, ARGUMENTS)
 
 vars.Add(BoolVariable("petsc", "Enable use of the Petsc linear algebra library.", True))
+vars.Add(BoolVariable("python", "Enable use of Python.", True))
 
 
 env = Environment(variables = vars, ENV = os.environ)
@@ -29,8 +30,8 @@ cppdefines = [ ]
 
 libs = [ 
     'precice',
-#    'python2.7',
-    'petsc' if env["petsc"] else '', 
+    'python2.7' if env["python"] else '',
+    'petsc'     if env["petsc"]  else '', 
     'boost_system',
     'boost_filesystem',
     'boost_program_options'
