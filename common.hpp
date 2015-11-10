@@ -22,7 +22,7 @@ OptionMap getOptions(int argc, char *argv[])
 {
   namespace po = boost::program_options;
   using std::cout; using std::endl;
-  po::options_description desc("ASET: Artificial solver emulation tool");
+  po::options_description desc("ASTE: Artificial solver emulation tool");
   desc.add_options()
     ("help,h", "produce help")
     ("precice-config,x", po::value<std::string>()->default_value("precice.xml"), "preCICE configuratio file")
