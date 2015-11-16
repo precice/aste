@@ -41,7 +41,8 @@ libs = [
 cxx = 'mpicxx'      # For systems offering mpic++ compiler
 
 ccflags = []
-ccflags.append(['-O0', '-g3'])
+# ccflags.append(['-O0', '-g3'])
+ccflags.append(['-O3'])
 ccflags.append(['-Wall', '-std=c++11'])
 
 #libpath.append (preciceRoot + '/build/' + buildmode + '-dim2-nompi/')
