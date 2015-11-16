@@ -58,8 +58,8 @@ int main(int argc, char *argv[])
 
   precice::SolverInterface interface(participant, MPIrank, MPIsize);
   interface.configure(options["precice-config"].as<std::string>());
-  int meshID = interface.getMeshID(options["mesh"].as<std::string>());
-  int dataID = interface.getDataID(options["data"].as<std::string>(), meshID);
+  int meshID = interface.getMeshID( (participant == "A") ? "MeshA" : "MeshB" );
+  int dataID = interface.getDataID("Data", meshID);
 
   Mesh mesh = getMyMesh(options, MPIrank, MPIsize);
   Data data;
@@ -78,8 +78,6 @@ int main(int argc, char *argv[])
   
   interface.initialize();
 
-  cout << "INITALIZED!!" << endl;
-  
   if (interface.isActionRequired(precice::constants::actionWriteInitialData())) {
     interface.writeBlockScalarData(dataID, localN, vertexIDs.data(), data.data());
     cout << "Wrote initial data = " << data << endl;
