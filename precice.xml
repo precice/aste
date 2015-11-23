@@ -3,7 +3,7 @@
 <precice-configuration>
 
   <log-filter target="debug" component="" switch="off" />
-  <!-- <log-filter target="debug" component="precice::mapping" switch="on" /> -->
+  <log-filter target="debug" component="precice::mapping" switch="on" />
   <!-- <log-filter target="debug" component="precice::impl::SolverInterfaceImpl" switch="on" /> -->
 
   <!-- <log-filter target="debug" component="precice::geometry" switch="on" /> -->
@@ -39,7 +39,7 @@
       <use-mesh name="MeshB" provide="no" from="B" />
       <write-data name="Data" mesh="MeshA" />
       <!-- <mapping:nearest-neighbor constraint="conservative" direction="write" from="MeshA" to="MeshB" /> -->
-      <mapping:petrbf-gaussian shape-parameter="10" solver-rtol="1e-9" constraint="conservative" direction="write" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" />
+      <mapping:petrbf-gaussian shape-parameter="2" solver-rtol="1e-9" constraint="conservative" direction="write" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" />
       <!-- <mapping:rbf-gaussian shape-parameter="10" constraint="conservative" direction="write" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
       
       <master:mpi-single />
