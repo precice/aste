@@ -38,7 +38,7 @@ Data getData(Mesh& mesh)
 {
   Data data;
   for (auto &v : mesh) {
-    data.emplace_back(v[0] + v[1]);
+    data.emplace_back(v[0] + v[1] + 1);
   }
   return data;
 }
