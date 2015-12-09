@@ -30,19 +30,15 @@ OptionMap getOptions(int argc, char *argv[])
     ("x", po::value<double>()->default_value(10), "X Mesh size")
     ("y", po::value<double>()->default_value(10), "Y Mesh size")
     ("nx", po::value<int>()->default_value(10), "Number of elements in y-direction")
-    ("ny", po::value<int>()->default_value(10), "Number of elements in y-direction");
+    ("ny", po::value<int>()->default_value(10), "Number of elements in y-direction")
+    ("deadrank", po::value<int>()->default_value(-1), "A rank that is not used")
+    ("printMesh", po::bool_switch(), "Print the full mesh");
   
-  // po::positional_options_description pd;
-  // pd.add("participant", 1);
-  // pd.add("mesh", 1);
-
   po::variables_map vm;        
 
   try {
-    // po::store(po::command_line_parser(argc, argv).options(desc).positional(pd).run(), vm);
     po::store(parse_command_line(argc, argv, desc), vm);
-    // po::store(po::parse_config_file("config", desc), vm);
-
+    
     if (vm.count("help")) {
       std::cout << desc << std::endl;
       std::exit(-1);
@@ -71,9 +67,10 @@ void printOptions(const OptionMap &options)
   std::cout << "preCICE configuration : " << options["precice-config"].as<std::string>() << std::endl;
   std::cout << "Mesh Size             : " << options["x"].as<double>() << ", " << options["y"].as<double>()<< std::endl;
   std::cout << "Mesh Elements         : " << options["nx"].as<int>() << ", " << options["ny"].as<int>()<< std::endl;
+  std::cout << "Dead Rank             : " << options["deadrank"].as<int>() << std::endl;
 }
 
-void printMesh(const Mesh &mesh, const Data &data)
+void printMesh(const Mesh &mesh, const Data &data, bool verbose)
 {
   int MPIrank = 0, MPIsize = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &MPIrank);
@@ -82,8 +79,9 @@ void printMesh(const Mesh &mesh, const Data &data)
   while (rank < MPIsize) {
     if (MPIrank == rank) {
       std::cout << "==== MESH FOR RANK " << MPIrank << ", SIZE = " << mesh.size() << " ====" << std::endl;
-      for (size_t i = 0; i < mesh.size(); i++)
-        std::cout << "[" << mesh[i] << "]" << " = " << data[i] << std::endl;
+      if (verbose)
+        for (size_t i = 0; i < mesh.size(); i++)
+          std::cout << "[" << mesh[i] << "]" << " = " << data[i] << std::endl;
       std::cout << std::flush;
     }
     rank++;

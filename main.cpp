@@ -19,6 +19,7 @@ Mesh getMyMesh(OptionMap options, int MPIrank, int MPIsize)
   double ySize = options["y"].as<double>();
   int nx =  options["nx"].as<int>();
   int ny =  options["ny"].as<int>();
+  int deadrank = options["deadrank"].as<int>();
   double xInc = xSize / nx;
   double yInc = ySize / ny;
 
@@ -29,6 +30,14 @@ Mesh getMyMesh(OptionMap options, int MPIrank, int MPIsize)
       mesh.push_back(v);
     }
   }
+  if (deadrank >= 0) {
+    --MPIsize;
+    if (MPIrank == deadrank)
+      return Mesh();
+    if (MPIrank > deadrank)
+      --MPIrank; // shift all MPIranks
+  }
+
   return partition(mesh, MPIsize)[MPIrank];
 }
 
@@ -64,11 +73,11 @@ int main(int argc, char *argv[])
   Mesh mesh = getMyMesh(options, MPIrank, MPIsize);
   Data data;
   if (participant == "A")
-    data = getData(mesh);
+    data = getData(mesh); // only A has a mesh with values
   else
-    data = Data(mesh.size(), 0);
+    data = Data(mesh.size(), 0); // B is mapped to
   
-  // printMesh(mesh, data);
+  printMesh(mesh, data, options["printMesh"].as<bool>());
   std::vector<int> vertexIDs;
   
   size_t localN = mesh.size();
