@@ -24,9 +24,9 @@ Mesh getMyMesh(OptionMap options, int MPIrank, int MPIsize)
   double yInc = ySize / ny;
 
   Mesh mesh;
-  for (double x = 0; x < xSize; x+= xInc) {
-    for (double y = 0; y < ySize; y+= yInc) {
-      Vertex v = { x*xInc, y*yInc};
+  for (int i=0; i<nx; i++) {
+    for (int j=0; j<ny; j++) {
+      Vertex v = { i*xInc, j*yInc};
       mesh.push_back(v);
     }
   }
