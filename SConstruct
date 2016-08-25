@@ -1,12 +1,26 @@
 import os, sys
 
+def uniqueCheckLib(conf, lib, header = None):
+    """ Checks for a library and appends it to env if not already appended. """
+    res = conf.CheckLibWithHeader(lib, header = header, autoadd=0, language="C++") if header \
+          else conf.CheckLib(lib, autoadd=0, language="C++")
+        
+    conf.env.AppendUnique(LIBS = [lib])
+    if res:
+        return True
+    else:
+        print "ERROR: Library '" + lib + "' not found!"
+        Exit(1)
+
+
 vars = Variables(None, ARGUMENTS)
 
-vars.Add(BoolVariable("petsc", "Enable use of the Petsc linear algebra library.", True))
-vars.Add(BoolVariable("python", "Enable use of Python.", True))
-
+vars.Add(EnumVariable('build', 'Build type, either release or debug', "debug", allowed_values=('release', 'debug')))
+vars.Add("compiler", "Compiler to use.", "g++")
 
 env = Environment(variables = vars, ENV = os.environ)
+conf = Configure(env)
+
 Help(vars.GenerateHelpText(env))
 
 preciceRoot = os.getenv("PRECICE_ROOT")
@@ -14,50 +28,22 @@ if preciceRoot == None:
     print("PRECICE_ROOT is not set.")
     Exit(1)
 
-cpppath = [os.path.join(preciceRoot, 'src')]
-libpath = [os.path.join(preciceRoot, 'build/last')]
-
-
-if env["petsc"]:
-    petscDir = env["ENV"]["PETSC_DIR"]
-    petscArch = env["ENV"]["PETSC_ARCH"]
-    cpppath.append(os.path.join(petscDir, "include"))
-    cpppath.append(os.path.join(petscDir, petscArch, "include"))
-    libpath.append(os.path.join(petscDir, petscArch, "lib"))
-    libpath.append(os.path.join(petscDir, petscArch, "lib"))
+env.Append(CPPPATH = [os.path.join(preciceRoot, "src")])
+env.Append(LIBPATH = [os.path.join(preciceRoot, "build/last")])
     
-cppdefines = [ ]   
+uniqueCheckLib(conf, "precice", header = "precice/SolverInterface.hpp")
+uniqueCheckLib(conf, "boost_program_options", header = "boost/program_options.hpp")
+    
+env.Replace(CXX = env["compiler"])
 
-libs = [ 
-    'precice',
-    'python2.7' if env["python"] else '',
-    'petsc'     if env["petsc"]  else '', 
-    'boost_system',
-    'boost_filesystem',
-    'boost_program_options'
-]
+env.Append(CCFLAGS = ['-Wall', '-std=c++11'])
 
-# cxx = 'g++' # For systems offering mpicxx compiler
-cxx = 'mpicxx'      # For systems offering mpic++ compiler
+if env["build"] == "debug":
+    env.Append(CCFLAGS = ['-O0', '-g3'])
+    env.Append(LINKFLAGS = ["-rdynamic"])
+elif env["build"] == "release":
+    env.Append(CCFLAGS = ['-O3'])
 
-ccflags = []
-# ccflags.append(['-O0', '-g3'])
-ccflags.append(['-O3'])
-ccflags.append(['-Wall', '-std=c++11'])
-
-#libpath.append (preciceRoot + '/build/' + buildmode + '-dim2-nompi/')
-#libpath.append('/usr/lib/')
-
-##### Setup build environment and issue builds
-
-env = Environment ( 
-    CPPDEFINES = cppdefines,  # defines for preprocessor (#define xyz)
-    LIBPATH    = libpath,     # path to libraries used
-    LIBS       = libs,        # libraries used (without prefix "lib" and suffix ".a"/".so"/...)
-    CPPPATH    = cpppath,     # pathes where the preprocessor should look for files
-    CCFLAGS    = ccflags,     # flags for the c/c++ compilers
-    CXX        = cxx,         # the c++ compiler that should be used
-    ENV        = os.environ,  # propagates environment variables to scons
-)
-
+env = conf.Finish()
+    
 env.Program ( 'aste', ['main.cpp'] )
