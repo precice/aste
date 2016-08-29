@@ -2,17 +2,17 @@ import os, sys
 
 def uniqueCheckLib(conf, lib, header = None):
     """ Checks for a library and appends it to env if not already appended. """
-    res = conf.CheckLibWithHeader(lib, header = header, autoadd=0, language="C++") if header \
-          else conf.CheckLib(lib, autoadd=0, language="C++")
-        
-    conf.env.AppendUnique(LIBS = [lib])
-    if res:
-        return True
+    if header:
+        if not conf.CheckLibWithHeader(lib, header = header, autoadd=0, language="C++"):
+            print "ERROR: Library '" + lib + "' or header '" + header + "' not found."
+            Exit(1)
     else:
-        print "ERROR: Library '" + lib + "' not found!"
-        Exit(1)
+        if not conf.CheckLib(lib, autoadd=0, language="C++"):
+            print "ERROR: Library '" + lib + "' not found!"
+            Exit(1)
 
-
+    conf.env.AppendUnique(LIBS = [lib])
+        
 vars = Variables(None, ARGUMENTS)
 
 vars.Add(EnumVariable('build', 'Build type, either release or debug', "debug", allowed_values=('release', 'debug')))

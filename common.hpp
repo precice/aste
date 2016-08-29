@@ -17,7 +17,6 @@ using Data = std::vector<double>;
 
 using OptionMap = boost::program_options::variables_map;
 
-
 OptionMap getOptions(int argc, char *argv[])
 {
   namespace po = boost::program_options;
@@ -25,7 +24,7 @@ OptionMap getOptions(int argc, char *argv[])
   po::options_description desc("ASTE: Artificial solver emulation tool");
   desc.add_options()
     ("help,h", "produce help")
-    ("precice-config,x", po::value<std::string>()->default_value("precice.xml"), "preCICE configuratio file")
+    ("precice-config,c", po::value<std::string>()->default_value("precice.xml"), "preCICE configuratio file")
     ("participant,p", po::value<std::string>()->required(), "Participant Name")
     ("x", po::value<double>()->default_value(10), "X Mesh size")
     ("y", po::value<double>()->default_value(10), "Y Mesh size")
