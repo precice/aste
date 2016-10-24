@@ -2,22 +2,11 @@
 
 <precice-configuration>
 
-  <log-filter target="debug" component="" switch="off" />
-  <log-filter target="debug" component="precice::mapping" switch="on" />
-  <!-- <log-filter target="debug" component="precice::impl::SolverInterfaceImpl" switch="on" /> -->
-
-  <!-- <log-filter target="debug" component="precice::geometry" switch="on" /> -->
-  <!-- <log-filter target="debug" component="precice::mesh" switch="on" /> -->
-  <!-- <log-filter target="debug" component="precice::geometry::BroadcastFilterDecomposition" switch="on" /> -->
-  <!-- <log-filter target="debug" component="precice::impl::SolverInterfaceImpl" switch="on" /> -->
-  <log-filter target="info"  component="" switch="on"/>
-
-  
-  <log-output column-separator=" | " log-time-stamp="no" 
-              log-time-stamp-human-readable="yes" log-machine-name="no" 
-              log-message-type="no" log-trace="yes" />
-  
-  <solver-interface dimensions="2">
+  <log>
+    <sink type="stream" output="stdout" filter="(%Severity% > debug) or (%Module% contains mapping)"/>
+    <!-- <sink type="stream" output="stdout" filter=""/> -->
+  </log>
+  <solver-interface dimensions="3">
     
     <!-- Data fields that are exchanged between the solvers -->
     <data:scalar name="Data" />

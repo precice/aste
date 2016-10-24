@@ -16,7 +16,7 @@ def uniqueCheckLib(conf, lib, header = None):
 vars = Variables(None, ARGUMENTS)
 
 vars.Add(EnumVariable('build', 'Build type, either release or debug', "debug", allowed_values=('release', 'debug')))
-vars.Add("compiler", "Compiler to use.", "g++")
+vars.Add("compiler", "Compiler to use.", "mpicxx")
 
 env = Environment(variables = vars, ENV = os.environ)
 conf = Configure(env)
@@ -28,12 +28,6 @@ if preciceRoot == None:
     print("PRECICE_ROOT is not set.")
     Exit(1)
 
-env.Append(CPPPATH = [os.path.join(preciceRoot, "src")])
-env.Append(LIBPATH = [os.path.join(preciceRoot, "build/last")])
-    
-uniqueCheckLib(conf, "precice", header = "precice/SolverInterface.hpp")
-uniqueCheckLib(conf, "boost_program_options", header = "boost/program_options.hpp")
-    
 env.Replace(CXX = env["compiler"])
 
 env.Append(CCFLAGS = ['-Wall', '-std=c++11'])
@@ -44,6 +38,16 @@ if env["build"] == "debug":
 elif env["build"] == "release":
     env.Append(CCFLAGS = ['-O3'])
 
+    
+env.Append(CPPPATH = [os.path.join(preciceRoot, "src")])
+env.Append(LIBPATH = [os.path.join(preciceRoot, "build/last")])
+    
+uniqueCheckLib(conf, "precice", header = "precice/SolverInterface.hpp")
+uniqueCheckLib(conf, "boost_system")
+uniqueCheckLib(conf, "boost_program_options", header = "boost/program_options.hpp")
+uniqueCheckLib(conf, "boost_filesystem", header = "boost/filesystem.hpp")
+    
 env = conf.Finish()
     
 env.Program ( 'aste', ['main.cpp'] )
+env.Program ( 'readMesh', ['readMesh.cpp'] )
