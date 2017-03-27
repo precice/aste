@@ -1,14 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import os
+import os, itertools
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 import pdb
 
-in_dimensions = (-10, 10, 50)
-out_dimensions = (-10, 10, 50)
+in_dimensions = (-10, 10, 500)
+out_dimensions = (-10, 10, 500)
+test_dimensions = (-10, 10, 2000)
 MPI_size = 4
 
 fun = lambda xx = 0, yy = 0, zz = 0 : np.sin(xx) + np.cos(2*yy)
@@ -58,6 +59,7 @@ def rmse(indata, outdata):
     return np.sqrt( ((outdata.flatten() - indata.flatten())**2).mean() )
 
 def gen_data(start, end, points):
+    """ Generates an 2d, quadratic mesh on [start, end]² on points² """
     x = np.linspace(start, end, points)
     y = np.linspace(start, end, points)
     xx, yy = np.meshgrid(x, y)
@@ -73,26 +75,28 @@ def write_file(filename, start, end, points):
     nodes_per_rank = int(len(flat_values) / MPI_size)
 
     current_rank = -1
+
     with open(filename, "w") as f:
-        for i, value in enumerate(flat_values):
+        for i, value, fx, fy in zip(itertools.count(), flat_values, xx.flatten(), yy.flatten()):
             if i % nodes_per_rank == 0:
                 current_rank += 1
                 
-            str = "{!s} {!s} {!s} {!s} {!s}".format(0,
-                                                    xx.flatten()[i],
-                                                    yy.flatten()[i],
-                                                    value,
-                                                    current_rank)
+            str = "{!s} {!s} {!s} {!s} {!s}".format(0, fx, fy, value, current_rank)
             print(str, file = f)
 
     
 def main():
     write_file("inMesh", *in_dimensions)
-    write_file("outMesh", *out_dimensions)
-    print("Wrote meshes for", MPI_size, "ranks.")
-    print("inMesh dimensions,", in_dimensions);
-    print("outMesh dimensions,", out_dimensions);
+    print("Wrote inMesh, dimensions,", in_dimensions);
     
+    write_file("outMesh", *out_dimensions)
+    print("Wrote outMesh dimensions,", out_dimensions);
+    
+    write_file("testMesh", *test_dimensions)
+    print("Wrote testMesh, dimensions,", test_dimensions);
+    
+    print("Wrote meshes for", MPI_size, "ranks.")
+        
     # plt.contour(x, y, values)
     # plt.grid()
     # plt.show()
