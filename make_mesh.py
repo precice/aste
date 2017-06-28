@@ -15,6 +15,13 @@ MPI_size = 4
 fun = lambda xx = 0, yy = 0, zz = 0 : np.sin(xx) + np.cos(2*yy)
 # fun = lambda xx = 0, yy = 0, zz = 0 : xx + yy
 
+def gauss_pulse(xx, yy, zz = 0):
+    rho_0 = 1.225
+    rho_pulse = 2
+    d = 0.2
+    x_0 = y_0 = 0
+    return rho_0 + rho_pulse * np.exp( -(np.power(xx + x_0, 2) + np.power(yy + y_0, 2))) / d + np.log(2)
+
 def lookup_from_coords(x, y, table):
     return table[table[0]==x][table[1]==y]
 
