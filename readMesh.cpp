@@ -17,14 +17,9 @@ namespace fs = boost::filesystem;
 
 int countLines(std::string file)
 {
-  std::ifstream fstream(file);
-
-  std::size_t lines_count = 0;
-  std::string line;
-  while (std::getline(fstream , line))
-    ++lines_count;
-
-  return lines_count;
+  std::ifstream inFile(file);
+  return std::count(std::istreambuf_iterator<char>(inFile),
+                    std::istreambuf_iterator<char>(), '\n');
 }
 
 boost::program_options::variables_map getOptions(int argc, char *argv[])
