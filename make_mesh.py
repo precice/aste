@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
 import os, itertools
-
+import mesh
 import numpy as np
 import matplotlib.pyplot as plt
 
-import pdb
+from pdb import set_trace
 
-in_dimensions = (-10, 10, 500)
-out_dimensions = (-10, 10, 500)
-test_dimensions = (-10, 10, 2000)
+in_dimensions = (-10, 10, 220)
+out_dimensions = (-10, 10, 280)
+test_dimensions = (-10, 10, 200)
 MPI_size = 4
 
 fun = lambda xx = 0, yy = 0, zz = 0 : np.sin(xx) + np.cos(2*yy)
@@ -25,7 +25,7 @@ def gauss_pulse(xx, yy, zz = 0):
 def lookup_from_coords(x, y, table):
     return table[table[0]==x][table[1]==y]
 
-def read_data(directory, geometry = (0,2), val_col_offset = 1):
+def read_data(directory, geometry = (0,2), val_col_offset = 1, value_function = fun):
     """ Reads data from directory
     geometry: Colums that hold 2D geometry information.
     val_col_offset: Offset from geometry col to value col 
@@ -57,7 +57,7 @@ def read_data(directory, geometry = (0,2), val_col_offset = 1):
         coords.append(out[..., i])
 
     vals = out[..., -1]
-    solution = fun(*coords)
+    solution = value_function(*coords)
     
     return coords, vals, solution
 
@@ -65,18 +65,21 @@ def read_data(directory, geometry = (0,2), val_col_offset = 1):
 def rmse(indata, outdata):
     return np.sqrt( ((outdata.flatten() - indata.flatten())**2).mean() )
 
-def gen_data(start, end, points):
+def gen_data(start, stop, points):
     """ Generates an 2d, quadratic mesh on [start, end]² on points² """
-    x = np.linspace(start, end, points)
-    y = np.linspace(start, end, points)
+    x = np.linspace(start, stop, points)
+    y = np.linspace(start, stop, points)
     xx, yy = np.meshgrid(x, y)
     values = fun(xx, yy)
+    return xx, yy, values
 
-    return x,y, xx, yy, values
+def gen_data_GC(order, element_size, domain_size, domain_start = 0, value_function = fun):
+    xx, yy = mesh.GaussChebyshev_3D(order, element_size, domain_size, domain_start)
+    values = value_function(xx, yy)
+    return xx, yy, values
+    
 
-def write_file(filename, start, end, points):
-    x, y, xx, yy, values = gen_data(start, end, points)
-
+def write_file(filename, xx, yy, values):
     flat_values = values.flatten()
 
     nodes_per_rank = int(len(flat_values) / MPI_size)
@@ -93,14 +96,21 @@ def write_file(filename, start, end, points):
 
     
 def main():
-    write_file("inMesh", *in_dimensions)
-    print("Wrote inMesh, dimensions,", in_dimensions);
-    
-    write_file("outMesh", *out_dimensions)
-    print("Wrote outMesh dimensions,", out_dimensions);
-    
-    write_file("testMesh", *test_dimensions)
-    print("Wrote testMesh, dimensions,", test_dimensions);
+    GC = False
+
+    if GC:
+        write_file("inMeshGC.txt", *gen_data_GC(4, 0.5, 4, domain_start = -2, value_function = gauss_pulse))
+        write_file("outMeshGC.txt", *gen_data_GC(10, 0.5, 4, domain_start = -2, value_function = gauss_pulse))
+        
+    else:
+        write_file("inMesh.txt", *gen_data(*in_dimensions))
+        print("Wrote inMesh, dimensions,", in_dimensions);
+
+        write_file("outMesh.txt", *gen_data(*out_dimensions))
+        print("Wrote outMesh dimensions,", out_dimensions);
+
+        write_file("testMesh.txt", *gen_data(*test_dimensions))
+        print("Wrote testMesh, dimensions,", test_dimensions);
     
     print("Wrote meshes for", MPI_size, "ranks.")
         
