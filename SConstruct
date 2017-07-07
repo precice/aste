@@ -36,7 +36,7 @@ if env["build"] == "debug":
     env.Append(CCFLAGS = ['-O0', '-g3'])
     env.Append(LINKFLAGS = ["-rdynamic"])
 elif env["build"] == "release":
-    env.Append(CCFLAGS = ['-O3'])
+    env.Append(CCFLAGS = ['-O3', '-g3', '-fno-omit-frame-pointer'])
 
     
 env.Append(CPPPATH = [os.path.join(preciceRoot, "src")])
