@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
-import os, itertools
+import argparse, os, itertools
 import mesh
 import numpy as np
 import matplotlib.pyplot as plt
 
 from pdb import set_trace
 
-in_dimensions = (-10, 10, 220)
-out_dimensions = (-10, 10, 280)
-test_dimensions = (-10, 10, 200)
+in_dimensions = (0, 1, 200)
+out_dimensions = (0, 1, 180)
+test_dimensions = (0, 1, 200)
+
 MPI_size = 4
 
 fun = lambda xx = 0, yy = 0, zz = 0 : np.sin(xx) + np.cos(2*yy)
@@ -96,6 +97,15 @@ def write_file(filename, xx, yy, values):
 
     
 def main():
+    parser = argparse.ArgumentParser(description='Create mesh to be read by readMesh.')
+    parser.add_argument('inputMeshSize', type=int)
+    parser.add_argument('outputMeshSize', type=int)
+    args = parser.parse_args()
+    
+    in_dimensions = (0, 1, args.inputMeshSize)
+    out_dimensions = (0, 1, args.outputMeshSize)
+    test_dimensions = (0, 1, 200)
+
     GC = False
 
     if GC:
