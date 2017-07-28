@@ -142,8 +142,8 @@ def measureRanks(ranks, prealloce, mesh_size_func, m):
 def measureScaling(mesh_size_func, filename):
     ms = [4, 6, 8]
     
-    # ranks = [2, 3, 4, 6, 8, 10, 14, 18, 24, 28, 32, 36]
-    ranks = [2, 3, 4, 5]
+    ranks = [2, 3, 4, 6, 8, 10, 14, 18, 24, 28, 32, 36]
+    # ranks = [2, 3, 4, 5]
 
     set_save_fig_params(rows = 3)
     
@@ -186,5 +186,5 @@ def measureScaling(mesh_size_func, filename):
 
 # measureStrongScaling()
 
-# measureScaling(lambda ranks: 50, 'strong-scaling-{prealloc}')
-measureScaling(lambda ranks: np.sqrt(ranks * 50), 'weak-scaling-{prealloc}')
+measureScaling(lambda ranks: 200, 'strong-scaling-{prealloc}-mesh200')
+measureScaling(lambda ranks: np.sqrt(ranks * 100), 'weak-scaling-{prealloc}-mesh100')
