@@ -6,7 +6,7 @@
   
   <log>
     <sink type="stream" output="stdout"
-          filter = "%Severity% > info"
+          filter = "%Severity% >= info"
           enabled="1" />
     <!-- <sink type="stream" output="stdout" filter=""/> -->
   </log>

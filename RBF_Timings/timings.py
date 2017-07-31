@@ -132,7 +132,7 @@ def comparePreAllocVsNon(mesh_size_func, filename):
         data.plot(ax = ax[i], y = 'GLOBAL', logy = True, legend = False, style = '-d',
                           sharex = True, label = "with preallocation")
         data = measureRanks(ranks, False, mesh_size_func, m)
-        data.plot(ax = ax[i], y = 'GLOBAL', logy = True, legend = False, style = '-d',
+        data.plot(ax = ax[i], y = 'GLOBAL', logy = False, legend = False, style = '-d',
                           sharex = True, label = "without preallocation")
         
         ax[i].xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
