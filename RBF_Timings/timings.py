@@ -60,12 +60,12 @@ def save_plot(filename, **kwargs):
     plt.savefig(fn + '.pdf')
     plt.savefig(fn + '.pgf')
 
-def measureRanks(ranks, prealloce, mesh_size_func, m):
+def measureRanks(ranks, prealloc, mesh_size_func, m):
     data = pandas.DataFrame()
     for rank in ranks:
         mesh_size = int(mesh_size_func(rank))
         createMesh(mesh_size)
-        prepareConfigTemplate(shapeParameter(mesh_size, m), True)
+        prepareConfigTemplate(shapeParameter(mesh_size, m), prealloc)
         launchRun(rank)
         timings = getLatestTimings()['avg']
         timings.name = rank
@@ -121,7 +121,6 @@ def measureScaling(mesh_size_func, filename):
 
 def comparePreAllocVsNon(mesh_size_func, filename):
     ranks = [4, 6, 8, 10, 14, 18, 24, 28, 32, 36, 40]
-    # ranks = [2,3]
     ms = [4, 6, 8]
 
     set_save_fig_params(rows = 3)
@@ -132,7 +131,7 @@ def comparePreAllocVsNon(mesh_size_func, filename):
         data.plot(ax = ax[i], y = 'computeMapping', logy = True, legend = False, style = '-d',
                           sharex = True, label = "with preallocation")
         data = measureRanks(ranks, False, mesh_size_func, m)
-        data.plot(ax = ax[i], y = 'computeMapping', logy = False, legend = False, style = '-d',
+        data.plot(ax = ax[i], y = 'computeMapping', logy = True, legend = False, style = '-d',
                           sharex = True, label = "without preallocation")
         
         ax[i].xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
