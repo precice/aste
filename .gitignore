@@ -4,3 +4,6 @@
 *.pyc
 *.o
 a.out
+rank_*
+iterations-*
+convergence-*
