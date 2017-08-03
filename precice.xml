@@ -3,7 +3,9 @@
 <precice-configuration>
 
   <log>
-    <sink type="stream" output="stdout" filter="(%Severity% > debug) or (%Module% contains mapping)"/>
+    <sink type="stream" output="stdout"
+          filter="(%Severity% > debug) or (%Module% contains mapping) or (%Module% contains Events)"
+          enabled="1" />
     <!-- <sink type="stream" output="stdout" filter=""/> -->
   </log>
   <solver-interface dimensions="3">
@@ -19,19 +21,19 @@
     <mesh name="MeshB" flip-normals="no">
       <use-data name="Data" />
     </mesh>
-
     
-    <m2n:sockets from="A" to="B" network="lo" exchange-directory="."  distribution-type="gather-scatter" />
+    <m2n:sockets from="A" to="B" network="lo" exchange-directory=".."  distribution-type="gather-scatter" />
 
     <participant name="A">
       <use-mesh name="MeshA" provide="yes" />
-      <use-mesh name="MeshB" provide="no" from="B" />
+
       <write-data name="Data" mesh="MeshA" />
       <!-- <mapping:nearest-neighbor constraint="conservative" direction="write" from="MeshA" to="MeshB" /> -->
-      <mapping:petrbf-gaussian shape-parameter="2" solver-rtol="1e-9" constraint="conservative" direction="write" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" />
+      <!-- <mapping:petrbf-gaussian shape-parameter="2" solver-rtol="1e-9" constraint="conservative" direction="write" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
       <!-- <mapping:rbf-gaussian shape-parameter="10" constraint="conservative" direction="write" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
-      
-      <master:mpi-single />
+
+      <!-- <export:vtk timestep-interval="1" directory="vtkA/" normals="0"/> -->
+      <!-- <master:mpi-single /> -->
     </participant>
     
     <participant name="B">
@@ -39,11 +41,11 @@
       <use-mesh name="MeshB" provide="yes" />
       <read-data name="Data" mesh="MeshB" />
       <!-- <mapping:nearest-neighbor constraint="consistent" direction="read" from="MeshA" to="MeshB" /> -->
-      <!-- <mapping:rbf-gaussian shape-parameter="10" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
-
-      <!-- <mapping:petrbf-gaussian shape-parameter="10" solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
-
-      <master:mpi-single />
+      <!-- <mapping:rbf-gaussian shape-parameter="4" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="false" z-dead="false" /> -->
+      <mapping:petrbf-gaussian shape-parameter="38" solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="true" y-dead="false" z-dead="false" polynomial="separate" preallocation="estimate"/>
+      <!-- <mapping:petrbf-volume-splines solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="false" z-dead="false" /> -->
+      <!-- <export:vtk timestep-interval="1" directory="vtkB/" normals="0"/> -->
+      <!-- <master:mpi-single /> -->
     </participant>
 
     
@@ -51,8 +53,8 @@
       <participants first="A" second="B" />
       <max-time value="1.0" />
       <timestep-length value="1" />
-      <!-- <exchange data="Data" mesh="MeshA" from="A" to="B" /> -->
-      <exchange data="Data" mesh="MeshB" from="A" to="B" />
+      <exchange data="Data" mesh="MeshA" from="A" to="B" />
+      <!-- <exchange data="Data" mesh="MeshB" from="A" to="B" /> -->
     </coupling-scheme:serial-explicit>
     
   </solver-interface>

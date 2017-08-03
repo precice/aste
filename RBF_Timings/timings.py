@@ -120,18 +120,25 @@ def measureScaling(mesh_size_func, filename):
 
 
 def comparePreAllocVsNon(mesh_size_func, filename):
-    ranks = [4, 6, 8, 10, 14, 18, 24, 28, 32, 36, 40]
+    # ranks = [4, 6, 8, 10, 14, 18, 24, 28, 32, 36, 40]
+    ranks = [2,3,4]
+
     ms = [4, 6, 8]
 
     set_save_fig_params(rows = 3)
     
     fig, ax = plt.subplots(len(ms), sharex = True)
     for i, m in enumerate(ms):
-        data = measureRanks(ranks, True, mesh_size_func, m)
+        data = measureRanks(ranks, 'compute', mesh_size_func, m)
         data.plot(ax = ax[i], y = 'computeMapping', logy = True, legend = False, style = '-d',
-                          sharex = True, label = "with preallocation")
-        data = measureRanks(ranks, False, mesh_size_func, m)
-        data.plot(ax = ax[i], y = 'computeMapping', logy = True, legend = False, style = '-d',
+                          sharex = True, label = "compute preallocation")
+        
+        data = measureRanks(ranks, 'estimate', mesh_size_func, m)
+        data.plot(ax = ax[i], y = 'computeMapping', logy = False, legend = False, style = '-d',
+                          sharex = True, label = "estimate preallocation")
+        
+        data = measureRanks(ranks, 'off', mesh_size_func, m)
+        data.plot(ax = ax[i], y = 'computeMapping', logy = False, legend = False, style = '-d',
                           sharex = True, label = "without preallocation")
         
         ax[i].xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
