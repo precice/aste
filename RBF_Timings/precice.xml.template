@@ -37,7 +37,7 @@
       <mapping:petrbf-gaussian shape-parameter="{shape_parameter:.4f}" preallocation="{preallocation}"
                                solver-rtol="1e-9" constraint="consistent"
                                direction="read" from="MeshA" to="MeshB"
-                               x-dead="false" y-dead="false" z-dead="false" polynomial="separate"/>
+                               x-dead="true" y-dead="false" z-dead="false" polynomial="separate"/>
       <master:mpi-single />
     </participant>
 

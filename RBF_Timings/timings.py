@@ -133,9 +133,9 @@ def comparePreAllocVsNon(mesh_size_func, filename):
         data.plot(ax = ax[i], y = 'computeMapping', logy = True, legend = False, style = '-d',
                           sharex = True, label = "compute preallocation")
         
-        data = measureRanks(ranks, 'estimate', mesh_size_func, m)
+        data = measureRanks(ranks, 'mark', mesh_size_func, m)
         data.plot(ax = ax[i], y = 'computeMapping', logy = False, legend = False, style = '-d',
-                          sharex = True, label = "estimate preallocation")
+                          sharex = True, label = "saved preallocation")
         
         data = measureRanks(ranks, 'off', mesh_size_func, m)
         data.plot(ax = ax[i], y = 'computeMapping', logy = False, legend = False, style = '-d',
@@ -154,4 +154,4 @@ def comparePreAllocVsNon(mesh_size_func, filename):
 
 # measureScaling(lambda ranks: 200, 'strong-scaling-{prealloc}-mesh200')
 # measureScaling(lambda ranks: np.sqrt(ranks * 100), 'weak-scaling-{prealloc}-mesh100')
-comparePreAllocVsNon(lambda ranks: 80, 'comparision-mesh200')
+comparePreAllocVsNon(lambda ranks: 50, 'comparision')
