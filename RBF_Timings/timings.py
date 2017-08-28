@@ -16,7 +16,7 @@ except ImportError:
 sys.path.append(os.environ['PRECICE_ROOT'] + "/tools")
 import EventTimings
 
-colors = [ i['color'] for i in plt.rcParams['axes.prop_cycle'] ]
+# colors = [ i['color'] for i in plt.rcParams['axes.prop_cycle'] ]
 
 def shapeParameter(mesh_size, m):
     h = 1 / mesh_size
@@ -140,6 +140,11 @@ def comparePreAllocVsNon(mesh_size_func, filename):
         data = measureRanks(ranks, 'off', mesh_size_func, m)
         data.plot(ax = ax[i], y = 'computeMapping', logy = False, legend = False, style = '-d',
                           sharex = True, label = "without preallocation")
+
+        data = measureRanks(ranks, 'estimate', mesh_size_func, m)
+        data.plot(ax = ax[i], y = 'computeMapping', logy = False, legend = False, style = '-d',
+                          sharex = True, label = "estimated preallocation")
+        
         
         ax[i].xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
         ax[i].set_ylabel("Time [ms]")
