@@ -27,8 +27,8 @@ def shapeParameter(mesh_size, m):
 def launchSingleRun(participant, ranks):
     mesh = "../outMesh.txt" if participant == "A" else "../inMesh.txt"
     os.chdir(participant)
-    run(["mpirun", "-n", ranks, "../../readMesh", "-a", "-c", "../precice.xml", mesh, participant],
-        check = True)
+    return run(["mpirun", "-n", ranks, "../../readMesh", "-a", "-c", "../precice.xml", mesh, participant]).returncode
+
 
 def launchRun(ranks):
     pA = multiprocessing.Process(target=launchSingleRun, daemon=True, args=("A", str(ranks)))
@@ -37,6 +37,9 @@ def launchRun(ranks):
     pB.start()
     pA.join()
     pB.join()
+    if (pA.exitcode != 0) or (pB.exitcode != 0):
+        raise Exception
+    
 
     
 def prepareConfigTemplate(shape_parameter, preallocation):
