@@ -73,8 +73,6 @@ int main(int argc, char *argv[])
 {
   MPI_Init(&argc, &argv);
 
-  precice::utils::Event _eTotal("Total");
-  
   auto options = getOptions(argc, argv);
 
   int MPIrank = 0, MPIsize = 0;
@@ -85,6 +83,7 @@ int main(int argc, char *argv[])
   string participant = options["participant"].as<string>();
     
   precice::SolverInterface interface(participant, MPIrank, MPIsize);
+  precice::utils::Event _eTotal("Total");
   interface.configure(options["precice-config"].as<string>());
 
   int meshID = interface.getMeshID( (participant == "A") ? "MeshA" : "MeshB" ); // participant = A => MeshID = MeshA
