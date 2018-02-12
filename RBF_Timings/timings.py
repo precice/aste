@@ -1,4 +1,5 @@
-import multiprocessing, os, time, sys
+import multiprocessing, os, time, sys, datetime, json
+from pathlib import Path
 from subprocess import run
 
 import numpy as np
@@ -10,13 +11,22 @@ from plot_helper import set_save_fig_params
 try:
     from ipdb import set_trace
 except ImportError:
-    pass
+    from pdb import set_trace
 
 # sys.path.append("/data/scratch/lindnefn/precice/tools")
 sys.path.append(os.environ['PRECICE_ROOT'] + "/tools")
 import EventTimings
 
 # colors = [ i['color'] for i in plt.rcParams['axes.prop_cycle'] ]
+
+def removeEventFiles(participant):
+    p = Path(participant)
+    try:
+        Path(p / ("Events-%s.log" % participant)).unlink()
+        Path(p / ("EventTimings-%s.log" % participant)).unlink()
+    except FileNotFoundError:
+        pass
+        
 
 def shapeParameter(mesh_size, m):
     h = 1 / mesh_size
@@ -33,14 +43,11 @@ def launchSingleRun(participant, ranks):
 def launchRun(ranks):
     pA = multiprocessing.Process(target=launchSingleRun, daemon=True, args=("A", str(ranks)))
     pB = multiprocessing.Process(target=launchSingleRun, daemon=True, args=("B", str(ranks)))
-    pA.start()
-    pB.start()
-    pA.join()
-    pB.join()
+    pA.start(); pB.start()
+    pA.join();  pB.join()
     if (pA.exitcode != 0) or (pB.exitcode != 0):
         raise Exception
     
-
     
 def prepareConfigTemplate(shape_parameter, preallocation):
     with open("precice.xml.template") as f:
@@ -51,11 +58,6 @@ def prepareConfigTemplate(shape_parameter, preallocation):
 def createMesh(size):
     cmd = "../make_mesh.py {0} {0}".format(size)
     run(cmd, shell = True, check = True)
-
-def getLatestTimings():
-    last_run = EventTimings.parseEventlog("B/EventTimings-B.log", timings_format = 'pandas')[-1]
-    # Select fields and reorder them
-    return last_run["timings"]
 
 
 def save_plot(filename, **kwargs):
@@ -69,6 +71,19 @@ def measureRanks(ranks, prealloc, mesh_size_func, m):
         mesh_size = int(mesh_size_func(rank))
         createMesh(mesh_size)
         prepareConfigTemplate(shapeParameter(mesh_size, m), prealloc)
+        launchRun(rank)
+        timings = getLatestTimings()['avg']
+        timings.name = rank
+        data = data.append(timings)
+
+    return data
+
+
+def measureUni(ranks, sizes, prealloc, m):
+    data = pandas.DataFrame()
+    for rank, size in zip(ranks, sizes):
+        createMesh(size)
+        prepareConfigTemplate(shapeParameter(size, m), prealloc)
         launchRun(rank)
         timings = getLatestTimings()['avg']
         timings.name = rank
@@ -122,9 +137,42 @@ def measureScaling(mesh_size_func, filename):
     plt.close()
 
 
+def doScaling(name, ranks, mesh_sizes, m):
+    assert(len(ranks) == len(mesh_sizes))
+    
+    removeEventFiles("A")
+    removeEventFiles("B")
+        
+    for rank, mesh_size in zip(ranks, mesh_sizes):
+        createMesh(mesh_size)
+        prepareConfigTemplate(shapeParameter(mesh_size, m), "tree")
+        launchRun(rank)
+
+    file_info = { "date" : datetime.datetime.now().isoformat(),
+                  "name" : name,
+                  "rankMin" : min(ranks), "rankMax" : max(ranks),
+                  "meshMin": min(mesh_sizes), "meshMax": min(mesh_sizes),
+                  "m" : m}
+    
+    file_pattern = "{date}_{name}_{participant}_ranks{rankMin}_{rankMax}-mesh{meshMin}_{meshMax}-m{m}.{suffix}"
+    Path("A" / Path("Events-A.log")).rename(file_pattern.format(suffix = "events", participant = "A",
+                                                                **file_info))
+    Path("A" / Path("EventTimings-A.log")).rename(file_pattern.format(suffix= "timings", participant = "A",
+                                                                      **file_info))        
+    Path("B" / Path("Events-B.log")).rename(file_pattern.format(suffix = "events", participant = "B",
+                                                                **file_info))
+    Path("B" / Path("EventTimings-B.log")).rename(file_pattern.format(suffix= "timings", participant = "B",
+                                                                      **file_info))
+
+    with open("{date}_{name}.meta".format(**file_info), "w") as f:
+        json.dump({"name"  : name, "ranks" : ranks, "mesh_sizes" : mesh_sizes, "m" : m},
+                  f)
+                
+    
+
 def comparePreAllocVsNon(mesh_size_func, filename):
-    # ranks = [4, 6, 8, 10, 14, 18, 24, 28, 32, 36, 40]
-    ranks = [2,3,4]
+    ranks = [4, 6, 8, 10, 14, 18, 24, 28, 32, 36, 40]
+    # ranks = [2,3,4]
 
     ms = [4, 6, 8]
 
@@ -144,9 +192,9 @@ def comparePreAllocVsNon(mesh_size_func, filename):
         data.plot(ax = ax[i], y = 'computeMapping', logy = False, legend = False, style = '-d',
                           sharex = True, label = "without preallocation")
 
-        data = measureRanks(ranks, 'estimate', mesh_size_func, m)
+        data = measureRanks(ranks, 'tree', mesh_size_func, m)
         data.plot(ax = ax[i], y = 'computeMapping', logy = False, legend = False, style = '-d',
-                          sharex = True, label = "estimated preallocation")
+                          sharex = True, label = "tree preallocation")
         
         
         ax[i].xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
@@ -157,9 +205,45 @@ def comparePreAllocVsNon(mesh_size_func, filename):
     ax[-1].set_xlabel("Processors")
     save_plot(filename)
     plt.close()
+
+
+def problemUpscaling(filename):
+    mesh_sizes = [10, 20, 50, 75, 125, 150, 175, 200, 225, 250, 275, 300]
+    ranks = [8] * len(mesh_sizes)
+    ms = [4, 6, 8]    
+
+    set_save_fig_params(rows = 3)
     
+    fig, ax = plt.subplots(len(ms), sharex = True)
+    for i, m in enumerate(ms):
+        data = measureUni(ranks, mesh_sizes, 'compute', m)
+        ax[i].loglog(mesh_sizes, data["computeMapping"].values, "-d", label = "computed")
+                
+        data = measureUni(ranks, mesh_sizes, 'mark', m)
+        ax[i].loglog(mesh_sizes, data["computeMapping"].values, "-d", label = "saved")
+        
+        data = measureUni(ranks, mesh_sizes, 'off', m)
+        ax[i].loglog(mesh_sizes, data["computeMapping"].values, "-d", label = "without")
+        
+        data = measureUni(ranks, mesh_sizes, 'tree', m)
+        ax[i].loglog(mesh_sizes, data["computeMapping"].values, "-d", label = "tree")
+                
+        
+        # ax[i].xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+        ax[i].set_ylabel("Time [ms]")
+        ax[i].set_title('ranks = {}, m = {}'.format(ranks[0], m))
+
+    set_trace()
+
+    ax[0].legend()
+    ax[-1].set_xlabel("Mesh Size")
+    save_plot(filename)
+    plt.close()
+
 
 
 # measureScaling(lambda ranks: 200, 'strong-scaling-{prealloc}-mesh200')
 # measureScaling(lambda ranks: np.sqrt(ranks * 100), 'weak-scaling-{prealloc}-mesh100')
-comparePreAllocVsNon(lambda ranks: 50, 'comparision')
+# comparePreAllocVsNon(lambda ranks: 200, 'comparision')
+# problemUpscaling("problemupscaling")
+doScaling("testeins", [4, 6, 8, 10, 12], [100, 100, 100, 100, 100], 6)

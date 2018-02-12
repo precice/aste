@@ -33,7 +33,7 @@
       <!-- <mapping:rbf-gaussian shape-parameter="10" constraint="conservative" direction="write" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
 
       <!-- <export:vtk timestep-interval="1" directory="vtkA/" normals="0"/> -->
-      <!-- <master:mpi-single /> -->
+      <master:mpi-single />
     </participant>
     
     <participant name="B">
@@ -42,10 +42,10 @@
       <read-data name="Data" mesh="MeshB" />
       <!-- <mapping:nearest-neighbor constraint="consistent" direction="read" from="MeshA" to="MeshB" /> -->
       <!-- <mapping:rbf-gaussian shape-parameter="4" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="false" z-dead="false" /> -->
-      <mapping:petrbf-gaussian shape-parameter="38" solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="true" y-dead="false" z-dead="false" polynomial="separate" preallocation="estimate"/>
+      <mapping:petrbf-gaussian shape-parameter="5600" solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="true" y-dead="false" z-dead="false" polynomial="separate" preallocation="tree"/>
       <!-- <mapping:petrbf-volume-splines solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="false" z-dead="false" /> -->
       <!-- <export:vtk timestep-interval="1" directory="vtkB/" normals="0"/> -->
-      <!-- <master:mpi-single /> -->
+      <master:mpi-single />
     </participant>
 
     
