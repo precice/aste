@@ -1,6 +1,5 @@
-import multiprocessing, os, time, sys, datetime, json
+import contextlib, datetime, multiprocessing, os, time, subprocess, sys, socket, json
 from pathlib import Path
-from subprocess import run
 
 import numpy as np
 import pandas
@@ -13,7 +12,6 @@ try:
 except ImportError:
     from pdb import set_trace
 
-# sys.path.append("/data/scratch/lindnefn/precice/tools")
 sys.path.append(os.environ['PRECICE_ROOT'] + "/tools")
 import EventTimings
 
@@ -28,21 +26,25 @@ def removeEventFiles(participant):
         pass
         
 
-def shapeParameter(mesh_size, m):
+def shape_parameter(mesh_size, m):
     h = 1 / mesh_size
     s = np.sqrt(- np.log(1e-9)) / (m * h)
     print("################## mesh_size =", mesh_size, ', m =', m, ", h =", h, ", s =", s, "##################")
     return s
 
-def launchSingleRun(participant, ranks):
+def launchSingleRun(participant, ranks, outfile = None):
+    ostream = open(outfile, "w+") if outfile else sys.stdout
     mesh = "../outMesh.txt" if participant == "A" else "../inMesh.txt"
     os.chdir(participant)
-    return run(["mpirun", "-n", ranks, "../../readMesh", "-a", "-c", "../precice.xml", mesh, participant]).returncode
+    
+    cmd = ["mpirun", "-n", ranks, "../../readMesh", "-a", "-c", "../precice.xml", mesh, participant]
+    with contextlib.redirect_stdout(ostream):
+        cp = subprocess.run(cmd, stdout = sys.stdout, stderr = subprocess.STDOUT, check = True)
+    
 
-
-def launchRun(ranks):
-    pA = multiprocessing.Process(target=launchSingleRun, daemon=True, args=("A", str(ranks)))
-    pB = multiprocessing.Process(target=launchSingleRun, daemon=True, args=("B", str(ranks)))
+def launchRun(ranks, outFileA = None, outFileB = None):
+    pA = multiprocessing.Process(target=launchSingleRun, daemon=True, args=("A", str(ranks), outFileA))
+    pB = multiprocessing.Process(target=launchSingleRun, daemon=True, args=("B", str(ranks), outFileB))
     pA.start(); pB.start()
     pA.join();  pB.join()
     if (pA.exitcode != 0) or (pB.exitcode != 0):
@@ -57,7 +59,7 @@ def prepareConfigTemplate(shape_parameter, preallocation):
         
 def createMesh(size):
     cmd = "../make_mesh.py {0} {0}".format(size)
-    run(cmd, shell = True, check = True)
+    subprocess.run(cmd, shell = True, check = True)
 
 
 def save_plot(filename, **kwargs):
@@ -70,7 +72,7 @@ def measureRanks(ranks, prealloc, mesh_size_func, m):
     for rank in ranks:
         mesh_size = int(mesh_size_func(rank))
         createMesh(mesh_size)
-        prepareConfigTemplate(shapeParameter(mesh_size, m), prealloc)
+        prepareConfigTemplate(shape_parameter(mesh_size, m), prealloc)
         launchRun(rank)
         timings = getLatestTimings()['avg']
         timings.name = rank
@@ -83,7 +85,7 @@ def measureUni(ranks, sizes, prealloc, m):
     data = pandas.DataFrame()
     for rank, size in zip(ranks, sizes):
         createMesh(size)
-        prepareConfigTemplate(shapeParameter(size, m), prealloc)
+        prepareConfigTemplate(shape_parameter(size, m), prealloc)
         launchRun(rank)
         timings = getLatestTimings()['avg']
         timings.name = rank
@@ -137,24 +139,28 @@ def measureScaling(mesh_size_func, filename):
     plt.close()
 
 
-def doScaling(name, ranks, mesh_sizes, m):
+def doScaling(name, ranks, mesh_sizes, ms):
     assert(len(ranks) == len(mesh_sizes))
-    
+
     removeEventFiles("A")
     removeEventFiles("B")
-        
-    for rank, mesh_size in zip(ranks, mesh_sizes):
-        createMesh(mesh_size)
-        prepareConfigTemplate(shapeParameter(mesh_size, m), "tree")
-        launchRun(rank)
 
     file_info = { "date" : datetime.datetime.now().isoformat(),
                   "name" : name,
                   "rankMin" : min(ranks), "rankMax" : max(ranks),
-                  "meshMin": min(mesh_sizes), "meshMax": min(mesh_sizes),
-                  "m" : m}
+                  "meshMin": min(mesh_sizes), "meshMax": min(mesh_sizes)}
     
-    file_pattern = "{date}_{name}_{participant}_ranks{rankMin}_{rankMax}-mesh{meshMin}_{meshMax}-m{m}.{suffix}"
+    file_pattern = "{date}-{name}-{participant}.{suffix}"
+    
+    for rank, mesh_size, m in zip(ranks, mesh_sizes, ms):
+        print("Running on ranks = {}, mesh size = {}, m = {}".format(rank, mesh_size, m))
+        createMesh(mesh_size)
+        prepareConfigTemplate(shape_parameter(mesh_size, m), "tree")
+        launchRun(rank,
+                  file_pattern.format(suffix = "out", participant = "A", **file_info),
+                  file_pattern.format(suffix = "out", participant = "B", **file_info))                  
+
+    
     Path("A" / Path("Events-A.log")).rename(file_pattern.format(suffix = "events", participant = "A",
                                                                 **file_info))
     Path("A" / Path("EventTimings-A.log")).rename(file_pattern.format(suffix= "timings", participant = "A",
@@ -164,8 +170,9 @@ def doScaling(name, ranks, mesh_sizes, m):
     Path("B" / Path("EventTimings-B.log")).rename(file_pattern.format(suffix= "timings", participant = "B",
                                                                       **file_info))
 
-    with open("{date}_{name}.meta".format(**file_info), "w") as f:
-        json.dump({"name"  : name, "ranks" : ranks, "mesh_sizes" : mesh_sizes, "m" : m},
+    with open("{date}-{name}.meta".format(**file_info), "w") as f:
+        json.dump({"name"  : name, "date" : file_info["date"], "host" : socket.getfqdn(),
+                   "ranks" : ranks, "mesh_sizes" : mesh_sizes, "m" : m},
                   f)
                 
     
@@ -246,4 +253,9 @@ def problemUpscaling(filename):
 # measureScaling(lambda ranks: np.sqrt(ranks * 100), 'weak-scaling-{prealloc}-mesh100')
 # comparePreAllocVsNon(lambda ranks: 200, 'comparision')
 # problemUpscaling("problemupscaling")
-doScaling("testeins", [4, 6, 8, 10, 12], [100, 100, 100, 100, 100], 6)
+
+ranks = [4, 6, 8, 10, 12, 14, 18, 22, 26, 30]
+# ranks = [4]
+mesh_sizes = [400] * len(ranks)
+ms = [6] * len(ranks)
+doScaling("testeins", ranks, mesh_sizes, ms)
