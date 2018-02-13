@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
   }
   infile.close();
 
-  std::cout << "Read in " << vertexIDs.size() << " vertices " << " from " << meshFile << std::endl;
+  std::cout << "(" << rank << ") Read in " << vertexIDs.size() << " vertices " << " from " << meshFile << std::endl;
   
   if (participant == "B")
     data = std::vector<double>(vertexIDs.size(), 0);
