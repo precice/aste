@@ -51,7 +51,7 @@
     
     <coupling-scheme:serial-explicit>
       <participants first="A" second="B" />
-      <max-time value="1.0" />
+      <max-time value="1000000.0" />
       <timestep-length value="1" />
       <exchange data="Data" mesh="MeshA" from="A" to="B" />
       <!-- <exchange data="Data" mesh="MeshB" from="A" to="B" /> -->

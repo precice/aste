@@ -8,6 +8,8 @@
 
 #include "common.hpp"
 
+#include <thread>
+#include <chrono>
 
 using std::cout;
 using std::endl;
@@ -102,6 +104,7 @@ int main(int argc, char *argv[])
 
     interface.advance(1);
     if (participant == "B") {
+      std::this_thread::sleep_for (std::chrono::seconds(999999));
       interface.readBlockScalarData(dataID, localN, vertexIDs.data(), data.data());
     // cout << "Rank = " << MPIrank << " B Read data = " << data << endl;
     }
