@@ -28,7 +28,7 @@ OptionMap getOptions(int argc, char *argv[])
     ("participant,p", po::value<std::string>()->required(), "Participant Name")
     ("x", po::value<double>()->default_value(10), "X Mesh size")
     ("y", po::value<double>()->default_value(10), "Y Mesh size")
-    ("nx", po::value<int>()->default_value(10), "Number of elements in y-direction")
+    ("nx", po::value<int>()->default_value(10), "Number of elements in x-direction")
     ("ny", po::value<int>()->default_value(10), "Number of elements in y-direction")
     ("deadrank", po::value<int>()->default_value(-1), "A rank that is not used")
     ("printMesh", po::bool_switch(), "Print the full mesh");
