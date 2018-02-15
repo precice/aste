@@ -40,9 +40,10 @@
       <use-mesh name="MeshA" provide="no" from="A" />
       <use-mesh name="MeshB" provide="yes" />
       <read-data name="Data" mesh="MeshB" />
-      <!-- <mapping:nearest-neighbor constraint="consistent" direction="read" from="MeshA" to="MeshB" /> -->
+      <mapping:nearest-neighbor constraint="consistent" direction="read" from="MeshA" to="MeshB" />
       <!-- <mapping:rbf-gaussian shape-parameter="4" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="false" z-dead="false" /> -->
-      <mapping:petrbf-gaussian shape-parameter="5600" solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="true" y-dead="false" z-dead="false" polynomial="separate" preallocation="tree"/>
+      <!-- <mapping:petrbf-gaussian shape-parameter="5600" solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="true" y-dead="false" z-dead="false" 
+polynomial="separate" preallocation="tree"/> -->
       <!-- <mapping:petrbf-volume-splines solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="false" z-dead="false" /> -->
       <!-- <export:vtk timestep-interval="1" directory="vtkB/" normals="0"/> -->
       <master:mpi-single />
