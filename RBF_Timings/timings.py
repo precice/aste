@@ -1,3 +1,4 @@
+#!env python3
 import contextlib, datetime, multiprocessing, os, time, subprocess, sys, socket, json
 from pathlib import Path
 
