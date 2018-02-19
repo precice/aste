@@ -34,7 +34,7 @@ def shape_parameter(mesh_size, m):
     return s
 
 def launchSingleRun(participant, ranks, outfile = None):
-    ostream = open(outfile, "w+") if outfile else sys.stdout
+    ostream = open(outfile, "a") if outfile else sys.stdout
     mesh = "../outMesh.txt" if participant == "A" else "../inMesh.txt"
     os.chdir(participant)
     
