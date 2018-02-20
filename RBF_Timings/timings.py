@@ -43,9 +43,9 @@ def launchSingleRun(participant, ranks, outfile = None):
         cp = subprocess.run(cmd, stdout = sys.stdout, stderr = subprocess.STDOUT, check = True)
     
 
-def launchRun(ranks, outFileA = None, outFileB = None):
-    pA = multiprocessing.Process(target=launchSingleRun, daemon=True, args=("A", str(ranks), outFileA))
-    pB = multiprocessing.Process(target=launchSingleRun, daemon=True, args=("B", str(ranks), outFileB))
+def launchRun(rankA, rankB, outFileA = None, outFileB = None):
+    pA = multiprocessing.Process(target=launchSingleRun, daemon=True, args=("A", str(rankA), outFileA))
+    pB = multiprocessing.Process(target=launchSingleRun, daemon=True, args=("B", str(rankB), outFileB))
     pA.start(); pB.start()
     pA.join();  pB.join()
     if (pA.exitcode != 0) or (pB.exitcode != 0):
@@ -140,7 +140,7 @@ def measureScaling(mesh_size_func, filename):
     plt.close()
 
 
-def doScaling(name, ranks, mesh_sizes, ms):
+def doScaling(name, ranksA, ranksB, mesh_sizes, ms):
     assert(len(ranks) == len(mesh_sizes))
 
     removeEventFiles("A")
@@ -153,11 +153,11 @@ def doScaling(name, ranks, mesh_sizes, ms):
     
     file_pattern = "{date}-{name}-{participant}.{suffix}"
     
-    for rank, mesh_size, m in zip(ranks, mesh_sizes, ms):
+    for ranksA, ranksB, mesh_size, m in zip(ranksA, ranksB, mesh_sizes, ms):
         print("Running on ranks = {}, mesh size = {}, m = {}".format(rank, mesh_size, m))
         createMesh(mesh_size)
         prepareConfigTemplate(shape_parameter(mesh_size, m), "tree")
-        launchRun(rank,
+        launchRun(ranksA, ranksB,
                   file_pattern.format(suffix = "out", participant = "A", **file_info),
                   file_pattern.format(suffix = "out", participant = "B", **file_info))                  
 
@@ -255,8 +255,11 @@ def problemUpscaling(filename):
 # comparePreAllocVsNon(lambda ranks: 200, 'comparision')
 # problemUpscaling("problemupscaling")
 
-ranks = [4, 6, 8, 10, 12, 14, 18, 22, 26, 30]
-# ranks = [4]
-mesh_sizes = [400] * len(ranks)
+nodes = 20
+ranksB = [(nodes-1)*28]
+ranksA = [28] * len(ranksB)
+
+# ranks = [2]
+mesh_sizes = [1500] * len(ranks)
 ms = [6] * len(ranks)
-doScaling("testeins", ranks, mesh_sizes, ms)
+doScaling("test_asymetric", ranksA, ranksB, mesh_sizes, ms)
