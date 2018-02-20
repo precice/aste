@@ -11,6 +11,8 @@
 #include <thread>
 #include <chrono>
 
+#include <stdlib.h>
+
 using std::cout;
 using std::endl;
 
@@ -57,6 +59,9 @@ Data getData(Mesh& mesh)
 
 int main(int argc, char *argv[])
 {
+
+  system("hostname");
+
   MPI_Init(&argc, &argv);
 
   OptionMap options = getOptions(argc, argv);

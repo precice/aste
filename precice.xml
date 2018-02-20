@@ -21,8 +21,8 @@
     <mesh name="MeshB" flip-normals="no">
       <use-data name="Data" />
     </mesh>
-    
-    <m2n:sockets from="A" to="B" network="lo" exchange-directory=".."  distribution-type="gather-scatter" />
+
+    <m2n:sockets from="A" to="B" network="ib0" exchange-directory="."  distribution-type="gather-scatter" />
 
     <participant name="A">
       <use-mesh name="MeshA" provide="yes" />
