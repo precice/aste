@@ -53,6 +53,7 @@ def launchRun(rankA, rankB, outFileA = None, outFileB = None):
     
     
 def prepareConfigTemplate(shape_parameter, preallocation):
+    print("Prepare config template: preallocation =", preallocation, ", shape paramemter =", shape_parameter)
     with open("precice.xml.template") as f:
         template = f.read()
     with open("precice.xml", "w") as f:
@@ -140,8 +141,8 @@ def measureScaling(mesh_size_func, filename):
     plt.close()
 
 
-def doScaling(name, ranksA, ranksB, mesh_sizes, ms):
-    assert(len(ranksA) == len(ranksB) == len(mesh_sizes))
+def doScaling(name, ranksA, ranksB, mesh_sizes, ms, preallocations):
+    assert(len(ranksA) == len(ranksB) == len(mesh_sizes) == len(ms) == len(preallocations))
 
     removeEventFiles("A")
     removeEventFiles("B")
@@ -152,10 +153,10 @@ def doScaling(name, ranksA, ranksB, mesh_sizes, ms):
     
     file_pattern = "{date}-{name}-{participant}.{suffix}"
     
-    for rankA, rankB, mesh_size, m in zip(ranksA, ranksB, mesh_sizes, ms):
+    for rankA, rankB, mesh_size, m, preallocation in zip(ranksA, ranksB, mesh_sizes, ms, preallocations):
         print("Running on ranks = {}/{}, mesh size = {}, m = {}".format(rankA, rankB, mesh_size, m))
         createMesh(mesh_size)
-        prepareConfigTemplate(shape_parameter(mesh_size, m), "tree")
+        prepareConfigTemplate(shape_parameter(mesh_size, m), preallocation)
         launchRun(rankA, rankB,
                   file_pattern.format(suffix = "out", participant = "A", **file_info),
                   file_pattern.format(suffix = "out", participant = "B", **file_info))                  
@@ -172,7 +173,9 @@ def doScaling(name, ranksA, ranksB, mesh_sizes, ms):
 
     with open("{date}-{name}.meta".format(**file_info), "w") as f:
         json.dump({"name"  : name, "date" : file_info["date"], "host" : socket.getfqdn(),
-                   "ranks" : ranks, "mesh_sizes" : mesh_sizes, "m" : m},
+                   "ranksA" : ranksA, "ranksB" : ranksB,
+                   "mesh_sizes" : mesh_sizes, "m" : m,
+                   "preallocations" : preallocations},
                   f)
                 
     
@@ -255,13 +258,16 @@ def problemUpscaling(filename):
 # problemUpscaling("problemupscaling")
 
 ppn = 24 # Processors per nodes, 24 for hazelhen, 28 for supermuc
-
 nodes = 3
 ranksB = [(nodes-1)*ppn]
 ranksA = [ppn] * len(ranksB)
+preallocations = ["tree"] * len(ranksB)
 
 
-mesh_sizes = [1500] * len(ranksA)
-ms = [6] * len(ranksB)
+mesh_sizes = [50] * 4 + [60] * 4
+preallocations = ["off", "compute", "saved", "tree"] * 2 # tree, saved, estimate, compute, off
+ranksA = [2] * 8
+ranksB = [4] * 8
+ms = [6] * 8
 
-doScaling("test_asymmetric", ranksA, ranksB, mesh_sizes, ms)
+doScaling("prealloc", ranksA, ranksB, mesh_sizes, ms, preallocations)
