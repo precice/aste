@@ -63,6 +63,10 @@ if env["platform"] == "HazelHen":
 
 checkAdd("precice", header = "precice/SolverInterface.hpp")
 checkAdd("boost_program_options", header = "boost/program_options.hpp")
+checkAdd("boost_system")
+checkAdd("boost_filesystem", header = "boost/filesystem.hpp")
+
+
 
 
 env = conf.Finish()
