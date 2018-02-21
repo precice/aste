@@ -38,7 +38,7 @@ def launchSingleRun(participant, ranks, outfile = None):
     mesh = "../outMesh.txt" if participant == "A" else "../inMesh.txt"
     os.chdir(participant)
     
-    cmd = ["mpirun", "-n", ranks, "../../readMesh", "-a", "-c", "../precice.xml", mesh, participant]
+    cmd = [mpirun, "-n", ranks, "../../readMesh", "-a", "-c", "../precice.xml", mesh, participant]
     with contextlib.redirect_stdout(ostream):
         cp = subprocess.run(cmd, stdout = sys.stdout, stderr = subprocess.STDOUT, check = True)
     
@@ -258,16 +258,17 @@ def problemUpscaling(filename):
 # problemUpscaling("problemupscaling")
 
 ppn = 24 # Processors per nodes, 24 for hazelhen, 28 for supermuc
+mpirun = "aprun" # for HazelHen
+# mpirun = "mpirun" # for SuperMUC and anywhere else
+
 nodes = 3
 ranksB = [(nodes-1)*ppn]
 ranksA = [ppn] * len(ranksB)
+mesh_sizes = [150] * len(ranksA)
+
+
+# preallocations = ["off", "compute", "saved", "tree"] * 2 # tree, saved, estimate, compute, off
+
 preallocations = ["tree"] * len(ranksB)
-
-
-mesh_sizes = [50] * 4 + [60] * 4
-preallocations = ["off", "compute", "saved", "tree"] * 2 # tree, saved, estimate, compute, off
-ranksA = [2] * 8
-ranksB = [4] * 8
-ms = [6] * 8
-
+ms = [6] * len(ranksB)
 doScaling("prealloc", ranksA, ranksB, mesh_sizes, ms, preallocations)
