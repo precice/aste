@@ -141,23 +141,22 @@ def measureScaling(mesh_size_func, filename):
 
 
 def doScaling(name, ranksA, ranksB, mesh_sizes, ms):
-    assert(len(ranks) == len(mesh_sizes))
+    assert(len(ranksA) == len(ranksB) == len(mesh_sizes))
 
     removeEventFiles("A")
     removeEventFiles("B")
 
     file_info = { "date" : datetime.datetime.now().isoformat(),
                   "name" : name,
-                  "rankMin" : min(ranks), "rankMax" : max(ranks),
                   "meshMin": min(mesh_sizes), "meshMax": min(mesh_sizes)}
     
     file_pattern = "{date}-{name}-{participant}.{suffix}"
     
-    for ranksA, ranksB, mesh_size, m in zip(ranksA, ranksB, mesh_sizes, ms):
-        print("Running on ranks = {}, mesh size = {}, m = {}".format(rank, mesh_size, m))
+    for rankA, rankB, mesh_size, m in zip(ranksA, ranksB, mesh_sizes, ms):
+        print("Running on ranks = {}/{}, mesh size = {}, m = {}".format(rankA, rankB, mesh_size, m))
         createMesh(mesh_size)
         prepareConfigTemplate(shape_parameter(mesh_size, m), "tree")
-        launchRun(ranksA, ranksB,
+        launchRun(rankA, rankB,
                   file_pattern.format(suffix = "out", participant = "A", **file_info),
                   file_pattern.format(suffix = "out", participant = "B", **file_info))                  
 
@@ -255,11 +254,11 @@ def problemUpscaling(filename):
 # comparePreAllocVsNon(lambda ranks: 200, 'comparision')
 # problemUpscaling("problemupscaling")
 
-nodes = 20
+nodes = 512
 ranksB = [(nodes-1)*28]
 ranksA = [28] * len(ranksB)
 
-# ranks = [2]
-mesh_sizes = [1500] * len(ranks)
-ms = [6] * len(ranks)
-doScaling("test_asymetric", ranksA, ranksB, mesh_sizes, ms)
+mesh_sizes = [1500] * len(ranksA)
+ms = [6] * len(ranksB)
+
+doScaling("test_asymmetric", ranksA, ranksB, mesh_sizes, ms)
