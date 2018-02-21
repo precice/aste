@@ -1,5 +1,5 @@
 #PBS -N Aste_RBF
-#PBS -l nodes=2:ppn=2
+#PBS -l nodes=3:ppn=24
 #PBS -l walltime=00:20:00
 #PBS -q test
 

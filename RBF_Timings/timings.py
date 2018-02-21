@@ -254,9 +254,12 @@ def problemUpscaling(filename):
 # comparePreAllocVsNon(lambda ranks: 200, 'comparision')
 # problemUpscaling("problemupscaling")
 
-nodes = 512
-ranksB = [(nodes-1)*28]
-ranksA = [28] * len(ranksB)
+ppn = 24 # Processors per nodes, 24 for hazelhen, 28 for supermuc
+
+nodes = 3
+ranksB = [(nodes-1)*ppn]
+ranksA = [ppn] * len(ranksB)
+
 
 mesh_sizes = [1500] * len(ranksA)
 ms = [6] * len(ranksB)
