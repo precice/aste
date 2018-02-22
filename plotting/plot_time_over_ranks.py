@@ -1,9 +1,6 @@
 import json, os, sys, pandas
 import matplotlib.pyplot as plt
 
-sys.path.append(os.environ['PRECICE_ROOT'] + "/tools")
-import EventTimings
-
 fields = ["PetRBF.fillA", "PetRBF.fillC", "PetRBF.preallocA", "PetRBF.preallocC"]
 
 run_name = sys.argv[1] # like 2018-02-12T16:45:25.141337_testeins
@@ -16,9 +13,11 @@ info = json.load(open(run_name + ".meta"))
 
 df = pandas.read_csv(f_timings)
 
+import ipdb; ipdb.set_trace()
+
 for field in fields:
-    plt.plot(info["ranks"],
-             df[df.Name == field][df.Rank == plot_rank].Avg.tolist(),
+    plt.plot(info["ranks" + participant],
+             df[(df.Name == field) & (df.Rank == plot_rank)].Avg.tolist(),
              label = field)
     
 
