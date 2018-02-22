@@ -109,7 +109,8 @@ mpirun = "mpirun" # for SuperMUC and anywhere else
 # mesh_sizes = [150] * len(ranksA)
 
 
-mesh_sizes = [50] * 4 + [60] * 4
+# mesh_sizes = [500] * 4 + [1000] * 4
+mesh_sizes = [900] * 4 + [900] * 4
 preallocations = ["off", "compute", "saved", "tree"] * 2 # tree, saved, estimate, compute, off
 ranksA = [2] * 8
 ranksB = [4] * 8
