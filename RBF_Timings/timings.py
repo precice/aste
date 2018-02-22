@@ -47,7 +47,7 @@ def launchRun(rankA, rankB, outFileA = None, outFileB = None):
     
     
 def prepareConfigTemplate(shape_parameter, preallocation):
-    print("Prepare config template: preallocation =", preallocation, ", shape paramemter =", shape_parameter)
+    print("Prepare config template: preallocation =", preallocation, ", shape parameter =", shape_parameter)
     with open("precice.xml.template") as f:
         template = f.read()
     with open("precice.xml", "w") as f:
