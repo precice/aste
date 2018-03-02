@@ -3,15 +3,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 
-from ipdb import set_trace
+publication = True
+
+if publication:
+    import plot_helper
+    plot_helper.set_save_fig_params()
+
 
 fields = ["PetRBF.fillA", "PetRBF.fillC", "PetRBF.preallocA", "PetRBF.preallocC"]
 colors = {f : c for (f, c) in zip(fields,
                                   matplotlib.cm.get_cmap()(np.linspace(0, 1, len(fields)))) }
-labels = {"PetRBF.fillA" : "Filling Matrix A",
-          "PetRBF.fillC" : "Filling Matrix C",
-          "PetRBF.preallocA" : "Preallocation Matrix A",
-          "PetRBF.preallocC" : "Preallocation Matrix C" }
+labels = {"PetRBF.fillA" : "Filling evaluation",
+          "PetRBF.fillC" : "Filling interpolation",
+          "PetRBF.preallocA" : "Preallocation evaluation",
+          "PetRBF.preallocC" : "Preallocation interpolation" }
 
 ticks_labels = {"off" : "No preallocation", 
                 "compute" : "Explicitly computed",
@@ -47,10 +52,18 @@ for idx, time in enumerate(df.index.unique()):
 
 
 plt.ylabel("Time [ms]")
-plt.xticks(x_locs, ticks)
+plt.xticks(x_locs, ticks, rotation = 20)
 plt.legend()
 plt.gca().yaxis.grid()
-plt.show()
+
+
+if publication:
+    plot_helper.set_save_fig_params()
+    # plt.gca().tick_params(axis='x', which='major', pad=15)
+    plt.subplots_adjust(bottom=0.15)
+    plt.savefig("preallocation_timings.pdf")
+else:
+    plt.show()
     
     
 
