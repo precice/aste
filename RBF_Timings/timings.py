@@ -66,7 +66,7 @@ def doScaling(name, ranksA, ranksB, mesh_sizes, ms, preallocations):
     removeEventFiles("A")
     removeEventFiles("B")
 
-    file_info = { "date" : datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S"),
+    file_info = { "date" : datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
                   "name" : name,
                   "meshMin": min(mesh_sizes), "meshMax": min(mesh_sizes)}
     
