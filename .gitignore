@@ -7,3 +7,12 @@ a.out
 rank_*
 iterations-*
 convergence-*
+CMakeCache.txt
+CMakeFiles/
+Makefile
+core
+aste
+readMesh
+inMesh.txt
+outMesh.txt
+testMesh.txt
