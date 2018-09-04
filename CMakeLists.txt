@@ -3,6 +3,14 @@ project(ASTE)
 
 set (CMAKE_CXX_STANDARD 11)
 
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+    "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+message(STATUS "Build configuration: " ${CMAKE_BUILD_TYPE})
+
 add_executable(readMesh readMesh.cpp)
 add_executable(aste main.cpp)
 
@@ -23,16 +31,11 @@ include_directories(${MPI_INCLUDE_PATH})
 set(COMPILE_FLAGS  ${COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
 set(LINK_FLAGS ${LINK_FLAGS} ${MPI_LINK_FLAGS})
 
-
-target_link_libraries(readMesh ${Boost_LIBRARIES})
 target_link_libraries(aste ${Boost_LIBRARIES})
-target_link_libraries(readMesh ${MPI_LIBRARIES})
 target_link_libraries(aste ${MPI_LIBRARIES})
-target_link_libraries(readMesh ${precice})
 target_link_libraries(aste ${precice})
 
+target_link_libraries(readMesh ${Boost_LIBRARIES})
+target_link_libraries(readMesh ${MPI_LIBRARIES})
+target_link_libraries(readMesh ${precice})
 
-# get_cmake_property(_variableNames VARIABLES)
-# foreach (_variableName ${_variableNames})
-    # message(STATUS "${_variableName}=${${_variableName}}")
-# endforeach()
