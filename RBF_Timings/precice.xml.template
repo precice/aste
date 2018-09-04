@@ -22,7 +22,7 @@
       <use-data name="Data" />
     </mesh>
     
-    <m2n:sockets from="A" to="B" network="lo" exchange-directory=".."  distribution-type="gather-scatter" />
+    <m2n:sockets from="A" to="B" network="lo" exchange-directory=".."  distribution-type="point-to-point" />
 
     <participant name="A">
       <use-mesh name="MeshA" provide="yes" />

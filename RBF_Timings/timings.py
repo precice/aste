@@ -1,6 +1,7 @@
 #!env python3
 import contextlib, datetime, multiprocessing, os, time, subprocess, sys, socket, json
 from pathlib import Path
+from shutil import copy
 
 import numpy as np
 
@@ -65,7 +66,7 @@ def doScaling(name, ranksA, ranksB, mesh_sizes, ms, preallocations):
     removeEventFiles("A")
     removeEventFiles("B")
 
-    file_info = { "date" : datetime.datetime.now().isoformat(),
+    file_info = { "date" : datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S"),
                   "name" : name,
                   "meshMin": min(mesh_sizes), "meshMax": min(mesh_sizes)}
     
@@ -80,28 +81,28 @@ def doScaling(name, ranksA, ranksB, mesh_sizes, ms, preallocations):
                   file_pattern.format(suffix = "out", participant = "B", **file_info))                  
 
     
-    Path("A" / Path("Events-A.log")).rename(file_pattern.format(suffix = "events", participant = "A",
-                                                                **file_info))
-    Path("A" / Path("EventTimings-A.log")).rename(file_pattern.format(suffix= "timings", participant = "A",
-                                                                      **file_info))        
-    Path("B" / Path("Events-B.log")).rename(file_pattern.format(suffix = "events", participant = "B",
-                                                                **file_info))
-    Path("B" / Path("EventTimings-B.log")).rename(file_pattern.format(suffix= "timings", participant = "B",
-                                                                      **file_info))
+    copy("A/precice-A-events.log",       file_pattern.format(suffix = "events", participant = "A", **file_info))
+    copy("A/precice-A-eventTimings.log", file_pattern.format(suffix= "timings", participant = "A", **file_info))
+    copy("B/precice-B-events.log",       file_pattern.format(suffix = "events", participant = "B", **file_info))
+    copy("B/precice-B-eventTimings.log", file_pattern.format(suffix= "timings", participant = "B", **file_info))
 
     with open("{date}-{name}.meta".format(**file_info), "w") as f:
-        json.dump({"name"  : name, "date" : file_info["date"], "host" : socket.getfqdn(),
+        json.dump({"name"  : name,
+                   "date" : file_info["date"],
+                   "host" : socket.getfqdn(),
                    "ranksA" : ranksA, "ranksB" : ranksB,
-                   "mesh_sizes" : mesh_sizes, "m" : m,
+                   "mesh_sizes" : mesh_sizes,
+                   "m" : m,
                    "preallocation" : preallocations},
-                  f)
+                  f, indent = 4)
                 
 
 
 ppn = 24 # Processors per nodes, 24 for hazelhen, 28 for supermuc
 
 # mpirun = "aprun" # for HazelHen
-mpirun = "mpirun" # for SuperMUC and anywhere else
+# mpirun = "mpirun" # for SuperMUC and anywhere else
+mpirun = "/opt/mpich/bin/mpiexec"
 
 # nodes = 3
 # ranksB = [(nodes-1)*ppn]
@@ -110,14 +111,14 @@ mpirun = "mpirun" # for SuperMUC and anywhere else
 
 
 # mesh_sizes = [500] * 4 + [1000] * 4
-mesh_sizes = [900] * 4 + [900] * 4
-preallocations = ["off", "compute", "saved", "tree"] * 2 # tree, saved, estimate, compute, off
-ranksA = [2] * 8
-ranksB = [4] * 8
-ms = [6] * 8
 
+# preallocations = ["off", "compute", "saved", "tree"] * 2 # tree, saved, estimate, compute, off
+multiplicity = 4
+ranksA = [2] * multiplicity
+ranksB = [2] * multiplicity
+ms = [6] * multiplicity
+mesh_sizes = [100] * multiplicity
+preallocations = ["off", "compute", "saved", "tree"]
 
-# preallocations = ["off", "compute", "saved", "tree"]
-preallocations = ["tree"] * len(ranksB)
-ms = [6] * len(ranksB)
+# preallocations = ["tree"] * len(ranksB)
 doScaling("prealloc", ranksA, ranksB, mesh_sizes, ms, preallocations)
