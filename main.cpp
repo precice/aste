@@ -1,3 +1,5 @@
+#include <thread>
+#include <chrono>
 #include <string>
 #include <cmath>
 #include <iostream>
@@ -108,7 +110,8 @@ int main(int argc, char *argv[])
   }
   interface.finalize();
 
-  // printMesh(mesh, data);
+  // std::this_thread::sleep_for(std::chrono::milliseconds(100 * MPIrank));
+  // printMesh(mesh, data, true);
   
   MPI_Finalize();
 

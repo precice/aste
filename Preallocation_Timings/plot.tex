@@ -1,0 +1,43 @@
+\documentclass{scrartcl}
+
+\usepackage{pgfplots}
+\usetikzlibrary{pgfplots.groupplots}
+\pgfplotsset{
+  compat=1.16,
+  table/col sep=comma}
+
+\usetikzlibrary{pgfplots.groupplots}
+
+\begin{document}
+\begin{tikzpicture}
+  \begin{groupplot}[
+    group style={group size=2 by 1, y descriptions at=edge left},
+    ybar stacked,
+    symbolic x coords={off, computed, saved, tree},
+    xtick=data,
+    /pgf/bar width=0.5cm,
+    ylabel={Time [ms]},
+    x tick label style={rotate=30},
+    legend entries={fillA, fillC, preallocA, preallocB},
+    legend to name=legend, legend columns=4
+    ]
+
+    % \legend{FillA, FillC, preAllocA, preAllocC}
+    \nextgroupplot
+    \addplot+ table[y=fillA]{data.csv};
+    \addplot+ table[y=fillC]{data.csv};
+    \addplot+ table[y=preallocA]{data.csv};
+    \addplot+ table[y=preallocC]{data.csv};
+
+    \nextgroupplot
+    
+    \addplot+ table[y=fillA]{data2.csv};
+    \addplot+ table[y=fillC]{data2.csv};
+    \addplot+ table[y=preallocA]{data2.csv};
+    \addplot+ table[y=preallocC]{data2.csv};
+  \end{groupplot}
+\end{tikzpicture}
+\ref{legend}
+
+\end{document}
+
