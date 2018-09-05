@@ -16,3 +16,10 @@ readMesh
 inMesh.txt
 outMesh.txt
 testMesh.txt
+*.events
+*.timings
+*.out
+*.meta
+*.csv
+*.aux
+*.synctex.gz
