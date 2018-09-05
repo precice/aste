@@ -101,8 +101,8 @@ def doScaling(name, ranksA, ranksB, mesh_sizes, ms, preallocations):
 ppn = 24 # Processors per nodes, 24 for hazelhen, 28 for supermuc
 
 # mpirun = "aprun" # for HazelHen
-# mpirun = "mpirun" # for SuperMUC and anywhere else
-mpirun = "/opt/mpich/bin/mpiexec"
+mpirun = "mpirun" # for SuperMUC and anywhere else
+# mpirun = "/opt/mpich/bin/mpiexec"
 
 # nodes = 3
 # ranksB = [(nodes-1)*ppn]
@@ -119,8 +119,9 @@ ranksB = [2] * multiplicity
 ms = [6] * multiplicity
 preallocations = ["off", "compute", "saved", "tree"]
 
-mesh_sizes = [100] * multiplicity
-doScaling("prealloc", ranksA, ranksB, mesh_sizes, ms, preallocations)
+for i in range(5):
+    mesh_sizes = [100] * multiplicity
+    doScaling("prealloc-" + str(mesh_sizes[0]), ranksA, ranksB, mesh_sizes, ms, preallocations)
 
-mesh_sizes = [150] * multiplicity
-doScaling("prealloc", ranksA, ranksB, mesh_sizes, ms, preallocations)
+    mesh_sizes = [120] * multiplicity
+    doScaling("prealloc-" + str(mesh_sizes[0]), ranksA, ranksB, mesh_sizes, ms, preallocations)

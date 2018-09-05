@@ -9,6 +9,7 @@ args = parser.parse_args()
 
 
 def avg_and_delete_outliers(a):
+    print("Averaging series with standard deviation of", a.std())
     a = a.drop(a.idxmax())
     a = a.drop(a.idxmin())
     return a.mean()
@@ -20,6 +21,7 @@ fields = ["initialize/map.pet.fillA.FromMeshAToMeshB",
           "initialize/map.pet.preallocC.FromMeshAToMeshB"]
 
 fieldNames = ["fillA", "fillC", "preallocA", "preallocC"]
+# Translates long fields to shorter fieldNames in output
 translator = dict(zip(fields, fieldNames))
 
 # Labels for the rows
