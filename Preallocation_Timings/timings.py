@@ -28,19 +28,20 @@ def shape_parameter(mesh_size, m):
     print("################## mesh_size =", mesh_size, ', m =', m, ", h =", h, ", s =", s, "##################")
     return s
 
-def launchSingleRun(participant, ranks, outfile = None):
+def launchSingleRun(participant, ranks, outfile = None, runName = ""):
     ostream = open(outfile, "a") if outfile else sys.stdout
     mesh = "../outMesh.txt" if participant == "A" else "../inMesh.txt"
     os.chdir(participant)
     
-    cmd = [mpirun, "-n", ranks, "../../readMesh", "-a", "-c", "../precice.xml", mesh, participant]
+    cmd = [mpirun, "-n", ranks, "../../readMesh", "-a", "--runName", runName,
+           "-c", "../precice.xml", mesh, participant]
     with contextlib.redirect_stdout(ostream):
         cp = subprocess.run(cmd, stdout = sys.stdout, stderr = subprocess.STDOUT, check = True)
     
 
-def launchRun(rankA, rankB, outFileA = None, outFileB = None):
-    pA = multiprocessing.Process(target=launchSingleRun, daemon=True, args=("A", str(rankA), outFileA))
-    pB = multiprocessing.Process(target=launchSingleRun, daemon=True, args=("B", str(rankB), outFileB))
+def launchRun(rankA, rankB, outFileA = None, outFileB = None, runName = ""):
+    pA = multiprocessing.Process(target=launchSingleRun, daemon=True, args=("A", str(rankA), outFileA, runName))
+    pB = multiprocessing.Process(target=launchSingleRun, daemon=True, args=("B", str(rankB), outFileB, runName))
     pA.start(); pB.start()
     pA.join();  pB.join()
     if (pA.exitcode != 0) or (pB.exitcode != 0):
@@ -60,7 +61,7 @@ def createMesh(size):
     subprocess.run(cmd, shell = True, check = True)
 
 
-def doScaling(name, ranksA, ranksB, mesh_sizes, ms, preallocations):
+def doScaling(name, runNames, ranksA, ranksB, mesh_sizes, ms, preallocations):
     assert(len(ranksA) == len(ranksB) == len(mesh_sizes) == len(ms) == len(preallocations))
 
     removeEventFiles("A")
@@ -72,13 +73,15 @@ def doScaling(name, ranksA, ranksB, mesh_sizes, ms, preallocations):
     
     file_pattern = "{date}-{name}-{participant}.{suffix}"
     
-    for rankA, rankB, mesh_size, m, preallocation in zip(ranksA, ranksB, mesh_sizes, ms, preallocations):
+    for runName, rankA, rankB, mesh_size, m, preallocation
+    in zip(runNames, ranksA, ranksB, mesh_sizes, ms, preallocations):
         print("Running on ranks = {}/{}, mesh size = {}, m = {}".format(rankA, rankB, mesh_size, m))
         createMesh(mesh_size)
         prepareConfigTemplate(shape_parameter(mesh_size, m), preallocation)
         launchRun(rankA, rankB,
                   file_pattern.format(suffix = "out", participant = "A", **file_info),
-                  file_pattern.format(suffix = "out", participant = "B", **file_info))                  
+                  file_pattern.format(suffix = "out", participant = "B", **file_info),
+                  runName = runName)                  
 
     
     copy("A/precice-A-events.log",       file_pattern.format(suffix = "events", participant = "A", **file_info))
@@ -119,8 +122,13 @@ ranksB = [2] * multiplicity
 ms = [6] * multiplicity
 preallocations = ["off", "compute", "saved", "tree"]
 
-mesh_sizes = [100] * multiplicity
-doScaling("prealloc", ranksA, ranksB, mesh_sizes, ms, preallocations)
+for i in range(5):
+    mesh_sizes = [20] * multiplicity
+    doScaling("prealloc-50",
+              preallocations,
+              ranksA, ranksB, mesh_sizes, ms, preallocations)
 
-mesh_sizes = [150] * multiplicity
-doScaling("prealloc", ranksA, ranksB, mesh_sizes, ms, preallocations)
+    mesh_sizes = [40] * multiplicity
+    doScaling("prealloc-60",
+              preallocations,
+              ranksA, ranksB, mesh_sizes, ms, preallocations)

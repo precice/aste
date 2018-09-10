@@ -6,6 +6,7 @@
 #include <mpi.h>
 
 #include "precice/SolverInterface.hpp"
+#include "utils/EventTimings.hpp"
 #include "utils/prettyprint.hpp"
 
 #include "common.hpp"
@@ -69,6 +70,8 @@ int main(int argc, char *argv[])
 
   precice::SolverInterface interface(participant, MPIrank, MPIsize);
   interface.configure(options["precice-config"].as<std::string>());
+  precice::utils::EventRegistry::instance().runName = options["runName"].as<std::string>();
+
   int meshID = interface.getMeshID( (participant == "A") ? "MeshA" : "MeshB" );
   int dataID = interface.getDataID("Data", meshID);
 

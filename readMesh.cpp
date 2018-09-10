@@ -36,7 +36,8 @@ boost::program_options::variables_map getOptions(int argc, char *argv[])
     ("precice-config,c", po::value<string>()->default_value("precice.xml"), "preCICE configuration file.")
     ("output,o", po::value<std::string>()->default_value("output"), "Directory to write output files to.")
     ("vpr", po::value<int>()->default_value(-1), "Vertices per rank or -1 if it should be read from file.")
-    ("autodist,a", po::bool_switch(), "Automatically distribute vertices among ranks.");    
+    ("autodist,a", po::bool_switch(), "Automatically distribute vertices among ranks.")
+    ("runName", po::value<std::string>()->default_value(""), "Name of the run");
 
   hidden.add_options()
     ("meshFile", po::value<string>()->required())
@@ -83,9 +84,10 @@ int main(int argc, char *argv[])
   string participant = options["participant"].as<string>();
     
   precice::SolverInterface interface(participant, MPIrank, MPIsize);
-  precice::utils::Event _eTotal("Total");
+  // precice::utils::Event _eTotal("Total");
   interface.configure(options["precice-config"].as<string>());
-
+  precice::utils::EventRegistry::instance().runName = options["runName"].as<std::string>();
+  
   int meshID = interface.getMeshID( (participant == "A") ? "MeshA" : "MeshB" ); // participant = A => MeshID = MeshA
   int dataID = interface.getDataID("Data", meshID);
   std::vector<int> vertexIDs;
@@ -156,7 +158,6 @@ int main(int argc, char *argv[])
     ostream.close();
   }
 
-  _eTotal.stop();
   interface.finalize();
     
   MPI_Finalize();

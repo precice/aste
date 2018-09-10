@@ -1,52 +1,38 @@
+#!/usr/bin/env python3
+
 import argparse, itertools, pandas as pd
 from ipdb import set_trace
 import numpy as np
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--file', help = "File names of log file", nargs = "+")
+parser.add_argument('--files', help = "File names of log file", nargs = "+")
 args = parser.parse_args()
 
 
-def avg_and_delete_outliers(a):
-    a = a.drop(a.idxmax())
-    a = a.drop(a.idxmin())
-    return a.mean()
+def drop_and_mean(x):
+    return x.mask((x.index == x.idxmax()) | (x.index == x.idxmin())).mean()
+
 
 # Fields in a row
-fields = ["initialize/map.pet.fillA.FromMeshAToMeshB",
-          "initialize/map.pet.fillC.FromMeshAToMeshB",
-          "initialize/map.pet.preallocA.FromMeshAToMeshB",
-          "initialize/map.pet.preallocC.FromMeshAToMeshB"]
+fields = { "RunName" : "Type",
+           "initialize/map.pet.fillA.FromMeshAToMeshB" : "fillA",
+           "initialize/map.pet.fillC.FromMeshAToMeshB" : "fillC",
+           "initialize/map.pet.preallocA.FromMeshAToMeshB" : "preallocA",
+           "initialize/map.pet.preallocC.FromMeshAToMeshB" : "preallocC" }
 
-fieldNames = ["fillA", "fillC", "preallocA", "preallocC"]
-translator = dict(zip(fields, fieldNames))
 
-# Labels for the rows
-labels = ["off", "computed", "saved", "tree"]
-
-dfs = [pd.read_csv(f, parse_dates = [0], comment = "#") for f in args.file]
-df = pd.concat(dfs, keys = args.file, names = ["File"])
+dfs = [pd.read_csv(f, parse_dates = [0], comment = "#") for f in args.files]
+df = pd.concat(dfs)
+df = df.reset_index()
 df = df[df.Rank == 0]
 
-# Add empty column
-df["Preallocation"] = ""
+df = df.groupby(["RunName", "Name"], as_index = False).aggregate(drop_and_mean)
 
-groups = df.groupby("Timestamp")
+df = df.pivot(index = "RunName", columns = "Name", values = "Total")
+df = df.reset_index()
 
-for grouping, label in zip(groups, itertools.cycle(labels)):
-    name = grouping[0]
-    df.loc[df.Timestamp == name, "Preallocation"] = label
+df = df.rename(index = fields, columns = fields)
 
+df.to_csv("data.csv", columns = fields.values())
 
-output = pd.DataFrame(index = labels)
-    
-for name, group in df.groupby(["Preallocation", "Name"]):#
-    if name[1] in fields:
-        output.loc[name] = avg_and_delete_outliers(group.Total)
-
-
-output = output.fillna(0)
-output = output.rename(translator, axis = "columns")
-output.to_csv("data.csv", index_label = "Type")
-print(output)
