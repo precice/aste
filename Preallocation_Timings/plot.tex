@@ -11,30 +11,29 @@
 \begin{document}
 \begin{tikzpicture}
   \begin{groupplot}[
-    group style={group size=2 by 1, y descriptions at=edge left},
+    group style={columns=2, ylabels at=edge left},
     ybar stacked,
     symbolic x coords={off, computed, saved, tree},
     xtick=data,
-    /pgf/bar width=0.5cm,
+    /pgf/bar width=1cm,
     ylabel={Time [ms]},
     x tick label style={rotate=30},
     legend entries={fillA, fillC, preallocA, preallocB},
-    legend to name=legend, legend columns=4
-    ]
+    legend to name=legend, legend columns=4]
 
     % \legend{FillA, FillC, preAllocA, preAllocC}
     \nextgroupplot
-    \addplot+ table[y=fillA]{data.csv};
-    \addplot+ table[y=fillC]{data.csv};
-    \addplot+ table[y=preallocA]{data.csv};
-    \addplot+ table[y=preallocC]{data.csv};
+    \addplot+ table[y=fillA]{data-100.csv};
+    \addplot+ table[y=fillC]{data-100.csv};
+    \addplot+ table[y=preallocA]{data-100.csv};
+    \addplot+ table[y=preallocC]{data-100.csv};
 
     \nextgroupplot
     
-    \addplot+ table[y=fillA]{data2.csv};
-    \addplot+ table[y=fillC]{data2.csv};
-    \addplot+ table[y=preallocA]{data2.csv};
-    \addplot+ table[y=preallocC]{data2.csv};
+    \addplot+ table[y=fillA]{data-150.csv};
+    \addplot+ table[y=fillC]{data-150.csv};
+    \addplot+ table[y=preallocA]{data-150.csv};
+    \addplot+ table[y=preallocC]{data-150.csv};
   \end{groupplot}
 \end{tikzpicture}
 \ref{legend}

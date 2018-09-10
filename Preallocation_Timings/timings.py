@@ -73,8 +73,7 @@ def doScaling(name, runNames, ranksA, ranksB, mesh_sizes, ms, preallocations):
     
     file_pattern = "{date}-{name}-{participant}.{suffix}"
     
-    for runName, rankA, rankB, mesh_size, m, preallocation
-    in zip(runNames, ranksA, ranksB, mesh_sizes, ms, preallocations):
+    for runName, rankA, rankB, mesh_size, m, preallocation in zip(runNames, ranksA, ranksB, mesh_sizes, ms, preallocations):
         print("Running on ranks = {}/{}, mesh size = {}, m = {}".format(rankA, rankB, mesh_size, m))
         createMesh(mesh_size)
         prepareConfigTemplate(shape_parameter(mesh_size, m), preallocation)

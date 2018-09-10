@@ -14,13 +14,12 @@ def drop_and_mean(x):
     return x.mask((x.index == x.idxmax()) | (x.index == x.idxmin())).mean()
 
 
+
 # Fields in a row
-fields = { "RunName" : "Type",
-           "initialize/map.pet.fillA.FromMeshAToMeshB" : "fillA",
+fields = { "initialize/map.pet.fillA.FromMeshAToMeshB" : "fillA",
            "initialize/map.pet.fillC.FromMeshAToMeshB" : "fillC",
            "initialize/map.pet.preallocA.FromMeshAToMeshB" : "preallocA",
            "initialize/map.pet.preallocC.FromMeshAToMeshB" : "preallocC" }
-
 
 dfs = [pd.read_csv(f, parse_dates = [0], comment = "#") for f in args.files]
 df = pd.concat(dfs)
@@ -30,9 +29,8 @@ df = df[df.Rank == 0]
 df = df.groupby(["RunName", "Name"], as_index = False).aggregate(drop_and_mean)
 
 df = df.pivot(index = "RunName", columns = "Name", values = "Total")
-df = df.reset_index()
 
-df = df.rename(index = fields, columns = fields)
+df = df.rename(columns = fields)
 
-df.to_csv("data.csv", columns = fields.values())
+df.to_csv("data.csv", index_label = "Type", columns = fields.values())
 
