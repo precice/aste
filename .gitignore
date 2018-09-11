@@ -9,6 +9,7 @@ iterations-*
 convergence-*
 CMakeCache.txt
 CMakeFiles/
+cmake_install.cmake
 Makefile
 core
 aste
