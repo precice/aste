@@ -129,8 +129,8 @@ int main(int argc, char *argv[])
     std::cout << "Write initial data for participant " << participant << std::endl;
     interface.writeBlockScalarData(dataID, data.size(), vertexIDs.data(), data.data());
     interface.fulfilledAction(precice::constants::actionWriteInitialData());
-    interface.initializeData();
   }
+  interface.initializeData();
 
   while (interface.isCouplingOngoing()) {
     if (participant == "A" and not data.empty()) {

@@ -96,8 +96,8 @@ int main(int argc, char *argv[])
     interface.writeBlockScalarData(dataID, localN, vertexIDs.data(), data.data());
     cout << "Wrote initial data = " << data << endl;
     interface.fulfilledAction(precice::constants::actionWriteInitialData());
-    interface.initializeData();
   }
+  interface.initializeData();
 
   while (interface.isCouplingOngoing()) {
     if (participant == "A" and not data.empty()) {
