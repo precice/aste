@@ -1,9 +1,12 @@
+#include <thread>
+#include <chrono>
 #include <string>
 #include <cmath>
 #include <iostream>
 #include <mpi.h>
 
 #include "precice/SolverInterface.hpp"
+#include "utils/EventTimings.hpp"
 #include "utils/prettyprint.hpp"
 
 #include "common.hpp"
@@ -67,6 +70,8 @@ int main(int argc, char *argv[])
 
   precice::SolverInterface interface(participant, MPIrank, MPIsize);
   interface.configure(options["precice-config"].as<std::string>());
+  precice::utils::EventRegistry::instance().runName = options["runName"].as<std::string>();
+
   int meshID = interface.getMeshID( (participant == "A") ? "MeshA" : "MeshB" );
   int dataID = interface.getDataID("Data", meshID);
 
@@ -91,8 +96,8 @@ int main(int argc, char *argv[])
     interface.writeBlockScalarData(dataID, localN, vertexIDs.data(), data.data());
     cout << "Wrote initial data = " << data << endl;
     interface.fulfilledAction(precice::constants::actionWriteInitialData());
-    interface.initializeData();
   }
+  interface.initializeData();
 
   while (interface.isCouplingOngoing()) {
     if (participant == "A" and not data.empty()) {
@@ -108,7 +113,8 @@ int main(int argc, char *argv[])
   }
   interface.finalize();
 
-  // printMesh(mesh, data);
+  // std::this_thread::sleep_for(std::chrono::milliseconds(100 * MPIrank));
+  // printMesh(mesh, data, true);
   
   MPI_Finalize();
 

@@ -1,0 +1,24 @@
+#PBS -N Aste_RBF
+#PBS -l nodes=3:ppn=24
+#PBS -l walltime=00:20:00
+#PBS -q test
+
+module swap tools/python tools/python/3.5.2
+
+# Change to the directory that the job was submitted from
+cd $PBS_O_WORKDIR
+
+python3 timings.py
+
+# export ATP_ENABLED=1
+# limit -c unlimited
+
+# cd A
+# aprun -n 2 ../../readMesh -a -c ../precice.xml ../inMesh.txt B & > A.out
+
+# cd ../B
+# aprun -n 2 ../../readMesh -a -c ../precice.xml ../outMesh.txt A > B.out
+
+# aprun -n 4 $ASTE/aste --participant=A --nx=100 --ny=100 --x=1 --y=1  --precice-config=$ASTE/precice.xml &
+# aprun -n 4 $ASTE/aste --participant=B --nx=100 --ny=100 --x=1 --y=1  --precice-config=$ASTE/precice.xml
+

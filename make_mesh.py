@@ -3,7 +3,6 @@
 import argparse, os, itertools
 import mesh
 import numpy as np
-import matplotlib.pyplot as plt
 
 from pdb import set_trace
 
