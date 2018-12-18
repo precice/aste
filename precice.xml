@@ -2,14 +2,6 @@
 
 <precice-configuration>
 
-  <!-- filter="(%Severity% > debug) or (%Module% contains mapping) or (%Module% contains Events)" -->
-  
-  <!-- <log> -->
-  <!--   <sink type="stream" output="stdout" -->
-  <!--         filter = "%Severity% >= info" -->
-  <!--         enabled="1" /> -->
-  <!--   <!-\- <sink type="stream" output="stdout" filter=""/> -\-> -->
-  <!-- </log> -->
   <log enabled="true">
     <sink type="stream" output="stdout" filter="%Severity% > debug" enabled="true" />
     <sink type="file" output="filtered.log"  filter= "(%Severity% > debug) or (%Severity% >= trace and %Module% contains SolverInterfaceImpl)" enabled="true" />
@@ -18,8 +10,10 @@
   
   <solver-interface dimensions="3">
     
+    <!-- Data fields that are exchanged between the solvers -->
     <data:scalar name="Data" />
 
+    <!-- A common mesh that uses these data fields -->
     <mesh name="MeshA" flip-normals="no">
       <use-data name="Data" />
     </mesh>
@@ -32,6 +26,7 @@
 
     <participant name="A">
       <use-mesh name="MeshA" provide="yes" />
+
       <write-data name="Data" mesh="MeshA" />
       <!-- <mapping:nearest-neighbor constraint="conservative" direction="write" from="MeshA" to="MeshB" /> -->
       <!-- <mapping:petrbf-gaussian shape-parameter="2" solver-rtol="1e-9" constraint="conservative" direction="write" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
@@ -45,17 +40,12 @@
       <use-mesh name="MeshA" provide="no" from="A" />
       <use-mesh name="MeshB" provide="yes" />
       <read-data name="Data" mesh="MeshB" />
-      <mapping:petrbf-gaussian shape-parameter="250" preallocation="tree"
-                               solver-rtol="1e-9" constraint="consistent"
-                               direction="read" from="MeshA" to="MeshB"
-                               x-dead="true" y-dead="false" z-dead="false" polynomial="separate"/>
       <!-- <mapping:nearest-neighbor constraint="consistent" direction="read" from="MeshA" to="MeshB" /> -->
       <!-- <mapping:rbf-gaussian shape-parameter="4" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="false" z-dead="false" /> -->
       <mapping:petrbf-gaussian shape-parameter="5600" solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="true" y-dead="false" z-dead="false" polynomial="separate" preallocation="tree"/>
       <!-- <mapping:petrbf-volume-splines solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="false" z-dead="false" /> -->
       <!-- <export:vtk timestep-interval="1" directory="vtkB/" normals="0"/> -->
       <master:mpi-single />
-
     </participant>
 
     
