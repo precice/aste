@@ -49,13 +49,13 @@
     </participant>
 
     
-    <coupling-scheme:serial-explicit>
+    <coupling-scheme:parallel-explicit>
       <participants first="A" second="B" />
       <max-time value="1.0" />
       <timestep-length value="1" />
       <exchange data="Data" mesh="MeshA" from="A" to="B" />
       <!-- <exchange data="Data" mesh="MeshB" from="A" to="B" /> -->
-    </coupling-scheme:serial-explicit>
+    </coupling-scheme:parallel-explicit>
     
   </solver-interface>
   
