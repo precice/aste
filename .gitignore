@@ -17,6 +17,7 @@ readMesh
 inMesh.txt
 outMesh.txt
 testMesh.txt
+.idea/
 *.events
 *.timings
 *.out
@@ -24,3 +25,5 @@ testMesh.txt
 *.csv
 *.aux
 *.synctex.gz
+compile_commands.json
+build/
