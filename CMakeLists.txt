@@ -12,7 +12,7 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 message(STATUS "Build configuration: " ${CMAKE_BUILD_TYPE})
 
-find_library(precice precice PATHS $ENV{PRECICE_ROOT}/build)
+find_library(precice precice PATHS $ENV{PRECICE_ROOT}/build $ENV{PRECICE_ROOT}/build/latest)
 if(NOT precice)
   message(FATAL_ERROR "preCICE was not found")
 endif()
@@ -48,6 +48,8 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/partition_mesh.py
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/join_mesh.py
          DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/eval_mesh.py
+         DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/mesh_io.py
          DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/precice.xml
          DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
