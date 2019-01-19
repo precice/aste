@@ -1,10 +1,9 @@
-#!/usr/bin/python3
-import vtk
+#!/usr/bin/env python3
 import os
 import numpy as np
 from ctypes import *
-from tqdm import tqdm
 import argparse
+import mesh_io
 class Mesh:
     """
     A Mesh consists of:
@@ -12,80 +11,44 @@ class Mesh:
         - Cells: A list of tuples of ints representing mesh elements
         - Pointdata: A list of floats representing data values at the respective point
     """
-    def __init__(self, vtkmesh = None, tag = None):
-        """
-        This constructor can be called without arguments or can be given a vtk.vtkDataSet
-        with an optional value tag, if values are defined on the points.
-        """
-        self.cells = []
-        self.points = []
-        self.pointdata = []
-        if vtkmesh:
-            for i in range(vtkmesh.GetNumberOfCells()):
-                cell = vtkmesh.GetCell(i)
-                entry = ()
-                for j in range(cell.GetNumberOfPoints()):
-                    entry += (cell.GetPointId(j),)
-                self.cells.append(entry)
-            self.points = [vtkmesh.GetPoint(i) for i in range(vtkmesh.GetNumberOfPoints())]
-            fieldData = vtkmesh.GetPointData().GetScalars()
-            if fieldData:
-                for i in range(vtkmesh.GetNumberOfPoints()):
-                    self.pointdata.append(fieldData.GetTuple(i))
+    def __init__(self, points = None, cells = None, pointdata = None):
+        if points is not None:
+            self.points = points
+        else:
+            self.points = []
+        if cells is not None:
+            self.cells = cells
+        else:
+            self.cells = []
+        if pointdata is not None:
+            self.pointdata = pointdata
+        else:
+            self.pointdata = []
 
 def main():
     args = parse_args()
-    print("Reading mesh...")
     mesh = read_mesh(args.in_meshname)
-    print("Done.")
     numparts = args.numparts if args.numparts else 1
     if numparts > 1:
-        print("Partitioning mesh...")
         part = partition(mesh, numparts)
-        print("Done.")
     else:
         part = [0] *  len(mesh.points)
-    meshes = generate_meshes(mesh, part, numparts)
+    meshes = apply_partition(mesh, part, numparts)
     if not args.out_meshname:
         out_meshname = args.in_meshname[:-4]
         print("No --out given. Setting output to: " + out_meshname)
     else:
         out_meshname = args.out_meshname
-    print("Writing mesh...")
     write_meshes(meshes, out_meshname)
-    print("Done.")
 
 def read_mesh(filename):
-    """
-    Reads a mesh from the given filename. For vtk meshes a tag for the data values can be given. 
-    """
-    if filename[-4:] == ".vtk":
-        result = []
-        reader = vtk.vtkDataSetReader()
-        reader.SetFileName(filename)
-        reader.Update()
-        output = reader.GetOutput()
-        return Mesh(output)
-    elif filename[-4:] == ".txt":
-        mesh = Mesh()
-        with open(filename, "r") as fh:
-            for line in tqdm(fh, "Reading lines"):
-                point = ()
-                parts = line.split(" ")
-                for i in range(3):
-                    point += (float(parts[i]),)
-                mesh.points.append(point)
-                if len(parts) > 3:
-                    mesh.pointdata.append(tuple(parts[3:]))
-        return mesh
-    raise Exception("Invalid file extension.")
-
+    return Mesh(*mesh_io.read_mesh(filename))
 def partition(mesh, numparts):
     """
     Partitions a mesh using METIS. This does not call METIS directly, but instead uses a small C++ Wrapper libmetisAPI.so for convenience. This shared library must be provided if this function should be called.
     """
-    if not mesh.cells:
-        print("No topology information given. This will yield arbitrary partitions")
+    if True or not mesh.cells:
+        return partition_kmeans(mesh, numparts)
     cellPtr = [0]
     cellData = []
     for i in range(len(mesh.cells)):
@@ -103,19 +66,21 @@ def partition(mesh, numparts):
     libmetis.partitionMetis(cell_count, point_count, cell_ptr, cell_data, num_parts, partition)
     arr = np.ctypeslib.as_array(partition)
     return arr
+def partition_kmeans(mesh, numparts):
+    from scipy.cluster.vq import kmeans2
+    _, label = kmeans2(mesh.points, numparts)
+    return label
 
-def generate_meshes(mesh, part, numparts):
+def apply_partition(orig_mesh, part, numparts):
     """
     Partitions a mesh into many meshes when given a partition and a mesh.
     """
-    meshes = [[] for _ in range(numparts)]
-    for i in range(len(mesh.points)):
+    meshes = [Mesh()] * numparts
+    for i in range(len(orig_mesh.points)):
         selected = meshes[part[i]]
-        entry = ()
-        entry += mesh.points[i]
-        if mesh.pointdata:
-            entry += mesh.pointdata[i]
-        selected.append(entry)
+        selected.points.append(orig_mesh.points[i])
+        if orig_mesh.pointdata:
+            selected.pointdata.append(orig_mesh.pointdata[i])
     return meshes
 
 def write_meshes(meshes, dirname):
@@ -127,9 +92,7 @@ def write_meshes(meshes, dirname):
         os.mkdir(dirname)
     for i in range(len(meshes)):
         mesh = meshes[i]
-        with open(dirname + "/" + str(i), "w+") as file:
-            for entry in mesh:
-                file.write(" ".join(map(str, entry)) + "\n")
+        mesh_io.write_txt(dirname + "/" + str(i), mesh.points, mesh.pointdata)
 def parse_args():
     parser = argparse.ArgumentParser(description="Read vtk meshes, partition them and write them out in internal format")
     parser.add_argument("in_meshname", metavar="inputmesh", help="The vtk mesh used as input")
