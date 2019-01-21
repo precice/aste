@@ -1,9 +1,31 @@
 #!/usr/bin/env python3
+import logging
 import os
 import numpy as np
 from ctypes import *
 import argparse
 import mesh_io
+
+def main():
+    args = parse_args()
+    logging.basicConfig(level=getattr(logging, args.logging))
+    mesh = read_mesh(args.in_meshname)
+    if args.algorithm == "meshfree" or (not mesh.cells and not args.algorithm):
+        algorithm = "meshfree"
+    else:
+        algorithm = "topology"
+    if args.numparts > 1:
+        part = partition(mesh, args.numparts, algorithm)
+    else:
+        part = [0] *  len(mesh.points)
+    meshes = apply_partition(mesh, part, args.numparts)
+    if not args.out_meshname:
+        out_meshname = args.in_meshname[:-4]
+        logging.info("No --out given. Setting output to: " + out_meshname)
+    else:
+        out_meshname = args.out_meshname
+    write_meshes(meshes, out_meshname)
+
 class Mesh:
     """
     A Mesh consists of:
@@ -25,30 +47,29 @@ class Mesh:
         else:
             self.pointdata = []
 
-def main():
-    args = parse_args()
-    mesh = read_mesh(args.in_meshname)
-    numparts = args.numparts if args.numparts else 1
-    if numparts > 1:
-        part = partition(mesh, numparts)
-    else:
-        part = [0] *  len(mesh.points)
-    meshes = apply_partition(mesh, part, numparts)
-    if not args.out_meshname:
-        out_meshname = args.in_meshname[:-4]
-        print("No --out given. Setting output to: " + out_meshname)
-    else:
-        out_meshname = args.out_meshname
-    write_meshes(meshes, out_meshname)
-
 def read_mesh(filename):
-    return Mesh(*mesh_io.read_mesh(filename))
-def partition(mesh, numparts):
+    points, cells, _, pointdata = mesh_io.read_mesh(filename)
+    return Mesh(points, cells, pointdata)
+def partition(mesh, numparts, algorithm):
+    """
+    Partitions a mesh using METIS or kmeans. This does not call METIS directly, but instead uses a small C++ Wrapper libmetisAPI.so for convenience. This shared library must be provided if this function should be called.
+    """
+    if algorithm == "meshfree":
+        return partition_kmeans(mesh, numparts)
+    else:
+        return partition_metis(mesh, numparts)
+
+def partition_kmeans(mesh, numparts):
+    points = np.array(mesh.points)[:,1:]
+    print(points)
+    from scipy.cluster.vq import kmeans2
+    _, label = kmeans2(points, numparts)
+    return label
+
+def partition_metis(mesh, numparts):
     """
     Partitions a mesh using METIS. This does not call METIS directly, but instead uses a small C++ Wrapper libmetisAPI.so for convenience. This shared library must be provided if this function should be called.
     """
-    if True or not mesh.cells:
-        return partition_kmeans(mesh, numparts)
     cellPtr = [0]
     cellData = []
     for i in range(len(mesh.cells)):
@@ -66,10 +87,6 @@ def partition(mesh, numparts):
     libmetis.partitionMetis(cell_count, point_count, cell_ptr, cell_data, num_parts, partition)
     arr = np.ctypeslib.as_array(partition)
     return arr
-def partition_kmeans(mesh, numparts):
-    from scipy.cluster.vq import kmeans2
-    _, label = kmeans2(mesh.points, numparts)
-    return label
 
 def apply_partition(orig_mesh, part, numparts):
     """
@@ -97,8 +114,9 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Read vtk meshes, partition them and write them out in internal format")
     parser.add_argument("in_meshname", metavar="inputmesh", help="The vtk mesh used as input")
     parser.add_argument("--out", "-o", dest="out_meshname", help="The output mesh directory name")
-    parser.add_argument("--numparts", "-n", dest="numparts", type=int, help="The number of parts to split into")
-    parser.add_argument("--dataTag", "-t", dest="data_tag", help="Data tag for vtk mesh") 
+    parser.add_argument("--numparts", "-n", dest="numparts", default=1, type=int, help="The number of parts to split into")
+    parser.add_argument("--algorithm", "-a", dest="algorithm", choices=["meshfree", "topology"], help="Change the algorithm used for determining a partition. A meshfree algorithm works on arbitrary meshes without needing topological information. A topology-based algorithm needs topology information and is therefore useless on point clouds")
+    parser.add_argument("--log", "-l", dest="logging", default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Set the log level. Default is INFO")
     return parser.parse_args()
 
 if __name__ == "__main__":

@@ -19,7 +19,6 @@ Reads a partitioned mesh from a directory like `dirname/0, 1, ...` and saves it 
 - METIS
 ### Python modules
 - NumPy
-- tqdm
 - vtk (Visualization Toolkit)
 ## Building
 Make sure to have all the dependencies installed. Then do:
@@ -31,4 +30,4 @@ make
 ```
 If precice is not installed in `$PRECICE_ROOT/build` do `cmake -DCMAKE_LIBRARY_PATH=$PRECICE_INSTALL_DIR ..` with the correct installation directory.
 ## Demo
-A demonstration of aste can be run with `./demo.sh`.
+A demonstration of aste can be run with `./demo.sh`. A bunny-shaped mesh is mapped onto a red blood cell. The result can be seen in `result.vtk`.

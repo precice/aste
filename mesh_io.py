@@ -3,9 +3,9 @@ def read_mesh(filename):
         return read_vtk(filename)
     else:
         return read_txt(filename)
-def write_mesh(filename, points, cells = None, values = None):
+def write_mesh(filename, points, cells = None, cell_types = None, values = None):
     if filename[-4:] == ".vtk":
-        return write_vtk(filename, points, cells, values)
+        return write_vtk(filename, points, cells, cell_types, values)
     else:
         # TODO: Warn on cells
         return write_txt(filename, points, values)
@@ -20,9 +20,11 @@ def read_vtk(filename):
     points = []
     cells = []
     pointdata = []
+    cell_types = []
     points = [vtkmesh.GetPoint(i) for i in range(vtkmesh.GetNumberOfPoints())]
     for i in range(vtkmesh.GetNumberOfCells()):
         cell = vtkmesh.GetCell(i)
+        cell_types.append(cell.GetCellType())
         entry = ()
         for j in range(cell.GetNumberOfPoints()):
             entry += (cell.GetPointId(j),)
@@ -31,7 +33,7 @@ def read_vtk(filename):
     if fieldData:
         for i in range(vtkmesh.GetNumberOfPoints()):
             pointdata.append(fieldData.GetTuple1(i))
-    return points, cells, pointdata
+    return points, cells, cell_types, pointdata
 def read_txt(filename):
     points = []
     cells = []
@@ -47,10 +49,8 @@ def read_txt(filename):
                 pointdata.append(float(parts[3]))
     return points, cells, pointdata
 
-def write_vtk(filename, points, cells = None, pointdata = None):
+def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None):
     import vtk
-    writer = vtk.vtkUnstructuredGridWriter()
-    writer.SetFileName(filename)
     data = vtk.vtkUnstructuredGrid() # is also vtkDataSet
     scalars = vtk.vtkDoubleArray()
     vtkpoints = vtk.vtkPoints()
@@ -58,11 +58,20 @@ def write_vtk(filename, points, cells = None, pointdata = None):
         vtkpoints.InsertPoint(i, point)
         if pointdata is not None and len(pointdata) > 0:
             scalars.InsertTuple1(i, pointdata[i])
+    data.SetPoints(vtkpoints)
     if cells:
-        pass # TODO: Add cells to vtk mesh
+        cellArray = vtk.vtkCellArray()
+        for i, cell in enumerate(cells):
+            vtkCell = vtk.vtkGenericCell()
+            vtkCell.SetCellType(cell_types[i])
+            idList = vtk.vtkIdList()
+            for cellid in cell:
+                idList.InsertNextId(cellid)
+            vtkCell.SetPointIds(idList)
+            cellArray.InsertNextCell(vtkCell)
+        data.SetCells(cell_types, cellArray)
     pointData = data.GetPointData()
     pointData.SetScalars(scalars)
-    data.SetPoints(vtkpoints)
     writer = vtk.vtkUnstructuredGridWriter()
     writer.SetFileName(filename)
     writer.SetInputData(data)
