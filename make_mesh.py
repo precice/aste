@@ -91,7 +91,7 @@ def write_file(filename, xx, yy, values):
             if i % nodes_per_rank == 0:
                 current_rank += 1
                 
-            str = "{!s} {!s} {!s} {!s} {!s}".format(0, fx, fy, value, current_rank)
+            str = "{!s} {!s} {!s} {!s}".format(0, fx, fy, value)
             print(str, file = f)
 
     
