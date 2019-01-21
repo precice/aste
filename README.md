@@ -1,5 +1,8 @@
 # aste
-Artificial Solver Testing Environment for preCICE.
+aste stands for Artificial Solver Testing Environment for preCICE.
+aste facilitates getting data into preCICE and out of it. An overview is given by the following figure:
+![](doc/AsteFlow.png)
+
 aste consists of compiled C++ Modules and of Python modules.
 ## Python modules
 ### eval_mesh.py
@@ -30,4 +33,4 @@ make
 ```
 If precice is not installed in `$PRECICE_ROOT/build` do `cmake -DCMAKE_LIBRARY_PATH=$PRECICE_INSTALL_DIR ..` with the correct installation directory.
 ## Demo
-A demonstration of aste can be run with `./demo.sh`. A bunny-shaped mesh is mapped onto a red blood cell. The result can be seen in `result.vtk`.
+A demonstration of aste can be run with `./demo.sh`. A bunny-shaped mesh is mapped onto a red blood cell. The result can be seen in `result.vtk`. 
