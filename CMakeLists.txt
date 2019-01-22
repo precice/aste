@@ -12,7 +12,7 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 message(STATUS "Build configuration: " ${CMAKE_BUILD_TYPE})
 
-find_library(precice precice PATHS $ENV{PRECICE_ROOT}/build $ENV{PRECICE_ROOT}/build/latest)
+find_library(precice precice PATHS $ENV{PRECICE_ROOT}/build $ENV{PRECICE_ROOT}/build/last)
 if(NOT precice)
   message(FATAL_ERROR "preCICE was not found")
 endif()
@@ -26,7 +26,7 @@ find_package(Eigen3 REQUIRED)
 
 find_package(MPI REQUIRED)
 
-add_executable(preciceDist preciceDist.cpp)
+add_executable(preciceMap preciceMap.cpp)
 add_library(common common.cpp)
 add_library(metisAPI SHARED metisAPI.cpp)
 
@@ -34,13 +34,13 @@ target_link_libraries(common ${precice})
 
 target_link_libraries(metisAPI ${METIS_LIBRARIES})
 
-target_link_libraries(preciceDist ${Boost_LIBRARIES})
-target_include_directories(preciceDist PRIVATE ${Boost_INCLUDE_DIRS})
-target_link_libraries(preciceDist ${MPI_LIBRARIES})
-target_include_directories(preciceDist PRIVATE ${MPI_INCLUDE_PATH})
-target_link_libraries(preciceDist ${precice})
-target_link_libraries(preciceDist common)
-target_include_directories(preciceDist PRIVATE ${EIGEN3_INCLUDE_DIR})
+target_link_libraries(preciceMap ${Boost_LIBRARIES})
+target_include_directories(preciceMap PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(preciceMap ${MPI_LIBRARIES})
+target_include_directories(preciceMap PRIVATE ${MPI_INCLUDE_PATH})
+target_link_libraries(preciceMap ${precice})
+target_link_libraries(preciceMap common)
+target_include_directories(preciceMap PRIVATE ${EIGEN3_INCLUDE_DIR})
 
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/partition_mesh.py

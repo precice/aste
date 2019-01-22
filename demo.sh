@@ -7,6 +7,6 @@ test -f bunny.vtk || wget "https://www.ece.lsu.edu/xinli/Meshing/Data/bunny.vtk"
 ./eval_mesh.py bunny.vtk -o colored.vtk -f "y = x[:,1]"
 ./partition_mesh.py colored.vtk -n 2
 ./partition_mesh.py rbc.vtk -n 2
-mpirun -n 2 ./preciceDist -p A --meshFile colored&
-mpirun -n 2 ./preciceDist -p B --meshFile rbc --output mapped
+mpirun -n 2 ./preciceMap -p A --meshFile colored&
+mpirun -n 2 ./preciceMap -p B --meshFile rbc --output mapped
 ./join_mesh.py mapped -o result.vtk
