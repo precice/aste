@@ -26,7 +26,7 @@ def read_mesh(dirname, length = None):
     all_points = []
     all_values = []
     for i in range(length):
-        points, _, values = read_txt(dirname + "/" + str(i))
+        points, _, _, values = read_txt(dirname + "/" + str(i))
         all_points += points
         all_values += values
     return all_points, all_values
