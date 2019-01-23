@@ -1,22 +1,20 @@
 def read_mesh(filename):
-    if filename[-4:] == ".vtk":
-        return read_vtk(filename)
-    else:
+    if filename[-4:] == ".txt":
         return read_txt(filename)
-def write_mesh(filename, points, cells = None, cell_types = None, values = None):
-    if filename[-4:] == ".vtk":
-        return write_vtk(filename, points, cells, cell_types, values)
     else:
-        # TODO: Warn on cells
-        return write_txt(filename, points, values)
+        return read_vtk(filename)
+def write_mesh(filename, points, cells = None, cell_types = None, values = None):
+    if filename[-4:] == ".txt":
+        if cells is not None and len(cells) > 0:
+            logging.warning("Saving as .txt discards topology")
+        return write_txt(filename, points, values) # TODO: Warn on cells
+    else:
+        return write_vtk(filename, points, cells, cell_types, values)
 
 def read_vtk(filename):
     import vtk
     result = []
-    reader = vtk.vtkDataSetReader()
-    reader.SetFileName(filename)
-    reader.Update()
-    vtkmesh = reader.GetOutput()
+    vtkmesh = read_dataset(filename)
     points = []
     cells = []
     pointdata = []
@@ -34,9 +32,29 @@ def read_vtk(filename):
         for i in range(vtkmesh.GetNumberOfPoints()):
             pointdata.append(fieldData.GetTuple1(i))
     return points, cells, cell_types, pointdata
+def read_dataset(filename):
+    import vtk
+    extension = filename[-4:]
+    if (extension == ".vtk"): # VTK Legacy format
+        reader = vtk.vtkDataSetReader()
+    elif (extension == ".vtp"): # VTK XML Poly format
+        reader = vtk.vtkXMLPolyDataReader()
+    elif (extension == ".vtp"): # VTK XML Unstructured format
+        reader = vtk.vtkXMLUnstructuredGridReader()
+    elif (extension == ".stl"): # Stereolithography format
+        reader = vtk.vtkSTLReader()
+    elif (extension == ".ply"): # Stanford triangle format
+        reader = vtk.vtkPLYReader()
+    elif (extension == ".obj"): # Wavefront OBJ format
+        reader = vtk.vtkOBJReader()
+    else:
+        raise Exception("Unkown File extension: " + extension)
+    reader.SetFileName(filename)
+    reader.Update()
+    return reader.GetOutput()
+
 def read_txt(filename):
     points = []
-    cells = []
     pointdata = []
     with open(filename, "r") as fh:
         for line in fh:
@@ -47,7 +65,7 @@ def read_txt(filename):
             points.append(point)
             if len(parts) > 3:
                 pointdata.append(float(parts[3]))
-    return points, cells, pointdata
+    return points, [], [], pointdata
 
 def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None):
     import vtk
@@ -72,9 +90,23 @@ def write_vtk(filename, points, cells = None, cell_types = None, pointdata = Non
         data.SetCells(cell_types, cellArray)
     pointData = data.GetPointData()
     pointData.SetScalars(scalars)
+    write_dataset(filename, data)
+
     writer = vtk.vtkUnstructuredGridWriter()
     writer.SetFileName(filename)
     writer.SetInputData(data)
+    writer.Write()
+def write_dataset(filename, dataset):
+    import vtk
+    extension = filename[-4:]
+    if (extension == ".vtk"): # VTK Legacy format
+        writer = vtk.vtkUnstructuredGridWriter()
+    elif (extension == ".vtu"): # VTK XML Unstructured Grid format
+        writer = vtk.vtkXMLUnstructuredGridWriter()
+    else:
+        raise Exception("Unkown File extension: " + extension)
+    writer.SetFileName(filename)
+    writer.SetInputData(dataset)
     writer.Write()
 def write_txt(filename, points, pointdata = None):
     with open(filename, "w") as fh:

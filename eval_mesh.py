@@ -17,7 +17,7 @@ def main():
 def user_func(points, f_str = None):
     if not f_str:
         f_str = "y = np.zeros(len(x))"
-    x = points
+    x = np.array(points)
     loc_dict = {"x": x}
     exec(f_str, globals(), loc_dict)
     y = loc_dict["y"]

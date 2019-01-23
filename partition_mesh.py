@@ -60,11 +60,39 @@ def partition(mesh, numparts, algorithm):
         return partition_metis(mesh, numparts)
 
 def partition_kmeans(mesh, numparts):
-    points = np.array(mesh.points)[:,1:]
-    print(points)
+    points = np.copy(mesh.points)
+    points = reduce_dimension(points)
     from scipy.cluster.vq import kmeans2
     _, label = kmeans2(points, numparts)
     return label
+
+def reduce_dimension(mesh):
+    testP = mesh[0]
+    dead_dims = np.argwhere(np.abs(np.array(testP)) < 1e-9)
+    for point in mesh:
+        current_dead_dims = np.argwhere(np.abs(np.array(point)) < 1e-9)
+        dead_dims = np.intersect1d(dead_dims, current_dead_dims)
+        if len(dead_dims) == 0:
+            return mesh
+    mesh = np.array(mesh)
+    full = np.array([0,1,2])
+    mask = np.setdiff1d(full, dead_dims)
+    return mesh[:,mask]
+
+
+def reduce_dimension_WIP(mesh):
+    pA, pB, pC = mesh[:3]
+    pA = np.array(pA)
+    AB = pB - pA
+    AC = pC - pA
+    n = np.cross(AB, AC)
+    # Every point x in the plane must fulfill (x - pA) * n = 0
+    for x in mesh:
+        if not np.dot(x - pA, n) == 0:
+            break
+    else: # All Points within plane
+        # Transform mesh so all points have form (0, y, z)
+        pass # TODO: This is WIP
 
 def partition_metis(mesh, numparts):
     """
