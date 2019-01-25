@@ -30,9 +30,15 @@ def user_func(points, f_str = None):
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluate a function on a given mesh")
     parser.add_argument("in_meshname", metavar="inputmesh", help="The mesh used as input")
-    parser.add_argument("--func", "-f", dest="f_str", help="The function to evalutate on the mesh. Points are given in the form \"x = [[x1,y1,z1],[x2,y2,z2],...]\" as a numpy array. Output must be written to \"y\". Default is the 0 function.")
-    parser.add_argument("--out", "-o", dest="out_meshname", help="The output meshname. Default is the same as for the input mesh")
-    parser.add_argument("--log", "-l", dest="logging", default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Set the log level. Default is INFO")
+    parser.add_argument("--func", "-f", dest="f_str", 
+            help="""The function to evalutate on the mesh. 
+            Points are given in the form \"x = [[x1,y1,z1],[x2,y2,z2],...]\" as a numpy array. 
+            Output must be written to \"y\". Default is the 0 function.""")
+    parser.add_argument("--out", "-o", dest="out_meshname", help="""The output meshname. 
+            Default is the same as for the input mesh""")
+    parser.add_argument("--log", "-l", dest="logging", default="INFO", 
+            choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="""Set the log level. 
+            Default is INFO""")
     return parser.parse_args()
 
 if __name__ == "__main__":

@@ -1,8 +1,18 @@
+""" 
+Mesh I/O utility script. One can read meshes from .vtk, .txt, .vtu, .vtp,... files
+ and save to .txt, .vtk and .vtu
+"""
+
 def read_mesh(filename):
+    """
+    Returns Mesh Points, Mesh Cells, Mesh Celltypes, 
+    Mesh Pointdata in this order
+    """
     if filename[-4:] == ".txt":
         return read_txt(filename)
     else:
         return read_vtk(filename)
+
 def write_mesh(filename, points, cells = None, cell_types = None, values = None):
     if filename[-4:] == ".txt":
         if cells is not None and len(cells) > 0:
@@ -39,7 +49,7 @@ def read_dataset(filename):
         reader = vtk.vtkDataSetReader()
     elif (extension == ".vtp"): # VTK XML Poly format
         reader = vtk.vtkXMLPolyDataReader()
-    elif (extension == ".vtp"): # VTK XML Unstructured format
+    elif (extension == ".vtu"): # VTK XML Unstructured format
         reader = vtk.vtkXMLUnstructuredGridReader()
     elif (extension == ".stl"): # Stereolithography format
         reader = vtk.vtkSTLReader()
@@ -96,6 +106,7 @@ def write_vtk(filename, points, cells = None, cell_types = None, pointdata = Non
     writer.SetFileName(filename)
     writer.SetInputData(data)
     writer.Write()
+
 def write_dataset(filename, dataset):
     import vtk
     extension = filename[-4:]
@@ -108,6 +119,7 @@ def write_dataset(filename, dataset):
     writer.SetFileName(filename)
     writer.SetInputData(dataset)
     writer.Write()
+
 def write_txt(filename, points, pointdata = None):
     with open(filename, "w") as fh:
         for i, point in enumerate(points):
