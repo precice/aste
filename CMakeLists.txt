@@ -26,32 +26,22 @@ find_package(Eigen3 REQUIRED)
 
 find_package(MPI REQUIRED)
 
-add_executable(preciceMap preciceMap.cpp)
-add_library(common common.cpp)
+
 add_library(metisAPI SHARED metisAPI.cpp)
-
-target_link_libraries(common ${precice})
-
 target_link_libraries(metisAPI ${METIS_LIBRARIES})
 
-target_link_libraries(preciceMap ${Boost_LIBRARIES})
+add_executable(preciceMap preciceMap.cpp common.cpp)
 target_include_directories(preciceMap PRIVATE ${Boost_INCLUDE_DIRS})
-target_link_libraries(preciceMap ${MPI_LIBRARIES})
+target_link_libraries(preciceMap ${Boost_LIBRARIES})
 target_include_directories(preciceMap PRIVATE ${MPI_INCLUDE_PATH})
-target_link_libraries(preciceMap ${precice})
-target_link_libraries(preciceMap common)
+target_link_libraries(preciceMap ${MPI_LIBRARIES})
 target_include_directories(preciceMap PRIVATE ${EIGEN3_INCLUDE_DIR})
+target_link_libraries(preciceMap ${precice})
 
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/partition_mesh.py
-         DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/join_mesh.py
-         DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/eval_mesh.py
-         DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/mesh_io.py
-         DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/precice.xml
-         DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/demo.sh
-         DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/partition_mesh.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/join_mesh.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/eval_mesh.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/mesh_io.py        DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/precice.xml       DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/demo.sh           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
