@@ -4,7 +4,7 @@
 #include <mpi.h>
 #include "precice/SolverInterface.hpp"
 #include "utils/prettyprint.hpp"
-#include "utils/EventTimings.hpp"
+#include "utils/EventUtils.hpp"
 
 #include "common.hpp"
 namespace fs = boost::filesystem; 
