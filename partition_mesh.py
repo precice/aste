@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
-import logging
-import os
+import argparse, logging, math, os
 import numpy as np
-import math
 from ctypes import *
-import argparse
 import mesh_io
 
 def main():
@@ -27,6 +24,7 @@ def main():
         out_meshname = args.out_meshname
     write_meshes(meshes, out_meshname)
 
+    
 class Mesh:
     """
     A Mesh consists of:
@@ -52,6 +50,7 @@ def read_mesh(filename):
     points, cells, _, pointdata = mesh_io.read_mesh(filename)
     return Mesh(points, cells, pointdata)
 
+
 def partition(mesh, numparts, algorithm):
     """
     Partitions a mesh using METIS or kmeans. This does not call METIS directly, 
@@ -63,14 +62,15 @@ def partition(mesh, numparts, algorithm):
     else:
         return partition_metis(mesh, numparts)
 
+    
 def partition_kmeans(mesh, numparts):
-    """ Partitions a mesh using k-means. This is a meshfree algorithm and
-    requires scipy"""
+    """ Partitions a mesh using k-means. This is a meshfree algorithm and requires scipy"""
     from scipy.cluster.vq import kmeans2
     points = np.copy(mesh.points)
     points = reduce_dimension(points)
     _, label = kmeans2(points, numparts)
     return label
+
 
 def reduce_dimension_simple(mesh):
     testP = mesh[0]
@@ -124,6 +124,7 @@ def reduce_dimension(mesh):
             mesh[i] = x
         return mesh[:,:-1]
 
+    
 def partition_metis(mesh, numparts):
     """
     Partitions a mesh using METIS. This does not call METIS directly, 
@@ -148,6 +149,7 @@ def partition_metis(mesh, numparts):
     arr = np.ctypeslib.as_array(partition)
     return arr
 
+
 def apply_partition(orig_mesh, part, numparts):
     """
     Partitions a mesh into many meshes when given a partition and a mesh.
@@ -160,6 +162,7 @@ def apply_partition(orig_mesh, part, numparts):
             selected.pointdata.append(orig_mesh.pointdata[i])
     return meshes
 
+
 def write_meshes(meshes, dirname):
     """
     Writes meshes to given directory.
@@ -170,6 +173,8 @@ def write_meshes(meshes, dirname):
     for i in range(len(meshes)):
         mesh = meshes[i]
         mesh_io.write_txt(dirname + "/" + str(i), mesh.points, mesh.pointdata)
+
+        
 def parse_args():
     parser = argparse.ArgumentParser(description="""Read vtk meshes, partition them 
             and write them out in internal format""")

@@ -25,7 +25,8 @@ int main(int argc, char* argv[])
 
     auto numParts = numMeshParts(meshname);
     if (numParts < MPIsize)
-        throw std::runtime_error("Mesh is too small for communicator, MeshSize="  + std::to_string(numParts) + ", Comm_size=" + std::to_string(MPIsize));
+        throw std::runtime_error("Mesh is too small for communicator, MeshSize="  + std::to_string(numParts)
+                                 + ", Comm_size=" + std::to_string(MPIsize));
 
     precice::SolverInterface interface(participant, MPIrank, MPIsize);
     interface.configure(options["precice-config"].as<string>());
@@ -93,8 +94,7 @@ int main(int argc, char* argv[])
 
 int numMeshParts(std::string meshname)
 {
-
-    if (!fs::is_directory(meshname))
+    if (not fs::is_directory(meshname))
         throw std::runtime_error("Invalid mesh name: directory not found.");
     int i = 0;
     while (fs::exists(meshname + "/" + std::to_string(i)))

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-import logging
-import os
+import argparse, logging, os
 import numpy as np
-import argparse
 from mesh_io import *
 
 def main():

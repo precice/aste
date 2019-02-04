@@ -3,27 +3,31 @@ Mesh I/O utility script. One can read meshes from .vtk, .txt, .vtu, .vtp,... fil
  and save to .txt, .vtk and .vtu
 """
 
+import os
+import vtk
+
+
 def read_mesh(filename):
     """
     Returns Mesh Points, Mesh Cells, Mesh Celltypes, 
     Mesh Pointdata in this order
     """
-    if filename[-4:] == ".txt":
+    if os.path.splitext(filename)[1] == ".txt":
         return read_txt(filename)
     else:
         return read_vtk(filename)
 
+    
 def write_mesh(filename, points, cells = None, cell_types = None, values = None):
-    if filename[-4:] == ".txt":
+    if os.path.splitext(filename)[1] == ".txt":
         if cells is not None and len(cells) > 0:
             logging.warning("Saving as .txt discards topology")
         return write_txt(filename, points, values) # TODO: Warn on cells
     else:
         return write_vtk(filename, points, cells, cell_types, values)
 
+    
 def read_vtk(filename):
-    import vtk
-    result = []
     vtkmesh = read_dataset(filename)
     points = []
     cells = []
@@ -42,9 +46,10 @@ def read_vtk(filename):
         for i in range(vtkmesh.GetNumberOfPoints()):
             pointdata.append(fieldData.GetTuple1(i))
     return points, cells, cell_types, pointdata
+
+
 def read_dataset(filename):
-    import vtk
-    extension = filename[-4:]
+    extension = os.path.splitext(filename)[1]
     if (extension == ".vtk"): # VTK Legacy format
         reader = vtk.vtkDataSetReader()
     elif (extension == ".vtp"): # VTK XML Poly format
@@ -63,6 +68,7 @@ def read_dataset(filename):
     reader.Update()
     return reader.GetOutput()
 
+
 def read_txt(filename):
     points = []
     pointdata = []
@@ -77,8 +83,8 @@ def read_txt(filename):
                 pointdata.append(float(parts[3]))
     return points, [], [], pointdata
 
+
 def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None):
-    import vtk
     data = vtk.vtkUnstructuredGrid() # is also vtkDataSet
     scalars = vtk.vtkDoubleArray()
     vtkpoints = vtk.vtkPoints()
@@ -107,9 +113,9 @@ def write_vtk(filename, points, cells = None, cell_types = None, pointdata = Non
     writer.SetInputData(data)
     writer.Write()
 
+    
 def write_dataset(filename, dataset):
-    import vtk
-    extension = filename[-4:]
+    extension = os.path.splitext(filename)[1]
     if (extension == ".vtk"): # VTK Legacy format
         writer = vtk.vtkUnstructuredGridWriter()
     elif (extension == ".vtu"): # VTK XML Unstructured Grid format
