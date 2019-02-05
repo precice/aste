@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import argparse, os, itertools
+import argparse, itertools, logging, os
 import mesh
 import numpy as np
 
@@ -65,10 +65,11 @@ def read_data(directory, geometry = (0,2), val_col_offset = 1, value_function = 
 def rmse(indata, outdata):
     return np.sqrt( ((outdata.flatten() - indata.flatten())**2).mean() )
 
-def gen_data(start, stop, points):
+def gen_data(x0, x1, nx, y0, y1, ny):
     """ Generates an 2d, quadratic mesh on [start, end]² on points² """
-    x = np.linspace(start, stop, points)
-    y = np.linspace(start, stop, points)
+    logging.info("Generate mesh on [{},{}] x [{},{}] with {} x {} points.".format(x0, x1, y0, y1, nx, ny))
+    x = np.linspace(x0, x1, nx)
+    y = np.linspace(y0, y1, ny)
     xx, yy = np.meshgrid(x, y)
     values = fun(xx, yy)
     return xx, yy, values
@@ -82,29 +83,33 @@ def gen_data_GC(order, element_size, domain_size, domain_start = 0, value_functi
 def write_file(filename, xx, yy, values):
     flat_values = values.flatten()
 
-    nodes_per_rank = int(len(flat_values) / MPI_size)
-
-    current_rank = -1
-
     with open(filename, "w") as f:
-        for i, value, fx, fy in zip(itertools.count(), flat_values, xx.flatten(), yy.flatten()):
-            if i % nodes_per_rank == 0:
-                current_rank += 1
-                
+        for value, fx, fy in zip(flat_values, xx.flatten(), yy.flatten()):
             str = "{!s} {!s} {!s} {!s}".format(0, fx, fy, value)
             print(str, file = f)
 
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Create a mesh")
+    parser.add_argument("out_mesh", metavar="outmesh", help="Name of output mesh file")
+    parser.add_argument("--x0", type = int, default = 0, help="Start coordinate in x-dimension")
+    parser.add_argument("--x1", type = int, default = 1, help="End coordinate in x-dimension")
+    parser.add_argument("--nx", type = int, default = 100, help="Number of elements in x-direction")
+    parser.add_argument("--y0", type = int, default = 0, help="Start coordinate in y-dimension")
+    parser.add_argument("--y1", type = int, default = 1, help="End coordinate in y-dimension")
+    parser.add_argument("--ny", type = int, default = 100, help="Number of elements in y-direction")
+    
+    parser.add_argument("--log", "-l", dest="logging", default="INFO",
+            choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+            help="Set the log level. Default is INFO")
+    return parser.parse_args()
+
+
     
 def main():
-    parser = argparse.ArgumentParser(description='Create mesh to be read by readMesh.')
-    parser.add_argument('inputMeshSize', type=int)
-    parser.add_argument('outputMeshSize', type=int)
-    args = parser.parse_args()
+    args = parse_args()
+    logging.basicConfig(level=getattr(logging, args.logging))
     
-    in_dimensions = (0, 1, args.inputMeshSize)
-    out_dimensions = (0, 1, args.outputMeshSize)
-    test_dimensions = (0, 1, 200)
-
     GC = False
 
     if GC:
@@ -112,27 +117,9 @@ def main():
         write_file("outMeshGC.txt", *gen_data_GC(10, 0.5, 4, domain_start = -2, value_function = gauss_pulse))
         
     else:
-        write_file("inMesh.txt", *gen_data(*in_dimensions))
-        print("Wrote inMesh, dimensions,", in_dimensions);
+        write_file(args.out_mesh, *gen_data(args.x0, args.x1, args.nx, args.y0, args.y1, args.ny))
+        logging.info("Wrote mesh to %s", args.out_mesh);
 
-        write_file("outMesh.txt", *gen_data(*out_dimensions))
-        print("Wrote outMesh dimensions,", out_dimensions);
-
-        write_file("testMesh.txt", *gen_data(*test_dimensions))
-        print("Wrote testMesh, dimensions,", test_dimensions);
-    
-    print("Wrote meshes for", MPI_size, "ranks.")
         
-    # plt.contour(x, y, values)
-    # plt.grid()
-    # plt.show()
-
-    # x,y,v,rank
-
-  
-
-    # plt.plot(fv)
-    # plt.show()
-
 if __name__== "__main__":
     main()
