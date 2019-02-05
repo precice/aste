@@ -22,8 +22,6 @@ find_package(Boost 1.60.0 REQUIRED COMPONENTS system program_options filesystem)
 
 find_package(METIS REQUIRED)
 
-find_package(Eigen3 REQUIRED)
-
 find_package(MPI REQUIRED)
 
 
@@ -35,7 +33,6 @@ target_include_directories(preciceMap PRIVATE ${Boost_INCLUDE_DIRS})
 target_link_libraries(preciceMap ${Boost_LIBRARIES})
 target_include_directories(preciceMap PRIVATE ${MPI_INCLUDE_PATH})
 target_link_libraries(preciceMap ${MPI_LIBRARIES})
-target_include_directories(preciceMap PRIVATE ${EIGEN3_INCLUDE_DIR})
 target_link_libraries(preciceMap ${precice})
 
 
