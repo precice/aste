@@ -9,14 +9,22 @@
 #include "common.hpp"
 namespace fs = boost::filesystem; 
 
-int numMeshParts(std::string meshname);
+int numMeshParts(std::string meshname)
+{
+    if (not fs::is_directory(meshname))
+        throw std::runtime_error("Invalid mesh name: directory not found.");
+    int i = 0;
+    while (fs::exists(meshname + "/" + std::to_string(i)))
+        i++;
+    return i;
+}
 
 int main(int argc, char* argv[])
 {
     using std::string;
     MPI_Init(&argc, &argv);
     auto options = getOptions(argc, argv);
-    std::string meshname = options["meshFile"].as<string>();
+    std::string meshname = options["mesh"].as<string>();
     string participant = options["participant"].as<string>();
 
     int MPIrank = 0, MPIsize = 0;
@@ -92,12 +100,3 @@ int main(int argc, char* argv[])
     MPI_Finalize();
 }
 
-int numMeshParts(std::string meshname)
-{
-    if (not fs::is_directory(meshname))
-        throw std::runtime_error("Invalid mesh name: directory not found.");
-    int i = 0;
-    while (fs::exists(meshname + "/" + std::to_string(i)))
-        i++;
-    return i;
-}

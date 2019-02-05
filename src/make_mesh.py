@@ -90,7 +90,8 @@ def write_file(filename, xx, yy, values):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Create a mesh")
+    parser = argparse.ArgumentParser(description="Create a mesh",
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("out_mesh", metavar="outmesh", help="Name of output mesh file")
     parser.add_argument("--x0", type = int, default = 0, help="Start coordinate in x-dimension")
     parser.add_argument("--x1", type = int, default = 1, help="End coordinate in x-dimension")
@@ -100,8 +101,8 @@ def parse_args():
     parser.add_argument("--ny", type = int, default = 100, help="Number of elements in y-direction")
     
     parser.add_argument("--log", "-l", dest="logging", default="INFO",
-            choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-            help="Set the log level. Default is INFO")
+                        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+                        help="Log level")
     return parser.parse_args()
 
 

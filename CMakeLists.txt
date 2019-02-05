@@ -24,11 +24,12 @@ find_package(METIS REQUIRED)
 
 find_package(MPI REQUIRED)
 
+include_directories("src")
 
-add_library(metisAPI SHARED metisAPI.cpp)
+add_library(metisAPI SHARED src/metisAPI.cpp)
 target_link_libraries(metisAPI ${METIS_LIBRARIES})
 
-add_executable(preciceMap preciceMap.cpp common.cpp)
+add_executable(preciceMap src/preciceMap.cpp src/common.cpp)
 target_include_directories(preciceMap PRIVATE ${Boost_INCLUDE_DIRS})
 target_link_libraries(preciceMap ${Boost_LIBRARIES})
 target_include_directories(preciceMap PRIVATE ${MPI_INCLUDE_PATH})
@@ -36,9 +37,7 @@ target_link_libraries(preciceMap ${MPI_LIBRARIES})
 target_link_libraries(preciceMap ${precice})
 
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/partition_mesh.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/join_mesh.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/eval_mesh.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/mesh_io.py        DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/precice.xml       DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/demo.sh           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/join_mesh.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/eval_mesh.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/mesh_io.py        DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

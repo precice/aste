@@ -1,6 +1,6 @@
 # aste
 aste stands for Artificial Solver Testing Environment for preCICE. aste facilitates getting data into preCICE and out of it. An overview is given by the following figure:
-![](doc/AsteFlow.png)
+![](docs/AsteFlow.png)
 
 aste consists of compiled C++ Modules and of Python modules.
 
@@ -56,7 +56,7 @@ Initialize environment, e.g., put in your `.bashrc`
 # METIS for aste
 module load metis
 export METIS_DIR=$METIS_BASE # so that cmake finds metis
-export CPLUS_INCLUDE_PATH="$METIS_BASE/include :$CPLUS_INCLUDE_PATH"
+export CPLUS_INCLUDE_PATH="$METIS_BASE/include:$CPLUS_INCLUDE_PATH"
 ```
 and execute cmake like `cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..` and `make`.
 
