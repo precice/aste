@@ -4,7 +4,7 @@ Mesh I/O utility script. One can read meshes from .vtk, .txt, .vtu, .vtp,... fil
 """
 
 import os
-import vtk
+import logging
 
 
 def read_mesh(filename):
@@ -28,6 +28,7 @@ def write_mesh(filename, points, cells = None, cell_types = None, values = None)
 
     
 def read_vtk(filename):
+    import vtk
     vtkmesh = read_dataset(filename)
     points = []
     cells = []
@@ -49,6 +50,7 @@ def read_vtk(filename):
 
 
 def read_dataset(filename):
+    import vtk
     extension = os.path.splitext(filename)[1]
     if (extension == ".vtk"): # VTK Legacy format
         reader = vtk.vtkDataSetReader()
@@ -85,6 +87,7 @@ def read_txt(filename):
 
 
 def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None):
+    import vtk
     data = vtk.vtkUnstructuredGrid() # is also vtkDataSet
     scalars = vtk.vtkDoubleArray()
     vtkpoints = vtk.vtkPoints()
@@ -115,6 +118,7 @@ def write_vtk(filename, points, cells = None, cell_types = None, pointdata = Non
 
     
 def write_dataset(filename, dataset):
+    import vtk
     extension = os.path.splitext(filename)[1]
     if (extension == ".vtk"): # VTK Legacy format
         writer = vtk.vtkUnstructuredGridWriter()
