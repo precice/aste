@@ -4,13 +4,6 @@ import argparse, itertools, logging, os
 import mesh
 import numpy as np
 
-from pdb import set_trace
-
-in_dimensions = (0, 1, 200)
-out_dimensions = (0, 1, 180)
-test_dimensions = (0, 1, 200)
-
-MPI_size = 4
 
 fun = lambda xx = 0, yy = 0, zz = 0 : np.sin(xx) + np.cos(2*yy)
 # fun = lambda xx = 0, yy = 0, zz = 0 : xx + yy
@@ -118,8 +111,8 @@ def main():
         write_file("outMeshGC.txt", *gen_data_GC(10, 0.5, 4, domain_start = -2, value_function = gauss_pulse))
         
     else:
-        write_file(args.out_mesh, *gen_data(args.x0, args.x1, args.nx, args.y0, args.y1, args.ny))
-        logging.info("Wrote mesh to %s", args.out_mesh);
+        write_file(args.out_mesh + ".txt", *gen_data(args.x0, args.x1, args.nx, args.y0, args.y1, args.ny))
+        logging.info("Wrote mesh to %s", args.out_mesh + ".txt");
 
         
 if __name__== "__main__":

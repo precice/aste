@@ -19,8 +19,7 @@ OptionMap getOptions(int argc, char *argv[])
     ("runName", po::value<std::string>()->default_value(""), "Name of the run")
     ("printMesh", po::bool_switch(), "Prints the full mesh")
     ("mesh", po::value<string>()->required(), "Mesh directory")
-    ("output", po::value<string>()->default_value("output"))
-    ("valueTag", po::value<string>()->default_value("Colors"), "VTK value tag for input mesh");
+    ("output", po::value<string>()->default_value("output"));
   
   po::variables_map vm;        
 
