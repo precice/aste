@@ -62,6 +62,9 @@ int main(int argc, char* argv[])
     infile.close();
     if (participant == "B")
         data = std::vector<double>(vertexIDs.size(), 0);
+
+    std::cout << "========= Rank " << MPIrank << " read in mesh of size " << vertexIDs.size() << std::endl;
+    
     interface.initialize();
 
     if (interface.isActionRequired(precice::constants::actionWriteInitialData())) {
@@ -84,11 +87,15 @@ int main(int argc, char* argv[])
 
     // Write out results in same format as data was read
     if (participant == "B") {
-        std::cout << "=========Write to " << options["output"].as<string>() << std::endl;
-        fs::path outfile(options["output"].as<string>());
-        fs::create_directory(outfile);
-        outfile = outfile / std::to_string(MPIrank);
-        std::ofstream ostream(outfile.string(), std::ios::trunc);
+        fs::path outdir(options["output"].as<string>());
+        if (MPIrank == 0) {
+          fs::remove_all(outdir);
+          fs::create_directory(outdir);
+        }
+        MPI_Barrier(MPI_COMM_WORLD);
+        
+        std::cout << "========= Write to " << outdir << std::endl;
+        std::ofstream ostream((outdir / std::to_string(MPIrank)).string(), std::ios::trunc);
         ostream.precision(9);
         for (size_t i = 0; i < data.size(); i++) {
             ostream << positions[i][0] << " " << positions[i][1] << " " << positions[i][2] << " " << data[i] << std::endl;
