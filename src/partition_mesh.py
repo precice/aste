@@ -178,8 +178,8 @@ def write_meshes(meshes, dirname):
 def parse_args():
     parser = argparse.ArgumentParser(description=
                                      "Read vtk meshes, partition them and write them out in internal format.")
-    parser.add_argument("in_meshname", metavar="inputmesh", help="The VTK or text mesh used as input")
-    parser.add_argument("out_meshname", metavar="outdir", help="The output mesh directory")
+    parser.add_argument("in_meshname", metavar="inputmesh", help="The vtk mesh used as input")
+    parser.add_argument("--out", "-o", dest="out_meshname", help="The output mesh directory name")
     parser.add_argument("--numparts", "-n", dest="numparts", default=1, type=int, 
             help="The number of parts to split into")
     parser.add_argument("--algorithm", "-a", dest="algorithm", choices=["meshfree", "topology"], 
