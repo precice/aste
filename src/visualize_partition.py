@@ -6,7 +6,7 @@ import os
 from mesh_io import *
 
 parser = argparse.ArgumentParser(description="Visualize partition of a mesh as pointData")
-parser.add_argument("meshname", metavar="inputmesh", help="The mesh used as input")
+parser.add_argument("meshname", metavar="inputmesh", help="The mesh directory used as input")
 args = parser.parse_args()
 
 dirname = args.meshname

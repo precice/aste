@@ -85,6 +85,8 @@ int main(int argc, char* argv[])
         }
     }
 
+    interface.finalize();
+    
     // Write out results in same format as data was read
     if (participant == "B") {
         fs::path outdir(options["output"].as<string>());
@@ -103,7 +105,6 @@ int main(int argc, char* argv[])
         ostream.close();
     }
 
-    interface.finalize();
     MPI_Finalize();
 }
 

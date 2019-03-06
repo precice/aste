@@ -17,7 +17,7 @@ def read_mesh(dirname, length = None):
     """
     if not length:
         length = 0
-        while os.path.isfile(dirname + "/" + str(length)):
+        while os.path.isfile(os.path.join(dirname, str(length))):
             length += 1
     dirname = os.path.abspath(dirname)
     if not os.path.exists(dirname):
@@ -25,7 +25,7 @@ def read_mesh(dirname, length = None):
     all_points = []
     all_values = []
     for i in range(length):
-        points, _, _, values = read_txt(dirname + "/" + str(i))
+        points, _, _, values = read_txt(os.path.join(dirname, str(i)))
         all_points += points
         all_values += values
     return all_points, all_values
