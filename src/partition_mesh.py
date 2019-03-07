@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse, logging, math, os
 import numpy as np
+import shutil
 from ctypes import *
 import mesh_io
 
@@ -8,10 +9,10 @@ def main():
     args = parse_args()
     logging.basicConfig(level=getattr(logging, args.logging))
     mesh = read_mesh(args.in_meshname)
-    if args.algorithm == "meshfree" or (not mesh.cells and not args.algorithm):
+    algorithm = args.algorithm
+    if not algorithm:
+        logging.info("No algorithm given. Defaulting to \"meshfree\"")
         algorithm = "meshfree"
-    else:
-        algorithm = "topology"
     if args.numparts > 1:
         part = partition(mesh, args.numparts, algorithm)
     else:
@@ -59,8 +60,13 @@ def partition(mesh, numparts, algorithm):
     """
     if algorithm == "meshfree":
         return partition_kmeans(mesh, numparts)
-    else:
+    elif algorithm == "topology":
         return partition_metis(mesh, numparts)
+    elif algorithm == "uniform":
+        labels = partition_uniform(mesh, numparts)
+        if labels is None:
+            return partition(mesh, numparts, "meshfree")
+        return labels
 
     
 def partition_kmeans(mesh, numparts):
@@ -73,6 +79,10 @@ def partition_kmeans(mesh, numparts):
 
 
 def reduce_dimension_simple(mesh):
+    """
+    A simple, efficient algorithm for a dimension reduction for a mesh 
+    with one or more "dead dimensions"
+    """
     testP = mesh[0]
     dead_dims = np.argwhere(np.abs(np.array(testP)) < 1e-9)
     for point in mesh:
@@ -149,6 +159,60 @@ def partition_metis(mesh, numparts):
     arr = np.ctypeslib.as_array(partition)
     return arr
 
+def partition_uniform(mesh, numparts):
+    """
+    Partitions a mesh assuming it is uniform. It must be two-dimensional 
+    but is allowed to be layed out anyhow in three dimensions.
+    """
+    mesh = mesh.points[:]
+    mesh = reduce_dimension(np.array(mesh))
+    if len(mesh[0]) == 3:
+        logging.warning("Mesh is not uniform. Falling back to meshfree method")
+        return None
+    min_point = np.amin(mesh, 0)
+    max_point = np.amax(mesh, 0)
+    big_dim = 0 if max_point[0] - min_point[0] >= max_point[1] - min_point[1] else 1
+    small_dim = 1 - big_dim
+
+    def prime_factors(n):
+        """ Straight from SO"""
+        i = 2
+        factors = []
+        while i * i <= n:
+            if n % i:
+                i += 1
+            else:
+                n //= i
+                factors.append(i)
+        if n > 1:
+            factors.append(n)
+        return factors
+
+    def greedy_choose(factors):
+        """ Greedily choose "best" divisors"""
+        small = big = 1
+        for factor in factors:
+            if big <= small:
+                big *= factor
+            else:
+                small *= factor
+        return small, big
+
+    small, big = greedy_choose(prime_factors(numparts))
+    small_interval = (max_point[small_dim] - min_point[small_dim]) / small
+    big_interval = (max_point[big_dim] - min_point[big_dim]) / big
+    labels = []
+    for point in mesh:
+        small_offset = point[small_dim] - min_point[small_dim]
+        small_index = int(small_offset / small_interval)
+        small_index = min(small_index, small - 1)
+        big_offset = point[big_dim] - min_point[big_dim]
+        big_index = int(big_offset / big_interval)
+        big_index = min(big_index, big - 1)
+        partition_num = small_index * big + big_index
+        labels.append(partition_num)
+    return labels
+
 
 def apply_partition(orig_mesh, part, numparts):
     """
@@ -168,8 +232,9 @@ def write_meshes(meshes, dirname):
     Writes meshes to given directory.
     """
     dirname = os.path.abspath(dirname)
-    if not os.path.exists(dirname):
-        os.mkdir(dirname)
+    if os.path.exists(dirname):
+        shutil.rmtree(dirname)
+    os.mkdir(dirname)
     for i in range(len(meshes)):
         mesh = meshes[i]
         mesh_io.write_txt(dirname + "/" + str(i), mesh.points, mesh.pointdata)
@@ -182,11 +247,13 @@ def parse_args():
     parser.add_argument("--out", "-o", dest="out_meshname", help="The output mesh directory name")
     parser.add_argument("--numparts", "-n", dest="numparts", default=1, type=int, 
             help="The number of parts to split into")
-    parser.add_argument("--algorithm", "-a", dest="algorithm", choices=["meshfree", "topology"], 
+    parser.add_argument("--algorithm", "-a", dest="algorithm", choices=["meshfree", "topology", "uniform"],
             help="""Change the algorithm used for determining a partition. 
             A meshfree algorithm works on arbitrary meshes without needing topological information. 
             A topology-based algorithm needs topology information 
-            and is therefore useless on point clouds""")
+            and is therefore useless on point clouds.
+
+            A uniform algorithm will assume a uniform 2d mesh layed out somehow in 3d and partition accordingly.""")
     parser.add_argument("--log", "-l", dest="logging", default="INFO", 
             choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], 
             help="Set the log level. Default is INFO")
