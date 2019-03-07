@@ -7,6 +7,7 @@ from mesh_io import *
 
 parser = argparse.ArgumentParser(description="Visualize partition of a mesh as pointData")
 parser.add_argument("meshname", metavar="inputmesh", help="The mesh directory used as input")
+parser.add_argument("--out", "-o", dest="out_meshname", help="The output mesh name")
 args = parser.parse_args()
 
 dirname = args.meshname
@@ -21,4 +22,5 @@ while os.path.isfile(dirname + "/" + str(i)):
     allpoints.extend(points)
     allvals.extend([i] * len(points))
     i += 1
-write_vtk(dirname + ".vtk", allpoints, None, None, allvals)
+filename = args.out_meshname if args.out_meshname else dirname + ".vtk"
+write_vtk(filename, allpoints, None, None, allvals)
