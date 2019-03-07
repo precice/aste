@@ -12,8 +12,13 @@ args = parser.parse_args()
 dirname = args.meshname
 i = 0
 
+allpoints = []
+allvals = []
+
 while os.path.isfile(dirname + "/" + str(i)):
     filename = dirname + "/" + str(i)
     points, _, _, _ = read_txt(filename)
-    write_txt(filename, points, [i] * len(points))
+    allpoints.extend(points)
+    allvals.extend([i] * len(points))
     i += 1
+write_vtk(dirname + ".vtk", allpoints, None, None, allvals)
