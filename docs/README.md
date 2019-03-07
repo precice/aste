@@ -1,6 +1,6 @@
 # aste
 aste stands for Artificial Solver Testing Environment for preCICE. aste facilitates getting data into preCICE and out of it. An overview is given by the following figure:
-![](docs/AsteFlow.png)
+![](AsteFlow.png)
 
 aste consists of compiled C++ Modules and of Python modules.
 
