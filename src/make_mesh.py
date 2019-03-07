@@ -5,9 +5,6 @@ import mesh
 import numpy as np
 
 
-fun = lambda xx = 0, yy = 0, zz = 0 : np.sin(xx) + np.cos(2*yy)
-# fun = lambda xx = 0, yy = 0, zz = 0 : xx + yy
-
 def gauss_pulse(xx, yy, zz = 0):
     rho_0 = 1.225
     rho_pulse = 2
@@ -18,7 +15,7 @@ def gauss_pulse(xx, yy, zz = 0):
 def lookup_from_coords(x, y, table):
     return table[table[0]==x][table[1]==y]
 
-def read_data(directory, geometry = (0,2), val_col_offset = 1, value_function = fun):
+def read_data(directory, geometry = (0,2), val_col_offset = 1):
     """ Reads data from directory
     geometry: Colums that hold 2D geometry information.
     val_col_offset: Offset from geometry col to value col 
@@ -50,9 +47,8 @@ def read_data(directory, geometry = (0,2), val_col_offset = 1, value_function = 
         coords.append(out[..., i])
 
     vals = out[..., -1]
-    solution = value_function(*coords)
     
-    return coords, vals, solution
+    return coords, vals
 
 
 def rmse(indata, outdata):
@@ -64,21 +60,17 @@ def gen_data(x0, x1, nx, y0, y1, ny):
     x = np.linspace(x0, x1, nx)
     y = np.linspace(y0, y1, ny)
     xx, yy = np.meshgrid(x, y)
-    values = fun(xx, yy)
-    return xx, yy, values
+    return xx, yy
 
-def gen_data_GC(order, element_size, domain_size, domain_start = 0, value_function = fun):
+def gen_data_GC(order, element_size, domain_size, domain_start = 0):
     xx, yy = mesh.GaussChebyshev_3D(order, element_size, domain_size, domain_start)
-    values = value_function(xx, yy)
-    return xx, yy, values
+    return xx, yy
     
 
-def write_file(filename, xx, yy, values):
-    flat_values = values.flatten()
-
+def write_file(filename, xx, yy):
     with open(filename, "w") as f:
-        for value, fx, fy in zip(flat_values, xx.flatten(), yy.flatten()):
-            str = "{!s} {!s} {!s} {!s}".format(0, fx, fy, value)
+        for fx, fy in zip(xx.flatten(), yy.flatten()):
+            str = "{!s} {!s} {!s} 0".format(0, fx, fy)
             print(str, file = f)
 
 
