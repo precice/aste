@@ -202,6 +202,8 @@ def partition_uniform(mesh, numparts):
     small_interval = (max_point[small_dim] - min_point[small_dim]) / small
     big_interval = (max_point[big_dim] - min_point[big_dim]) / big
     labels = []
+    logging.info("Uniform partioning of mesh size {} into {} x {} partitions.".format(
+        len(mesh), small, big))
     for point in mesh:
         small_offset = point[small_dim] - min_point[small_dim]
         small_index = int(small_offset / small_interval)
