@@ -12,11 +12,14 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 message(STATUS "Build configuration: " ${CMAKE_BUILD_TYPE})
 
-find_library(precice precice PATHS $ENV{PRECICE_ROOT}/build $ENV{PRECICE_ROOT}/build/last)
+find_library(precice precice PATHS $ENV{PRECICE_ROOT}/build/last $ENV{PRECICE_ROOT}/build)
 if(NOT precice)
   message(FATAL_ERROR "preCICE was not found")
 endif()
 include_directories($ENV{PRECICE_ROOT}/src)
+
+find_package(Eigen3)
+include_directories(${EIGEN3_INCLUDE_DIR})
 
 find_package(Boost 1.60.0 REQUIRED COMPONENTS system program_options filesystem)
 
@@ -32,11 +35,11 @@ if (METIS_FOUND)
 endif()
 
 add_executable(preciceMap src/preciceMap.cpp src/common.cpp)
+target_link_libraries(preciceMap ${precice})
 target_include_directories(preciceMap PRIVATE ${Boost_INCLUDE_DIRS})
 target_link_libraries(preciceMap ${Boost_LIBRARIES})
 target_include_directories(preciceMap PRIVATE ${MPI_INCLUDE_PATH})
 target_link_libraries(preciceMap ${MPI_LIBRARIES})
-target_link_libraries(preciceMap ${precice})
 
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/make_mesh.py           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
