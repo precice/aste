@@ -20,14 +20,16 @@ include_directories($ENV{PRECICE_ROOT}/src)
 
 find_package(Boost 1.60.0 REQUIRED COMPONENTS system program_options filesystem)
 
-find_package(METIS REQUIRED)
+find_package(METIS)
 
 find_package(MPI REQUIRED)
 
 include_directories("src")
 
-add_library(metisAPI SHARED src/metisAPI.cpp)
-target_link_libraries(metisAPI ${METIS_LIBRARIES})
+if (METIS_FOUND)
+    add_library(metisAPI SHARED src/metisAPI.cpp)
+    target_link_libraries(metisAPI ${METIS_LIBRARIES})
+endif()
 
 add_executable(preciceMap src/preciceMap.cpp src/common.cpp)
 target_include_directories(preciceMap PRIVATE ${Boost_INCLUDE_DIRS})
