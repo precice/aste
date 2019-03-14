@@ -143,6 +143,8 @@ def partition_metis(mesh, numparts):
     """
     cellPtr = [0]
     cellData = []
+    if len(mesh.cells) == 0:
+        logging.warning("No topology information provided. Partitioning with metis will likely provide bad partition");
     for i in range(len(mesh.cells)):
         cell = mesh.cells[i]
         cellData += list(cell)
@@ -191,7 +193,7 @@ def partition_uniform(mesh, numparts):
     def greedy_choose(factors):
         """ Greedily choose "best" divisors"""
         small = big = 1
-        for factor in factors:
+        for factor in reversed(factors):
             if big <= small:
                 big *= factor
             else:
