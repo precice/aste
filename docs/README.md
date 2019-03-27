@@ -21,7 +21,7 @@ Reads a partitioned mesh from a directory like `dirname/0, 1, ...` and saves it 
 This is a small C++ wrapper around METIS. It is only required if `partition_mesh.py` should use a topological algorithm. 
 
 ### preciceMap
-This is a C++ application, which does the coupling through precice. It expects a mesh in the format given by `partition_mesh.py`.
+This is a C++ application, which does the coupling through precice. It expects a mesh in the format given by `partition_mesh.py`. currently, only explict coupling is supported. When using multiple timesteps, make sure to provide a mesh (with data) for each timestep.
 
 ## Dependencies
 
@@ -63,4 +63,6 @@ and execute cmake like `cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
 
 
 ## Demo
-A demonstration of aste can be run with `./demo.sh`. A bunny-shaped mesh is mapped onto a red blood cell. The result can be seen in `result.vtk`. 
+A simple demonstration of aste can be run with `./demo.sh`. A bunny-shaped mesh is mapped onto a red blood cell. The result can be seen in `result.vtk`. 
+## Demo with multiple timesteps
+A similar demo with multiple timesteps can be run with `./timesteps.py` inside `contrib/timestep-demo`. Make sure to set `astedir` inside `timesteps.py` to the correct value (By using the environment variable `ASTEDIR`). For details look into the `timesteps.py` and the corresponding `timesteps-precice.xml` file.

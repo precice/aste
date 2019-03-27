@@ -8,22 +8,33 @@ import mesh_io
 def main():
     args = parse_args()
     logging.basicConfig(level=getattr(logging, args.logging))
-    mesh = read_mesh(args.in_meshname)
+    if len(args.in_meshname) > 1 and args.out_meshname:
+        logging.warn("--out ignored")
+    mesh_names = args.in_meshname
+    for mesh_name in mesh_names:
+        assert os.path.isfile(mesh_name), ("Invalid filename: "  + mesh_name)
     algorithm = args.algorithm
     if not algorithm:
         logging.info("No algorithm given. Defaulting to \"meshfree\"")
         algorithm = "meshfree"
+    rootmesh = read_mesh(mesh_names[0], args.tag)
     if args.numparts > 1:
-        part = partition(mesh, args.numparts, algorithm)
+        part = partition(rootmesh, args.numparts, algorithm)
     else:
-        part = [0] *  len(mesh.points)
-    meshes = apply_partition(mesh, part, args.numparts)
-    if not args.out_meshname:
-        out_meshname = args.in_meshname[:-4]
-        logging.info("No --out given. Setting output to: " + out_meshname)
-    else:
-        out_meshname = args.out_meshname
-    write_meshes(meshes, out_meshname)
+        part = [0] *  len(rootmesh.points)
+    for mesh_name in mesh_names:
+        logging.info("Processing mesh " + mesh_name)
+        mesh = read_mesh(mesh_name, args.tag)
+        logging.debug("Checking if meshes are matching...")
+        assert mesh.points == rootmesh.points, ("Non-matching meshes detected!")
+        meshes = apply_partition(mesh, part, args.numparts)
+        if len(mesh_names) > 1 or not args.out_meshname:
+            out_meshname = os.path.splitext(mesh_name)[0]
+            logging.info("Writing output to: " + out_meshname)
+            # logging.info("No --out given. Setting output to: " + out_meshname)
+        else:
+            out_meshname = args.out_meshname
+        write_meshes(meshes, out_meshname)
 
     
 class Mesh:
@@ -47,8 +58,8 @@ class Mesh:
         else:
             self.pointdata = []
 
-def read_mesh(filename):
-    points, cells, _, pointdata = mesh_io.read_mesh(filename)
+def read_mesh(filename, tag):
+    points, cells, _, pointdata = mesh_io.read_mesh(filename, tag)
     return Mesh(points, cells, pointdata)
 
 
@@ -246,11 +257,13 @@ def write_meshes(meshes, dirname):
         
 def parse_args():
     parser = argparse.ArgumentParser(description=
-                                     "Read vtk meshes, partition them and write them out in internal format.")
-    parser.add_argument("in_meshname", metavar="inputmesh", help="The vtk mesh used as input")
-    parser.add_argument("--out", "-o", dest="out_meshname", help="The output mesh directory name")
+                                     "Read meshes, partition them and write them out in internal format.")
+    parser.add_argument("in_meshname", metavar="inputmesh", nargs="+", help="The meshes used as input")
+    parser.add_argument("--out", "-o", dest="out_meshname", help="The output mesh directory name. Only works if single in_mesh is given.")
     parser.add_argument("--numparts", "-n", dest="numparts", default=1, type=int, 
             help="The number of parts to split into")
+    parser.add_argument("--tag", "-t", dest="tag", default=None,
+            help="The PointData tag for vtk meshes")
     parser.add_argument("--algorithm", "-a", dest="algorithm", choices=["meshfree", "topology", "uniform"],
             help="""Change the algorithm used for determining a partition. 
             A meshfree algorithm works on arbitrary meshes without needing topological information. 

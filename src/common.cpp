@@ -18,7 +18,7 @@ OptionMap getOptions(int argc, char *argv[])
     ("participant,p", po::value<std::string>()->required(), "Participant Name")
     ("runName", po::value<std::string>()->default_value(""), "Name of the run")
     ("printMesh", po::bool_switch(), "Prints the full mesh")
-    ("mesh", po::value<string>()->required(), "Mesh directory")
+    ("mesh", po::value<string>()->required(), "Mesh directory. For each timestep i there will be .dti (e.g. .dt4) appended to the directory name")
     ("output", po::value<string>()->default_value("output"));
   
   po::variables_map vm;        
