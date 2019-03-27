@@ -7,7 +7,7 @@ import os
 import logging
 
 
-def read_mesh(filename):
+def read_mesh(filename, tag = None):
     """
     Returns Mesh Points, Mesh Cells, Mesh Celltypes, 
     Mesh Pointdata in this order
@@ -15,7 +15,7 @@ def read_mesh(filename):
     if os.path.splitext(filename)[1] == ".txt":
         return read_txt(filename)
     else:
-        return read_vtk(filename)
+        return read_vtk(filename, tag)
 
     
 def write_mesh(filename, points, cells = None, cell_types = None, values = None):
@@ -27,7 +27,7 @@ def write_mesh(filename, points, cells = None, cell_types = None, values = None)
         return write_vtk(filename, points, cells, cell_types, values)
 
     
-def read_vtk(filename):
+def read_vtk(filename, tag = None):
     import vtk
     vtkmesh = read_dataset(filename)
     points = []
@@ -42,7 +42,11 @@ def read_vtk(filename):
         for j in range(cell.GetNumberOfPoints()):
             entry += (cell.GetPointId(j),)
         cells.append(entry)
-    fieldData = vtkmesh.GetPointData().GetScalars()
+    if not tag:
+        # vtk Python utility method. Same as tag=="scalars"
+        fieldData = vtkmesh.GetPointData().GetScalars()
+    else:
+        fieldData = vtkmesh.GetPointData().GetAbstractArray(tag)
     if fieldData:
         for i in range(vtkmesh.GetNumberOfPoints()):
             pointdata.append(fieldData.GetTuple1(i))
@@ -64,6 +68,8 @@ def read_dataset(filename):
         reader = vtk.vtkPLYReader()
     elif (extension == ".obj"): # Wavefront OBJ format
         reader = vtk.vtkOBJReader()
+    elif (extension == ".pvtu"):
+        reader = vtk.vtkXMLPUnstructuredGridReader() # Parallel XML format
     else:
         raise Exception("Unkown File extension: " + extension)
     reader.SetFileName(filename)
@@ -86,10 +92,12 @@ def read_txt(filename):
     return points, [], [], pointdata
 
 
-def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None):
+def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None, tag = None):
     import vtk
     data = vtk.vtkUnstructuredGrid() # is also vtkDataSet
     scalars = vtk.vtkDoubleArray()
+    if tag:
+        scalars.SetName(tag)
     vtkpoints = vtk.vtkPoints()
     for i, point in enumerate(points):
         vtkpoints.InsertPoint(i, point)
