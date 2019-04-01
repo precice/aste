@@ -5,18 +5,43 @@ from shutil import copy
 
 import numpy as np
 
-try:
-    from ipdb import set_trace
-except ImportError:
-    from pdb import set_trace
+# try:
+    # from ipdb import set_trace
+# except ImportError:
+    # from pdb import set_trace
+
+
+def get_mpi_cmd(platform):
+    if platform == "hazelhen":
+        return "aprun -p fl_domain"
+    elif platform == "supermuc":
+        return "mpiexec"
+    elif platform == "mpich-opt":
+        return "/opt/mpich/bin/mpiexec --prepend-rank"
+    elif platform == "mpich":
+        return "mpiexec.mpich"
+    else:
+        return "mpiexec"
+
+def generate_test_sizes(mpisize, platform):
+    node_numbers = [1, 2, 3, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96,
+                    104, 112, 128,  144, 160, 176, 192, 208, 224, 240, 256, 272, 288, 304]
+    if platform == "hazelhen":
+        # Hazelhen node size is 24, only one mpi job per node.
+        sizes = [24*i for i in node_numbers]
+    elif platform == "supermuc":
+        sizes = [28*i for i in node_numbers]
+    else:
+        sizes = range(2, mpisize+1)
+
+    return [i for i in sizes if i <= mpisize]
 
 
 
 def removeEventFiles(participant):
     p = Path(participant)
     try:
-        Path(p / ("Events-%s.log" % participant)).unlink()
-        Path(p / ("EventTimings-%s.log" % participant)).unlink()
+        Path(p / ("precice-%s-events.json" % participant)).unlink()
     except FileNotFoundError:
         pass
         
@@ -30,10 +55,14 @@ def shape_parameter(mesh_size, m):
 
 def launchSingleRun(participant, ranks, outfile = None):
     ostream = open(outfile, "a") if outfile else sys.stdout
-    mesh = "../outMesh.txt" if participant == "A" else "../inMesh.txt"
+    mesh = "../outmesh" if participant == "A" else "../inmesh"
     os.chdir(participant)
     
-    cmd = [mpirun, "-n", ranks, "../../readMesh", "-a", "-c", "../precice.xml", mesh, participant]
+    cmd = [mpirun, "-n", ranks, "../../build/preciceMap",
+           "--precice-config", "../precice.xml",
+           "--mesh", mesh,
+           "--participant", participant]
+
     with contextlib.redirect_stdout(ostream):
         cp = subprocess.run(cmd, stdout = sys.stdout, stderr = subprocess.STDOUT, check = True)
     
@@ -56,7 +85,11 @@ def prepareConfigTemplate(shape_parameter, preallocation):
 
         
 def createMesh(size):
-    cmd = "../make_mesh.py {0} {0}".format(size)
+    cmd = "../build/make_mesh.py --nx {0} --ny {0} mesh".format(size)
+    subprocess.run(cmd, shell = True, check = True)
+    
+def partitionMesh(partitions, outname):
+    cmd = "../build/partition_mesh.py --algorithm uniform --numparts {} --out {} mesh.txt".format(partitions, outname)
     subprocess.run(cmd, shell = True, check = True)
 
 
@@ -70,21 +103,22 @@ def doScaling(name, ranksA, ranksB, mesh_sizes, ms, preallocations):
                   "name" : name,
                   "meshMin": min(mesh_sizes), "meshMax": min(mesh_sizes)}
     
-    file_pattern = "{date}-{name}-{participant}.{suffix}"
+    file_pattern = "{date}-{name}-{participant}-ranks{ranks}.{suffix}"
     
     for rankA, rankB, mesh_size, m, preallocation in zip(ranksA, ranksB, mesh_sizes, ms, preallocations):
         print("Running on ranks = {}/{}, mesh size = {}, m = {}".format(rankA, rankB, mesh_size, m))
+        file_info["ranks"] = rankB
         createMesh(mesh_size)
+        partitionMesh(rankA, "outmesh")
+        partitionMesh(rankB, "inmesh")
         prepareConfigTemplate(shape_parameter(mesh_size, m), preallocation)
         launchRun(rankA, rankB,
                   file_pattern.format(suffix = "out", participant = "A", **file_info),
                   file_pattern.format(suffix = "out", participant = "B", **file_info))                  
 
     
-    copy("A/precice-A-events.log",       file_pattern.format(suffix = "events", participant = "A", **file_info))
-    copy("A/precice-A-eventTimings.log", file_pattern.format(suffix= "timings", participant = "A", **file_info))
-    copy("B/precice-B-events.log",       file_pattern.format(suffix = "events", participant = "B", **file_info))
-    copy("B/precice-B-eventTimings.log", file_pattern.format(suffix= "timings", participant = "B", **file_info))
+        copy("A/precice-A-events.json", file_pattern.format(suffix = "json", participant = "A", **file_info))
+        copy("B/precice-B-events.json", file_pattern.format(suffix = "json", participant = "B", **file_info))
 
     with open("{date}-{name}.meta".format(**file_info), "w") as f:
         json.dump({"name"  : name,
@@ -98,27 +132,27 @@ def doScaling(name, ranksA, ranksB, mesh_sizes, ms, preallocations):
                 
 
 
-ppn = 24 # Processors per nodes, 24 for hazelhen, 28 for supermuc
-
-# mpirun = "aprun" # for HazelHen
-# mpirun = "mpirun" # for SuperMUC and anywhere else
-mpirun = "/opt/mpich/bin/mpiexec"
-
-# nodes = 3
-# ranksB = [(nodes-1)*ppn]
-# ranksA = [ppn] * len(ranksB)
-# mesh_sizes = [150] * len(ranksA)
+# Global: Name of mpirun command
+mpirun = ""
 
 
-# mesh_sizes = [500] * 4 + [1000] * 4
+if __name__ == "__main__":
+    max_size = 64
+    platform = None
 
-# preallocations = ["off", "compute", "saved", "tree"] * 2 # tree, saved, estimate, compute, off
-multiplicity = 4
-ranksA = [2] * multiplicity
-ranksB = [2] * multiplicity
-ms = [6] * multiplicity
-mesh_sizes = [100] * multiplicity
-preallocations = ["off", "compute", "saved", "tree"]
+    ranks = generate_test_sizes(max_size, platform)
+    mpirun = get_mpi_cmd(platform)
 
-# preallocations = ["tree"] * len(ranksB)
-doScaling("prealloc", ranksA, ranksB, mesh_sizes, ms, preallocations)
+    print("Using MPI command:", mpirun)
+    print("Running upscaling on ranks =", ranks)
+
+    multiplicity = len(ranks)
+    
+    ranksA = [2] * multiplicity
+    ranksB = ranks
+    ms = [4] * multiplicity
+    mesh_sizes = [75] * multiplicity
+    preallocations = ["tree"] * multiplicity
+
+    # preallocations = ["tree"] * len(ranksB)
+    doScaling("strongscaling", ranksA, ranksB, mesh_sizes, ms, preallocations)
