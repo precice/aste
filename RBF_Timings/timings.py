@@ -50,6 +50,15 @@ def get_platform_node_size(platform):
     else:
         return 2
 
+def get_platform_network_interface(platform):
+    if platform == "hazelhen":
+        return "ipogif0"
+    elif platform == "supermuc":
+        return "ib0"
+    else:
+        return "lo"
+    
+
 def generate_test_sizes(mpisize, platform):
     node_numbers = [1, 2, 3, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96,
                     104, 112, 128,  144, 160, 176, 192, 208, 224, 240, 256, 272, 288, 304]
@@ -100,12 +109,14 @@ def launchRun(cmdA, cmdB, outFileA = None, outFileB = None):
         raise Exception
     
     
-def prepareConfigTemplate(shape_parameter, preallocation):
+def prepareConfigTemplate(platform, shape_parameter, preallocation):
     print("Prepare config template: preallocation =", preallocation, ", shape parameter =", shape_parameter)
     with open("precice.xml.template") as f:
         template = f.read()
     with open("precice.xml", "w") as f:
-        f.write(template.format(shape_parameter = shape_parameter, preallocation = preallocation))
+        f.write(template.format(shape_parameter = shape_parameter,
+                                preallocation = preallocation,
+                                network = get_platform_network_interface(platform)))
 
         
 def createMesh(size):
@@ -156,7 +167,7 @@ def doScaling(args, ranksA, ranksB, mesh_sizes, ms, preallocations):
         createMesh(mesh_size)
         partitionMesh(rankA, "outmesh")
         partitionMesh(rankB, "inmesh")
-        prepareConfigTemplate(shape_parameter(mesh_size, m), preallocation)
+        prepareConfigTemplate(args.platform, shape_parameter(mesh_size, m), preallocation)
         launchRun(cmdA, cmdB,
                   file_pattern.format(suffix = "out", participant = "A", **file_info),
                   file_pattern.format(suffix = "out", participant = "B", **file_info))                  
@@ -164,6 +175,8 @@ def doScaling(args, ranksA, ranksB, mesh_sizes, ms, preallocations):
     
         copy("A/precice-A-events.json", file_pattern.format(suffix = "json", participant = "A", **file_info))
         copy("B/precice-B-events.json", file_pattern.format(suffix = "json", participant = "B", **file_info))
+        
+        time.sleep(1) # sleep one second, sometimes the network ifaces are not free otherwise
 
     with open("{date}-{name}.meta".format(**file_info), "w") as f:
         json.dump({"name"  : args.name,
