@@ -1,5 +1,5 @@
 #PBS -N Aste_RBF
-#PBS -l nodes=3:ppn=24
+#PBS -l nodes=10:ppn=24
 #PBS -l walltime=00:20:00
 #PBS -q test
 
@@ -8,7 +8,7 @@ module swap tools/python tools/python/3.5.2
 # Change to the directory that the job was submitted from
 cd $PBS_O_WORKDIR
 
-python3 timings.py
+python3 timings.py --platform hazelhen --mpisize 240
 
 # export ATP_ENABLED=1
 # limit -c unlimited
