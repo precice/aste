@@ -200,7 +200,10 @@ if __name__ == "__main__":
     parser.add_argument("--debug", action = "store_true", default = False)
     args = parser.parse_args()
 
-    ranks = generate_test_sizes(args.platform, args.minmpisize, args.maxmpisize)
+    ranks = generate_test_sizes(args.platform,
+                                args.minmpisize,
+                                args.maxmpisize - get_platform_node_size(args.platform))
+    
     mpirun = get_mpi_cmd(args.platform)
 
     print("Name        =", args.name)
