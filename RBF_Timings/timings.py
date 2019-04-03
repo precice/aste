@@ -1,5 +1,5 @@
 #!env python3
-import argparse, contextlib, datetime, multiprocessing, os, time, subprocess, sys, socket, json
+import argparse, contextlib, datetime, glob, multiprocessing, os, time, subprocess, sys, socket, json
 from pathlib import Path
 from shutil import copy
 import numpy as np
@@ -59,7 +59,7 @@ def get_platform_network_interface(platform):
         return "lo"
     
 
-def generate_test_sizes(mpisize, platform):
+def generate_test_sizes(platform, minsize, maxsize):
     node_numbers = [1, 2, 3, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96,
                     104, 112, 128,  144, 160, 176, 192, 208, 224, 240, 256, 272, 288, 304]
     if platform == "hazelhen" or platform == "supermuc":
@@ -67,8 +67,7 @@ def generate_test_sizes(mpisize, platform):
     else:
         sizes = range(2, mpisize+1)
 
-    return [i for i in sizes if i <= mpisize]
-
+    return [i for i in sizes if minsize <= i <= maxsize]
 
 
 def removeEventFiles(participant):
@@ -143,6 +142,7 @@ def doScaling(args, ranksA, ranksB, mesh_sizes, ms, preallocations):
     
     for rankA, rankB, mesh_size, m, preallocation in zip(ranksA, ranksB, mesh_sizes, ms, preallocations):
         print("Running on ranks = {}/{}, mesh size = {}, m = {}".format(rankA, rankB, mesh_size, m))
+
         cmd = "{mpi} -n {size} {machinefile} ../../build/preciceMap --precice-config ../precice.xml --participant {participant} --mesh {mesh}"
         machine_file = get_machine_file(args.platform, rankA, rankB, args.mfile)
         cmdA = cmd.format(
@@ -175,8 +175,8 @@ def doScaling(args, ranksA, ranksB, mesh_sizes, ms, preallocations):
     
         copy("A/precice-A-events.json", file_pattern.format(suffix = "json", participant = "A", **file_info))
         copy("B/precice-B-events.json", file_pattern.format(suffix = "json", participant = "B", **file_info))
-        
-        time.sleep(1) # sleep one second, sometimes the network ifaces are not free otherwise
+
+        map(os.remove, glob.glob(".A-B-*.address"))
 
     with open("{date}-{name}.meta".format(**file_info), "w") as f:
         json.dump({"name"  : args.name,
@@ -198,12 +198,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--name", help = "A name for that run.", default = "upscaling")
     parser.add_argument("--mfile", help = "MPI machine file to use.")
-    parser.add_argument("--mpisize", help = "Maximum MPI size per participant", type = int, required = True)
+    parser.add_argument("--maxmpisize", help = "Max MPI size to upscale per participant", type = int, required = True)
+    parser.add_argument("--minmpisize", help = "Min MPI size to upscale per participant", type = int, default = 2)
+
     parser.add_argument("--platform", choices = ["supermuc", "hazelhen", "mpich-opt", "mpich", "none"], default = "none")
     parser.add_argument("--debug", action = "store_true", default = False)
     args = parser.parse_args()
 
-    ranks = generate_test_sizes(args.mpisize, args.platform)
+    ranks = generate_test_sizes(args.platform, args.minmpisize, args.maxmpisize)
     mpirun = get_mpi_cmd(args.platform)
 
     print("Name        =", args.name)

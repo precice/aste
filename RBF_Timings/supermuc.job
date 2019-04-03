@@ -29,7 +29,7 @@ module load petsc/3.8
 # ulimit -c unlimited
 # export I_MPI_DEBUG_COREDUMP=1
 
-python3 timings.py --platform supermuc --mpisize 280 --mfile $LOADL_HOSTFILE
+python3 timings.py --platform supermuc --maxmpisize 240 --mfile $LOADL_HOSTFILE
 
 
 # cd A
