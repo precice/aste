@@ -115,6 +115,10 @@ def prepareConfigTemplate(platform, shape_parameter, preallocation):
 def createMesh(size):
     cmd = "../build/make_mesh.py --nx {0} --ny {0} mesh".format(size)
     subprocess.run(cmd, shell = True, check = True)
+
+def evalMesh():
+    cmd = '../build/eval_mesh.py mesh.txt "math.sin(x) + math.exp(z)"'
+    subprocess.run(cmd, shell = True, check = True)
     
 def partitionMesh(partitions, outname):
     cmd = "../build/partition_mesh.py --algorithm uniform --numparts {} --out {} mesh.txt"
@@ -159,6 +163,7 @@ def doScaling(args, ranksA, ranksB, mesh_sizes, ms, preallocations):
         
         file_info["ranks"] = rankB
         createMesh(mesh_size)
+        evalMesh()
         partitionMesh(rankA, "outmesh")
         partitionMesh(rankB, "inmesh")
         prepareConfigTemplate(args.platform, shape_parameter(mesh_size, m), preallocation)
@@ -223,6 +228,5 @@ if __name__ == "__main__":
         mesh_sizes = [int(math.sqrt(r * elems_per_proc)) for r in ranksB]
     else:
         mesh_sizes = [args.meshsize] * multiplicity
-
-
+        
     doScaling(args, ranksA, ranksB, mesh_sizes, ms, preallocations)
