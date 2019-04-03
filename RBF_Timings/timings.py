@@ -1,5 +1,5 @@
 #!env python3
-import argparse, contextlib, datetime, glob, multiprocessing, os, time, subprocess, sys, socket, json
+import argparse, contextlib, datetime, glob, math, multiprocessing, os, time, subprocess, sys, socket, json
 from pathlib import Path
 from shutil import copy
 import numpy as np
@@ -65,7 +65,7 @@ def generate_test_sizes(platform, minsize, maxsize):
     if platform == "hazelhen" or platform == "supermuc":
         sizes = [get_platform_node_size(platform)*i for i in node_numbers]
     else:
-        sizes = range(2, mpisize+1)
+        sizes = range(2, maxsize+1)
 
     return [i for i in sizes if minsize <= i <= maxsize]
 
@@ -87,14 +87,8 @@ def shape_parameter(mesh_size, m):
 
 def launchSingleRun(cmd ,participant,  outfile = None):
     ostream = open(outfile, "a") if outfile else sys.stdout
-    # mesh = "../outmesh" if participant == "A" else "../inmesh"
     os.chdir(participant)
     
-    # cmd = [mpirun, "-n", ranks, "../../build/preciceMap",
-           # "--precice-config", "../precice.xml",
-           # "--mesh", mesh,
-           # "--participant", participant]
-
     with contextlib.redirect_stdout(ostream):
         cp = subprocess.run(cmd, shell = True, stdout = sys.stdout, stderr = subprocess.STDOUT, check = True)
     
@@ -200,7 +194,8 @@ if __name__ == "__main__":
     parser.add_argument("--mfile", help = "MPI machine file to use.")
     parser.add_argument("--maxmpisize", help = "Max MPI size to upscale per participant", type = int, required = True)
     parser.add_argument("--minmpisize", help = "Min MPI size to upscale per participant", type = int, default = 2)
-
+    parser.add_argument("--weakscaling", help = "Use weak scaling for the number of vertices.", action = "store_true")
+    parser.add_argument("--meshsize", help = "Strong scaling: mesh size. Weak scaling: meshsize^2 is base size for minimum number of ranks ", type = int, required = True)
     parser.add_argument("--platform", choices = ["supermuc", "hazelhen", "mpich-opt", "mpich", "none"], default = "none")
     parser.add_argument("--debug", action = "store_true", default = False)
     args = parser.parse_args()
@@ -218,7 +213,13 @@ if __name__ == "__main__":
     ranksA = [get_platform_node_size(args.platform)] * multiplicity
     ranksB = ranks
     ms = [6] * multiplicity
-    mesh_sizes = [100] * multiplicity
     preallocations = ["tree"] * multiplicity
+    
+    if args.weakscaling:
+        elems_per_proc = args.meshsize**2 / ranksA[0]
+        mesh_sizes = [int(math.sqrt(r * elems_per_proc)) for r in ranksB]
+    else:
+        mesh_sizes = [args.meshsize] * multiplicity
+
 
     doScaling(args, ranksA, ranksB, mesh_sizes, ms, preallocations)

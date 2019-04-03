@@ -10,7 +10,7 @@ cd $PBS_O_WORKDIR
 
 rm -f .A-B-*.address
 
-python3 timings.py --platform hazelhen --maxmpisize 240
+python3 timings.py --platform hazelhen --maxmpisize 240 --meshsize 100
 
 # export ATP_ENABLED=1
 # limit -c unlimited
