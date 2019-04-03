@@ -37,7 +37,7 @@ def split_file(inputfile, lines1, lines2, output1, output2):
 def get_machine_file(platform, sizeA, sizeB, inputfile):
     if platform == "supermuc":
         split_file(inputfile, sizeA, sizeB, "mfile.A", "mfile.B")
-        return "-f mfile.A", "-f mfile.B"
+        return "-f ../mfile.A", "-f ../mfile.B"
     else:
         return ["", ""]
     
@@ -144,7 +144,7 @@ def doScaling(args, ranksA, ranksB, mesh_sizes, ms, preallocations):
     for rankA, rankB, mesh_size, m, preallocation in zip(ranksA, ranksB, mesh_sizes, ms, preallocations):
         print("Running on ranks = {}/{}, mesh size = {}, m = {}".format(rankA, rankB, mesh_size, m))
         cmd = "{mpi} -n {size} {machinefile} ../../build/preciceMap --precice-config ../precice.xml --participant {participant} --mesh {mesh}"
-        machine_file = get_machine_file(args.platform, ranksA, ranksB, args.mfile)
+        machine_file = get_machine_file(args.platform, rankA, rankB, args.mfile)
         cmdA = cmd.format(
             mpi = get_mpi_cmd(args.platform),
             size = rankA,
