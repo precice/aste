@@ -228,5 +228,7 @@ if __name__ == "__main__":
         mesh_sizes = [int(math.sqrt(r * elems_per_proc)) for r in ranksB]
     else:
         mesh_sizes = [args.meshsize] * multiplicity
-        
+
+    print("Mesh Sizes  =", mesh_sizes)
+
     doScaling(args, ranksA, ranksB, mesh_sizes, ms, preallocations)
