@@ -17,9 +17,10 @@ OptionMap getOptions(int argc, char *argv[])
     ("precice-config,c", po::value<std::string>()->default_value("precice.xml"), "preCICE configuratio file")
     ("participant,p", po::value<std::string>()->required(), "Participant Name")
     ("runName", po::value<std::string>()->default_value(""), "Name of the run")
-    ("printMesh", po::bool_switch(), "Prints the full mesh")
     ("mesh", po::value<string>()->required(), "Mesh directory. For each timestep i there will be .dti (e.g. .dt4) appended to the directory name")
-    ("output", po::value<string>()->default_value("output"));
+    ("output", po::value<string>()->default_value("output"), "Output file name.")
+    ("verbose", po::bool_switch(), "Enable verbose output")
+;
   
   po::variables_map vm;        
 
@@ -31,7 +32,7 @@ OptionMap getOptions(int argc, char *argv[])
       std::exit(-1);
     }
     if (vm["participant"].as<string>() != "A" && vm["participant"].as<string>() != "B")
-        throw runtime_error("Invalid participant");
+        throw runtime_error("Invalid participant, must be either 'A' or 'B'");
     po::notify(vm);
   }
   catch(const std::exception& e) {
@@ -40,42 +41,5 @@ OptionMap getOptions(int argc, char *argv[])
     std::exit(-1);
   }
   return vm;  
-}
-
-void printOptions(const OptionMap &options)
-{
-  int MPIrank = 0, MPIsize = 0;
-  MPI_Comm_rank(MPI_COMM_WORLD, &MPIrank);
-  MPI_Comm_size(MPI_COMM_WORLD, &MPIsize);
-
-  if (MPIrank != 0)
-    return;
-
-  std::cout << "Running as participant: " << options["participant"].as<std::string>() << std::endl;
-  std::cout << "Running as MPI rank   : " << MPIrank << " of " << MPIsize << std::endl;
-  std::cout << "preCICE configuration : " << options["precice-config"].as<std::string>() << std::endl;
-  std::cout << "Mesh Size             : " << options["x"].as<double>() << ", " << options["y"].as<double>()<< std::endl;
-  std::cout << "Mesh Elements         : " << options["nx"].as<int>() << ", " << options["ny"].as<int>()<< std::endl;
-  std::cout << "Dead Rank             : " << options["deadrank"].as<int>() << std::endl;
-}
-
-void printMesh(const DistMesh &mesh, const Data &data, bool verbose)
-{
-  int MPIrank = 0, MPIsize = 0;
-  MPI_Comm_rank(MPI_COMM_WORLD, &MPIrank);
-  MPI_Comm_size(MPI_COMM_WORLD, &MPIsize);
-  int rank = 0;
-  while (rank < MPIsize) {
-    if (MPIrank == rank) {
-      std::cout << "==== MESH FOR RANK " << MPIrank << ", SIZE = " << mesh.size() << " ====" << std::endl;
-      if (verbose)
-        for (size_t i = 0; i < mesh.size(); i++)
-          std::cout << "[" << mesh[i] << "]" << " = " << data[i] << std::endl;
-      std::cout << std::flush;
-    }
-    rank++;
-  }
-   
-  MPI_Barrier(MPI_COMM_WORLD);
 }
 
