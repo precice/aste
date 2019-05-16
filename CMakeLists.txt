@@ -12,6 +12,9 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 message(STATUS "Build configuration: " ${CMAKE_BUILD_TYPE})
 
+find_package (Threads REQUIRED)
+
+
 find_library(precice precice PATHS $ENV{PRECICE_ROOT}/build/last $ENV{PRECICE_ROOT}/build)
 if(NOT precice)
   message(FATAL_ERROR "preCICE was not found")
@@ -35,11 +38,14 @@ if (METIS_FOUND)
 endif()
 
 add_executable(preciceMap src/preciceMap.cpp src/common.cpp)
-target_link_libraries(preciceMap ${precice})
+target_link_libraries(preciceMap
+  ${precice}
+  Threads::Threads
+  ${Boost_LIBRARIES}
+  ${MPI_LIBRARIES}
+)
 target_include_directories(preciceMap PRIVATE ${Boost_INCLUDE_DIRS})
-target_link_libraries(preciceMap ${Boost_LIBRARIES})
 target_include_directories(preciceMap PRIVATE ${MPI_INCLUDE_PATH})
-target_link_libraries(preciceMap ${MPI_LIBRARIES})
 
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/make_mesh.py           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
