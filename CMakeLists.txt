@@ -37,7 +37,7 @@ if (METIS_FOUND)
     target_link_libraries(metisAPI ${METIS_LIBRARIES})
 endif()
 
-add_executable(preciceMap src/preciceMap.cpp src/common.cpp)
+add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/easylogging++.cc)
 target_link_libraries(preciceMap
   ${precice}
   Threads::Threads

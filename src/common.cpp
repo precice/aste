@@ -1,7 +1,7 @@
 #include <iostream>
 #include <mpi.h>
 #include <boost/program_options.hpp>
-
+#include "easylogging++.h"
 #include "utils/prettyprint.hpp"
 #include "common.hpp"
 
@@ -19,7 +19,7 @@ OptionMap getOptions(int argc, char *argv[])
     ("runName", po::value<std::string>()->default_value(""), "Name of the run")
     ("mesh", po::value<string>()->required(), "Mesh directory. For each timestep i there will be .dti (e.g. .dt4) appended to the directory name")
     ("output", po::value<string>()->default_value("output"), "Output file name.")
-    ("verbose", po::bool_switch(), "Enable verbose output")
+    ("verbose,v", po::bool_switch(), "Enable verbose output") // not explicitely used, handled by easylogging
 ;
   
   po::variables_map vm;        
@@ -36,8 +36,8 @@ OptionMap getOptions(int argc, char *argv[])
     po::notify(vm);
   }
   catch(const std::exception& e) {
-    std::cout << "ERROR: " << e.what() << "\n\n";
-    std::cout << desc << std::endl;
+    LOG(ERROR) << "ERROR: " << e.what() << "\n";
+    LOG(ERROR) << desc << std::endl;
     std::exit(-1);
   }
   return vm;  

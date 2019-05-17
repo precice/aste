@@ -9,7 +9,12 @@
 #include "utils/EventUtils.hpp"
 
 #include "common.hpp"
-namespace fs = boost::filesystem; 
+#include "easylogging++.h"
+
+INITIALIZE_EASYLOGGINGPP
+
+namespace fs = boost::filesystem;
+
 
 /// Returns number n of directories meshname/0,1,2...n
 int numMeshParts(std::string meshname)
@@ -48,9 +53,9 @@ Mesh readMesh(std::istream& stream, bool read_data = true)
 
 int main(int argc, char* argv[])
 {
+  START_EASYLOGGINGPP(argc, argv);
   MPI_Init(&argc, &argv);
   auto options = getOptions(argc, argv);
-  bool verbose = options["verbose"].as<bool>();
   std::string meshname = options["mesh"].as<std::string>();
   std::string participant = options["participant"].as<std::string>();
 
@@ -72,7 +77,7 @@ int main(int argc, char* argv[])
   int dataID = interface.getDataID("Data", meshID);
   
   std::vector<int> vertexIDs;
-  auto filename = meshname + ".dt1/" + std::to_string(MPIrank);
+  auto filename = meshname + ".dt0/" + std::to_string(MPIrank);
   std::ifstream infile(filename);
   // reads in mesh, 0 data for participant B
   auto mesh = readMesh(infile, participant == "A");
@@ -81,12 +86,12 @@ int main(int argc, char* argv[])
   // Feed mesh to preCICE
   for (auto const & pos : mesh.positions)
     vertexIDs.push_back(interface.setMeshVertex(meshID, pos.data()));
-  if (verbose) std::cout << "========= Rank " << MPIrank << " read in mesh of size " << vertexIDs.size() << std::endl;
+  VLOG(1) << "Rank " << MPIrank << " read in mesh of size " << vertexIDs.size();
     
   interface.initialize();
 
   if (interface.isActionRequired(precice::constants::actionWriteInitialData())) {
-    if (verbose) std::cout << "Write initial data for participant " << participant << std::endl;
+    VLOG(1) << "Write initial data for participant " << participant;
     interface.writeBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
     interface.fulfilledAction(precice::constants::actionWriteInitialData());
   }
@@ -96,7 +101,7 @@ int main(int argc, char* argv[])
   while (interface.isCouplingOngoing()) {
     if (participant == "A" and not mesh.data.empty()) {
       auto filename = meshname + ".dt" + std::to_string(round) + "/" + std::to_string(MPIrank);
-      if (verbose) std::cout << "Read mesh for t=" << round << " from " << filename << std::endl;
+      VLOG(1) << "Read mesh for t=" << round << " from " << filename;
       if (not boost::filesystem::exists(filename))
         throw std::runtime_error("File does not exist: " + filename);
       std::ifstream infile(filename);
@@ -123,11 +128,11 @@ int main(int argc, char* argv[])
     }
     MPI_Barrier(MPI_COMM_WORLD);
         
-    std::cout << "========= Write to " << outdir << std::endl;
+    VLOG(1) << "Writing results to " << outdir;
     std::ofstream ostream((outdir / std::to_string(MPIrank)).string(), std::ios::trunc);
     ostream.precision(9);
-    const auto& positions = mesh.positions;
-    const auto& data = mesh.data;
+    auto const & positions = mesh.positions;
+    auto const & data = mesh.data;
     for (size_t i = 0; i < mesh.positions.size(); i++) {
       ostream << positions[i][0] << " " << positions[i][1] << " " << positions[i][2] << " " << data[i] << std::endl;
     }

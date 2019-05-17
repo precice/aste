@@ -24,8 +24,8 @@ mv -f colored colored.dt0
 mv -f rbc rbc.dt0
 
 # Map from the bunny to the red blood cell (yeah, that doesn't really make sense)
-mpirun -n 2 preciceMap -p A --mesh colored &
-mpirun -n 2 preciceMap -p B --mesh rbc --output mapped
+mpirun -n 2 preciceMap -v -p A --mesh colored &
+mpirun -n 2 preciceMap -v -p B --mesh rbc --output mapped
 
 # Join the output files together to result.vtk
 join_mesh.py mapped -o result.vtk
