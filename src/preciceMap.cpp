@@ -1,5 +1,4 @@
 #include <iostream>
-#include <istream>
 #include <fstream>
 #include <string>
 #include <boost/filesystem.hpp>
@@ -16,15 +15,33 @@ INITIALIZE_EASYLOGGINGPP
 namespace fs = boost::filesystem;
 
 
-/// Returns number n of directories meshname/0,1,2...n
-int numMeshParts(std::string meshname)
+/// Returns list of meshes matching meshname or meshname.dtN for the given rank
+std::vector<std::string> getMeshes(std::string basename, int rank)
 {
-  if (not fs::is_directory(meshname))
-    throw std::runtime_error("Invalid mesh name: Directory not found. Directory Name: " + meshname);
-  int i = 0;
-  while (fs::exists(meshname + "/" + std::to_string(i)))
-    i++;
-  return i;
+  VLOG(1) << "Basename: " << basename;
+  std::vector<std::string> meshes;
+  if (fs::is_directory(basename)) {
+    meshes.push_back(basename);
+  }
+  else {
+    int t = 0;
+    while (fs::is_directory(basename + ".dt" + std::to_string(t))) {
+      meshes.push_back(basename + ".dt" + std::to_string(t));
+      ++t;
+    }
+  }
+
+  // add the rank number
+  for (auto & mesh : meshes) {
+    std::string rankFile = mesh + "/" + std::to_string(rank);
+    if (fs::is_regular_file(rankFile))
+      mesh = rankFile;
+    else
+      throw std::range_error("Mesh is not decomposed for requested rank, i.e. " + rankFile + " not found.");
+  }
+  
+  LOG(DEBUG) << "Meshes: " << meshes;
+  return meshes;
 }
 
 struct Mesh {
@@ -43,7 +60,7 @@ Mesh readMesh(std::istream& stream, bool read_data = true)
     iss >> x >> y >> z >> val; // split up by whitespace
     std::array<double, 3> vertexPos{x, y, z};
     mesh.positions.push_back(vertexPos);
-    if (read_data) //val is ignored on B.
+    if (read_data) // val is ignored on B.
       mesh.data.push_back(val);
   }
   if (not read_data)
@@ -63,10 +80,7 @@ int main(int argc, char* argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &MPIrank);
   MPI_Comm_size(MPI_COMM_WORLD, &MPIsize);
 
-  auto numParts = numMeshParts(meshname + ".dt0");
-  if (numParts < MPIsize)
-    throw std::runtime_error("Mesh is too small for communicator, MeshSize="  + std::to_string(numParts)
-                             + ", Comm_size=" + std::to_string(MPIsize));
+  auto meshes = getMeshes(meshname, MPIrank);
 
   // Create and configure solver interface
   precice::SolverInterface interface(participant, MPIrank, MPIsize);
@@ -77,8 +91,7 @@ int main(int argc, char* argv[])
   int dataID = interface.getDataID("Data", meshID);
   
   std::vector<int> vertexIDs;
-  auto filename = meshname + ".dt0/" + std::to_string(MPIrank);
-  std::ifstream infile(filename);
+  std::ifstream infile(meshes[0]);
   // reads in mesh, 0 data for participant B
   auto mesh = readMesh(infile, participant == "A");
   infile.close();
@@ -100,7 +113,8 @@ int main(int argc, char* argv[])
   int round = 0;
   while (interface.isCouplingOngoing()) {
     if (participant == "A" and not mesh.data.empty()) {
-      auto filename = meshname + ".dt" + std::to_string(round) + "/" + std::to_string(MPIrank);
+      auto filename = meshes[round];
+
       VLOG(1) << "Read mesh for t=" << round << " from " << filename;
       if (not boost::filesystem::exists(filename))
         throw std::runtime_error("File does not exist: " + filename);
@@ -134,7 +148,10 @@ int main(int argc, char* argv[])
     auto const & positions = mesh.positions;
     auto const & data = mesh.data;
     for (size_t i = 0; i < mesh.positions.size(); i++) {
-      ostream << positions[i][0] << " " << positions[i][1] << " " << positions[i][2] << " " << data[i] << std::endl;
+      ostream << positions[i][0] << " "
+              << positions[i][1] << " "
+              << positions[i][2] << " "
+              << data[i] << std::endl;
     }
     ostream.close();
   }

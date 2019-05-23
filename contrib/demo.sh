@@ -20,8 +20,8 @@ eval_mesh.py bunny.vtk -o colored.vtk "x + y"
 partition_mesh.py colored.vtk -n 2
 partition_mesh.py rbc.vtk -n 2
 
-mv -f colored colored.dt0
-mv -f rbc rbc.dt0
+rm -rf colored.dt0 && mv colored colored.dt0
+rm -rf rbc.dt0 && mv rbc rbc.dt0
 
 # Map from the bunny to the red blood cell (yeah, that doesn't really make sense)
 mpirun -n 2 preciceMap -v -p A --mesh colored &
