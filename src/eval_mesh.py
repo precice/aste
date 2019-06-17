@@ -9,8 +9,7 @@ def main():
     points, cells, cell_types, _ = read_mesh(args.in_meshname)
     points = np.array(points)
     values = user_func(points, args.function)
-    out_meshname = args.out_meshname if args.out_meshname else args.in_meshname
-    write_mesh(out_meshname, points, cells, cell_types, values)
+    write_mesh(args.out_meshname, points, cells, cell_types, values)
 
 def user_func(points, f_str):
     points = np.array(points)
@@ -35,7 +34,10 @@ def parse_args():
     parser.add_argument("--log", "-l", dest="logging", default="INFO", 
             choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="""Set the log level. 
             Default is INFO""")
-    return parser.parse_args()
+
+    args = parser.parse_args()
+    args.out_meshname = args.out_meshname or args.in_meshname
+    return args
 
 if __name__ == "__main__":
     main()

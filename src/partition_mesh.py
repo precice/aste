@@ -22,6 +22,7 @@ def main():
         part = partition(rootmesh, args.numparts, algorithm)
     else:
         part = [0] *  len(rootmesh.points)
+        
     for mesh_name in mesh_names:
         logging.info("Processing mesh " + mesh_name)
         mesh = read_mesh(mesh_name, args.tag)

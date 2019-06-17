@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
   interface.initializeData();
 
   int round = 0;
-  while (interface.isCouplingOngoing()) {
+  while (interface.isCouplingOngoing() and round < meshes.size()) {
     if (participant == "A" and not mesh.data.empty()) {
       auto filename = meshes[round];
 
