@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Evaluates a function on a given mesh, using the VTK Calculator."""
 
-import argparse, logging
+import argparse, logging, os.path
 import mesh_io
 import vtk
 
@@ -25,6 +25,8 @@ def parse_args():
 def main():
     args = parse_args()
     logging.basicConfig(level = getattr(logging, args.logging))
+
+    assert os.path.isfile(args.in_meshname), "Input mesh file not found!"
     data = mesh_io.read_dataset(args.in_meshname)
     logging.info("Read in {} points.".format(data.GetNumberOfPoints()))
 
