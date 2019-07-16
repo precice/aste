@@ -74,13 +74,11 @@ def write_mesh(filename, xx, yy):
             print(str, file = f)
 
 def write_mesh_connectivity(filename, connectivity, xn, yn):
-    print(connectivity)
     def idx(x, y):
         return x + xn*y
 
     if connectivity == "Triangles":
         with open(filename, "w") as f:
-            print("3", file=f)
             fmt = "{} {} {}"
             for y, x in itertools.product(range(yn-1), range(xn-1)):
                 print(fmt.format(idx(x,  y), idx(x+1,y),   idx(x,y+1)), file=f)
@@ -88,7 +86,6 @@ def write_mesh_connectivity(filename, connectivity, xn, yn):
 
     elif connectivity == "Edges":
         with open(filename, "w") as f:
-            print("2", file=f)
             fmt = "{} {}"
             for y, x in itertools.product(range(yn-1), range(xn-1)):
                 print(fmt.format(idx(x,y), idx(x+1,y)), file=f)

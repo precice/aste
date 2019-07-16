@@ -45,22 +45,25 @@ class Mesh:
         - Cells: A list of tuples of ints representing mesh elements
         - Pointdata: A list of floats representing data values at the respective point
     """
-    def __init__(self, points = None, cells = None, pointdata = None):
+    def __init__(self, points = None, cells = None, cell_types = None, pointdata = None):
         if points is not None:
             self.points = points
         else:
             self.points = []
         if cells is not None:
+            assert(cell_types is not None)
             self.cells = cells
+            self.cell_types = cell_types
         else:
             self.cells = []
+            self.cell_types = []
         if pointdata is not None:
             self.pointdata = pointdata
         else:
             self.pointdata = []
 
 def read_mesh(filename, tag):
-    points, cells, _, pointdata = mesh_io.read_mesh(filename, tag)
+    points, cells, cell_types, pointdata = mesh_io.read_mesh(filename, tag)
     return Mesh(points, cells, pointdata)
 
 
@@ -234,12 +237,22 @@ def apply_partition(orig_mesh, part, numparts):
     """
     Partitions a mesh into many meshes when given a partition and a mesh.
     """
-    meshes = [Mesh() for _ in range(numparts)]
+    meshes = [Mesh()] * numparts
+    mapping = {}  # Maps global index to partition and local index
     for i in range(len(orig_mesh.points)):
-        selected = meshes[part[i]]
+        partition = part[i]
+        selected = meshes[partition]
+        mapping[i] = (partition, len(selected.points))
         selected.points.append(orig_mesh.points[i])
         if orig_mesh.pointdata:
             selected.pointdata.append(orig_mesh.pointdata[i])
+
+    for cell, type in zip(orig_mesh.cells, orig_mesh.cell_types):
+        partition = mapping[cell[0]][0]
+        if all([partition == mapping[gidx][0] for gidx in cell]):
+            meshes[partition].cells.append(tuple([mapping[gidx][1] for gidx in cell]))
+            meshes[partition].cell_types.append(type)
+
     return meshes
 
 
