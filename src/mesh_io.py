@@ -166,4 +166,4 @@ def write_txt(filename, points, cells = [], pointdata = None):
     base, ext = os.path.splitext(filename)
     connFileName = base + ".conn" + ext
     with open(connFileName, "w") as fh:
-        fh.writelines([" ".join(cell) for cell in cells])
+        fh.writelines([" ".join(map(str,cell))+"\n" for cell in cells])

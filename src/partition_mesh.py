@@ -62,9 +62,14 @@ class Mesh:
         else:
             self.pointdata = []
 
+    def __str__(self):
+        return "Mesh with {} Points and {} Cells".format(len(self.points), len(self.cells))
+
+
 def read_mesh(filename, tag):
     points, cells, cell_types, pointdata = mesh_io.read_mesh(filename, tag)
     return Mesh(points, cells, pointdata)
+
 
 
 def partition(mesh, numparts, algorithm):
@@ -237,7 +242,7 @@ def apply_partition(orig_mesh, part, numparts):
     """
     Partitions a mesh into many meshes when given a partition and a mesh.
     """
-    meshes = [Mesh()] * numparts
+    meshes = [Mesh() for _ in range(numparts)]
     mapping = {}  # Maps global index to partition and local index
     for i in range(len(orig_mesh.points)):
         partition = part[i]
@@ -248,10 +253,10 @@ def apply_partition(orig_mesh, part, numparts):
             selected.pointdata.append(orig_mesh.pointdata[i])
 
     for cell, type in zip(orig_mesh.cells, orig_mesh.cell_types):
-        partition = mapping[cell[0]][0]
-        if all([partition == mapping[gidx][0] for gidx in cell]):
-            meshes[partition].cells.append(tuple([mapping[gidx][1] for gidx in cell]))
-            meshes[partition].cell_types.append(type)
+        partitions = list(map(lambda idx: mapping[idx][0], cell))
+        if len(set(partitions)) == 1:
+            meshes[partitions[0]].cells.append(tuple([mapping[gidx][1] for gidx in cell]))
+            meshes[partitions[0]].cell_types.append(type)
 
     return meshes
 
@@ -266,7 +271,7 @@ def write_meshes(meshes, dirname):
     os.mkdir(dirname)
     for i in range(len(meshes)):
         mesh = meshes[i]
-        mesh_io.write_txt(dirname + "/" + str(i), mesh.points, mesh.pointdata)
+        mesh_io.write_txt(dirname + "/" + str(i), mesh.points, mesh.cells, mesh.pointdata)
 
         
 def parse_args():
