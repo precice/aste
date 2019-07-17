@@ -84,6 +84,7 @@ def read_conn(filename):
             assert(len(coords) in [2, 3])
             cells.append(coords)
             cell_types.append({2: vtk.VTK_LINE, 3: vtk.VTK_TRIANGLE}[len(coords)])
+        assert(len(cells) == len(cell_types))
         return cells, cell_types
 
 
