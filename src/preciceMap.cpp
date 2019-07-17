@@ -56,7 +56,7 @@ struct Mesh {
 // Reads the main file containing the vertices and data
 void readMainFile(Mesh& mesh, const std::string& filename, bool read_data)
 {
-    std::ifstream mainFile(filename);
+    std::ifstream mainFile{filename};
     std::string line;
     while (std::getline(mainFile, line)){
         double x, y, z, val;
@@ -67,7 +67,6 @@ void readMainFile(Mesh& mesh, const std::string& filename, bool read_data)
         if (read_data) // val is ignored on B.
             mesh.data.push_back(val);
     }
-    mainFile.close();
     if (not read_data)
         mesh.data = std::vector<double>(mesh.positions.size(), 0);
 }
@@ -75,7 +74,7 @@ void readMainFile(Mesh& mesh, const std::string& filename, bool read_data)
 // Reads the connectivity file containing the triangle and edge information
 void readConnFile(Mesh& mesh, const std::string& filename)
 {
-    std::ifstream mainFile(connFile);
+    std::ifstream connFile{filename};
     std::string line;
     while (std::getline(connFile, line)){
         std::vector<std::string> parts;
@@ -84,9 +83,11 @@ void readConnFile(Mesh& mesh, const std::string& filename)
         std::transform(parts.begin(), parts.end(), indices.begin(), [](const std::string& s) -> size_t {return std::stol(s);});
 
         if (indices.size() == 3) {
-            mesh.triangles.emplace_back(indices[0], indices[1], indices[2]);
+            std::array<size_t, 3> elem{indices[0], indices[1], indices[2]};
+            mesh.triangles.push_back(elem);
         } else if (indices.size() == 2) {
-            mesh.edges.emplace_back(indices[0], indices[1]);
+            std::array<size_t, 2> elem{indices[0], indices[1]};
+            mesh.edges.push_back(elem);
         } else {
             throw std::runtime_error{"Invalid entry in connectivitiy file"};
         }
@@ -98,7 +99,7 @@ Mesh readMesh(const std::string& filename, bool read_data = true)
 {
   Mesh mesh;
   readMainFile(mesh, filename, read_data);
-  std::string connFile = boost::filesystem::path(filename).replace_extension(".conn.txt");
+  std::string connFile = boost::filesystem::path(filename).replace_extension(".conn.txt").string();
   readConnFile(mesh, connFile);
   return mesh;
 }
@@ -127,7 +128,7 @@ int main(int argc, char* argv[])
   
   // reads in mesh, 0 data for participant B
   auto mesh = readMesh(meshes[0], participant == "A");
-  VLOG(1) << "The mesh contains:\n " << mesh.vertices.size() << " Vertices\n " << mesh.edges.size() << " Edges\n " << mesh.triangles.size() << " Triangles";
+  VLOG(1) << "The mesh contains:\n " << mesh.positions.size() << " Vertices\n " << mesh.edges.size() << " Edges\n " << mesh.triangles.size() << " Triangles";
 
   // Feed vertices to preCICE
   std::vector<int> vertexIDs;
@@ -136,19 +137,19 @@ int main(int argc, char* argv[])
     vertexIDs.push_back(interface.setMeshVertex(meshID, pos.data()));
   VLOG(1) << "Rank " << MPIrank << " read in mesh of size " << vertexIDs.size();
 
-  for (auto const & edge : mesh.edges):
+  for (auto const & edge : mesh.edges)
       interface.setMeshEdge(
               meshID,
               vertexIDs.at(edge[0]),
               vertexIDs.at(edge[1])
               );
 
-  for (auto const & triangle : mesh.triangles):
+  for (auto const & triangle : mesh.triangles)
       interface.setMeshTriangleWithEdges(
               meshID,
-              vertexIDs.at(edge[0]),
-              vertexIDs.at(edge[1]),
-              vertexIDs.at(edge[2])
+              vertexIDs.at(triangle[0]),
+              vertexIDs.at(triangle[1]),
+              vertexIDs.at(triangle[2])
               );
     
   interface.initialize();
@@ -160,7 +161,7 @@ int main(int argc, char* argv[])
   }
   interface.initializeData();
 
-  int round = 0;
+  size_t round = 0;
   while (interface.isCouplingOngoing() and round < meshes.size()) {
     if (participant == "A" and not mesh.data.empty()) {
       auto filename = meshes[round];
@@ -169,7 +170,6 @@ int main(int argc, char* argv[])
       if (not boost::filesystem::exists(filename))
         throw std::runtime_error("File does not exist: " + filename);
       auto roundmesh = readMesh(filename, participant == "A");
-      infile.close();
       interface.writeBlockScalarData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
     }
     interface.advance(1);
