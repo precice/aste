@@ -14,9 +14,7 @@ message(STATUS "Build configuration: " ${CMAKE_BUILD_TYPE})
 
 find_package (Threads REQUIRED)
 
-find_library(precice REQUIRED CONFIG)
-
-find_package(Eigen3 3.2 REQUIRED)
+find_package(precice REQUIRED CONFIG)
 
 find_package(Boost 1.65.1 REQUIRED COMPONENTS system program_options filesystem)
 
@@ -29,7 +27,7 @@ endif()
 find_package(MPI REQUIRED)
 
 add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/easylogging++.cc)
-target_include_directories(preciceMap src)
+target_include_directories(preciceMap PRIVATE src)
 target_link_libraries(preciceMap
   precice::precice
   Threads::Threads
@@ -37,8 +35,6 @@ target_link_libraries(preciceMap
   Boost::filesystem
   Boost::program_options
   Boost::system
-  Boost::thread
-  Eigen3::Eigen
   MPI::MPI_CXX
 )
 
