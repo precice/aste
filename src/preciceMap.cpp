@@ -56,6 +56,7 @@ struct Mesh {
 // Reads the main file containing the vertices and data
 void readMainFile(Mesh& mesh, const std::string& filename, bool read_data)
 {
+    VLOG(1) << "Reading mesh vertices " << (read_data?"and data ":"") << "from file " << filename;
     std::ifstream mainFile{filename};
     std::string line;
     while (std::getline(mainFile, line)){
@@ -74,6 +75,7 @@ void readMainFile(Mesh& mesh, const std::string& filename, bool read_data)
 // Reads the connectivity file containing the triangle and edge information
 void readConnFile(Mesh& mesh, const std::string& filename)
 {
+    VLOG(1) << "Reading mesh connectivity information from file " << filename;
     std::ifstream connFile{filename};
     std::string line;
     while (std::getline(connFile, line)){
@@ -102,6 +104,8 @@ Mesh readMesh(const std::string& filename, bool read_data = true)
   std::string connFile = boost::filesystem::path(filename).replace_extension(".conn.txt").string();
   if (boost::filesystem::exists(connFile)) {
     readConnFile(mesh, connFile);
+  } else {
+    VLOG(1) << "Skipped Reading mesh connectivity information from non-existent file " << filename;
   }
   return mesh;
 }
