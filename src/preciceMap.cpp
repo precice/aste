@@ -134,7 +134,7 @@ int main(int argc, char* argv[])
   
   // reads in mesh, 0 data for participant B
   auto mesh = readMesh(meshes[0], participant == "A");
-  VLOG(1) << "The mesh contains:\n " << mesh.positions.size() << " Vertices\n " << mesh.edges.size() << " Edges\n " << mesh.triangles.size() << " Triangles";
+  VLOG(1) << "The mesh contains:\n " << mesh.positions.size() << " Vertices\n " << mesh.data.size() << " Data\n " << mesh.edges.size()  << " Edges\n " << mesh.triangles.size() << " Triangles";
 
   // Feed vertices to preCICE
   std::vector<int> vertexIDs;
@@ -163,6 +163,11 @@ int main(int argc, char* argv[])
   if (interface.isActionRequired(precice::constants::actionWriteInitialData())) {
     VLOG(1) << "Write initial data for participant " << participant;
     interface.writeBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+    std::ostringstream oss;
+    for(size_t i = 0; i<std::min((size_t)10, mesh.data.size()); ++i)
+        oss << mesh.data[i] << ' ';
+    VLOG(1) << "Data written: " << oss.str();
+
     interface.fulfilledAction(precice::constants::actionWriteInitialData());
   }
   interface.initializeData();
@@ -176,12 +181,22 @@ int main(int argc, char* argv[])
       if (not boost::filesystem::exists(filename))
         throw std::runtime_error("File does not exist: " + filename);
       auto roundmesh = readMesh(filename, participant == "A");
+      VLOG(1) << "This roundmesh contains:\n " << roundmesh.positions.size() << " Vertices\n " << roundmesh.data.size() << " Data\n " << roundmesh.edges.size()  << " Edges\n " << roundmesh.triangles.size() << " Triangles";
+      assert(roundmesh.data.size() == vertexIDs.size());
       interface.writeBlockScalarData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
+    std::ostringstream oss;
+    for(size_t i = 0; i<std::min((size_t)10, mesh.data.size()); ++i)
+        oss << roundmesh.data[i] << ' ';
+    VLOG(1) << "Data written: " << oss.str();
     }
     interface.advance(1);
 
     if (participant == "B") {
       interface.readBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+      std::ostringstream oss;
+      for(size_t i = 0; i<std::min((size_t)10, mesh.data.size()); ++i)
+          oss << mesh.data[i] << ' ';
+      VLOG(1) << "Data read: " << oss.str();
     }
     round++;
   }
@@ -206,7 +221,7 @@ int main(int argc, char* argv[])
       ostream << positions[i][0] << " "
               << positions[i][1] << " "
               << positions[i][2] << " "
-              << data[i] << std::endl;
+              << data[i] << '\n';
     }
     ostream.close();
   }
