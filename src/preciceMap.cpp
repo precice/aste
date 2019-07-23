@@ -101,7 +101,7 @@ Mesh readMesh(const std::string& filename, bool read_data = true)
 {
   Mesh mesh;
   readMainFile(mesh, filename, read_data);
-  std::string connFile = boost::filesystem::path(filename).replace_extension(".conn.txt").string();
+  std::string connFile = filename + ".conn";// boost::filesystem::path(filename).replace_extension(".conn.txt").string();
   if (boost::filesystem::exists(connFile)) {
     readConnFile(mesh, connFile);
   } else {
