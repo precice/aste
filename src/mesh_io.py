@@ -35,7 +35,10 @@ def read_vtk(filename, tag = None):
     points = [vtkmesh.GetPoint(i) for i in range(vtkmesh.GetNumberOfPoints())]
     for i in range(vtkmesh.GetNumberOfCells()):
         cell = vtkmesh.GetCell(i)
-        cell_types.append(cell.GetCellType())
+        cell_type = cell.GetCellType()
+        if cell_type not in [vtk.VTK_LINE, vtk.VTK_TRIANGLE]:
+            continue
+        cell_types.append(cell_type)
         entry = ()
         for j in range(cell.GetNumberOfPoints()):
             entry += (cell.GetPointId(j),)
