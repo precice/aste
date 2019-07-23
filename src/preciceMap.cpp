@@ -7,6 +7,10 @@
 #include "precice/SolverInterface.hpp"
 #include "utils/prettyprint.hpp"
 #include "utils/EventUtils.hpp"
+#include <algorithm>
+#include <cassert>
+#include <unordered_map>
+#include <functional>
 
 #include "common.hpp"
 #include "easylogging++.h"
@@ -52,6 +56,32 @@ struct Mesh {
   std::vector<double> data;
 };
 
+using VertexID = int;
+using EdgeID = int;
+
+struct Edge {
+    Edge(VertexID a, VertexID b) : vA(std::min(a,b)), vB(std::max(a,b)) {}
+    VertexID vA;
+    VertexID vB;
+};
+
+bool operator==(const Edge& lhs, const Edge& rhs) {
+    return (lhs.vA == rhs.vA) && (lhs.vB == rhs.vB);
+}
+
+bool operator<(const Edge& lhs, const Edge& rhs) {
+    return (lhs.vA < rhs.vA) || ( (lhs.vA == rhs.vA) && (lhs.vB < rhs.vB) );
+}
+
+namespace std {
+    template<> struct hash<Edge> {
+        using argument_type = Edge;
+        using result_type = std::size_t;
+        result_type operator()(argument_type const& e) const noexcept {
+            return std::hash<int>{}(e.vA) ^ std::hash<int>{}(e.vB);
+        }
+    };
+};
 
 // Reads the main file containing the vertices and data
 void readMainFile(Mesh& mesh, const std::string& filename, bool read_data)
@@ -115,8 +145,8 @@ int main(int argc, char* argv[])
   START_EASYLOGGINGPP(argc, argv);
   MPI_Init(&argc, &argv);
   auto options = getOptions(argc, argv);
-  std::string meshname = options["mesh"].as<std::string>();
-  std::string participant = options["participant"].as<std::string>();
+  const std::string meshname = options["mesh"].as<std::string>();
+  const std::string participant = options["participant"].as<std::string>();
 
   int MPIrank = 0, MPIsize = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &MPIrank);
@@ -129,34 +159,79 @@ int main(int argc, char* argv[])
   interface.configure(options["precice-config"].as<std::string>());
   precice::utils::EventRegistry::instance().runName =  options["runName"].as<std::string>();
   
-  int meshID = interface.getMeshID( (participant == "A") ? "MeshA" : "MeshB" ); // participant = A => MeshID = MeshA
-  int dataID = interface.getDataID("Data", meshID);
+  const int meshID = interface.getMeshID( (participant == "A") ? "MeshA" : "MeshB" ); // participant = A => MeshID = MeshA
+  const int dataID = interface.getDataID("Data", meshID);
   
   // reads in mesh, 0 data for participant B
   auto mesh = readMesh(meshes[0], participant == "A");
   VLOG(1) << "The mesh contains:\n " << mesh.positions.size() << " Vertices\n " << mesh.data.size() << " Data\n " << mesh.edges.size()  << " Edges\n " << mesh.triangles.size() << " Triangles";
 
+  VLOG(1) << "Setting up Mesh:";
+  VLOG(1) << "1) Setting up Vertices";
   // Feed vertices to preCICE
   std::vector<int> vertexIDs;
-  vertexIDs.resize(mesh.positions.size());
+  vertexIDs.reserve(mesh.positions.size());
   for (auto const & pos : mesh.positions)
     vertexIDs.push_back(interface.setMeshVertex(meshID, pos.data()));
-  VLOG(1) << "Rank " << MPIrank << " read in mesh of size " << vertexIDs.size();
 
-  for (auto const & edge : mesh.edges)
-      interface.setMeshEdge(
-              meshID,
-              vertexIDs.at(edge[0]),
-              vertexIDs.at(edge[1])
-              );
+  std::unordered_map<Edge, EdgeID> edgeMap;
 
-  for (auto const & triangle : mesh.triangles)
-      interface.setMeshTriangleWithEdges(
-              meshID,
-              vertexIDs.at(triangle[0]),
-              vertexIDs.at(triangle[1]),
-              vertexIDs.at(triangle[2])
+  VLOG(1) << " 2) Setting up Edges";
+  for (auto const & edge : mesh.edges) {
+      const auto a = vertexIDs.at(edge[0]);
+      const auto b = vertexIDs.at(edge[1]);
+      assert(a != b);
+
+      auto iter = edgeMap.find(Edge{a, b});
+      if (iter == edgeMap.end()) {
+          EdgeID eid = interface.setMeshEdge(meshID, a, b);
+          edgeMap.emplace(Edge{a, b}, eid);
+      }
+  }
+
+  VLOG(1) << " 3) Generate Triangle Edges";
+  for (auto const & triangle : mesh.triangles) {
+      const auto a = vertexIDs.at(triangle[0]);
+      const auto b = vertexIDs.at(triangle[1]);
+      const auto c = vertexIDs.at(triangle[2]);
+      assert(a != b);
+      assert(b != c);
+      assert(c != a);
+
+      const Edge ab{a, b};
+      auto ab_pos = edgeMap.find(ab);
+      if (ab_pos == edgeMap.end()) {
+          EdgeID eid = interface.setMeshEdge(meshID, a, b);
+          edgeMap.emplace(ab, eid);
+      }
+      const Edge bc{b, c};
+      auto bc_pos = edgeMap.find(bc);
+      if (bc_pos == edgeMap.end()) {
+          EdgeID eid = interface.setMeshEdge(meshID, b, c);
+          edgeMap.emplace(bc, eid);
+      }
+      const Edge ca{c, a};
+      auto ca_pos = edgeMap.find(ca);
+      if (ca_pos == edgeMap.end()) {
+          EdgeID eid = interface.setMeshEdge(meshID, c, a);
+          edgeMap.emplace(ca, eid);
+      }
+  }
+
+  VLOG(1) << " 4) Setting up Triangles";
+  for (auto const & triangle : mesh.triangles) {
+      const auto a = vertexIDs[triangle[0]];
+      const auto b = vertexIDs[triangle[1]];
+      const auto c = vertexIDs[triangle[2]];
+
+      interface.setMeshTriangle( meshID, 
+              edgeMap[Edge{a,b}],
+              edgeMap[Edge{b,c}],
+              edgeMap[Edge{c,a}]
               );
+  }
+  edgeMap.clear();
+  VLOG(1) << "Mesh setup completed on Rank " << MPIrank;
     
   interface.initialize();
 
