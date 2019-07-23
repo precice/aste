@@ -91,7 +91,7 @@ void readConnFile(Mesh& mesh, const std::string& filename)
             std::array<size_t, 2> elem{indices[0], indices[1]};
             mesh.edges.push_back(elem);
         } else {
-            throw std::runtime_error{"Invalid entry in connectivitiy file"};
+            throw std::runtime_error{std::string{"Invalid entry in connectivitiy file \""}.append(line).append("\"")};
         }
     }
 }
