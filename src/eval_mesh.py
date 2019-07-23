@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import argparse, logging, math
 import numpy as np
-from mesh_io import *
+from mesh_io import read_mesh, write_mesh
+
 
 def main():
     args = parse_args()
@@ -10,6 +11,7 @@ def main():
     points = np.array(points)
     values = user_func(points, args.function)
     write_mesh(args.out_meshname, points, cells, cell_types, values)
+
 
 def user_func(points, f_str):
     points = np.array(points)
@@ -21,6 +23,7 @@ def user_func(points, f_str):
 
     logging.info("Evaluated {} on {} vertices".format(f_str, len(vals)))
     return vals
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluate a function on a given mesh")
@@ -38,6 +41,7 @@ def parse_args():
     args = parser.parse_args()
     args.out_meshname = args.out_meshname or args.in_meshname
     return args
+
 
 if __name__ == "__main__":
     main()
