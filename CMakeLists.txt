@@ -1,5 +1,8 @@
 cmake_minimum_required (VERSION 3.1)
 
+project(ASTE)
+
+
 list (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake-modules")
 
 set (CMAKE_CXX_STANDARD 11)
