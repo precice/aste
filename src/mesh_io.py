@@ -79,14 +79,22 @@ def read_dataset(filename):
 
 
 def read_conn(filename):
-    import vtk
+    try:
+        import vtk
+    except ImportError:
+        VTK_LINE = 3
+        VTK_TRIANGLE = 5
+    else:
+        VTK_LINE = vtk.VTK_LINE
+        VTK_TRIANGLE = vtk.VTK_TRIANGLE
+        
     with open(filename, "r") as fh:
         cells, cell_types = [], []
         for line in fh:
             coords = tuple([int(e) for e in line.split(" ")])
             assert(len(coords) in [2, 3])
             cells.append(coords)
-            cell_types.append({2: vtk.VTK_LINE, 3: vtk.VTK_TRIANGLE}[len(coords)])
+            cell_types.append({2: VTK_LINE, 3: VTK_TRIANGLE}[len(coords)])
         assert(len(cells) == len(cell_types))
         return cells, cell_types
 
