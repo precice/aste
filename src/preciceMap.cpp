@@ -5,8 +5,7 @@
 #include <boost/algorithm/string.hpp>
 #include <mpi.h>
 #include "precice/SolverInterface.hpp"
-#include "utils/prettyprint.hpp"
-#include "utils/EventUtils.hpp"
+//#include "utils/EventUtils.hpp"
 #include <algorithm>
 #include <cassert>
 #include <unordered_map>
@@ -45,7 +44,12 @@ std::vector<std::string> getMeshes(std::string basename, int rank)
       throw std::range_error("Mesh is not decomposed for requested rank, i.e. " + rankFile + " not found.");
   }
   
-  LOG(DEBUG) << "Meshes: " << meshes;
+  LOG(DEBUG) << "Meshes:" << [&]{ 
+      std::ostringstream oss;
+      for(auto& mesh: meshes)
+          oss << ' ' << mesh;
+      return oss.str();
+  }();
   return meshes;
 }
 
@@ -157,7 +161,7 @@ int main(int argc, char* argv[])
   // Create and configure solver interface
   precice::SolverInterface interface(participant, MPIrank, MPIsize);
   interface.configure(options["precice-config"].as<std::string>());
-  precice::utils::EventRegistry::instance().runName =  options["runName"].as<std::string>();
+  //precice::utils::EventRegistry::instance().runName =  options["runName"].as<std::string>();
   
   const int meshID = interface.getMeshID( (participant == "A") ? "MeshA" : "MeshB" ); // participant = A => MeshID = MeshA
   const int dataID = interface.getDataID("Data", meshID);
