@@ -3,7 +3,7 @@
 #include <mpi.h>
 #include <boost/program_options.hpp>
 
-#include "utils/prettyprint.hpp"
+#include "prettyprint/prettyprint.hpp"
 
 using DistVertex = std::vector<double>;
 
