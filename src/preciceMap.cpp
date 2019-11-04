@@ -3,8 +3,8 @@
 #include <string>
 #include <boost/filesystem.hpp>
 #include <mpi.h>
-#include "precice/SolverInterface.hpp"
-#include "utils/prettyprint.hpp"
+#include <precice/SolverInterface.hpp>
+#include "prettyprint/prettyprint.hpp"
 #include "utils/EventUtils.hpp"
 
 #include "common.hpp"
