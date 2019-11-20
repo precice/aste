@@ -3,12 +3,12 @@
 #include <string>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/container/flat_map.hpp>
 #include <mpi.h>
 #include "precice/SolverInterface.hpp"
 //#include "utils/EventUtils.hpp"
 #include <algorithm>
 #include <cassert>
-#include <unordered_map>
 #include <functional>
 
 #include "common.hpp"
@@ -178,7 +178,8 @@ int main(int argc, char* argv[])
   for (auto const & pos : mesh.positions)
     vertexIDs.push_back(interface.setMeshVertex(meshID, pos.data()));
 
-  std::unordered_map<Edge, EdgeID> edgeMap;
+  boost::container::flat_map<Edge, EdgeID> edgeMap;
+  edgeMap.reserve(mesh.edges.size() + 2*mesh.triangles.size());
 
   VLOG(1) << " 2) Setting up Edges";
   for (auto const & edge : mesh.edges) {
