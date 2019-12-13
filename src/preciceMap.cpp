@@ -44,24 +44,42 @@ std::vector<std::string> getMeshes(std::string basename, int rank)
   return meshes;
 }
 
-struct Mesh {
+struct ScalarMesh {
   std::vector<std::array<double, 3>> positions;
   std::vector<double> data;
 };
 
+struct VectorMesh {
+  std::vector<std::array<double, 3>> positions;
+  std::vector<std::array<double, 3>> data;
+};
+
 /// Reads the mesh from the file. If not read_data, zeros are returned for data.
-Mesh readMesh(std::istream& stream, bool read_data = true)
+Mesh readMesh(std::istream& stream, bool read_data = true, int datadim=1)
 {
-  Mesh mesh;
-  double x, y, z, val;
+  if (datadim==1){
+    ScalarMesh mesh;
+    double x, y, z, valx;
+  }
+  if (datadim == 3){
+    VectorMesh mesh;
+    double x, y, z, valx, valy, valz;
+}
+
   std::string line;
   while (std::getline(stream, line)){
     std::istringstream iss(line);
-    iss >> x >> y >> z >> val; // split up by whitespace
+    if (datadim == 1)
+      iss >> x >> y >> z >> valx; // split up by whitespace
+    if (datadim == 3) 
+      iss >> x >> y >> z >> valx >> valy >> valz;
     std::array<double, 3> vertexPos{x, y, z};
     mesh.positions.push_back(vertexPos);
     if (read_data) // val is ignored on B.
-      mesh.data.push_back(val);
+      if (datadim==1)
+        mesh.data.push_back(valx);
+      if (datadim ==3)
+        mesh.data.push
   }
   if (not read_data)
     mesh.data = std::vector<double>(mesh.positions.size(), 0);
