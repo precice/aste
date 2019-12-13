@@ -20,9 +20,7 @@ def read_mesh(filename, tag = None, datadim=1):
     
 def write_mesh(filename, points, cells = None, cell_types = None, values = None, datadim=1):
     if os.path.splitext(filename)[1] == ".txt":
-        if cells is not None and len(cells) > 0:
-            logging.warning("Saving as .txt discards topology")
-        return write_txt(filename, points, values) # TODO: Warn on cells
+        return write_txt(filename, points, cells, values)
     else:
         return write_vtk(filename, points, cells, cell_types, values, datadim=datadim)
 
@@ -37,7 +35,10 @@ def read_vtk(filename, tag = None, datadim=1):
     points = [vtkmesh.GetPoint(i) for i in range(vtkmesh.GetNumberOfPoints())]
     for i in range(vtkmesh.GetNumberOfCells()):
         cell = vtkmesh.GetCell(i)
-        cell_types.append(cell.GetCellType())
+        cell_type = cell.GetCellType()
+        if cell_type not in [vtk.VTK_LINE, vtk.VTK_TRIANGLE]:
+            continue
+        cell_types.append(cell_type)
         entry = ()
         for j in range(cell.GetNumberOfPoints()):
             entry += (cell.GetPointId(j),)
@@ -85,8 +86,31 @@ def read_dataset(filename):
     return reader.GetOutput()
 
 
+def read_conn(filename):
+    try:
+        import vtk
+    except ImportError:
+        VTK_LINE = 3
+        VTK_TRIANGLE = 5
+    else:
+        VTK_LINE = vtk.VTK_LINE
+        VTK_TRIANGLE = vtk.VTK_TRIANGLE
+        
+    with open(filename, "r") as fh:
+        cells, cell_types = [], []
+        for line in fh:
+            coords = tuple([int(e) for e in line.split(" ")])
+            assert(len(coords) in [2, 3])
+            cells.append(coords)
+            cell_types.append({2: VTK_LINE, 3: VTK_TRIANGLE}[len(coords)])
+        assert(len(cells) == len(cell_types))
+        return cells, cell_types
+
+
 def read_txt(filename):
     points = []
+    cells = []
+    cell_types = []
     pointdata = []
     with open(filename, "r") as fh:
         for line in fh:
@@ -97,7 +121,12 @@ def read_txt(filename):
             points.append(point)
             if len(parts) > 3:
                 pointdata.append(float(parts[3]))
-    return points, [], [], pointdata
+    base, ext = os.path.splitext(filename)
+    connFileName = base + ".conn" + ext
+    if os.path.exists(connFileName):
+        cells, cell_types = read_conn(connFileName)
+
+    return points, cells, cell_types, pointdata
 
 
 def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None, tag = None, datadim=1):
@@ -157,7 +186,7 @@ def write_dataset(filename, dataset):
     writer.SetInputData(dataset)
     writer.Write()
 
-def write_txt(filename, points, pointdata = None):
+def write_txt(filename, points, cells = [], pointdata = None):
     with open(filename, "w") as fh:
         for i, point in enumerate(points):
             entry = (str(point[0]), str(point[1]), str(point[2]))
@@ -173,3 +202,8 @@ def write_txt(filename, points, pointdata = None):
                               str(float(pointdata[i][2])))
 
             fh.write(" ".join(entry) + "\n")
+
+    base, ext = os.path.splitext(filename)
+    connFileName = base + ".conn" + ext
+    with open(connFileName, "w") as fh:
+        fh.writelines([" ".join(map(str,cell))+"\n" for cell in cells])

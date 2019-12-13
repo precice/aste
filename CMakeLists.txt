@@ -17,39 +17,33 @@ message(STATUS "Build configuration: " ${CMAKE_BUILD_TYPE})
 
 find_package (Threads REQUIRED)
 
+find_package(precice REQUIRED CONFIG)
 
-find_library(precice PATHS $ENV{PRECICE_ROOT}/build/last $ENV{PRECICE_ROOT}/build)
-if(NOT precice)
-  message(FATAL_ERROR "preCICE was not found")
-endif()
-include_directories($ENV{PRECICE_ROOT}/src)
+find_package(Boost 1.65.1 REQUIRED COMPONENTS system program_options filesystem)
 
-find_package(Eigen3)
-include_directories(${EIGEN3_INCLUDE_DIR})
-
-find_package(Boost 1.60.0 REQUIRED COMPONENTS system program_options filesystem)
-
-find_package(metis)
-
-find_package(MPI REQUIRED)
-
-include_directories("src")
-
+find_package(METIS)
 if (METIS_FOUND)
     add_library(metisAPI SHARED src/metisAPI.cpp)
     target_link_libraries(metisAPI ${METIS_LIBRARIES})
 endif()
 
-add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/easylogging++.cc)
-target_link_libraries(preciceMap
-  ${precice}
-  Threads::Threads
-  ${Boost_LIBRARIES}
-  ${MPI_LIBRARIES}
-)
-target_include_directories(preciceMap PRIVATE ${Boost_INCLUDE_DIRS})
-target_include_directories(preciceMap PRIVATE ${MPI_INCLUDE_PATH})
+find_package(MPI REQUIRED)
 
+add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/easylogging++.cc)
+target_include_directories(preciceMap PRIVATE src)
+target_link_libraries(preciceMap
+  precice::precice
+  Threads::Threads
+  Boost::boost
+  Boost::filesystem
+  Boost::program_options
+  Boost::system
+  MPI::MPI_CXX
+)
+
+if(METIS_FOUND)
+  target_link_libraries(preciceMap metisAPI)
+endif()
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/make_mesh.py           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/visualize_partition.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

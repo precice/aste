@@ -2,7 +2,6 @@
 #include <mpi.h>
 #include <boost/program_options.hpp>
 #include "easylogging++.h"
-#include "prettyprint/prettyprint.hpp"
 #include "common.hpp"
 
 using namespace std;

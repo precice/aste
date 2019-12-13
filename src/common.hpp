@@ -3,8 +3,6 @@
 #include <mpi.h>
 #include <boost/program_options.hpp>
 
-#include "prettyprint/prettyprint.hpp"
-
 using DistVertex = std::vector<double>;
 
 /// The serialized mesh

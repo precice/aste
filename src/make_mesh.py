@@ -67,11 +67,38 @@ def gen_data_GC(order, element_size, domain_size, domain_start = 0):
     return xx, yy
     
 
-def write_file(filename, xx, yy):
+def write_mesh(filename, xx, yy):
     with open(filename, "w") as f:
         for fx, fy in zip(xx.flatten(), yy.flatten()):
             str = "{!s} {!s} {!s} 0".format(0, fx, fy)
             print(str, file = f)
+
+def write_mesh_connectivity(filename, connectivity, xn, yn):
+    def idx(x, y):
+        return x + xn*y
+
+    if connectivity == "Triangles":
+        with open(filename, "w") as f:
+            fmt = "{} {} {}"
+            for y, x in itertools.product(range(yn-1), range(xn-1)):
+                print(fmt.format(idx(x,  y), idx(x+1,y),   idx(x,y+1)), file=f)
+                print(fmt.format(idx(x+1,y), idx(x+1,y+1), idx(x,y+1)), file=f)
+
+    elif connectivity == "Edges":
+        with open(filename, "w") as f:
+            fmt = "{} {}"
+            for y, x in itertools.product(range(yn-1), range(xn-1)):
+                print(fmt.format(idx(x,y), idx(x+1,y)), file=f)
+                print(fmt.format(idx(x,y), idx(x,y+1)), file=f)
+
+            for x in range(xn-1):
+                print(fmt.format(idx(x,yn-1), idx(x+1,yn-1)), file=f)
+
+            for y in range(yn-1):
+                print(fmt.format(idx(xn-1,y), idx(xn-1,y+1)), file=f)
+
+    else:
+        assert(connectivity is None)
 
 
 def parse_args():
@@ -84,6 +111,8 @@ def parse_args():
     parser.add_argument("--y0", type = int, default = 0, help="Start coordinate in y-dimension")
     parser.add_argument("--y1", type = int, default = 1, help="End coordinate in y-dimension")
     parser.add_argument("--ny", type = int, default = 100, help="Number of elements in y-direction")
+
+    parser.add_argument("-c", "--connectivity", default=None, choices=[None, "Edges", "Triangles"], help="The additional connectivity information to generate.")
     
     parser.add_argument("--log", "-l", dest="logging", default="INFO",
                         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
@@ -99,12 +128,15 @@ def main():
     GC = False
 
     if GC:
-        write_file("inMeshGC.txt", *gen_data_GC(4, 0.5, 4, domain_start = -2, value_function = gauss_pulse))
-        write_file("outMeshGC.txt", *gen_data_GC(10, 0.5, 4, domain_start = -2, value_function = gauss_pulse))
+        write_mesh("inMeshGC.txt", *gen_data_GC(4, 0.5, 4, domain_start = -2, value_function = gauss_pulse))
+        write_mesh("outMeshGC.txt", *gen_data_GC(10, 0.5, 4, domain_start = -2, value_function = gauss_pulse))
         
     else:
-        write_file(args.out_mesh + ".txt", *gen_data(args.x0, args.x1, args.nx, args.y0, args.y1, args.ny))
-        logging.info("Wrote mesh to %s", args.out_mesh + ".txt");
+        write_mesh(args.out_mesh + ".txt", *gen_data(args.x0, args.x1, args.nx, args.y0, args.y1, args.ny))
+        write_mesh_connectivity(args.out_mesh + ".conn.txt", args.connectivity, args.nx, args.ny)
+        logging.info("Wrote mesh to %s", args.out_mesh + ".txt")
+        if args.connectivity:
+            logging.info("Wrote mesh connectivity to %s", args.out_mesh + ".conn.txt")
 
         
 if __name__== "__main__":
