@@ -7,7 +7,7 @@ import os
 import logging
 
 
-def read_mesh(filename, tag = None):
+def read_mesh(filename, tag = None, datadim=1):
     """
     Returns Mesh Points, Mesh Cells, Mesh Celltypes, 
     Mesh Pointdata in this order
@@ -15,7 +15,7 @@ def read_mesh(filename, tag = None):
     if os.path.splitext(filename)[1] == ".txt":
         return read_txt(filename)
     else:
-        return read_vtk(filename, tag)
+        return read_vtk(filename, tag, datadim)
 
     
 def write_mesh(filename, points, cells = None, cell_types = None, values = None, datadim=1):
@@ -27,7 +27,7 @@ def write_mesh(filename, points, cells = None, cell_types = None, values = None,
         return write_vtk(filename, points, cells, cell_types, values, datadim=datadim)
 
     
-def read_vtk(filename, tag = None):
+def read_vtk(filename, tag = None, datadim=1):
     import vtk
     vtkmesh = read_dataset(filename)
     points = []
@@ -44,12 +44,20 @@ def read_vtk(filename, tag = None):
         cells.append(entry)
     if not tag:
         # vtk Python utility method. Same as tag=="scalars"
-        fieldData = vtkmesh.GetPointData().GetScalars()
+        if datadim==1:
+            fieldData = vtkmesh.GetPointData().GetScalars()
+        if datadim >1:
+            fieldData = vtkmesh.GetPointData().GetVectors()
     else:
         fieldData = vtkmesh.GetPointData().GetAbstractArray(tag)
     if fieldData:
         for i in range(vtkmesh.GetNumberOfPoints()):
-            pointdata.append(fieldData.GetTuple1(i))
+            if datadim == 1:
+                pointdata.append(fieldData.GetTuple1(i))
+            elif datadim == 2:
+                pointdata.append(fieldData.GetTuple2(i))
+            elif datadim == 3:
+                pointdata.append(fieldData.GetTuple3(i))
     return points, cells, cell_types, pointdata
 
 
@@ -100,7 +108,6 @@ def write_vtk(filename, points, cells = None, cell_types = None, pointdata = Non
     if tag:
         DataArray.SetName(tag)
     vtkpoints = vtk.vtkPoints()
-    print(pointdata.shape)
     for i, point in enumerate(points):
         vtkpoints.InsertPoint(i, point)
         if pointdata is not None and len(pointdata) > 0:
@@ -155,5 +162,14 @@ def write_txt(filename, points, pointdata = None):
         for i, point in enumerate(points):
             entry = (str(point[0]), str(point[1]), str(point[2]))
             if pointdata is not None and len(pointdata) > 0:
-                entry += (str(float(pointdata[i])),)
+                if len(pointdata[0]) ==1:
+                    entry += (str(float(pointdata[i])),)
+                elif len(pointdata[0])==2:
+                    entry += (str(float(pointdata[i,0])), str(float(pointdata[i,1])))
+                elif len(pointdata[0])==3:
+                    #print(pointdata[i])
+                    entry += (str(float(pointdata[i][0])), 
+                              str(float(pointdata[i][1])), 
+                              str(float(pointdata[i][2])))
+
             fh.write(" ".join(entry) + "\n")

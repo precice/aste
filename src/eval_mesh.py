@@ -20,8 +20,6 @@ def user_func(points, f_str, dimf):
         logging.debug("Evaluating {} on ({}, {}, {}) = {}".format(f_str, x, y, z, vals[i]))
 
     logging.info("Evaluated {} on {} vertices".format(f_str, len(vals[1,:])))
-    print(vals[1,:])
-
     return vals
 
 def parse_args():

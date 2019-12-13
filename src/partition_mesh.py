@@ -60,7 +60,7 @@ class Mesh:
             self.pointdata = []
 
 def read_mesh(filename, tag):
-    points, cells, _, pointdata = mesh_io.read_mesh(filename, tag)
+    points, cells, _, pointdata = mesh_io.read_mesh(filename, tag, datadim=3)
     return Mesh(points, cells, pointdata)
 
 
