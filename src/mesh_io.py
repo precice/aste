@@ -18,13 +18,13 @@ def read_mesh(filename, tag = None):
         return read_vtk(filename, tag)
 
     
-def write_mesh(filename, points, cells = None, cell_types = None, values = None):
+def write_mesh(filename, points, cells = None, cell_types = None, values = None, datadim=1):
     if os.path.splitext(filename)[1] == ".txt":
         if cells is not None and len(cells) > 0:
             logging.warning("Saving as .txt discards topology")
         return write_txt(filename, points, values) # TODO: Warn on cells
     else:
-        return write_vtk(filename, points, cells, cell_types, values)
+        return write_vtk(filename, points, cells, cell_types, values, datadim=datadim)
 
     
 def read_vtk(filename, tag = None):
@@ -92,17 +92,24 @@ def read_txt(filename):
     return points, [], [], pointdata
 
 
-def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None, tag = None):
+def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None, tag = None, datadim=1):
     import vtk
     data = vtk.vtkUnstructuredGrid() # is also vtkDataSet
-    scalars = vtk.vtkDoubleArray()
+    DataArray = vtk.vtkDoubleArray()
+    DataArray.SetNumberOfComponents(datadim)
     if tag:
-        scalars.SetName(tag)
+        DataArray.SetName(tag)
     vtkpoints = vtk.vtkPoints()
+    print(pointdata.shape)
     for i, point in enumerate(points):
         vtkpoints.InsertPoint(i, point)
         if pointdata is not None and len(pointdata) > 0:
-            scalars.InsertTuple1(i, pointdata[i])
+            if len(pointdata.shape) == 1 or pointdata.shape[1]==1: #scalar data
+                DataArray.InsertTuple1(i, pointdata[i])
+            elif len(pointdata.shape) > 1 and pointdata.shape[1]==2: #two dimensional data
+                DataArray.InsertTuple2(i, pointdata[i,0], pointdata[i,1])
+            elif len(pointdata.shape) > 1 and pointdata.shape[1]==3: #3D-data
+                DataArray.InsertTuple3(i, pointdata[i,0], pointdata[i,1], pointdata[i,2])
     data.SetPoints(vtkpoints)
     if cells:
         cellArray = vtk.vtkCellArray()
@@ -116,7 +123,12 @@ def write_vtk(filename, points, cells = None, cell_types = None, pointdata = Non
             cellArray.InsertNextCell(vtkCell)
         data.SetCells(cell_types, cellArray)
     pointData = data.GetPointData()
-    pointData.SetScalars(scalars)
+    if len(pointdata.shape) == 1 or pointdata.shape[1]==1:
+        pointData.SetScalars(DataArray)
+        print("Writing scalar data...")
+    else:
+        pointData.SetVectors(DataArray)
+        print("Writing Vector data...")
     write_dataset(filename, data)
 
     writer = vtk.vtkUnstructuredGridWriter()

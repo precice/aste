@@ -18,7 +18,7 @@ message(STATUS "Build configuration: " ${CMAKE_BUILD_TYPE})
 find_package (Threads REQUIRED)
 
 
-find_library(precice precice PATHS $ENV{PRECICE_ROOT}/build/last $ENV{PRECICE_ROOT}/build)
+find_library(precice PATHS $ENV{PRECICE_ROOT}/build/last $ENV{PRECICE_ROOT}/build)
 if(NOT precice)
   message(FATAL_ERROR "preCICE was not found")
 endif()
@@ -29,7 +29,7 @@ include_directories(${EIGEN3_INCLUDE_DIR})
 
 find_package(Boost 1.60.0 REQUIRED COMPONENTS system program_options filesystem)
 
-find_package(METIS)
+find_package(metis)
 
 find_package(MPI REQUIRED)
 
