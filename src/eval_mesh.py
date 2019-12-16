@@ -12,11 +12,8 @@ def main():
     values = user_func(points, args.function, int(args.dimf))
     write_mesh(args.out_meshname, points, cells, cell_types, values, datadim=int(args.dimf))
 
-    values = user_func(points, args.function)
-    write_mesh(args.out_meshname, points, cells, cell_types, values)
 
-
-def user_func(points, f_str):
+def user_func(points, f_str, dimf=1):
     points = np.array(points)
     vals = np.zeros((points.shape[0], dimf))
     for i, (x, y, z) in enumerate(points):
@@ -24,7 +21,7 @@ def user_func(points, f_str):
         vals[i,:] = eval(f_str, globals(), loc_dict)
         logging.debug("Evaluating {} on ({}, {}, {}) = {}".format(f_str, x, y, z, vals[i]))
 
-    logging.info("Evaluated {} on {} vertices".format(f_str, len(vals[1,:])))
+    logging.info("Evaluated {} on {} vertices".format(f_str, len(vals[:,0])))
     return vals
 
 

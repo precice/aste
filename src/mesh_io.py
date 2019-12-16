@@ -200,6 +200,8 @@ def write_txt(filename, points, cells = [], pointdata = None):
                     entry += (str(float(pointdata[i][0])), 
                               str(float(pointdata[i][1])), 
                               str(float(pointdata[i][2])))
+                else:
+                    print("Don't know how to write points")
 
             fh.write(" ".join(entry) + "\n")
 

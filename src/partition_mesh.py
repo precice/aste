@@ -18,6 +18,7 @@ def main():
         logging.info("No algorithm given. Defaulting to \"meshfree\"")
         algorithm = "meshfree"
     rootmesh = read_mesh(mesh_names[0], args.tag)
+    print(rootmesh.pointdata)
     if args.numparts > 1:
         part = partition(rootmesh, args.numparts, algorithm)
     else:
@@ -35,6 +36,7 @@ def main():
             # logging.info("No --out given. Setting output to: " + out_meshname)
         else:
             out_meshname = args.out_meshname
+        print(meshes[0].pointdata)
         write_meshes(meshes, out_meshname)
 
     
@@ -67,11 +69,8 @@ class Mesh:
 
 
 def read_mesh(filename, tag):
-    points, cells, cell_types, pointdata = mesh_io.read_mesh(filename, tag)
+    points, cells, cell_types, pointdata = mesh_io.read_mesh(filename, tag, datadim=3)
     return Mesh(points, cells, cell_types, pointdata)
-
-    points, cells, _, pointdata = mesh_io.read_mesh(filename, tag, datadim=3)
-    return Mesh(points, cells, pointdata)
 
 
 def partition(mesh, numparts, algorithm):
