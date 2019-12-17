@@ -18,7 +18,6 @@ def main():
         logging.info("No algorithm given. Defaulting to \"meshfree\"")
         algorithm = "meshfree"
     rootmesh = read_mesh(mesh_names[0], args.tag)
-    print(rootmesh.pointdata)
     if args.numparts > 1:
         part = partition(rootmesh, args.numparts, algorithm)
     else:
@@ -36,7 +35,6 @@ def main():
             # logging.info("No --out given. Setting output to: " + out_meshname)
         else:
             out_meshname = args.out_meshname
-        print(meshes[0].pointdata)
         write_meshes(meshes, out_meshname)
 
     
@@ -245,7 +243,6 @@ def apply_partition(orig_mesh, part, numparts):
     """
     meshes = [Mesh() for _ in range(numparts)]
     mapping = {}  # Maps global index to partition and local index
-    print(orig_mesh)
     for i in range(len(orig_mesh.points)):
         partition = part[i]
         selected = meshes[partition]

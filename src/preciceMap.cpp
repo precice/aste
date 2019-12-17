@@ -53,11 +53,18 @@ std::vector<std::string> getMeshes(std::string basename, int rank)
   return meshes;
 }
 
-struct ScalarMesh {
+struct Mesh {
   std::vector<std::array<double, 3>> positions;
   std::vector<std::array<size_t, 2>> edges;
   std::vector<std::array<size_t, 3>> triangles;
-  std::vector<double> data;
+  std::vector<std::array<double, 3>> data;
+};
+
+struct VectorMesh {
+  std::vector<std::array<double, 3>> positions;
+  std::vector<std::array<size_t, 2>> edges;
+  std::vector<std::array<size_t, 3>> triangles;
+  std::vector<std::array<double, 3>> data;
 };
 
 using VertexID = int;
@@ -93,17 +100,25 @@ void readMainFile(Mesh& mesh, const std::string& filename, bool read_data)
     VLOG(1) << "Reading mesh vertices " << (read_data?"and data ":"") << "from file " << filename;
     std::ifstream mainFile{filename};
     std::string line;
-    while (std::getline(mainFile, line)){
-        double x, y, z, val;
-        std::istringstream iss(line);
-        iss >> x >> y >> z >> val; // split up by whitespace
-        std::array<double, 3> vertexPos{x, y, z};
-        mesh.positions.push_back(vertexPos);
-        if (read_data) // val is ignored on B.
-            mesh.data.push_back(val);
-    }
+      while (std::getline(mainFile, line)){
+          double x, y, z, valx, valy, valz;
+          std::istringstream iss(line);
+          iss >> x >> y >> z >> valx >> valy >> valz; // split up by whitespace
+          std::array<double, 3> vertexPos{x, y, z};
+          mesh.positions.push_back(vertexPos);
+          if (read_data){// val is ignored on B.
+              std::array<double, 3> pointData{valx, valy, valz};
+              mesh.data.push_back(pointData);
+          }
+      }
     if (not read_data)
-        mesh.data = std::vector<double>(mesh.positions.size(), 0);
+        mesh.data = std::vector<std::array<double, 3>>(mesh.positions.size(),{0.0,0.0,0.0});
+
+    std::ostringstream oss;
+    for(size_t i = 0; i<std::min((size_t)10, mesh.data.size()); ++i)
+        oss << '(' << mesh.data[i][0] << ' ' << mesh.data[i][1] << ' ' << mesh.data[i][2]<< ')' << ' ';
+    VLOG(1) << "Data read from file: " << oss.str();
+
 }
 
 // Reads the connectivity file containing the triangle and edge information
@@ -141,6 +156,7 @@ Mesh readMesh(const std::string& filename, bool read_data = true)
   } else {
     VLOG(1) << "Skipped Reading mesh connectivity information from non-existent file " << filename;
   }
+
   return mesh;
 }
 
@@ -242,10 +258,17 @@ int main(int argc, char* argv[])
 
   if (interface.isActionRequired(precice::constants::actionWriteInitialData())) {
     VLOG(1) << "Write initial data for participant " << participant;
-    interface.writeBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+    //interface.writeBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+    size_t i=0;
+    for(auto const& vertexID : vertexIDs){
+      interface.writeVectorData(dataID, vertexID, (const double *) &mesh.data[i]);
+      std::cout << mesh.data[i][0] << ' ' << mesh.data[i][1] << ' ' << mesh.data[i][0] << '\n'  ;
+
+      i++;
+    }
     std::ostringstream oss;
     for(size_t i = 0; i<std::min((size_t)10, mesh.data.size()); ++i)
-        oss << mesh.data[i] << ' ';
+        oss << '(' << mesh.data[i][0] << ' ' << mesh.data[i][1] << ' ' << mesh.data[i][2]<< ')' << ' ';
     VLOG(1) << "Data written: " << oss.str();
 
     interface.fulfilledAction(precice::constants::actionWriteInitialData());
@@ -263,19 +286,31 @@ int main(int argc, char* argv[])
       auto roundmesh = readMesh(filename, participant == "A");
       VLOG(1) << "This roundmesh contains:\n " << roundmesh.positions.size() << " Vertices\n " << roundmesh.data.size() << " Data\n " << roundmesh.edges.size()  << " Edges\n " << roundmesh.triangles.size() << " Triangles";
       assert(roundmesh.data.size() == vertexIDs.size());
-      interface.writeBlockScalarData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
+      //interface.writeBlockScalarData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
+      size_t i=0;
+      for(auto const& vertexID : vertexIDs){
+        interface.writeVectorData(dataID, vertexID, (const double *) &mesh.data[i]);
+        i++;
+      }
+
     std::ostringstream oss;
     for(size_t i = 0; i<std::min((size_t)10, mesh.data.size()); ++i)
-        oss << roundmesh.data[i] << ' ';
+        oss << '(' << roundmesh.data[i][0] << ' ' << roundmesh.data[i][1] << ' ' << roundmesh.data[i][2]<< ')' << ' ';
     VLOG(1) << "Data written: " << oss.str();
     }
     interface.advance(1);
 
     if (participant == "B") {
-      interface.readBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+      //interface.readBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+      size_t i=0;
+      for(auto const& vertexID : vertexIDs){
+        interface.readVectorData(dataID, vertexID, (double *) &mesh.data[i]);
+        i++;
+      }
+
       std::ostringstream oss;
       for(size_t i = 0; i<std::min((size_t)10, mesh.data.size()); ++i)
-          oss << mesh.data[i] << ' ';
+        oss << '(' << mesh.data[i][0] << ' ' << mesh.data[i][1] << ' ' << mesh.data[i][2]<< ')' << ' ';
       VLOG(1) << "Data read: " << oss.str();
     }
     round++;
@@ -301,7 +336,9 @@ int main(int argc, char* argv[])
       ostream << positions[i][0] << " "
               << positions[i][1] << " "
               << positions[i][2] << " "
-              << data[i] << '\n';
+              << data[i][0] << " "
+              << data[i][1] << " "
+              << data[i][2] << '\n';
     }
     ostream.close();
   }
