@@ -11,7 +11,7 @@ def main():
     logging.basicConfig(level=getattr(logging, args.logging))
     points, cells, cell_types, values = read_mesh(args.in_meshname, args.numparts)
     out_meshname = args.out_meshname if args.out_meshname else args.in_meshname + ".vtk"
-    write_mesh(out_meshname, points, cells, cell_types, values)
+    write_mesh(out_meshname, points, cells, cell_types, values, datadim=3)
 
 
 def read_mesh(dirname, length = None):

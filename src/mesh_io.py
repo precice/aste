@@ -5,6 +5,7 @@ Mesh I/O utility script. One can read meshes from .vtk, .txt, .vtu, .vtp,... fil
 
 import os
 import logging
+import numpy as np
 
 
 def read_mesh(filename, tag = None, datadim=1):
@@ -48,9 +49,12 @@ def read_vtk(filename, tag = None, datadim=1):
         if datadim==1:
             fieldData = vtkmesh.GetPointData().GetScalars()
         if datadim >1:
-            fieldData = vtkmesh.GetPointData().GetVectors()
+            fieldData = vtkmesh.GetPointData().GetVectors("Forces0")
     else:
-        fieldData = vtkmesh.GetPointData().GetAbstractArray(tag)
+        fieldData = vtkmesh.GetPointData().GetAbstractArray()
+        print(fieldData.GetArrayName(0))
+        print("Imported " + tag +".")
+        print(fieldData)
     if fieldData:
         for i in range(vtkmesh.GetNumberOfPoints()):
             if datadim == 1:
@@ -119,8 +123,13 @@ def read_txt(filename):
             for i in range(3):
                 point += (float(parts[i]),)
             points.append(point)
-            if len(parts) > 3:
+            if len(parts) == 4:
                 pointdata.append(float(parts[3]))
+            if len(parts) == 6:
+                pointvector = ()
+                for i in range(3):
+                    pointvector += (float(parts[3+i]),)
+                pointdata.append(pointvector)
     base, ext = os.path.splitext(filename)
     connFileName = base + ".conn" + ext
     if os.path.exists(connFileName):
@@ -129,11 +138,12 @@ def read_txt(filename):
     return points, cells, cell_types, pointdata
 
 
-def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None, tag = None, datadim=1):
+def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None, tag = None, datadim=3):
     import vtk
     data = vtk.vtkUnstructuredGrid() # is also vtkDataSet
     DataArray = vtk.vtkDoubleArray()
     DataArray.SetNumberOfComponents(datadim)
+    pointdata = np.array(pointdata)
     if tag:
         DataArray.SetName(tag)
     vtkpoints = vtk.vtkPoints()
