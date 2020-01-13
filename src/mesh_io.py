@@ -49,7 +49,7 @@ def read_vtk(filename, tag = None, datadim=1):
         if datadim==1:
             fieldData = vtkmesh.GetPointData().GetScalars()
         if datadim >1:
-            fieldData = vtkmesh.GetPointData().GetVectors("Forces0")
+            fieldData = vtkmesh.GetPointData().GetVectors("Displacements0")
     else:
         fieldData = vtkmesh.GetPointData().GetAbstractArray()
         print(fieldData.GetArrayName(0))
@@ -86,6 +86,7 @@ def read_dataset(filename):
     else:
         raise Exception("Unkown File extension: " + extension)
     reader.SetFileName(filename)
+    reader.ReadAllVectorsOn()
     reader.Update()
     return reader.GetOutput()
 
@@ -138,7 +139,7 @@ def read_txt(filename):
     return points, cells, cell_types, pointdata
 
 
-def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None, tag = None, datadim=3):
+def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None, tag = "MyVectors", datadim=3):
     import vtk
     data = vtk.vtkUnstructuredGrid() # is also vtkDataSet
     DataArray = vtk.vtkDoubleArray()
