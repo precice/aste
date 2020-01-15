@@ -49,12 +49,10 @@ def read_vtk(filename, tag = None, datadim=1):
         if datadim==1:
             fieldData = vtkmesh.GetPointData().GetScalars()
         if datadim >1:
-            fieldData = vtkmesh.GetPointData().GetVectors("Displacements0")
+            fieldData = vtkmesh.GetPointData().GetVectors()
     else:
-        fieldData = vtkmesh.GetPointData().GetAbstractArray()
-        print(fieldData.GetArrayName(0))
+        fieldData = vtkmesh.GetPointData().GetAbstractArray(tag)
         print("Imported " + tag +".")
-        print(fieldData)
     if fieldData:
         for i in range(vtkmesh.GetNumberOfPoints()):
             if datadim == 1:
@@ -86,6 +84,7 @@ def read_dataset(filename):
     else:
         raise Exception("Unkown File extension: " + extension)
     reader.SetFileName(filename)
+    reader.ReadAllScalarsOn()
     reader.ReadAllVectorsOn()
     reader.Update()
     return reader.GetOutput()
