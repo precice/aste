@@ -247,7 +247,7 @@ int main(int argc, char* argv[])
         oss << mesh.data[i] << ' ';
     VLOG(1) << "Data written: " << oss.str();
 
-    interface.fulfilledAction(precice::constants::actionWriteInitialData());
+    interface.markActionFulfilled(precice::constants::actionWriteInitialData());
   }
   interface.initializeData();
 
