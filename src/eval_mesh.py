@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse, logging, math
 import numpy as np
+from multiprocessing import Pool
 from mesh_io import read_mesh, write_mesh
 
 
@@ -13,13 +14,21 @@ def main():
     write_mesh(args.out_meshname, points, cells, cell_types, values)
 
 
+class Evaluator:
+    def __init__(self, func):
+        self._func = func;
+
+    def evaluate(self, on):
+        i, (x, y, z) = on
+        loc_dict = {"x": x, "y": y, "z": z, "math": math, "np": np}
+        return eval(self._func, globals(), loc_dict)
+
+
 def user_func(points, f_str):
     points = np.array(points)
-    vals = np.zeros(points.shape[0])
-    for i, (x, y, z) in enumerate(points):
-        loc_dict = {"x": x, "y": y, "z": z, "math": math, "np": np}
-        vals[i] = eval(f_str, globals(), loc_dict)
-        logging.debug("Evaluating {} on ({}, {}, {}) = {}".format(f_str, x, y, z, vals[i]))
+    evaluator = Evaluator(f_str)
+    with Pool() as pool:
+        vals = np.array(pool.map(evaluator.evaluate, enumerate(points)))
 
     logging.info("Evaluated {} on {} vertices".format(f_str, len(vals)))
     return vals
