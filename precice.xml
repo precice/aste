@@ -29,11 +29,10 @@
 
       <write-data name="Data" mesh="MeshA" />
       <!-- <mapping:nearest-neighbor constraint="conservative" direction="write" from="MeshA" to="MeshB" /> -->
-      <!-- <mapping:petrbf-gaussian shape-parameter="2" solver-rtol="1e-9" constraint="conservative" direction="write" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
+      <!-- <mapping:rbf-gaussian shape-parameter="2" solver-rtol="1e-9" constraint="conservative" direction="write" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
       <!-- <mapping:rbf-gaussian shape-parameter="10" constraint="conservative" direction="write" from="MeshA" to="MeshB" x-dead="false" y-dead="true" z-dead="false" /> -->
 
-      <!-- <export:vtk timestep-interval="1" directory="vtkA/" normals="0"/> -->
-      <master:mpi-single />
+      <!-- <export:vtk every-n-time-windows="1" directory="vtkA/" normals="0"/> -->
     </participant>
     
     <participant name="B">
@@ -44,15 +43,14 @@
       <!-- <mapping:rbf-gaussian shape-parameter="4" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="false" z-dead="false" /> -->
       <!-- <mapping:petrbf-gaussian shape-parameter="5600" solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="true" y-dead="false" z-dead="false" polynomial="separate" preallocation="tree"/> -->
       <!-- <mapping:petrbf-volume-splines solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="false" z-dead="false" /> -->
-      <!-- <export:vtk timestep-interval="1" directory="vtkB/" normals="0"/> -->
-      <master:mpi-single />
+      <!-- <export:vtk every-n-time-windows="1" directory="vtkB/" normals="0"/> -->
     </participant>
 
     
     <coupling-scheme:parallel-explicit>
       <participants first="A" second="B" />
       <max-time value="1.0" />
-      <timestep-length value="1" />
+      <time-window-size value="1" />
       <exchange data="Data" mesh="MeshA" from="A" to="B" />
       <!-- <exchange data="Data" mesh="MeshB" from="A" to="B" /> -->
     </coupling-scheme:parallel-explicit>
