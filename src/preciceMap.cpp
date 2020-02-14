@@ -175,8 +175,7 @@ int main(int argc, char* argv[])
   auto meshes = getMeshes(meshname, MPIrank);
 
   // Create and configure solver interface
-  precice::SolverInterface interface(participant, MPIrank, MPIsize);
-  interface.configure(options["precice-config"].as<std::string>());
+  precice::SolverInterface interface(participant, options["precice-config"].as<std::string>(), MPIrank, MPIsize);
   //precice::utils::EventRegistry::instance().runName =  options["runName"].as<std::string>();
   
   const int meshID = interface.getMeshID( (participant == "A") ? "MeshA" : "MeshB" ); // participant = A => MeshID = MeshA
@@ -271,7 +270,7 @@ int main(int argc, char* argv[])
         oss << '(' << mesh.data[i][0] << ' ' << mesh.data[i][1] << ' ' << mesh.data[i][2]<< ')' << ' ';
     VLOG(1) << "Data written: " << oss.str();
 
-    interface.fulfilledAction(precice::constants::actionWriteInitialData());
+    interface.markActionFulfilled(precice::constants::actionWriteInitialData());
   }
   interface.initializeData();
 

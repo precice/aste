@@ -1,0 +1,1097 @@
+{
+  "Finalized": "2019-10-15T14:52:52.266",
+  "Initialized": "2019-10-15T14:52:51.385",
+  "Name": "",
+  "Ranks": [
+    {
+      "Finalized": "2019-10-15T14:52:52.266",
+      "Initialized": "2019-10-15T14:52:51.385",
+      "StateChanges": [
+        {
+          "Name": "_GLOBAL",
+          "State": 1,
+          "Timestamp": 0
+        },
+        {
+          "Name": "_GLOBAL",
+          "State": 0,
+          "Timestamp": 881
+        },
+        {
+          "Name": "advance",
+          "State": 1,
+          "Timestamp": 784
+        },
+        {
+          "Name": "advance",
+          "State": 0,
+          "Timestamp": 880
+        },
+        {
+          "Name": "advance/m2n.receiveData",
+          "State": 1,
+          "Timestamp": 784
+        },
+        {
+          "Name": "advance/m2n.receiveData",
+          "State": 0,
+          "Timestamp": 880
+        },
+        {
+          "Name": "advance/map.nn.computeMapping.FromMeshAToMeshB",
+          "State": 1,
+          "Timestamp": 880
+        },
+        {
+          "Name": "advance/map.nn.computeMapping.FromMeshAToMeshB",
+          "State": 0,
+          "Timestamp": 880
+        },
+        {
+          "Name": "advance/map.nn.computeMapping.FromMeshAToMeshB.getIndexOnVertices",
+          "State": 1,
+          "Timestamp": 880
+        },
+        {
+          "Name": "advance/map.nn.computeMapping.FromMeshAToMeshB.getIndexOnVertices",
+          "State": 0,
+          "Timestamp": 880
+        },
+        {
+          "Name": "advance/map.nn.mapData.FromMeshAToMeshB",
+          "State": 1,
+          "Timestamp": 880
+        },
+        {
+          "Name": "advance/map.nn.mapData.FromMeshAToMeshB",
+          "State": 0,
+          "Timestamp": 880
+        },
+        {
+          "Name": "configure",
+          "State": 1,
+          "Timestamp": 0
+        },
+        {
+          "Name": "configure",
+          "State": 0,
+          "Timestamp": 160
+        },
+        {
+          "Name": "configure/com.initializeMasterSlaveCom",
+          "State": 1,
+          "Timestamp": 0
+        },
+        {
+          "Name": "configure/com.initializeMasterSlaveCom",
+          "State": 0,
+          "Timestamp": 160
+        },
+        {
+          "Name": "finalize",
+          "State": 1,
+          "Timestamp": 880
+        },
+        {
+          "Name": "finalize",
+          "State": 0,
+          "Timestamp": 881
+        },
+        {
+          "Name": "initialize",
+          "State": 1,
+          "Timestamp": 162
+        },
+        {
+          "Name": "initialize",
+          "State": 0,
+          "Timestamp": 784
+        },
+        {
+          "Name": "initialize/m2n.acceptMasterConnection",
+          "State": 1,
+          "Timestamp": 163
+        },
+        {
+          "Name": "initialize/m2n.acceptMasterConnection",
+          "State": 0,
+          "Timestamp": 216
+        },
+        {
+          "Name": "initialize/m2n.acceptSlavesConnection",
+          "State": 1,
+          "Timestamp": 731
+        },
+        {
+          "Name": "initialize/m2n.acceptSlavesConnection",
+          "State": 0,
+          "Timestamp": 783
+        },
+        {
+          "Name": "initialize/m2n.broadcastVertexDistributions",
+          "State": 1,
+          "Timestamp": 780
+        },
+        {
+          "Name": "initialize/m2n.broadcastVertexDistributions",
+          "State": 0,
+          "Timestamp": 780
+        },
+        {
+          "Name": "initialize/m2n.buildCommunicationMap",
+          "State": 1,
+          "Timestamp": 780
+        },
+        {
+          "Name": "initialize/m2n.buildCommunicationMap",
+          "State": 0,
+          "Timestamp": 781
+        },
+        {
+          "Name": "initialize/m2n.createCommunications",
+          "State": 1,
+          "Timestamp": 781
+        },
+        {
+          "Name": "initialize/m2n.createCommunications",
+          "State": 0,
+          "Timestamp": 783
+        },
+        {
+          "Name": "initialize/m2n.exchangeVertexDistribution",
+          "State": 1,
+          "Timestamp": 731
+        },
+        {
+          "Name": "initialize/m2n.exchangeVertexDistribution",
+          "State": 0,
+          "Timestamp": 780
+        },
+        {
+          "Name": "initialize/map.nn.computeMapping.FromMeshAToMeshB",
+          "State": 1,
+          "Timestamp": 602
+        },
+        {
+          "Name": "initialize/map.nn.computeMapping.FromMeshAToMeshB",
+          "State": 0,
+          "Timestamp": 633
+        },
+        {
+          "Name": "initialize/map.nn.computeMapping.FromMeshAToMeshB.getIndexOnVertices",
+          "State": 1,
+          "Timestamp": 602
+        },
+        {
+          "Name": "initialize/map.nn.computeMapping.FromMeshAToMeshB.getIndexOnVertices",
+          "State": 0,
+          "Timestamp": 631
+        },
+        {
+          "Name": "initialize/map.nn.tagMeshFirstRound.FromMeshAToMeshB",
+          "State": 1,
+          "Timestamp": 602
+        },
+        {
+          "Name": "initialize/map.nn.tagMeshFirstRound.FromMeshAToMeshB",
+          "State": 0,
+          "Timestamp": 634
+        },
+        {
+          "Name": "initialize/partition.broadcastMesh.MeshA",
+          "State": 1,
+          "Timestamp": 411
+        },
+        {
+          "Name": "initialize/partition.broadcastMesh.MeshA",
+          "State": 0,
+          "Timestamp": 453
+        },
+        {
+          "Name": "initialize/partition.createOwnerInformation.MeshA",
+          "State": 1,
+          "Timestamp": 634
+        },
+        {
+          "Name": "initialize/partition.createOwnerInformation.MeshA",
+          "State": 0,
+          "Timestamp": 706
+        },
+        {
+          "Name": "initialize/partition.feedbackMesh.MeshA",
+          "State": 1,
+          "Timestamp": 731
+        },
+        {
+          "Name": "initialize/partition.feedbackMesh.MeshA",
+          "State": 0,
+          "Timestamp": 731
+        },
+        {
+          "Name": "initialize/partition.feedbackMesh.MeshB",
+          "State": 1,
+          "Timestamp": 411
+        },
+        {
+          "Name": "initialize/partition.feedbackMesh.MeshB",
+          "State": 0,
+          "Timestamp": 411
+        },
+        {
+          "Name": "initialize/partition.filterMeshBB.MeshA",
+          "State": 1,
+          "Timestamp": 454
+        },
+        {
+          "Name": "initialize/partition.filterMeshBB.MeshA",
+          "State": 0,
+          "Timestamp": 592
+        },
+        {
+          "Name": "initialize/partition.filterMeshMappingsMeshA",
+          "State": 1,
+          "Timestamp": 706
+        },
+        {
+          "Name": "initialize/partition.filterMeshMappingsMeshA",
+          "State": 0,
+          "Timestamp": 725
+        },
+        {
+          "Name": "initialize/partition.receiveGlobalMesh.MeshA",
+          "State": 1,
+          "Timestamp": 216
+        },
+        {
+          "Name": "initialize/partition.receiveGlobalMesh.MeshA",
+          "State": 0,
+          "Timestamp": 410
+        },
+        {
+          "Name": "initializeData",
+          "State": 1,
+          "Timestamp": 784
+        },
+        {
+          "Name": "initializeData",
+          "State": 0,
+          "Timestamp": 784
+        },
+        {
+          "Name": "solver.advance",
+          "State": 1,
+          "Timestamp": 880
+        },
+        {
+          "Name": "solver.advance",
+          "State": 0,
+          "Timestamp": 880
+        },
+        {
+          "Name": "solver.initialize",
+          "State": 1,
+          "Timestamp": 160
+        },
+        {
+          "Name": "solver.initialize",
+          "State": 2,
+          "Timestamp": 162
+        },
+        {
+          "Name": "solver.initialize",
+          "State": 1,
+          "Timestamp": 784
+        },
+        {
+          "Name": "solver.initialize",
+          "State": 2,
+          "Timestamp": 784
+        },
+        {
+          "Name": "solver.initialize",
+          "State": 1,
+          "Timestamp": 784
+        },
+        {
+          "Name": "solver.initialize",
+          "State": 0,
+          "Timestamp": 784
+        }
+      ],
+      "Timings": {
+        "_GLOBAL": {
+          "Count": 1,
+          "Data": {},
+          "Max": 881,
+          "Min": 881,
+          "TimeRatio": 1.0,
+          "Total": 881
+        },
+        "advance": {
+          "Count": 1,
+          "Data": {},
+          "Max": 96,
+          "Min": 96,
+          "TimeRatio": 0.10896708286038592,
+          "Total": 96
+        },
+        "advance/m2n.receiveData": {
+          "Count": 1,
+          "Data": {},
+          "Max": 96,
+          "Min": 96,
+          "TimeRatio": 0.10896708286038592,
+          "Total": 96
+        },
+        "advance/map.nn.computeMapping.FromMeshAToMeshB": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "advance/map.nn.computeMapping.FromMeshAToMeshB.getIndexOnVertices": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "advance/map.nn.mapData.FromMeshAToMeshB": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "configure": {
+          "Count": 1,
+          "Data": {},
+          "Max": 161,
+          "Min": 161,
+          "TimeRatio": 0.18274687854710556,
+          "Total": 161
+        },
+        "configure/com.initializeMasterSlaveCom": {
+          "Count": 1,
+          "Data": {},
+          "Max": 160,
+          "Min": 160,
+          "TimeRatio": 0.18161180476730987,
+          "Total": 160
+        },
+        "finalize": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "initialize": {
+          "Count": 1,
+          "Data": {},
+          "Max": 621,
+          "Min": 621,
+          "TimeRatio": 0.7048808172531215,
+          "Total": 621
+        },
+        "initialize/m2n.acceptMasterConnection": {
+          "Count": 1,
+          "Data": {},
+          "Max": 53,
+          "Min": 53,
+          "TimeRatio": 0.060158910329171394,
+          "Total": 53
+        },
+        "initialize/m2n.acceptSlavesConnection": {
+          "Count": 1,
+          "Data": {},
+          "Max": 52,
+          "Min": 52,
+          "TimeRatio": 0.05902383654937571,
+          "Total": 52
+        },
+        "initialize/m2n.broadcastVertexDistributions": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "initialize/m2n.buildCommunicationMap": {
+          "Count": 1,
+          "Data": {},
+          "Max": 1,
+          "Min": 1,
+          "TimeRatio": 0.0011350737797956867,
+          "Total": 1
+        },
+        "initialize/m2n.createCommunications": {
+          "Count": 1,
+          "Data": {
+            "Connections": [
+              2
+            ]
+          },
+          "Max": 2,
+          "Min": 2,
+          "TimeRatio": 0.0022701475595913734,
+          "Total": 2
+        },
+        "initialize/m2n.exchangeVertexDistribution": {
+          "Count": 1,
+          "Data": {},
+          "Max": 48,
+          "Min": 48,
+          "TimeRatio": 0.05448354143019296,
+          "Total": 48
+        },
+        "initialize/map.nn.computeMapping.FromMeshAToMeshB": {
+          "Count": 1,
+          "Data": {},
+          "Max": 30,
+          "Min": 30,
+          "TimeRatio": 0.0340522133938706,
+          "Total": 30
+        },
+        "initialize/map.nn.computeMapping.FromMeshAToMeshB.getIndexOnVertices": {
+          "Count": 1,
+          "Data": {},
+          "Max": 28,
+          "Min": 28,
+          "TimeRatio": 0.03178206583427923,
+          "Total": 28
+        },
+        "initialize/map.nn.tagMeshFirstRound.FromMeshAToMeshB": {
+          "Count": 1,
+          "Data": {},
+          "Max": 32,
+          "Min": 32,
+          "TimeRatio": 0.036322360953461974,
+          "Total": 32
+        },
+        "initialize/partition.broadcastMesh.MeshA": {
+          "Count": 1,
+          "Data": {},
+          "Max": 42,
+          "Min": 42,
+          "TimeRatio": 0.04767309875141884,
+          "Total": 42
+        },
+        "initialize/partition.createOwnerInformation.MeshA": {
+          "Count": 1,
+          "Data": {},
+          "Max": 71,
+          "Min": 71,
+          "TimeRatio": 0.08059023836549375,
+          "Total": 71
+        },
+        "initialize/partition.feedbackMesh.MeshA": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "initialize/partition.feedbackMesh.MeshB": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "initialize/partition.filterMeshBB.MeshA": {
+          "Count": 1,
+          "Data": {},
+          "Max": 138,
+          "Min": 138,
+          "TimeRatio": 0.15664018161180476,
+          "Total": 138
+        },
+        "initialize/partition.filterMeshMappingsMeshA": {
+          "Count": 1,
+          "Data": {},
+          "Max": 19,
+          "Min": 19,
+          "TimeRatio": 0.021566401816118047,
+          "Total": 19
+        },
+        "initialize/partition.receiveGlobalMesh.MeshA": {
+          "Count": 1,
+          "Data": {},
+          "Max": 193,
+          "Min": 193,
+          "TimeRatio": 0.21906923950056753,
+          "Total": 193
+        },
+        "initializeData": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "solver.advance": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "solver.initialize": {
+          "Count": 1,
+          "Data": {},
+          "Max": 2,
+          "Min": 2,
+          "TimeRatio": 0.0022701475595913734,
+          "Total": 2
+        }
+      }
+    },
+    {
+      "Finalized": "2019-10-15T14:52:52.266",
+      "Initialized": "2019-10-15T14:52:51.400",
+      "StateChanges": [
+        {
+          "Name": "_GLOBAL",
+          "State": 1,
+          "Timestamp": 15
+        },
+        {
+          "Name": "_GLOBAL",
+          "State": 0,
+          "Timestamp": 881
+        },
+        {
+          "Name": "advance",
+          "State": 1,
+          "Timestamp": 786
+        },
+        {
+          "Name": "advance",
+          "State": 0,
+          "Timestamp": 881
+        },
+        {
+          "Name": "advance/m2n.receiveData",
+          "State": 1,
+          "Timestamp": 786
+        },
+        {
+          "Name": "advance/m2n.receiveData",
+          "State": 0,
+          "Timestamp": 880
+        },
+        {
+          "Name": "advance/map.nn.computeMapping.FromMeshAToMeshB",
+          "State": 1,
+          "Timestamp": 880
+        },
+        {
+          "Name": "advance/map.nn.computeMapping.FromMeshAToMeshB",
+          "State": 0,
+          "Timestamp": 881
+        },
+        {
+          "Name": "advance/map.nn.computeMapping.FromMeshAToMeshB.getIndexOnVertices",
+          "State": 1,
+          "Timestamp": 880
+        },
+        {
+          "Name": "advance/map.nn.computeMapping.FromMeshAToMeshB.getIndexOnVertices",
+          "State": 0,
+          "Timestamp": 880
+        },
+        {
+          "Name": "advance/map.nn.mapData.FromMeshAToMeshB",
+          "State": 1,
+          "Timestamp": 881
+        },
+        {
+          "Name": "advance/map.nn.mapData.FromMeshAToMeshB",
+          "State": 0,
+          "Timestamp": 881
+        },
+        {
+          "Name": "configure",
+          "State": 1,
+          "Timestamp": 1
+        },
+        {
+          "Name": "configure",
+          "State": 0,
+          "Timestamp": 163
+        },
+        {
+          "Name": "configure/com.initializeMasterSlaveCom",
+          "State": 1,
+          "Timestamp": 15
+        },
+        {
+          "Name": "configure/com.initializeMasterSlaveCom",
+          "State": 0,
+          "Timestamp": 163
+        },
+        {
+          "Name": "finalize",
+          "State": 1,
+          "Timestamp": 881
+        },
+        {
+          "Name": "finalize",
+          "State": 0,
+          "Timestamp": 881
+        },
+        {
+          "Name": "initialize",
+          "State": 1,
+          "Timestamp": 165
+        },
+        {
+          "Name": "initialize",
+          "State": 0,
+          "Timestamp": 786
+        },
+        {
+          "Name": "initialize/m2n.acceptMasterConnection",
+          "State": 1,
+          "Timestamp": 165
+        },
+        {
+          "Name": "initialize/m2n.acceptMasterConnection",
+          "State": 0,
+          "Timestamp": 223
+        },
+        {
+          "Name": "initialize/m2n.acceptSlavesConnection",
+          "State": 1,
+          "Timestamp": 739
+        },
+        {
+          "Name": "initialize/m2n.acceptSlavesConnection",
+          "State": 0,
+          "Timestamp": 785
+        },
+        {
+          "Name": "initialize/m2n.broadcastVertexDistributions",
+          "State": 1,
+          "Timestamp": 739
+        },
+        {
+          "Name": "initialize/m2n.broadcastVertexDistributions",
+          "State": 0,
+          "Timestamp": 780
+        },
+        {
+          "Name": "initialize/m2n.buildCommunicationMap",
+          "State": 1,
+          "Timestamp": 780
+        },
+        {
+          "Name": "initialize/m2n.buildCommunicationMap",
+          "State": 0,
+          "Timestamp": 781
+        },
+        {
+          "Name": "initialize/m2n.createCommunications",
+          "State": 1,
+          "Timestamp": 781
+        },
+        {
+          "Name": "initialize/m2n.createCommunications",
+          "State": 0,
+          "Timestamp": 785
+        },
+        {
+          "Name": "initialize/map.nn.computeMapping.FromMeshAToMeshB",
+          "State": 1,
+          "Timestamp": 641
+        },
+        {
+          "Name": "initialize/map.nn.computeMapping.FromMeshAToMeshB",
+          "State": 0,
+          "Timestamp": 669
+        },
+        {
+          "Name": "initialize/map.nn.computeMapping.FromMeshAToMeshB.getIndexOnVertices",
+          "State": 1,
+          "Timestamp": 641
+        },
+        {
+          "Name": "initialize/map.nn.computeMapping.FromMeshAToMeshB.getIndexOnVertices",
+          "State": 0,
+          "Timestamp": 666
+        },
+        {
+          "Name": "initialize/map.nn.tagMeshFirstRound.FromMeshAToMeshB",
+          "State": 1,
+          "Timestamp": 641
+        },
+        {
+          "Name": "initialize/map.nn.tagMeshFirstRound.FromMeshAToMeshB",
+          "State": 0,
+          "Timestamp": 670
+        },
+        {
+          "Name": "initialize/partition.broadcastMesh.MeshA",
+          "State": 1,
+          "Timestamp": 420
+        },
+        {
+          "Name": "initialize/partition.broadcastMesh.MeshA",
+          "State": 0,
+          "Timestamp": 497
+        },
+        {
+          "Name": "initialize/partition.createOwnerInformation.MeshA",
+          "State": 1,
+          "Timestamp": 670
+        },
+        {
+          "Name": "initialize/partition.createOwnerInformation.MeshA",
+          "State": 0,
+          "Timestamp": 702
+        },
+        {
+          "Name": "initialize/partition.feedbackMesh.MeshA",
+          "State": 1,
+          "Timestamp": 722
+        },
+        {
+          "Name": "initialize/partition.feedbackMesh.MeshA",
+          "State": 0,
+          "Timestamp": 738
+        },
+        {
+          "Name": "initialize/partition.feedbackMesh.MeshB",
+          "State": 1,
+          "Timestamp": 224
+        },
+        {
+          "Name": "initialize/partition.feedbackMesh.MeshB",
+          "State": 0,
+          "Timestamp": 420
+        },
+        {
+          "Name": "initialize/partition.filterMeshBB.MeshA",
+          "State": 1,
+          "Timestamp": 506
+        },
+        {
+          "Name": "initialize/partition.filterMeshBB.MeshA",
+          "State": 0,
+          "Timestamp": 617
+        },
+        {
+          "Name": "initialize/partition.filterMeshMappingsMeshA",
+          "State": 1,
+          "Timestamp": 702
+        },
+        {
+          "Name": "initialize/partition.filterMeshMappingsMeshA",
+          "State": 0,
+          "Timestamp": 712
+        },
+        {
+          "Name": "initialize/partition.receiveGlobalMesh.MeshA",
+          "State": 1,
+          "Timestamp": 224
+        },
+        {
+          "Name": "initialize/partition.receiveGlobalMesh.MeshA",
+          "State": 0,
+          "Timestamp": 224
+        },
+        {
+          "Name": "initializeData",
+          "State": 1,
+          "Timestamp": 786
+        },
+        {
+          "Name": "initializeData",
+          "State": 0,
+          "Timestamp": 786
+        },
+        {
+          "Name": "solver.advance",
+          "State": 1,
+          "Timestamp": 881
+        },
+        {
+          "Name": "solver.advance",
+          "State": 0,
+          "Timestamp": 881
+        },
+        {
+          "Name": "solver.initialize",
+          "State": 1,
+          "Timestamp": 163
+        },
+        {
+          "Name": "solver.initialize",
+          "State": 2,
+          "Timestamp": 165
+        },
+        {
+          "Name": "solver.initialize",
+          "State": 1,
+          "Timestamp": 786
+        },
+        {
+          "Name": "solver.initialize",
+          "State": 2,
+          "Timestamp": 786
+        },
+        {
+          "Name": "solver.initialize",
+          "State": 1,
+          "Timestamp": 786
+        },
+        {
+          "Name": "solver.initialize",
+          "State": 0,
+          "Timestamp": 786
+        }
+      ],
+      "Timings": {
+        "_GLOBAL": {
+          "Count": 1,
+          "Data": {},
+          "Max": 865,
+          "Min": 865,
+          "TimeRatio": 1.0,
+          "Total": 865
+        },
+        "advance": {
+          "Count": 1,
+          "Data": {},
+          "Max": 94,
+          "Min": 94,
+          "TimeRatio": 0.10867052023121387,
+          "Total": 94
+        },
+        "advance/m2n.receiveData": {
+          "Count": 1,
+          "Data": {},
+          "Max": 93,
+          "Min": 93,
+          "TimeRatio": 0.10751445086705202,
+          "Total": 93
+        },
+        "advance/map.nn.computeMapping.FromMeshAToMeshB": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "advance/map.nn.computeMapping.FromMeshAToMeshB.getIndexOnVertices": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "advance/map.nn.mapData.FromMeshAToMeshB": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "configure": {
+          "Count": 1,
+          "Data": {},
+          "Max": 161,
+          "Min": 161,
+          "TimeRatio": 0.1861271676300578,
+          "Total": 161
+        },
+        "configure/com.initializeMasterSlaveCom": {
+          "Count": 1,
+          "Data": {},
+          "Max": 147,
+          "Min": 147,
+          "TimeRatio": 0.1699421965317919,
+          "Total": 147
+        },
+        "finalize": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "initialize": {
+          "Count": 1,
+          "Data": {},
+          "Max": 621,
+          "Min": 621,
+          "TimeRatio": 0.7179190751445087,
+          "Total": 621
+        },
+        "initialize/m2n.acceptMasterConnection": {
+          "Count": 1,
+          "Data": {},
+          "Max": 58,
+          "Min": 58,
+          "TimeRatio": 0.06705202312138728,
+          "Total": 58
+        },
+        "initialize/m2n.acceptSlavesConnection": {
+          "Count": 1,
+          "Data": {},
+          "Max": 46,
+          "Min": 46,
+          "TimeRatio": 0.05317919075144509,
+          "Total": 46
+        },
+        "initialize/m2n.broadcastVertexDistributions": {
+          "Count": 1,
+          "Data": {},
+          "Max": 41,
+          "Min": 41,
+          "TimeRatio": 0.047398843930635835,
+          "Total": 41
+        },
+        "initialize/m2n.buildCommunicationMap": {
+          "Count": 1,
+          "Data": {},
+          "Max": 1,
+          "Min": 1,
+          "TimeRatio": 0.0011560693641618498,
+          "Total": 1
+        },
+        "initialize/m2n.createCommunications": {
+          "Count": 1,
+          "Data": {
+            "Connections": [
+              2
+            ]
+          },
+          "Max": 4,
+          "Min": 4,
+          "TimeRatio": 0.004624277456647399,
+          "Total": 4
+        },
+        "initialize/map.nn.computeMapping.FromMeshAToMeshB": {
+          "Count": 1,
+          "Data": {},
+          "Max": 28,
+          "Min": 28,
+          "TimeRatio": 0.03236994219653179,
+          "Total": 28
+        },
+        "initialize/map.nn.computeMapping.FromMeshAToMeshB.getIndexOnVertices": {
+          "Count": 1,
+          "Data": {},
+          "Max": 24,
+          "Min": 24,
+          "TimeRatio": 0.027745664739884393,
+          "Total": 24
+        },
+        "initialize/map.nn.tagMeshFirstRound.FromMeshAToMeshB": {
+          "Count": 1,
+          "Data": {},
+          "Max": 29,
+          "Min": 29,
+          "TimeRatio": 0.03352601156069364,
+          "Total": 29
+        },
+        "initialize/partition.broadcastMesh.MeshA": {
+          "Count": 1,
+          "Data": {},
+          "Max": 77,
+          "Min": 77,
+          "TimeRatio": 0.08901734104046242,
+          "Total": 77
+        },
+        "initialize/partition.createOwnerInformation.MeshA": {
+          "Count": 1,
+          "Data": {},
+          "Max": 31,
+          "Min": 31,
+          "TimeRatio": 0.035838150289017344,
+          "Total": 31
+        },
+        "initialize/partition.feedbackMesh.MeshA": {
+          "Count": 1,
+          "Data": {},
+          "Max": 15,
+          "Min": 15,
+          "TimeRatio": 0.017341040462427744,
+          "Total": 15
+        },
+        "initialize/partition.feedbackMesh.MeshB": {
+          "Count": 1,
+          "Data": {},
+          "Max": 195,
+          "Min": 195,
+          "TimeRatio": 0.2254335260115607,
+          "Total": 195
+        },
+        "initialize/partition.filterMeshBB.MeshA": {
+          "Count": 1,
+          "Data": {},
+          "Max": 110,
+          "Min": 110,
+          "TimeRatio": 0.12716763005780346,
+          "Total": 110
+        },
+        "initialize/partition.filterMeshMappingsMeshA": {
+          "Count": 1,
+          "Data": {},
+          "Max": 9,
+          "Min": 9,
+          "TimeRatio": 0.010404624277456647,
+          "Total": 9
+        },
+        "initialize/partition.receiveGlobalMesh.MeshA": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "initializeData": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "solver.advance": {
+          "Count": 1,
+          "Data": {},
+          "Max": 0,
+          "Min": 0,
+          "TimeRatio": 0.0,
+          "Total": 0
+        },
+        "solver.initialize": {
+          "Count": 1,
+          "Data": {},
+          "Max": 1,
+          "Min": 1,
+          "TimeRatio": 0.0011560693641618498,
+          "Total": 1
+        }
+      }
+    }
+  ]
+}

@@ -19,7 +19,7 @@ if not os.path.isfile("bunny.vtk"):
 files = ["colored.dt" + str(i) + ".vtk" for i in range(20)]
 for t, f in enumerate(files):
     if not os.path.isfile(f):
-        run("eval_mesh.py bunny.vtk -o " + f + " " + str(t))
+        run("eval_mesh.py bunny.vtk -o " + f + " " + str(t) + " -d 3")
         
 if not all([os.path.isdir("colored.dt"  + str(i)) for i in range(20)]):
     run("partition_mesh.py -n 2 " + " ".join(files))
