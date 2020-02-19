@@ -27,3 +27,8 @@ testMesh.txt
 *.synctex.gz
 compile_commands.json
 build/
+contrib/colored*
+contrib/mapped/
+contrib/precice-run/
+contrib/bunny*
+*.vtk
