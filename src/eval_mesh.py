@@ -10,9 +10,6 @@ def main():
     logging.basicConfig(level=getattr(logging, args.logging))
     points, cells, cell_types, _ = read_mesh(args.in_meshname)
     points = np.array(points)
-    values = user_func(points, args.function, int(args.dimf))
-    write_mesh(args.out_meshname, points, cells, cell_types, values, datadim=int(args.dimf))
-
 
     values = user_func(points, args.function)
     write_mesh(args.out_meshname, points, cells, cell_types, values)
@@ -34,7 +31,7 @@ def user_func(points, f_str):
     with Pool() as pool:
         vals = np.array(pool.map(evaluator.evaluate, enumerate(points)))
 
-    logging.info("Evaluated {} on {} vertices".format(f_str, len(vals[:,0])))
+    logging.info("Evaluated {} on {} vertices".format(f_str, len(vals[:])))
     return vals
 
 

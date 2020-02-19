@@ -201,7 +201,7 @@ def write_txt(filename, points, cells = [], pointdata = None):
         for i, point in enumerate(points):
             entry = (str(point[0]), str(point[1]), str(point[2]))
             if pointdata is not None and len(pointdata) > 0:
-                if len(pointdata[0]) ==1:
+                if type(pointdata[0]) is float:
                     entry += (str(float(pointdata[i])),)
                 elif len(pointdata[0])==2:
                     entry += (str(float(pointdata[i,0])), str(float(pointdata[i,1])))

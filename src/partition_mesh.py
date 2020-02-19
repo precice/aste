@@ -67,7 +67,7 @@ class Mesh:
 
 
 def read_mesh(filename, tag):
-    points, cells, cell_types, pointdata = mesh_io.read_mesh(filename, tag, datadim=3)
+    points, cells, cell_types, pointdata = mesh_io.read_mesh(filename, tag, datadim=1)
     return Mesh(points, cells, cell_types, pointdata)
 
 

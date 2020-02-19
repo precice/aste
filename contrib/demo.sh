@@ -14,7 +14,7 @@ test -f rbc.vtk || wget "https://people.sc.fsu.edu/~jburkardt/data/vtk/rbc_001.v
 test -f bunny.vtk || wget "https://www.ece.lsu.edu/xinli/Meshing/Data/bunny.vtk" -O bunny.vtk
 
 # Evaluate the function x+y on the bunny, write to colored.vtk
-eval_mesh.py bunny.vtk -o colored.vtk "x + y" -d 3
+eval_mesh.py bunny.vtk -o colored.vtk "x + y"
 
 # Decompose both meshes to two procesors
 partition_mesh.py colored.vtk -n 2
