@@ -253,7 +253,7 @@ int main(int argc, char* argv[])
   edgeMap.clear();
   VLOG(1) << "Mesh setup completed on Rank " << MPIrank;
     
-  interface.initialize();
+  auto dt = interface.initialize();
 
   if (interface.isActionRequired(precice::constants::actionWriteInitialData())) {
     VLOG(1) << "Write initial data for participant " << participant;
@@ -297,7 +297,7 @@ int main(int argc, char* argv[])
         oss << '(' << roundmesh.data[i][0] << ' ' << roundmesh.data[i][1] << ' ' << roundmesh.data[i][2]<< ')' << ' ';
     VLOG(1) << "Data written: " << oss.str();
     }
-    interface.advance(1);
+    interface.advance(dt);
 
     if (participant == "B") {
       //interface.readBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
