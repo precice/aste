@@ -32,3 +32,9 @@ contrib/mapped/
 contrib/precice-run/
 contrib/bunny*
 *.vtk
+*.vtu
+*.pvtu
+0*
+1*
+*events.json
+*.log
