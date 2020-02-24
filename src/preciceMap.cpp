@@ -288,7 +288,7 @@ int main(int argc, char* argv[])
       //interface.writeBlockScalarData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
       size_t i=0;
       for(auto const& vertexID : vertexIDs){
-        interface.writeVectorData(dataID, vertexID, (const double *) &mesh.data[i]);
+        interface.writeVectorData(dataID, vertexID, (const double *) &roundmesh.data[i]);
         i++;
       }
 
