@@ -17,7 +17,7 @@ def main():
     if not algorithm:
         logging.info("No algorithm given. Defaulting to \"meshfree\"")
         algorithm = "meshfree"
-    rootmesh = read_mesh(mesh_names[0], args.tag, args.dimf)
+    rootmesh = read_mesh(mesh_names[0], args.tag, args.datadim)
     if args.numparts > 1:
         part = partition(rootmesh, args.numparts, algorithm)
     else:
@@ -25,7 +25,7 @@ def main():
         
     for mesh_name in mesh_names:
         logging.info("Processing mesh " + mesh_name)
-        mesh = read_mesh(mesh_name, args.tag, args.dimf)
+        mesh = read_mesh(mesh_name, args.tag, args.datadim)
         logging.debug("Checking if meshes are matching...")
         assert mesh.points == rootmesh.points, ("Non-matching meshes detected!")
         meshes = apply_partition(mesh, part, args.numparts)
@@ -66,8 +66,8 @@ class Mesh:
         return "Mesh with {} Points and {} Cells ({} Cell Types)".format(len(self.points), len(self.cells), len(self.cell_types))
 
 
-def read_mesh(filename, tag, dimf=1):
-    points, cells, cell_types, pointdata = mesh_io.read_mesh(filename, tag, datadim=dimf)
+def read_mesh(filename, tag, datadim=1):
+    points, cells, cell_types, pointdata = mesh_io.read_mesh(filename, tag, datadim=datadim)
     return Mesh(points, cells, cell_types, pointdata)
 
 
@@ -297,7 +297,7 @@ def parse_args():
     parser.add_argument("--log", "-l", dest="logging", default="INFO", 
             choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], 
             help="Set the log level. Default is INFO")
-    parser.add_argument("--dimf", "-d", dest="dimf", default=1, type=int, help="Dimensions of the function. Default is 1 (Scalar function.")
+    parser.add_argument("--datadim", "-d", dest="datadim", default=1, type=int, help="Dimensions of the function. Default is 1 (Scalar function.")
     return parser.parse_args()
 
 if __name__ == "__main__":

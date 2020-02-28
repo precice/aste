@@ -64,7 +64,7 @@ public:
 
 class VectorMesh : public Mesh{
 public:
-  std::vector<std::array<double, 3>> data; //Overload data with Vector data
+  VectorData data; //Overload data with Vector data
 
   void ReadVectorMesh(const std::string& filename, bool read_data = true){
     VLOG(1) << "Reading mesh vertices " << (read_data?"and data ":"") << "from file " << filename;
