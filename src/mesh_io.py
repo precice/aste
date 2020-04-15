@@ -138,7 +138,7 @@ def read_txt(filename):
     return points, cells, cell_types, pointdata
 
 
-def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None, tag = "MyVectors", datadim=3):
+def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None, tag = None, datadim=1):
     import vtk
     data = vtk.vtkUnstructuredGrid() # is also vtkDataSet
     DataArray = vtk.vtkDoubleArray()

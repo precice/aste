@@ -297,7 +297,7 @@ def parse_args():
     parser.add_argument("--log", "-l", dest="logging", default="INFO", 
             choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], 
             help="Set the log level. Default is INFO")
-    parser.add_argument("--datadim", "-d", dest="datadim", default=1, type=int, help="Dimensions of the function. Default is 1 (Scalar function.")
+    parser.add_argument("--datadim", "-d", dest="datadim", default=1, type=int, help="Dimensions of the data. Default is 1 (scalar data).")
     return parser.parse_args()
 
 if __name__ == "__main__":

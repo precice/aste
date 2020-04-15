@@ -15,10 +15,13 @@ def main():
     for i in range(1,args.n+1):
         files.append(args.SolverName +".dt" + str(i) + ".vtk")
     
-    for i in files:
-        run("partition_mesh.py -n 1 " + i + " -t " + args.function + " --datadim "+ str(args.datadim))
+    for file in files:
+        run("partition_mesh.py -n 1 " + file + " -t " + args.function + " --datadim "+ str(args.datadim))
     
-    run("rm -r " + args.SolverName + ".dt0")
+    try:
+        run("rm -r " + args.SolverName + ".dt0")
+    except:
+        print("Renaming " + args.SolverName + ".init to " + args.SolverName +".dto")
     run("mv " + args.SolverName + ".init " + args.SolverName + ".dt0")
 
 def parse_args():
