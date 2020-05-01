@@ -5,10 +5,6 @@ import os
 import mesh_io
 import shutil
 
-def run(cmd):
-    print("+ " + cmd)
-    subprocess.run(cmd, shell = True, check = True)
-    
 # Generate Aste files from preCICE VTK output for every timestep
 def main():    
     args=parse_args()
