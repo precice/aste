@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import subprocess
 import argparse, logging
+import os
+import mesh_io
+import shutil
 
 def run(cmd):
     print("+ " + cmd)
@@ -13,16 +16,29 @@ def main():
     files.append(args.SolverName + ".init.vtk")
     
     for i in range(1,args.n+1):
-        files.append(args.SolverName +".dt" + str(i) + ".vtk")
+        if os.path.exists(args.SolverName +".dt" + str(i) + ".vtk"):
+            files.append(args.SolverName +".dt" + str(i) + ".vtk")
+        else:
+            raise Exception(args.SolverName +".dt" + str(i) + ".vtk not found.")
     
     for file in files:
-        run("partition_mesh.py -n 1 " + file + " -t " + args.function + " --datadim "+ str(args.datadim))
+        dirname = os.path.splitext(file)[0]
+        if os.path.exists(dirname):
+            shutil.rmtree(dirname)
+        os.mkdir(dirname)
+        points, [], [], pointdata = mesh_io.read_mesh(file, tag=args.function, datadim=args.datadim)
+        mesh_io.write_txt(dirname + "/0", points, pointdata=pointdata)
+        #run("partition_mesh.py -n 1 " + file + " -t " + args.function + " --datadim "+ str(args.datadim))
+        
     
-    try:
-        run("rm -r " + args.SolverName + ".dt0")
-    except:
-        print("Renaming " + args.SolverName + ".init to " + args.SolverName +".dto")
-    run("mv " + args.SolverName + ".init " + args.SolverName + ".dt0")
+    if os.path.exists(args.SolverName + ".dt0"):
+        shutil.rmtree(args.SolverName + ".dt0")
+        
+    print("Renaming " + args.SolverName + ".init to " + args.SolverName +".dt0")
+    if os.path.exists(args.SolverName + ".init"):
+        os.rename(args.SolverName + ".init", args.SolverName + ".dt0")
+    else:
+        raise Exception("Initial coupling data " + args.SolverName + ".init does not exist.")
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Convert preCICE VTK exports to ASTE format")
@@ -33,7 +49,7 @@ def parse_args():
     parser.add_argument("--log", "-l", dest="logging", default="INFO", 
             choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="""Set the log level. 
             Default is INFO""")
-    parser.add_argument("--datadim","-d", dest="datadim", default="1", choices=["1","2", "3"],
+    parser.add_argument("--datadim","-d", dest="datadim", type=int, default=1, choices=[1,2,3],
                         help="""Dimension of the coupling function. 
                         Default is 1 (scalar function).""")
     parser.add_argument("--function", "-f", dest="function", default=None, help="""Name of the

@@ -34,6 +34,7 @@ def read_vtk(filename, tag = None, datadim=1):
     pointdata = []
     cell_types = []
     points = [vtkmesh.GetPoint(i) for i in range(vtkmesh.GetNumberOfPoints())]
+    print("Import "+ tag + " from " +filename)
     for i in range(vtkmesh.GetNumberOfCells()):
         cell = vtkmesh.GetCell(i)
         cell_type = cell.GetCellType()
@@ -52,7 +53,6 @@ def read_vtk(filename, tag = None, datadim=1):
             fieldData = vtkmesh.GetPointData().GetVectors()
     else:
         fieldData = vtkmesh.GetPointData().GetAbstractArray(tag)
-        print("Imported " + tag +".")
     if fieldData:
         for i in range(vtkmesh.GetNumberOfPoints()):
             if datadim == 1:
@@ -61,6 +61,8 @@ def read_vtk(filename, tag = None, datadim=1):
                 pointdata.append(fieldData.GetTuple2(i))
             elif datadim == 3:
                 pointdata.append(fieldData.GetTuple3(i))
+            else :
+                raise Exception("Something weird is going on")
     return points, cells, cell_types, pointdata
 
 
