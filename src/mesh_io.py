@@ -122,16 +122,14 @@ def read_txt(filename):
         for line in fh:
             point = ()
             parts = line.split(" ")
-            for i in range(3):
-                point += (float(parts[i]),)
+            parts_floats = [float(i) for i in parts]
+            point = parts_floats[0:3]
             points.append(point)
-            if len(parts) == 4:
-                pointdata.append(float(parts[3]))
-            if len(parts) == 6:
-                pointvector = ()
-                for i in range(3):
-                    pointvector += (float(parts[3+i]),)
-                pointdata.append(pointvector)
+            if len(parts_floats)==4:
+                data = parts_floats[3]
+            elif len(parts_floats)>4:
+                data = parts_floats[3:]
+                pointdata.append(data)
     base, ext = os.path.splitext(filename)
     connFileName = base + ".conn" + ext
     if os.path.exists(connFileName):
@@ -206,14 +204,11 @@ def write_txt(filename, points, cells = [], pointdata = None):
             if pointdata is not None and len(pointdata) > 0:
                 if type(pointdata[0]) is float:
                     entry += (str(float(pointdata[i])),)
-                elif len(pointdata[0])==2:
-                    entry += (str(float(pointdata[i,0])), str(float(pointdata[i,1])))
                 elif len(pointdata[0])==3:
-                    #print(pointdata[i])
                     entry += (str(float(pointdata[i][0])), 
                               str(float(pointdata[i][1])), 
                               str(float(pointdata[i][2])))
-
+                    
             fh.write(" ".join(entry) + "\n")
 
     base, ext = os.path.splitext(filename)
