@@ -54,15 +54,15 @@ std::vector<std::string> getMeshes(std::string basename, int rank)
   return meshes;
 }
 
-class Mesh {
-public:
+struct Mesh {
   std::vector<std::array<double, 3>> positions;
   std::vector<std::array<size_t, 2>> edges;
   std::vector<std::array<size_t, 3>> triangles;
   std::vector<double> data;
+  size_t dataStride = 1;
 };
 
-class VectorMesh : public Mesh{
+/*class VectorMesh : public Mesh{
 public:
   VectorData data; //Overload data with Vector data
 
@@ -89,7 +89,7 @@ public:
         oss << '(' << data[i][0] << ' ' << data[i][1] << ' ' << data[i][2]<< ')' << ' ';
     VLOG(1) << "Data read from file: " << oss.str();
   }
-};
+};*/
 
 using VertexID = int;
 using EdgeID = int;
@@ -134,7 +134,7 @@ VectorData readVectorData(const std::string& filename){
 }
 
 // Reads the main file containing the vertices and data
-void readMainFile(Mesh& mesh, const std::string& filename, bool read_data)
+/*void readMainFile(Mesh& mesh, const std::string& filename, bool read_data)
 {
     VLOG(1) << "Reading mesh vertices " << (read_data?"and data ":"") << "from file " << filename;
     std::ifstream mainFile{filename};
@@ -150,7 +150,31 @@ void readMainFile(Mesh& mesh, const std::string& filename, bool read_data)
     }
     if (not read_data)
         mesh.data = std::vector<double>(mesh.positions.size(), 0);
+}*/
+
+void readMainFile(Mesh& mesh, const std::string& filename, bool read_data)
+{
+    VLOG(1) << "Reading mesh vertices " << (read_data?"and data ":"") << "from file " << filename;
+    std::ifstream mainFile{filename};
+    std::string line;
+    while (std::getline(mainFile, line)){
+        std::vector<std::string> parts;
+        boost::split(parts, line, [](char c){return c==' ';});
+        std::vector<double> linevalues(parts.size());
+        std::transform(parts.begin(), parts.end(), linevalues.begin(), [](const std::string& s) -> double{return std::stod(s);} );
+        std::array<double, 3> position {linevalues[0], linevalues[1], linevalues[2]};
+        mesh.positions.push_back(position);       
+        if (read_data){
+          mesh.dataStride = linevalues.size() - 3;
+          for (size_t i = 3; i < linevalues.size(); i++){
+            mesh.data.push_back(linevalues[i]);
+          }
+        }
+    }
+    if (not read_data)
+        mesh.data = std::vector<double>(mesh.positions.size()*mesh.dataStride, 0);
 }
+
 
 // Reads the connectivity file containing the triangle and edge information
 void readConnFile(Mesh& mesh, const std::string& filename)
@@ -295,7 +319,7 @@ int main(int argc, char* argv[])
 
     
     
-    if (vectordata){
+   /* if (vectordata){
       size_t i=0;
       VectorData initialdata = readVectorData(meshes[0]);
 
@@ -307,9 +331,13 @@ int main(int argc, char* argv[])
       for(size_t i = 0; i<std::min((size_t)10, mesh.data.size()); ++i)
           oss << '(' << initialdata[i][0] << ' ' << initialdata[i][1] << ' ' << initialdata[i][2]<< ')' << ' ';
       VLOG(1) << "Data written: " << oss.str();
+    }*/
+    if (mesh.dataStride>1){
+      interface.writeBlockVectorData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
     }
-    else
+    else{
       interface.writeBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+    }
 
     interface.markActionFulfilled(precice::constants::actionWriteInitialData());
   }
@@ -326,7 +354,7 @@ int main(int argc, char* argv[])
       if (not boost::filesystem::exists(filename))
         throw std::runtime_error("File does not exist: " + filename);
 
-      if (vectordata){
+      /*if (vectordata){
           VectorMesh roundmesh;
           roundmesh.ReadVectorMesh(filename, participant == "A");
           VLOG(1) << "This roundmesh contains:\n " << roundmesh.positions.size() << " Vertices\n " << roundmesh.data.size() << " Data\n " << roundmesh.edges.size()  << " Edges\n " << roundmesh.triangles.size() << " Triangles";
@@ -340,8 +368,16 @@ int main(int argc, char* argv[])
           for(size_t i = 0; i<std::min((size_t)10, mesh.data.size()); ++i)
               oss << '(' << roundmesh.data[i][0] << ' ' << roundmesh.data[i][1] << ' ' << roundmesh.data[i][2]<< ')' << ' ';
           VLOG(1) << "Data written: " << oss.str();
-      }
+      }*/
 
+      if (mesh.dataStride>1){
+          auto roundmesh = readMesh(filename, participant == "A");
+          if (roundmesh.data.size() != roundmesh.positions.size()*roundmesh.dataStride){
+            throw std::runtime_error{std::string{"Size of data does not equal number of vertices by datadimension."}};
+          }
+          interface.writeBlockVectorData(dataID, roundmesh.positions.size(), vertexIDs.data(), roundmesh.data.data());
+
+      }
       else{ //scalar data
           auto roundmesh = readMesh(filename, participant == "A");
           interface.writeBlockScalarData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
