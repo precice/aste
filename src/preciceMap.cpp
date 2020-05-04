@@ -90,21 +90,6 @@ namespace std {
     };
 };
 
-VectorData readVectorData(const std::string& filename){
-    VLOG(1) << "Reading Vectordata from file " << filename;
-    std::ifstream mainFile{filename};
-    std::string line;
-    VectorData vectordata;
-    while (std::getline(mainFile, line)){
-        double x, y, z, valx, valy, valz;
-        std::istringstream iss(line);
-        iss >> x >> y >> z >> valx >> valy >> valz; // split up by whitespace
-        std::array<double, 3> pointData{valx, valy, valz};
-        vectordata.push_back(pointData);
-    }
-    return vectordata;
-}
-
 
 void readMainFile(Mesh& mesh, const std::string& filename, bool read_data)
 {
@@ -312,22 +297,7 @@ int main(int argc, char* argv[])
 
     if (participant == "B") {
             
-      if (vectordata){
-        /*VectorData currentdata;
-        size_t i=0;
-        for(auto const& vertexID : vertexIDs){
-          interface.readVectorData(dataID, vertexID, (double *) &currentdata[i]);
-          i++;
-        }
-
-        std::ostringstream oss;
-        for(size_t i = 0; i<std::min((size_t)10, currentdata.size()); ++i)
-          oss << '(' << currentdata[i][0] << ' ' << currentdata[i][1] << ' ' << currentdata[i][2]<< ')' << ' ';
-        VLOG(1) << "Data read: " << oss.str();*/
-        VLOG(0) << "Vectors are not implemented for participant B so far.";
-      }
-      else
-        interface.readBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+      interface.readBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
     }
     round++;
   }
