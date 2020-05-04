@@ -90,7 +90,7 @@ namespace std {
     };
 };
 
-
+// Reads the main file containing the vertices and data
 void readMainFile(Mesh& mesh, const std::string& filename, bool read_data)
 {
     VLOG(1) << "Reading mesh vertices " << (read_data?"and data ":"") << "from file " << filename;
@@ -140,8 +140,6 @@ void readConnFile(Mesh& mesh, const std::string& filename)
     }
 }
 
-
-
 /// Reads the mesh from the file. If not read_data, zeros are returned for data.
 Mesh readMesh(const std::string& filename, bool read_data = true)
 {
@@ -153,7 +151,6 @@ Mesh readMesh(const std::string& filename, bool read_data = true)
   } else {
     VLOG(1) << "Skipped Reading mesh connectivity information from non-existent file " << filename;
   }
-
   return mesh;
 }
 
@@ -255,15 +252,12 @@ int main(int argc, char* argv[])
 
   if (interface.isActionRequired(precice::constants::actionWriteInitialData())) {
     VLOG(1) << "Write initial data for participant " << participant;
-
-    
     if (mesh.dataStride>1){
       interface.writeBlockVectorData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
     }
     else{
       interface.writeBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
     }
-
     interface.markActionFulfilled(precice::constants::actionWriteInitialData());
   }
   interface.initializeData();
@@ -273,14 +267,11 @@ int main(int argc, char* argv[])
     if (participant == "A" and not mesh.data.empty()) {
       auto filename = meshes[round];
       std::ostringstream oss;
-
-
       VLOG(1) << "Read mesh for t=" << round << " from " << filename;
       if (not boost::filesystem::exists(filename))
         throw std::runtime_error("File does not exist: " + filename);
       
       auto roundmesh = readMesh(filename, participant == "A");
-
       if (mesh.dataStride>1){
           if (roundmesh.data.size() != roundmesh.positions.size()*roundmesh.dataStride){
             throw std::runtime_error{std::string{"Size of data does not equal number of vertices by datadimension."}};
@@ -290,12 +281,10 @@ int main(int argc, char* argv[])
       else{ //scalar data
           interface.writeBlockScalarData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
       }
-    
     }
     interface.advance(dt);
 
     if (participant == "B") {
-            
       interface.readBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
     }
     round++;
@@ -324,7 +313,7 @@ int main(int argc, char* argv[])
                 << positions[i][2] << " "
                 << data[i] << '\n';
       }
-    
+
     ostream.close();
   }
 
