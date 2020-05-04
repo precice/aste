@@ -22,9 +22,8 @@ def main():
         if os.path.exists(dirname):
             shutil.rmtree(dirname)
         os.mkdir(dirname)
-        points, [], [], pointdata = mesh_io.read_mesh(file, tag=args.function, datadim=args.datadim)
+        points, [], [], pointdata = mesh_io.read_mesh(file, tag=args.tag, datadim=args.datadim)
         mesh_io.write_txt(dirname + "/0", points, pointdata=pointdata)
-        #run("partition_mesh.py -n 1 " + file + " -t " + args.function + " --datadim "+ str(args.datadim))
         
     
     if os.path.exists(args.SolverName + ".dt0"):
@@ -42,14 +41,11 @@ def parse_args():
                         help="""Name of the participant that exported the data. 
                         Files are named SolverName.dti.vtk""")
     parser.add_argument("--ntimesteps", "-n", dest="n", type= int, help="""Number of timesteps""")
-    parser.add_argument("--log", "-l", dest="logging", default="INFO", 
-            choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="""Set the log level. 
-            Default is INFO""")
     parser.add_argument("--datadim","-d", dest="datadim", type=int, default=1, choices=[1,2,3],
-                        help="""Dimension of the coupling function. 
-                        Default is 1 (scalar function).""")
-    parser.add_argument("--function", "-f", dest="function", default=None, help="""Name of the
-                        Coupling function in preCICE.""")
+                        help="""Dimension of the coupling data. 
+                        Default is 1 (scalar data).""")
+    parser.add_argument("--tag", "-t", dest="tag", default=None, help="""Name of the
+                        Coupling data in preCICE.""")
 
     args = parser.parse_args()
     return args
