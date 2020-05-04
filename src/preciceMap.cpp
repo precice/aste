@@ -307,16 +307,13 @@ int main(int argc, char* argv[])
     auto const & positions = mesh.positions;
     auto const & data = mesh.data;
     for (size_t i = 0; i < mesh.positions.size(); i++) {
-
         ostream << positions[i][0] << " "
                 << positions[i][1] << " "
                 << positions[i][2] << " "
                 << data[i] << '\n';
       }
-
     ostream.close();
   }
 
   MPI_Finalize();
 }
-
