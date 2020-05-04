@@ -143,7 +143,7 @@ void readConnFile(Mesh& mesh, const std::string& filename)
 
 
 /// Reads the mesh from the file. If not read_data, zeros are returned for data.
-Mesh readMesh(const std::string& filename, bool read_data = true, bool vectordata = false)
+Mesh readMesh(const std::string& filename, bool read_data = true)
 {
   Mesh mesh;
   readMainFile(mesh, filename, read_data);
@@ -164,7 +164,6 @@ int main(int argc, char* argv[])
   auto options = getOptions(argc, argv);
   const std::string meshname = options["mesh"].as<std::string>();
   const std::string participant = options["participant"].as<std::string>();
-  const bool vectordata = options["vectordata"].as<bool>();
 
   int MPIrank = 0, MPIsize = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &MPIrank);
@@ -319,22 +318,13 @@ int main(int argc, char* argv[])
     auto const & positions = mesh.positions;
     auto const & data = mesh.data;
     for (size_t i = 0; i < mesh.positions.size(); i++) {
-      if (vectordata){/*
-        ostream << positions[i][0] << " "
-                << positions[i][1] << " "
-                << positions[i][2] << " "
-                << data[i][0] << " "
-                << data[i][1] << " "
-                << data[i][2] << '\n';*/
-      VLOG(0) << "Vectors are not implemented for participant B so far.";
-      }
-      else{
+
         ostream << positions[i][0] << " "
                 << positions[i][1] << " "
                 << positions[i][2] << " "
                 << data[i] << '\n';
       }
-    }
+    
     ostream.close();
   }
 
