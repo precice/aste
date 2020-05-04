@@ -34,7 +34,7 @@ def read_vtk(filename, tag = None, datadim=1):
     pointdata = []
     cell_types = []
     points = [vtkmesh.GetPoint(i) for i in range(vtkmesh.GetNumberOfPoints())]
-    print("Import "+ tag + " from " +filename)
+    print("Read " +filename)
     for i in range(vtkmesh.GetNumberOfCells()):
         cell = vtkmesh.GetCell(i)
         cell_type = cell.GetCellType()

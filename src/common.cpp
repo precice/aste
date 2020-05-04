@@ -19,7 +19,6 @@ OptionMap getOptions(int argc, char *argv[])
     ("mesh", po::value<string>()->required(), "Mesh directory. For each timestep i there will be .dti (e.g. .dt4) appended to the directory name")
     ("output", po::value<string>()->default_value("output"), "Output file name.")
     ("verbose,v", po::bool_switch(), "Enable verbose output") // not explicitely used, handled by easylogging
-    ("vectordata", po::bool_switch(), "Enable vector data. Otherwise scalar data is assumed.")
 ;
   
   po::variables_map vm;        
