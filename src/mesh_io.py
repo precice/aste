@@ -152,11 +152,11 @@ def write_vtk(filename, points, cells = None, cell_types = None, pointdata = Non
     for i, point in enumerate(points):
         vtkpoints.InsertPoint(i, point)
         if pointdata is not None and len(pointdata) > 0:
-            if len(pointdata.shape) == 1 or pointdata.shape[1]==1: #scalar data
+            if len(pointdata.shape) == 1 : # scalar case
                 DataArray.InsertTuple1(i, pointdata[i])
-            elif len(pointdata.shape) > 1 and pointdata.shape[1]==2: #two dimensional data
+            elif len(pointdata.shape) > 1 and pointdata.shape[1]==2: # two dimensional data
                 DataArray.InsertTuple2(i, pointdata[i,0], pointdata[i,1])
-            elif len(pointdata.shape) > 1 and pointdata.shape[1]==3: #3D-data
+            elif len(pointdata.shape) > 1 and pointdata.shape[1]==3: # 3D-data
                 DataArray.InsertTuple3(i, pointdata[i,0], pointdata[i,1], pointdata[i,2])
     data.SetPoints(vtkpoints)
     if cells:
@@ -171,7 +171,8 @@ def write_vtk(filename, points, cells = None, cell_types = None, pointdata = Non
             cellArray.InsertNextCell(vtkCell)
         data.SetCells(cell_types, cellArray)
     pointData = data.GetPointData()
-    if len(pointdata.shape) == 1 or pointdata.shape[1]==1:
+    if len(pointdata.shape) == 1:
+        print(pointdata.shape)
         pointData.SetScalars(DataArray)
         print("Writing scalar data...")
     else:
