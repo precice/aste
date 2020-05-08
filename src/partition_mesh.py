@@ -45,23 +45,31 @@ class Mesh:
         - Cells: A list of tuples of ints representing mesh elements
         - Pointdata: A list of floats representing data values at the respective point
     """
-    def __init__(self, points = None, cells = None, pointdata = None):
+    def __init__(self, points = None, cells = None, cell_types = None, pointdata = None):
         if points is not None:
             self.points = points
         else:
             self.points = []
         if cells is not None:
+            assert(cell_types is not None)
             self.cells = cells
+            self.cell_types = cell_types
         else:
             self.cells = []
+            self.cell_types = []
         if pointdata is not None:
             self.pointdata = pointdata
         else:
             self.pointdata = []
 
+    def __str__(self):
+        return "Mesh with {} Points and {} Cells ({} Cell Types)".format(len(self.points), len(self.cells), len(self.cell_types))
+
+
 def read_mesh(filename, tag):
-    points, cells, _, pointdata = mesh_io.read_mesh(filename, tag)
-    return Mesh(points, cells, pointdata)
+    points, cells, cell_types, pointdata = mesh_io.read_mesh(filename, tag)
+    return Mesh(points, cells, cell_types, pointdata)
+
 
 
 def partition(mesh, numparts, algorithm):
@@ -235,11 +243,27 @@ def apply_partition(orig_mesh, part, numparts):
     Partitions a mesh into many meshes when given a partition and a mesh.
     """
     meshes = [Mesh() for _ in range(numparts)]
+    mapping = {}  # Maps global index to partition and local index
+    print(orig_mesh)
     for i in range(len(orig_mesh.points)):
-        selected = meshes[part[i]]
+        partition = part[i]
+        selected = meshes[partition]
+        mapping[i] = (partition, len(selected.points))
         selected.points.append(orig_mesh.points[i])
         if orig_mesh.pointdata:
             selected.pointdata.append(orig_mesh.pointdata[i])
+
+    assert(len(mapping) == len(orig_mesh.points))
+    assert(len(orig_mesh.cells) == len(orig_mesh.cell_types))
+    for cell, type in zip(orig_mesh.cells, orig_mesh.cell_types):
+        partitions = list(map(lambda idx: mapping[idx][0], cell))
+        if len(set(partitions)) == 1:
+            meshes[partitions[0]].cells.append(tuple([mapping[gidx][1] for gidx in cell]))
+            meshes[partitions[0]].cell_types.append(type)
+
+    for m in meshes:
+        print(m)
+
     return meshes
 
 
@@ -253,7 +277,7 @@ def write_meshes(meshes, dirname):
     os.mkdir(dirname)
     for i in range(len(meshes)):
         mesh = meshes[i]
-        mesh_io.write_txt(dirname + "/" + str(i), mesh.points, mesh.pointdata)
+        mesh_io.write_txt(dirname + "/" + str(i), mesh.points, mesh.cells, mesh.pointdata)
 
         
 def parse_args():
