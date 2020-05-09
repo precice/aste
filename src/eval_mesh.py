@@ -17,7 +17,7 @@ def main():
         logging.info("Arithmetic mean of error {}".format(np.mean(values)))
         logging.info("Variance of error {}".format(np.var(values)))
 
-    write_mesh(args.out_meshname, points, cells, cell_types, values)
+    write_mesh(args.out_meshname, points, cells, cell_types, abs(values))
 
 
 class Evaluator:
