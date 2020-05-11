@@ -241,7 +241,10 @@ def apply_partition(orig_mesh, part, numparts):
     """
     Partitions a mesh into many meshes when given a partition and a mesh.
     """
-    cellOrder = []
+    partitionNumbering = []
+    globalIDNumbering = []
+    localIDNumbering = []
+
     meshes = [Mesh() for _ in range(numparts)]
     mapping = {}  # Maps global index to partition and local index
     print("orig points: ", len(orig_mesh.points))
@@ -258,16 +261,16 @@ def apply_partition(orig_mesh, part, numparts):
         if orig_mesh.pointdata:
             selected.pointdata.append(orig_mesh.pointdata[i])
         #Partition, global ID, local ID
-        cellOrder.append(partition)
-        cellOrder.append(i)
-        cellOrder.append(len(selected.points))
-        #cellOrder[i][3] = orig_mesh.cells[i][0]
-        #cellOrder[i][4] = orig_mesh.cells[i][1]
-        #cellOrder[i][5] = orig_mesh.cells[i][2]
-    #print(cellOrder)
+        partitionNumbering.append(partition)
+        globalIDNumbering.append(i)
+        localIDNumbering.append(len(selected.points))
     i=0
-    with open('cellOrder.dat', 'w+') as f:
-        f.write(str(cellOrder))
+    with open('partitionOrder.dat', 'w+') as pOrder:
+        pOrder.write(str(partitionNumbering))
+    with open('globalOrder.dat', 'w+') as gOrder:
+        gOrder.write(str(globalIDNumbering))
+    with open('localOrder.dat', 'w+') as iOrder:
+        iOrder.write(str(localIDNumbering))
 
 
     assert(len(mapping) == len(orig_mesh.points))

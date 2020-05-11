@@ -23,43 +23,59 @@ def main():
     cellList = []
     newCellList = []
     print(offset)
-    cellOrder = []
+    partitionNumbering = []
+    globalIDNumbering = []
+    localIDNumbering = []
 
     for i in range(len(vtkCells)):
         cell_types.append(5)
 
-    with open('cellOrder.dat','r') as f:
-        for line in f:
+    with open('partitionOrder.dat','r') as pOrder:
+        for line in pOrder:
             for char in line:
-                if char in "[]]":
+                if char in "[]":
                     line = line.replace(char,'')
 
     list = line.split (",")
     for i in list:
-	    cellOrder.append(int(i))
+	    partitionNumbering.append(int(i))
 
-    #print "list: ", list
-    #print(map)
-    #print(cellOrder)
-    print(cellOrder[2])
-    newNumber=0
+    with open('globalOrder.dat','r') as gOrder:
+        for line in gOrder:
+            for char in line:
+                if char in "[]":
+                    line = line.replace(char,'')
+
+    list = line.split (",")
+    for i in list:
+	    globalIDNumbering.append(int(i))
+
+    with open('localOrder.dat','r') as iOrder:
+        for line in iOrder:
+            for char in line:
+                if char in "[]":
+                    line = line.replace(char,'')
+
+    list = line.split (",")
+    for i in list:
+	    localIDNumbering.append(int(i))
     
+    print(globalIDNumbering)
+    newNumber=0
+    print("lenght of vtkCells: ", len(vtkCells))
+
     for i in range(len(vtkCells)):
         for j in range(3):
             globalNumber = vtkCells[i][j]
-            #print("globalNumber: ", globalNumber)
-            for k in range(len(points)):
-                if globalNumber == cellOrder[k*3 + 1]:
-                    newNumber = cellOrder[k*3 + 2] + offset[cellOrder[k*3]] - 1
-                    break
-            #print("newNumber:", newNumber)
+            newNumber = localIDNumbering[globalNumber] + offset[partitionNumbering[globalNumber]] - 1
             cellList.append(newNumber)
         newCellList.append(cellList)
         cellList = []
 
+        
+
     print(cellList)
-    #tupleCellList = tuple(newCellList)
-    #print(tupleCellList)
+    
     out_meshname = args.out_meshname if args.out_meshname else args.in_meshname + ".vtk"
     write_mesh(out_meshname, points, newCellList, cell_types, values)
 
