@@ -3,6 +3,36 @@ import argparse, logging, math
 import numpy as np
 from multiprocessing import Pool
 from mesh_io import read_mesh, write_mesh
+import math
+
+
+def relativel2(pointdata):
+    return math.sqrt(np.sum(np.square(pointdata)) / len(pointdata))
+
+
+def weightedl2(points, cells, values):
+    vertices = np.array(points)
+    triangles = np.array(cells, dtype=np.int_)
+
+    def area(triangle):
+        A = vertices[triangle[0]]
+        B = vertices[triangle[1]]
+        C = vertices[triangle[2]]
+        AB = B - A
+        AC = C - A
+        return  np.linalg.norm(np.cross(AB, AC))/2
+
+    areas = np.apply_along_axis(area, 1, triangles)
+
+    weights = np.zeros(len(vertices))
+    for idx in range(len(triangles)):
+        (a, b, c) = triangles[idx]
+        w = areas[idx]
+        weights[a] += w
+        weights[b] += w
+        weights[c] += w
+
+    return math.sqrt(np.sum(np.square(np.array(values) * weights)))
 
 
 def main():
@@ -12,10 +42,16 @@ def main():
     points = np.array(points)
     values = user_func(points, args.function)
     if args.diff:
-        values = np.array(pointdata) - values
-        logging.info("L2-norm of error {}".format(np.linalg.norm(values, 2)))
-        logging.info("Arithmetic mean of error {}".format(np.mean(values)))
-        logging.info("Variance of error {}".format(np.var(values)))
+        values = np.abs(np.array(pointdata) - values)
+        logging.info("Relative l2 error {}".format(relativel2(pointdata)))
+        logging.info("Weighted l2 error {}".format(weightedl2(points, cells, pointdata)))
+        logging.info("Maximum error {}".format(np.nanmax(values)))
+        logging.info("Minimum error {}".format(np.nanmin(values)))
+        p99, p95, p90, median = np.percentile(values, [99, 95, 90, 50])
+        logging.info("Median error {}".format(median))
+        logging.info("99th percentile of error {}".format(p99))
+        logging.info("95th percentile of error {}".format(p95))
+        logging.info("90th percentile of error {}".format(p90))
 
     write_mesh(args.out_meshname, points, cells, cell_types, values)
 
