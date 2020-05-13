@@ -17,7 +17,7 @@ def main():
     if not algorithm:
         logging.info("No algorithm given. Defaulting to \"meshfree\"")
         algorithm = "meshfree"
-    rootmesh = read_mesh(mesh_names[0], args.tag)
+    rootmesh = read_mesh(mesh_names[0], args.tag, args.datadim)
     if args.numparts > 1:
         part = partition(rootmesh, args.numparts, algorithm)
     else:
@@ -25,7 +25,7 @@ def main():
         
     for mesh_name in mesh_names:
         logging.info("Processing mesh " + mesh_name)
-        mesh = read_mesh(mesh_name, args.tag)
+        mesh = read_mesh(mesh_name, args.tag, args.datadim)
         logging.debug("Checking if meshes are matching...")
         assert mesh.points == rootmesh.points, ("Non-matching meshes detected!")
         meshes = apply_partition(mesh, part, args.numparts)
@@ -66,10 +66,9 @@ class Mesh:
         return "Mesh with {} Points and {} Cells ({} Cell Types)".format(len(self.points), len(self.cells), len(self.cell_types))
 
 
-def read_mesh(filename, tag):
-    points, cells, cell_types, pointdata = mesh_io.read_mesh(filename, tag)
+def read_mesh(filename, tag, datadim=1):
+    points, cells, cell_types, pointdata = mesh_io.read_mesh(filename, tag, datadim=datadim)
     return Mesh(points, cells, cell_types, pointdata)
-
 
 
 def partition(mesh, numparts, algorithm):
@@ -242,16 +241,32 @@ def apply_partition(orig_mesh, part, numparts):
     """
     Partitions a mesh into many meshes when given a partition and a mesh.
     """
+    partitionNumbering = []
+    globalIDNumbering = []
+    localIDNumbering = []
+
     meshes = [Mesh() for _ in range(numparts)]
     mapping = {}  # Maps global index to partition and local index
-    print(orig_mesh)
     for i in range(len(orig_mesh.points)):
+        #print("points: ", orig_mesh.points[i])
         partition = part[i]
         selected = meshes[partition]
         mapping[i] = (partition, len(selected.points))
         selected.points.append(orig_mesh.points[i])
         if orig_mesh.pointdata:
             selected.pointdata.append(orig_mesh.pointdata[i])
+        #Partition, global ID, local ID
+        partitionNumbering.append(partition)
+        globalIDNumbering.append(i)
+        localIDNumbering.append(len(selected.points))
+
+    with open('partitionOrder.dat', 'w+') as pOrder:
+        pOrder.write(str(partitionNumbering))
+    with open('globalOrder.dat', 'w+') as gOrder:
+        gOrder.write(str(globalIDNumbering))
+    with open('localOrder.dat', 'w+') as iOrder:
+        iOrder.write(str(localIDNumbering))
+
 
     assert(len(mapping) == len(orig_mesh.points))
     assert(len(orig_mesh.cells) == len(orig_mesh.cell_types))
@@ -278,7 +293,7 @@ def write_meshes(meshes, dirname):
     for i in range(len(meshes)):
         mesh = meshes[i]
         mesh_io.write_txt(dirname + "/" + str(i), mesh.points, mesh.cells, mesh.pointdata)
-
+    #print("mesh Cells", mesh.cells)
         
 def parse_args():
     parser = argparse.ArgumentParser(description=
@@ -299,6 +314,7 @@ def parse_args():
     parser.add_argument("--log", "-l", dest="logging", default="INFO", 
             choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], 
             help="Set the log level. Default is INFO")
+    parser.add_argument("--datadim", "-d", dest="datadim", default=1, type=int, help="Dimensions of the function. Default is 1 (Scalar function.")
     return parser.parse_args()
 
 if __name__ == "__main__":
