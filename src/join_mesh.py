@@ -15,14 +15,10 @@ def main():
     logging.basicConfig(level=getattr(logging, args.logging))
     in_vtkname = args.in_vtkname if args.in_vtkname else args.in_meshname + ".vtk"
     vtkPoints,vtkCells, vtkCellTypes,vtkValues = mesh_io.read_mesh(in_vtkname, args.numparts)
-    #print(vtkCells)
     points, cells, cell_types, values, offset = read_mesh(args.in_meshname, args.numparts)
-    cells = vtkCells
-    print(len(points))
-    #print(cells)
+    #cells = vtkCells
     cellList = []
-    newCellList = []
-    print(offset)
+    combinedCellList = []
     partitionNumbering = []
     globalIDNumbering = []
     localIDNumbering = []
@@ -60,24 +56,17 @@ def main():
     for i in list:
 	    localIDNumbering.append(int(i))
     
-    print(globalIDNumbering)
-    newNumber=0
-    print("lenght of vtkCells: ", len(vtkCells))
-
+    localIdNumber=0
     for i in range(len(vtkCells)):
         for j in range(3):
             globalNumber = vtkCells[i][j]
-            newNumber = localIDNumbering[globalNumber] + offset[partitionNumbering[globalNumber]] - 1
-            cellList.append(newNumber)
-        newCellList.append(cellList)
+            localIdNumber = localIDNumbering[globalNumber] + offset[partitionNumbering[globalNumber]] - 1
+            cellList.append(localIdNumber)
+        combinedCellList.append(cellList)
         cellList = []
 
-        
-
-    print(cellList)
-    
     out_meshname = args.out_meshname if args.out_meshname else args.in_meshname + ".vtk"
-    write_mesh(out_meshname, points, newCellList, cell_types, values)
+    write_mesh(out_meshname, points, combinedCellList, cell_types, values)
 
 
 def read_mesh(dirname, length = None):
@@ -104,6 +93,11 @@ def read_mesh(dirname, length = None):
         all_points += points
         all_values += values
         all_offset.append(offset)
+        all_cells += [
+            tuple(map(lambda idx: idx+offset, cell))
+            for cell in cells
+        ]
+        all_cell_types += cell_types
         #all_cells.append(offset)
         #all_cell_types.append(offset)
         #    tuple(map(lambda idx: idx+offset, cell))

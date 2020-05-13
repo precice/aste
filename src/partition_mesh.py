@@ -247,16 +247,11 @@ def apply_partition(orig_mesh, part, numparts):
 
     meshes = [Mesh() for _ in range(numparts)]
     mapping = {}  # Maps global index to partition and local index
-    print("orig points: ", len(orig_mesh.points))
     for i in range(len(orig_mesh.points)):
         #print("points: ", orig_mesh.points[i])
         partition = part[i]
-        print("partition #: ", partition)
         selected = meshes[partition]
-        print("selected #: ", selected)
         mapping[i] = (partition, len(selected.points))
-        print("mapping #: ", mapping[i])
-        #print("Mesh Info: Gloabl ID #: {} - Partition: {} - Local ID #: {} - Cell Order: {}",i,partition,len(selected.points),orig_mesh.cells[i][0],orig_mesh.cells[i][1],orig_mesh.cells[i][2])
         selected.points.append(orig_mesh.points[i])
         if orig_mesh.pointdata:
             selected.pointdata.append(orig_mesh.pointdata[i])
@@ -264,7 +259,7 @@ def apply_partition(orig_mesh, part, numparts):
         partitionNumbering.append(partition)
         globalIDNumbering.append(i)
         localIDNumbering.append(len(selected.points))
-    i=0
+
     with open('partitionOrder.dat', 'w+') as pOrder:
         pOrder.write(str(partitionNumbering))
     with open('globalOrder.dat', 'w+') as gOrder:
@@ -279,7 +274,6 @@ def apply_partition(orig_mesh, part, numparts):
         partitions = list(map(lambda idx: mapping[idx][0], cell))
         if len(set(partitions)) == 1:
             meshes[partitions[0]].cells.append(tuple([mapping[gidx][1] for gidx in cell]))
-            #print("Cells: ", meshes[partitions[0]].cells.append(tuple([mapping[gidx][1] for gidx in cell])))
             meshes[partitions[0]].cell_types.append(type)
 
     for m in meshes:
