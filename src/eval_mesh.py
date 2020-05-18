@@ -11,6 +11,9 @@ def relativel2(pointdata):
 
 
 def weightedl2(points, cells, values):
+    if (not cells):
+        return None
+
     vertices = np.array(points)
     triangles = np.array(cells, dtype=np.int_)
 
