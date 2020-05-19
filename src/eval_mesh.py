@@ -45,6 +45,7 @@ def main():
     points = np.array(points)
     values = user_func(points, args.function)
     if args.diff:
+        logging.info("Measuring the error per vertex against mapped data.")
         values = np.abs(np.array(pointdata) - values)
         logging.info("Relative l2 error {}".format(relativel2(pointdata)))
         logging.info("Weighted l2 error {}".format(weightedl2(points, cells, pointdata)))
