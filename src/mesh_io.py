@@ -7,11 +7,40 @@ import os
 import logging
 
 
+class MeshIOError(Exception):
+    pass
+
+
+class MeshFormatError(MeshIOError):
+    pass
+
+
+def get_cell_type(cell):
+    try:
+        import vtk
+    except ImportError:
+        VTK_LINE = 3
+        VTK_TRIANGLE = 5
+    else:
+        VTK_LINE = vtk.VTK_LINE
+        VTK_TRIANGLE = vtk.VTK_TRIANGLE
+
+    return {2: VTK_LINE, 3: VTK_TRIANGLE}[len(cell)]
+
+
 def read_mesh(filename, tag = None):
     """
     Returns Mesh Points, Mesh Cells, Mesh Celltypes, 
     Mesh Pointdata in this order
     """
+    if os.path.isdir(filename):
+        logging.error("Reading of partitioned meshes is not supported. Join it first using join_mesh.")
+        raise MeshFormatError()
+        
+    if not os.path.isfile(filename):
+        logging.error("Cannot read mesh with filename \"{}\".".format(filename))
+        raise MeshFormatError()
+
     if os.path.splitext(filename)[1] == ".txt":
         return read_txt(filename)
     else:
@@ -51,6 +80,8 @@ def read_vtk(filename, tag = None):
     if fieldData:
         for i in range(vtkmesh.GetNumberOfPoints()):
             pointdata.append(fieldData.GetTuple1(i))
+    assert(len(pointdata) in [0, len(points)])
+    assert(len(cell_types) in [0, len(cells)])
     return points, cells, cell_types, pointdata
 
 
@@ -72,29 +103,20 @@ def read_dataset(filename):
     elif (extension == ".pvtu"):
         reader = vtk.vtkXMLPUnstructuredGridReader() # Parallel XML format
     else:
-        raise Exception("Unkown File extension: " + extension)
+        raise MeshFormatError()
     reader.SetFileName(filename)
     reader.Update()
     return reader.GetOutput()
 
 
 def read_conn(filename):
-    try:
-        import vtk
-    except ImportError:
-        VTK_LINE = 3
-        VTK_TRIANGLE = 5
-    else:
-        VTK_LINE = vtk.VTK_LINE
-        VTK_TRIANGLE = vtk.VTK_TRIANGLE
-        
     with open(filename, "r") as fh:
         cells, cell_types = [], []
         for line in fh:
             coords = tuple([int(e) for e in line.split(" ")])
             assert(len(coords) in [2, 3])
             cells.append(coords)
-            cell_types.append({2: VTK_LINE, 3: VTK_TRIANGLE}[len(coords)])
+            cell_types.append(get_cell_type(coords))
         assert(len(cells) == len(cell_types))
         return cells, cell_types
 
@@ -118,10 +140,16 @@ def read_txt(filename):
     if os.path.exists(connFileName):
         cells, cell_types = read_conn(connFileName)
 
+    assert(len(pointdata) in [0, len(points)])
+    assert(len(cell_types) in [0, len(cells)])
     return points, cells, cell_types, pointdata
 
 
 def write_vtk(filename, points, cells = None, cell_types = None, pointdata = None, tag = None):
+    if(cell_types is not None):
+        assert(len(cell_types) in [0, len(cells)])
+    if(pointdata is not None):
+        assert(len(pointdata) in [0, len(points)])
     import vtk
     data = vtk.vtkUnstructuredGrid() # is also vtkDataSet
     scalars = vtk.vtkDoubleArray()
@@ -167,7 +195,10 @@ def write_dataset(filename, dataset):
     writer.SetInputData(dataset)
     writer.Write()
 
+
 def write_txt(filename, points, cells = [], pointdata = None):
+    assert(len(pointdata) in [0, len(points)])
+
     with open(filename, "w") as fh:
         for i, point in enumerate(points):
             entry = (str(point[0]), str(point[1]), str(point[2]))

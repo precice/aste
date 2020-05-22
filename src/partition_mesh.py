@@ -4,6 +4,7 @@ import numpy as np
 import shutil
 from ctypes import *
 import mesh_io
+import json
 
 def main():
     args = parse_args()
@@ -28,14 +29,14 @@ def main():
         mesh = read_mesh(mesh_name, args.tag, args.datadim)
         logging.debug("Checking if meshes are matching...")
         assert mesh.points == rootmesh.points, ("Non-matching meshes detected!")
-        meshes = apply_partition(mesh, part, args.numparts)
+        meshes, recoveryInfo = apply_partition(mesh, part, args.numparts)
         if len(mesh_names) > 1 or not args.out_meshname:
             out_meshname = os.path.splitext(mesh_name)[0]
             logging.info("Writing output to: " + out_meshname)
             # logging.info("No --out given. Setting output to: " + out_meshname)
         else:
             out_meshname = args.out_meshname
-        write_meshes(meshes, out_meshname)
+        write_meshes(meshes, recoveryInfo, out_meshname)
 
     
 class Mesh:
@@ -241,59 +242,56 @@ def apply_partition(orig_mesh, part, numparts):
     """
     Partitions a mesh into many meshes when given a partition and a mesh.
     """
-    partitionNumbering = []
-    globalIDNumbering = []
-    localIDNumbering = []
-
     meshes = [Mesh() for _ in range(numparts)]
     mapping = {}  # Maps global index to partition and local index
     for i in range(len(orig_mesh.points)):
-        #print("points: ", orig_mesh.points[i])
         partition = part[i]
         selected = meshes[partition]
         mapping[i] = (partition, len(selected.points))
         selected.points.append(orig_mesh.points[i])
         if orig_mesh.pointdata:
             selected.pointdata.append(orig_mesh.pointdata[i])
-        #Partition, global ID, local ID
-        partitionNumbering.append(partition)
-        globalIDNumbering.append(i)
-        localIDNumbering.append(len(selected.points))
-
-    with open('partitionOrder.dat', 'w+') as pOrder:
-        pOrder.write(str(partitionNumbering))
-    with open('globalOrder.dat', 'w+') as gOrder:
-        gOrder.write(str(globalIDNumbering))
-    with open('localOrder.dat', 'w+') as iOrder:
-        iOrder.write(str(localIDNumbering))
-
 
     assert(len(mapping) == len(orig_mesh.points))
     assert(len(orig_mesh.cells) == len(orig_mesh.cell_types))
+    # Save discarded cells to allow recovery
+    discardedCells = []
     for cell, type in zip(orig_mesh.cells, orig_mesh.cell_types):
         partitions = list(map(lambda idx: mapping[idx][0], cell))
         if len(set(partitions)) == 1:
             meshes[partitions[0]].cells.append(tuple([mapping[gidx][1] for gidx in cell]))
             meshes[partitions[0]].cell_types.append(type)
+        else:
+            discardedCells.append(list(cell))
 
-    for m in meshes:
-        print(m)
+    # Calculate the inverse mapping (partition, localID) -> globalID
+    inverseMapping = { part: {} for part in range(numparts)}
+    for globalID, info in mapping.items():
+        part, localID = info
+        inverseMapping[part][localID] = globalID
 
-    return meshes
+    recoveryInfo = {
+        "size": len(orig_mesh.points),
+        "mapping": inverseMapping,
+        "cells": discardedCells
+    }
+
+    return meshes, recoveryInfo
 
 
-def write_meshes(meshes, dirname):
+def write_meshes(meshes, recoveryInfo, dirname):
     """
     Writes meshes to given directory.
     """
     dirname = os.path.abspath(dirname)
+    recoveryName = os.path.join(dirname, 'recovery.json')
     if os.path.exists(dirname):
         shutil.rmtree(dirname)
     os.mkdir(dirname)
     for i in range(len(meshes)):
         mesh = meshes[i]
         mesh_io.write_txt(dirname + "/" + str(i), mesh.points, mesh.cells, mesh.pointdata)
-    #print("mesh Cells", mesh.cells)
+    json.dump(recoveryInfo, open(recoveryName, "w"))
         
 def parse_args():
     parser = argparse.ArgumentParser(description=
