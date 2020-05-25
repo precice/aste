@@ -70,8 +70,6 @@ def createRunScript(outdir, path, case):
     amesh = case["A"]["mesh"]["name"]
     aranks = case["A"]["ranks"]
     ameshLocation = os.path.relpath(os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path)
-    if (aranks == 1):
-        ameshLocation += ".txt"
 
     acmd = "preciceMap -p A --mesh {} &".format(ameshLocation)
 
@@ -84,6 +82,13 @@ def createRunScript(outdir, path, case):
     content = [
         "#!/bin/bash",
         'cd "$( dirname "${BASH_SOURCE[0]}" )"',
+        "echo '=========='",
+        "echo '= {} ({}) {} - {}'".format(
+            case["mapping"]["name"],
+            case["mapping"]["constraint"],
+            amesh, bmesh
+        ),
+        "echo '=========='",
         "",
         acmd,
         bcmd,
@@ -91,12 +96,12 @@ def createRunScript(outdir, path, case):
     ]
 
     if (branks == 1):
-        diffcmd = "eval_mesh.py mapped.txt -o error.vtk --diff \"{}\"".format(case["function"])
-        content.append(diffcmd)
+        copycmd = "cp {}.conn.txt mapped.conn.txt".format(bmeshLocation)
+        diffcmd = "eval_mesh.py mapped.txt -o error.vtk --diff \"{}\" | tee diff.log".format(case["function"])
+        content += [copycmd, diffcmd]
     else:
-        bmeshRecovery = os.path.relpath(os.path.join(outdir, "meshes", bmesh, branks, bmesh, "recovery.json"), path)
-        joincmd = "join_mesh.py mapped -f {} -o result.vtk".format(bmeshRecovery)
-        diffcmd = "eval_mesh.py result.vtk -o error.vtk --diff \"{}\"".format(case["function"])
+        joincmd = "join_mesh.py mapped -r {} -o result.vtk".format(bmeshLocation)
+        diffcmd = "eval_mesh.py result.vtk -o error.vtk --diff \"{}\" | tee diff.log".format(case["function"])
         content += [joincmd,diffcmd]
     open(os.path.join(path, "run.sh"),"w").writelines([ line + "\n" for line in content ])
 
