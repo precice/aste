@@ -199,14 +199,19 @@ def write_dataset(filename, dataset):
 def write_txt(filename, points, cells = [], pointdata = None):
     assert(len(pointdata) in [0, len(points)])
 
-    with open(filename, "w") as fh:
+    base, ext = os.path.splitext(filename)
+    if (ext != ".txt"):
+        base = filename
+        ext = ".txt"
+    mainFileName = base + ext
+
+    with open(mainFileName, "w") as fh:
         for i, point in enumerate(points):
             entry = (str(point[0]), str(point[1]), str(point[2]))
             if pointdata is not None and len(pointdata) > 0:
                 entry += (str(float(pointdata[i])),)
             fh.write(" ".join(entry) + "\n")
 
-    base, ext = os.path.splitext(filename)
     connFileName = base + ".conn" + ext
     with open(connFileName, "w") as fh:
         fh.writelines([" ".join(map(str,cell))+"\n" for cell in cells])

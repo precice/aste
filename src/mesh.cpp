@@ -1,5 +1,6 @@
 #include <mesh.hpp>
 
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <boost/algorithm/string.hpp>
@@ -18,7 +19,7 @@ namespace {
 void readMainFile(Mesh& mesh, const std::string& filename)
 {
   if (!fs::is_regular_file(filename)) {
-    throw std::invalid_argument{"The mesh file does not exist"};
+    throw std::invalid_argument{"The mesh file does not exist: " + filename};
   }
   std::ifstream mainFile{filename};
   std::string line;
@@ -36,7 +37,7 @@ void readMainFile(Mesh& mesh, const std::string& filename)
 void readConnFile(Mesh& mesh, const std::string& filename)
 {
   if (!fs::is_regular_file(filename)) {
-    throw std::invalid_argument{"The mesh connectivity file does not exist"};
+    throw std::invalid_argument{"The mesh connectivity file does not exist: " + filename};
   }
   std::ifstream connFile{filename};
   std::string line;
@@ -101,42 +102,43 @@ MeshName BaseName::with(const ExecutionContext &context) const
 
 std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
 {
-  // Check single timestep/meshfiles first
-  // Case: a single mesh
-  if (fs::is_regular_file(_bname+".txt")) {
-    if (context.isParallel()) throw MeshException{"Cannot use unparitioned meshes in parallel."};
-    return {MeshName{_bname + ".txt"}};
-  }
-  // Case: a single partitioned mesh
-  if (fs::is_directory(_bname)) {
-    if (!context.isParallel()) throw MeshException{"Cannot use paritioned meshes in serial."};
-    std::string rankFile = _bname + std::to_string(context.rank) + ".txt";
-    if (fs::is_regular_file(rankFile)) {
-      return {MeshName{rankFile}};
+  if (!context.isParallel()) {
+    // Check single timestep/meshfiles first
+    // Case: a single mesh
+    if (fs::is_regular_file(_bname+".txt")) {
+      return {MeshName{_bname}};
     }
-  }
 
-  // Check multiple timesteps
-  std::vector<MeshName> meshNames;
-  // Case: a single mesh
-  for(int t = 0; true; ++t) {
-      std::string filename = _bname+".dt"+std::to_string(t)+".txt";
-      if (!fs::is_regular_file(filename)) break;
-      meshNames.push_back(MeshName{filename});
-      if (context.isParallel()) throw MeshException{"Cannot use unparitioned meshes in parallel."};
-  }
-  if (!meshNames.empty()) return meshNames;
+    // Check multiple timesteps
+    std::vector<MeshName> meshNames;
+    for(int t = 0; true; ++t) {
+      std::string stepMeshName = _bname+".dt"+std::to_string(t);
+      if (!fs::is_regular_file(stepMeshName + ".txt")) break;
+      meshNames.push_back(MeshName{stepMeshName});
+    }
+    std::cerr << "Names: " << meshNames.size() << '\n';
+    return meshNames;
+  } else {
+    fs::path rank{std::to_string(context.rank)};
+    // Is there a single partitioned mesh?
+    if (fs::is_directory(_bname)) {
+      auto rankMeshName = (fs::path(_bname) / rank).string();
+      if (fs::is_regular_file(rankMeshName + ".txt")) {
+        return {MeshName{rankMeshName}};
+      }
+    }
 
-
-  // Case: a single mesh
-  for(int t = 0; true; ++t) {
-    auto stepDirectory = _bname + ".dt"+std::to_string(t);
-    auto rankFile = fs::path(stepDirectory) / fs::path(std::to_string(context.rank) + ".txt");
-    if (!(fs::is_directory(stepDirectory) && fs::is_regular_file(rankFile))) break;
-    meshNames.push_back(MeshName{rankFile.string()});
-    if (!context.isParallel()) throw MeshException{"Cannot use paritioned meshes in serial."};
+    // Check multiple timesteps
+    std::vector<MeshName> meshNames;
+    for(int t = 0; true; ++t) {
+      fs::path stepDirectory{_bname + ".dt"+std::to_string(t)};
+      auto rankMeshName = (stepDirectory / rank).string();
+      if (!(fs::is_directory(stepDirectory) && fs::is_regular_file(rankMeshName+".txt"))) break;
+      meshNames.push_back(MeshName{rankMeshName});
+    }
+    std::cerr << "Names: " << meshNames.size() << '\n';
+    return meshNames;
   }
-  return meshNames;
 }
 
 std::string Mesh::previewData(std::size_t max) const

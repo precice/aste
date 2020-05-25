@@ -54,20 +54,21 @@ aste::ExecutionContext initializeMPI(int argc, char* argv[]) {
 }
 
 std::vector<int> setupMesh(precice::SolverInterface& interface, const aste::Mesh& mesh, int meshID) {
-  VLOG(1) << "Setting up Mesh:";
-  auto start = std::chrono::steady_clock::now();
+  auto tstart = std::chrono::steady_clock::now();
 
-  VLOG(1) << "1) Setting up Vertices";
+  VLOG(1) << "Mesh Setup: 1) Vertices";
   // Feed vertices to preCICE
   std::vector<int> vertexIDs;
   vertexIDs.reserve(mesh.positions.size());
   for (auto const & pos : mesh.positions)
     vertexIDs.push_back(interface.setMeshVertex(meshID, pos.data()));
 
+  auto tconnectivity = std::chrono::steady_clock::now();
+
   boost::container::flat_map<Edge, EdgeID> edgeMap;
   edgeMap.reserve(mesh.edges.size() + 2*mesh.triangles.size());
 
-  VLOG(1) << " 2) Setting up Edges";
+  VLOG(1) << "Mesh Setup: 2) Explicit Edges";
   for (auto const & edge : mesh.edges) {
       const auto a = vertexIDs.at(edge[0]);
       const auto b = vertexIDs.at(edge[1]);
@@ -80,7 +81,7 @@ std::vector<int> setupMesh(precice::SolverInterface& interface, const aste::Mesh
       }
   }
 
-  VLOG(1) << " 3) Generate Triangle Edges";
+  VLOG(1) << "Mesh Setup: 3) Implicit Edges";
   for (auto const & triangle : mesh.triangles) {
       const auto a = vertexIDs.at(triangle[0]);
       const auto b = vertexIDs.at(triangle[1]);
@@ -109,7 +110,7 @@ std::vector<int> setupMesh(precice::SolverInterface& interface, const aste::Mesh
       }
   }
 
-  VLOG(1) << " 4) Setting up Triangles";
+  VLOG(1) << "Mesh Setup: 4) Triangles";
   for (auto const & triangle : mesh.triangles) {
       const auto a = vertexIDs[triangle[0]];
       const auto b = vertexIDs[triangle[1]];
@@ -121,9 +122,13 @@ std::vector<int> setupMesh(precice::SolverInterface& interface, const aste::Mesh
               edgeMap[Edge{c,a}]
               );
   }
-  auto end = std::chrono::steady_clock::now();
+  auto tend = std::chrono::steady_clock::now();
 
-  VLOG(1) << "Mesh setup finished in" << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms";
+  VLOG(1)
+    << "Mesh Setup Took "
+    << std::chrono::duration_cast<std::chrono::milliseconds>(tend - tstart).count() << "ms ("
+    << std::chrono::duration_cast<std::chrono::milliseconds>(tconnectivity - tstart).count() << "ms for vertices, "
+    << std::chrono::duration_cast<std::chrono::milliseconds>(tend - tconnectivity).count() << "ms for connectivity)";
   return vertexIDs;
 }
 

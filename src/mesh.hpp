@@ -5,6 +5,7 @@
 #include <vector>
 #include <exception>
 #include <iosfwd>
+#include <cassert>
 
 namespace aste {
 
@@ -20,10 +21,12 @@ class MeshException : public std::runtime_error {
 
 struct ExecutionContext {
   ExecutionContext() = default;
-  ExecutionContext(int rank, int size) : rank(rank), size(size) {};
+  ExecutionContext(int rank, int size) : rank(rank), size(size) {
+    assert(0 <= rank && rank < size);
+  };
   int rank{0};
   int size{1};
-  bool isParallel() const { return size != 1; }
+  bool isParallel() const { return size > 1; }
 };
 
 class MeshName {
