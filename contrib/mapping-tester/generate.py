@@ -74,13 +74,13 @@ def createRunScript(outdir, path, case):
     aranks = case["A"]["ranks"]
     ameshLocation = os.path.relpath(os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path)
 
-    acmd = "preciceMap -p A --mesh {} &".format(ameshLocation)
+    acmd = "preciceMap -v -p A --mesh {} &".format(ameshLocation)
 
     bmesh = case["B"]["mesh"]["name"]
     branks = case["B"]["ranks"]
     bmeshLocation = os.path.relpath(os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path)
 
-    bcmd = "preciceMap -p B --mesh {} --output mapped".format(bmeshLocation)
+    bcmd = "preciceMap -v -p B --mesh {} --output mapped".format(bmeshLocation)
 
     content = [
         "#!/bin/bash",
