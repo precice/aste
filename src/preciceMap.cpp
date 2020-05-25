@@ -196,10 +196,18 @@ int main(int argc, char* argv[])
   if (participant == "B") {
     auto meshName = aste::BaseName{options["output"].as<std::string>()}.with(context);
     auto filename = fs::path(meshName.filename());
-    if (context.rank == 0) {
-      auto dir = filename.parent_path();
-      fs::remove_all(dir);
-      fs::create_directory(dir);
+    if (context.rank == 0 && fs::exists(filename)) {
+      if (context.isParallel()) {
+        // Remove the directory <meshName>/<rank>.txt
+        auto dir = filename.parent_path();
+        if (!dir.empty()) {
+          fs::remove_all(dir);
+          fs::create_directory(dir);
+        }
+      } else {
+        // Remove the mesh file <meshName>.txt
+        fs::remove(filename);
+      }
     }
     MPI_Barrier(MPI_COMM_WORLD);
         
