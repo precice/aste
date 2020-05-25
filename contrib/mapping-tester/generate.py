@@ -60,7 +60,10 @@ def createMasterRunScript(casedirs, dir):
                "",
                'cd "$( dirname "${BASH_SOURCE[0]}" )"',
                ""] + [
-                   "/bin/bash {}".format(os.path.join(reldir, "run.sh"))
+                   "/bin/bash {} 2>&1 | tee {}".format(
+                       os.path.join(reldir, "run.sh"),
+                       os.path.join(reldir, "run.log")
+                   )
                    for reldir in reldirs
                ]
     open(os.path.join(dir, "runall.sh"),"w").writelines([ line + "\n" for line in content ])
