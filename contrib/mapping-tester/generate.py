@@ -70,15 +70,16 @@ def createRunScript(outdir, path, case):
     amesh = case["A"]["mesh"]["name"]
     aranks = case["A"]["ranks"]
     ameshLocation = os.path.relpath(os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path)
+    if (aranks == 1):
+        ameshLocation += ".txt"
+
     acmd = "preciceMap -p A --mesh {} &".format(ameshLocation)
 
     bmesh = case["B"]["mesh"]["name"]
     branks = case["B"]["ranks"]
     bmeshLocation = os.path.relpath(os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path)
-    bmeshOrigLocation = os.path.relpath(os.path.join(outdir, "meshes", bmesh, "1", bmesh), path)
-    bcmd = "preciceMap -p B --mesh {} --output mapped &".format(bmeshLocation)
-    joincmd = "join_mesh.py mapped -i {} -o result.vtk".format(bmeshOrigLocation)
-    diffcmd = "eval_mesh.py result.vtk -o error.vtk --diff \"{}\"".format(case["function"])
+
+    bcmd = "preciceMap -p B --mesh {} --output mapped".format(bmeshLocation)
 
     content = [
         "#!/bin/bash",
@@ -86,10 +87,17 @@ def createRunScript(outdir, path, case):
         "",
         acmd,
         bcmd,
-        "",
-        joincmd,
-        diffcmd,
+        ""
     ]
+
+    if (branks == 1):
+        diffcmd = "eval_mesh.py mapped.txt -o error.vtk --diff \"{}\"".format(case["function"])
+        content.append(diffcmd)
+    else:
+        bmeshRecovery = os.path.relpath(os.path.join(outdir, "meshes", bmesh, branks, bmesh, "recovery.json"), path)
+        joincmd = "join_mesh.py mapped -f {} -o result.vtk".format(bmeshRecovery)
+        diffcmd = "eval_mesh.py result.vtk -o error.vtk --diff \"{}\"".format(case["function"])
+        content += [joincmd,diffcmd]
     open(os.path.join(path, "run.sh"),"w").writelines([ line + "\n" for line in content ])
 
 
@@ -100,7 +108,7 @@ def setupCases(outdir, template, cases):
         name = [outdir] + getCaseFolders(case)
         path=os.path.join(*name)
         casedirs.append(path)
-        config=os.path.join(path, "config.xml")
+        config=os.path.join(path, "precice.xml")
 
         os.makedirs(path, exist_ok=True)
         with open(config, "w") as config:

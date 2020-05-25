@@ -29,7 +29,7 @@ endif()
 
 find_package(MPI REQUIRED)
 
-add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/easylogging++.cc)
+add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/easylogging++.cc src/mesh.cpp)
 target_include_directories(preciceMap PRIVATE src)
 target_link_libraries(preciceMap
   precice::precice
