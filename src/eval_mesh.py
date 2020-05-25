@@ -4,6 +4,8 @@ import numpy as np
 from multiprocessing import Pool
 from mesh_io import read_mesh, write_mesh
 import math
+import json
+import os
 
 
 def relativel2(pointdata):
@@ -46,16 +48,36 @@ def main():
     values = user_func(points, args.function)
     if args.diff:
         logging.info("Measuring the error per vertex against mapped data.")
-        values = np.abs(np.array(pointdata) - values)
-        logging.info("Relative l2 error {}".format(relativel2(pointdata)))
-        logging.info("Weighted l2 error {}".format(weightedl2(points, cells, pointdata)))
-        logging.info("Maximum error per vertex {}".format(np.nanmax(values)))
-        logging.info("Minimum error per vertex {}".format(np.nanmin(values)))
+        values = np.abs(np.array(pointdata, dtype=np.double) - values)
+
+        cnt, min, max = len(points), np.nanmin(values), np.nanmax(values)
+        relative, weighted = relativel2(pointdata), weightedl2(points, cells, pointdata)
         p99, p95, p90, median = np.percentile(values, [99, 95, 90, 50])
+
+        logging.info("Vertex count {}".format(cnt))
+        logging.info("Relative l2 error {}".format(relative))
+        logging.info("Weighted l2 error {}".format(weighted))
+        logging.info("Maximum error per vertex {}".format(max))
+        logging.info("Minimum error per vertex {}".format(min))
         logging.info("Median error per vertex {}".format(median))
         logging.info("99th percentile of error per vertex {}".format(p99))
         logging.info("95th percentile of error per vertex {}".format(p95))
         logging.info("90th percentile of error per vertex {}".format(p90))
+
+        if args.stats:
+            base  = os.path.splitext(args.out_meshname)[0]
+            json.dump({
+                "count": cnt,
+                "min": min,
+                "max": max,
+                "median": median,
+                "relative-l2": relative,
+                "weighted-l2": weighted,
+                "99th percentile": p99,
+                "95th percentile": p95,
+                "90th percentile": p90
+            }, open(base+".stats.json", "w"))
+
 
     write_mesh(args.out_meshname, points, cells, cell_types, abs(values))
 
@@ -75,7 +97,7 @@ def user_func(points, f_str):
     points = np.array(points)
     evaluator = Evaluator(f_str)
     with Pool() as pool:
-        vals = np.array(pool.map(evaluator.evaluate, enumerate(points)))
+        vals = np.array(pool.map(evaluator.evaluate, enumerate(points)), dtype=np.double)
 
     logging.info("Evaluated {} on {} vertices".format(f_str, len(vals)))
     return vals
@@ -91,6 +113,7 @@ def parse_args():
     parser.add_argument("--out", "-o", dest="out_meshname", help="""The output meshname. 
             Default is the same as for the input mesh""")
     parser.add_argument("--diff", "-d", action='store_true', help="Calculate the difference to present data.")
+    parser.add_argument("--stats", "-s", action='store_true', help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
     parser.add_argument("--log", "-l", dest="logging", default="INFO", 
             choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="""Set the log level. 
             Default is INFO""")

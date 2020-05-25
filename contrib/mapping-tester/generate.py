@@ -100,11 +100,11 @@ def createRunScript(outdir, path, case):
 
     if (branks == 1):
         copycmd = "cp {}.conn.txt mapped.conn.txt".format(bmeshLocation)
-        diffcmd = "eval_mesh.py mapped.txt -o error.vtk --diff \"{}\" | tee diff.log".format(case["function"])
+        diffcmd = "eval_mesh.py mapped.txt -o error.vtk --diff --stats \"{}\" | tee diff.log".format(case["function"])
         content += [copycmd, diffcmd]
     else:
         joincmd = "join_mesh.py mapped -r {} -o result.vtk".format(bmeshLocation)
-        diffcmd = "eval_mesh.py result.vtk -o error.vtk --diff \"{}\" | tee diff.log".format(case["function"])
+        diffcmd = "eval_mesh.py result.vtk -o error.vtk --diff --stats \"{}\" | tee diff.log".format(case["function"])
         content += [joincmd,diffcmd]
     open(os.path.join(path, "run.sh"),"w").writelines([ line + "\n" for line in content ])
 
