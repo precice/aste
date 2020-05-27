@@ -15,6 +15,27 @@ class MeshFormatError(MeshIOError):
     pass
 
 
+def printable_cell_type(celltype):
+    linetype = [3]
+    triangletype = [5]
+
+    try:
+        import vtk
+        linetype.append(vtk.VTK_LINE)
+        triangletype.append(vtk.VTK_TRIANGLE)
+    except ImportError:
+        pass
+
+    if celltype in linetype:
+        return "line"
+    else:
+        return "triangle"
+
+
+    return None
+
+
+
 def get_cell_type(cell):
     try:
         import vtk
