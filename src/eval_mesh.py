@@ -12,12 +12,8 @@ def relativel2(pointdata):
     return math.sqrt(np.sum(np.square(pointdata)) / len(pointdata))
 
 
-def weightedl2(points, cells, values):
-    if (not cells):
-        return None
-
-    vertices = np.array(points)
-    triangles = np.array(cells, dtype=np.int_)
+def weightedl2_apply_area(args):
+    triangles, vertices = args
 
     def area(triangle):
         A = vertices[triangle[0]]
@@ -27,7 +23,21 @@ def weightedl2(points, cells, values):
         AC = C - A
         return  np.linalg.norm(np.cross(AB, AC))/2
 
-    areas = np.apply_along_axis(area, 1, triangles)
+    return np.apply_along_axis(area, 1, triangles)
+
+
+def weightedl2(points, cells, values):
+    if (not cells):
+        return None
+
+    vertices = np.array(points)
+    triangles = np.array(cells, dtype=np.int_)
+
+    with Pool() as pool:
+        areas = np.concatenate(pool.map(
+            weightedl2_apply_area,
+            [ (chunk, vertices) for chunk in np.array_split(triangles, os.cpu_count()) ]
+        ))
 
     weights = np.zeros(len(vertices))
     for idx in range(len(triangles)):
