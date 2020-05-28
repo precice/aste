@@ -18,8 +18,13 @@
     }
   },
   "meshes": {
-    "fine": "/home/simonis/dev/latex/precice2-ref-paper/meshes/windTurbine/FineA.vtk",
-    "medium": "/home/simonis/dev/latex/precice2-ref-paper/meshes/windTurbine/mediumA.vtk",
-    "coarse": "/home/simonis/dev/latex/precice2-ref-paper/meshes/windTurbine/coarseA.vtk"
+    "A": {
+      "fine": "/home/simonis/dev/latex/precice2-ref-paper/meshes/windTurbine/FineA.vtk"
+    },
+    "B": {
+      "fine": "/home/simonis/dev/latex/precice2-ref-paper/meshes/windTurbine/FineA.vtk",
+      "medium": "/home/simonis/dev/latex/precice2-ref-paper/meshes/windTurbine/mediumA.vtk",
+      "coarse": "/home/simonis/dev/latex/precice2-ref-paper/meshes/windTurbine/coarseA.vtk"
+    }
   }
 }

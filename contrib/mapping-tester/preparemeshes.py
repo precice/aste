@@ -2,6 +2,7 @@ import json
 import os
 import argparse
 import subprocess
+import itertools
 
 def parseArguments(args):
     parser = argparse.ArgumentParser(description="Prepares meshes for a test suite")
@@ -42,7 +43,7 @@ def main(argv):
     partitions = set(map(int, setup["general"]["ranks"].values()))
     partitions.discard(1)
 
-    for name, file in setup["meshes"].items():
+    for name, file in itertools.chain(setup["meshes"]["A"].items(), setup["meshes"]["B"].items()):
         prepareMainMesh(meshdir, name, file, function)
         for p in partitions:
             preparePartMesh(meshdir, name, p)

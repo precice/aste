@@ -13,8 +13,8 @@ def generateCases(setup):
 
     for name, mapping in setup["mapping"]["cases"].items():
         for constraint in setup["mapping"]["constraints"]:
-            for inname, infile in setup["meshes"].items():
-                for outname, outfile in setup["meshes"].items():
+            for inname, infile in setup["meshes"]["A"].items():
+                for outname, outfile in setup["meshes"]["B"].items():
                     cases.append({
                         "function": setup["general"]["function"],
                         "mapping": {
@@ -39,7 +39,7 @@ def generateCases(setup):
                         }
                     })
 
-    return cases, setup["meshes"]
+    return cases
 
 
 def getCaseFolders(case):
@@ -138,7 +138,7 @@ def main(argv):
     args = parseArguments(argv[1:])
     setup = json.load(args.setup)
     template = args.template.read()
-    cases, meshes = generateCases(setup)
+    cases = generateCases(setup)
     outdir = os.path.normpath(args.outdir)
     if (os.path.isdir(outdir)):
         print('Warning: outdir "{}" already exisits.'.format(outdir))
