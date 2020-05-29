@@ -5,6 +5,7 @@ Mesh I/O utility script. One can read meshes from .vtk, .txt, .vtu, .vtp,... fil
 
 import os
 import logging
+import numpy as np
 
 
 class MeshIOError(Exception):
@@ -13,6 +14,80 @@ class MeshIOError(Exception):
 
 class MeshFormatError(MeshIOError):
     pass
+
+
+class Mesh:
+    def __init__(self, points, data=None, cells=None, celltypes=None):
+        self._points = np.reshape(np.nfloat64(points), (-1, 3))
+        self._data = np.float64(data)
+        self._cells = np.int32(cells)
+        self.celltypes = np.int8(celltypes)
+
+    def __init__(self, meshname):
+        points, cells, celltypes, data = read_mesh(meshname)
+        self.__init__(points, data, cells, celltypes)
+
+    @property
+    def data(self):
+        return self._data
+
+    @property
+    def set_data(self, data):
+        self._data = np.float64(data)
+
+    @property
+    def points(self):
+        return self._points
+
+    @points.setter
+    def set_points(self, points):
+        self._points = np.reshape(np.nfloat64(points), (-1, 3))
+
+    @property
+    def cells(self):
+        return self._cells
+
+    @cells.setter
+    def set_cells(self, cells):
+        self._cells = np.int32(cells)
+
+    @property
+    def celltypes(self):
+        return self._celltypes
+
+    @celltypes.setter
+    def set_celltypes(self, celltypes):
+        self.celltypes = np.int8(celltypes)
+
+    def to_pandas(self):
+        import pandas
+        x, y, z = self.points.transpose()
+        points = pandas.Dataframe({
+            "x": x,
+            "y": y,
+            "z": z,
+            "data": self.data
+        })
+        a, b, c = self.points.transpose()
+        cells = pandas.Dataframe({
+            "a": a,
+            "b": b,
+            "c": c,
+            "type": self.data
+        })
+        return points, cells
+
+    def to_aste(self, filename):
+        write_txt(filename, self.points, self.cells, self.data)
+
+    def to_vtk(self, filename):
+        write_vtk(filename, self.points, self.cells, self.celltypes, self.data)
+
+    def has_connectivity(self):
+        return len(self.cells) > 0
+
+    def has_data(self):
+        return len(self.data) > 0
 
 
 def printable_cell_type(celltype):
