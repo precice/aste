@@ -9,7 +9,7 @@ import os
 
 
 def relativel2(pointdata):
-    return math.sqrt(np.sum(np.square(pointdata)) / len(pointdata))
+    return math.sqrt(np.nansum(np.square(pointdata)) / len(pointdata))
 
 
 def weightedl2_apply_area(args):
@@ -47,21 +47,24 @@ def weightedl2(points, cells, values):
         weights[b] += w
         weights[c] += w
 
-    return math.sqrt(np.sum(np.square(np.array(values) * weights)))
+    return math.sqrt(np.nansum(np.square(values * weights)))
 
 
 def main():
     args = parse_args()
     logging.basicConfig(level=getattr(logging, args.logging))
     points, cells, cell_types, pointdata = read_mesh(args.in_meshname)
-    points = np.array(points)
+
+    pointdata = np.array(pointdata, dtype=np.float64)
+    points = np.array(points, dtype=np.float64)
+
     values = user_func(points, args.function)
     if args.diff:
         logging.info("Measuring the error per vertex against mapped data.")
-        values = np.abs(np.array(pointdata, dtype=np.double) - values)
+        values = np.abs(pointdata - values)
 
         cnt, min, max = len(points), np.nanmin(values), np.nanmax(values)
-        relative, weighted = relativel2(pointdata), weightedl2(points, cells, pointdata)
+        relative, weighted = relativel2(values), weightedl2(points, cells, values)
         p99, p95, p90, median = np.percentile(values, [99, 95, 90, 50])
 
         logging.info("Vertex count {}".format(cnt))
@@ -89,7 +92,7 @@ def main():
             }, open(base+".stats.json", "w"))
 
 
-    write_mesh(args.out_meshname, points, cells, cell_types, abs(values))
+    write_mesh(args.out_meshname, points, cells, cell_types, values)
 
 
 class Evaluator:
@@ -104,10 +107,9 @@ class Evaluator:
 
 def user_func(points, f_str):
     import math
-    points = np.array(points)
     evaluator = Evaluator(f_str)
     with Pool() as pool:
-        vals = np.array(pool.map(evaluator.evaluate, enumerate(points)), dtype=np.double)
+        vals = np.array(pool.map(evaluator.evaluate, enumerate(points)), dtype=np.float64)
 
     logging.info("Evaluated {} on {} vertices".format(f_str, len(vals)))
     return vals
