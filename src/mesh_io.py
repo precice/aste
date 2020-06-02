@@ -18,14 +18,15 @@ class MeshFormatError(MeshIOError):
 
 class Mesh:
     def __init__(self, points, data=None, cells=None, celltypes=None):
-        self._points = np.reshape(np.nfloat64(points), (-1, 3))
+        self._points = np.reshape(np.float64(points), (-1, 3))
         self._data = np.float64(data)
         self._cells = np.int32(cells)
-        self.celltypes = np.int8(celltypes)
+        self._celltypes = np.int8(celltypes)
 
-    def __init__(self, meshname):
+    @classmethod
+    def load(cls, meshname):
         points, cells, celltypes, data = read_mesh(meshname)
-        self.__init__(points, data, cells, celltypes)
+        return cls(points, data, cells, celltypes)
 
     @property
     def data(self):
@@ -41,7 +42,7 @@ class Mesh:
 
     @points.setter
     def set_points(self, points):
-        self._points = np.reshape(np.nfloat64(points), (-1, 3))
+        self._points = np.reshape(np.float64(points), (-1, 3))
 
     @property
     def cells(self):
@@ -59,23 +60,20 @@ class Mesh:
     def set_celltypes(self, celltypes):
         self.celltypes = np.int8(celltypes)
 
+    def __repr__(self):
+        return "{} Vertices {} data, {} Cells".format(
+            len(self.points),
+            "with" if self.has_data() else "without",
+            len(self.cells)
+        )
+
     def to_pandas(self):
         import pandas
         x, y, z = self.points.transpose()
-        points = pandas.Dataframe({
-            "x": x,
-            "y": y,
-            "z": z,
-            "data": self.data
-        })
-        a, b, c = self.points.transpose()
-        cells = pandas.Dataframe({
-            "a": a,
-            "b": b,
-            "c": c,
-            "type": self.data
-        })
-        return points, cells
+        columns = {"x": x, "y": y, "z": z}
+        if self.has_data():
+            columns["data"] = self.data
+        return pandas.DataFrame(columns)
 
     def to_aste(self, filename):
         write_txt(filename, self.points, self.cells, self.data)
