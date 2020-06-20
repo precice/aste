@@ -43,7 +43,7 @@ def main(argv):
     partitions = set(map(int, setup["general"]["ranks"].values()))
     partitions.discard(1)
 
-    for name, file in itertools.chain(setup["meshes"]["A"].items(), setup["meshes"]["B"].items()):
+    for name, file in set(itertools.chain(setup["meshes"]["A"].items(), setup["meshes"]["B"].items())):
         prepareMainMesh(meshdir, name, file, function)
         for p in partitions:
             preparePartMesh(meshdir, name, p)
