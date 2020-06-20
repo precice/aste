@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <limits>
 #include <boost/algorithm/string.hpp>
 
 namespace aste {
@@ -75,7 +76,7 @@ void MeshName::save(const Mesh& mesh) const
 {
   assert(mesh.positions.size() == mesh.data.size());
   std::ofstream out(filename(), std::ios::trunc);
-  out.precision(9);
+  out.precision(std::numeric_limits<long double>::max_digits10);
   for (size_t i = 0; i < mesh.positions.size(); i++) {
     out << mesh.positions[i][0] << " "
       << mesh.positions[i][1] << " "
