@@ -18,16 +18,17 @@ def main(argv):
     args = parseArguments(argv[1:])
 
     df = pandas.read_csv(args.file)
-    df.sort_values("h A", inplace=True)
+    df.sort_values("mesh A", inplace=True)
     grouped = df.groupby(["mapping", "mesh B"])
 
     fig, ax = plt.subplots(sharex=True, sharey=True)
 
     for name, group in grouped:
-        group.plot(
+        filtered = group # group[group["mesh A"] != group["mesh B"]]
+        filtered.plot(
             ax=ax,
             loglog=True,
-            x="h A",
+            x="mesh A",
             y="relative-l2",
             label="{} onto {}".format(*name),
             marker="o"
