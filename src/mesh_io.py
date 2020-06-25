@@ -6,6 +6,7 @@ Mesh I/O utility script. One can read meshes from .vtk, .txt, .vtu, .vtp,... fil
 import os
 import logging
 import numpy as np
+import itertools
 
 
 class MeshIOError(Exception):
@@ -17,16 +18,25 @@ class MeshFormatError(MeshIOError):
 
 
 class Mesh:
-    def __init__(self, points, data=None, cells=None, celltypes=None):
+
+    def __init__(self):
+        self._points = np.reshape([], (-1, 3))
+        self._data = np.asarray([], dtype=np.float64)
+
+        self._edges = np.reshape([], (-1, 2), dtype=np.int32)
+        self._triangles = np.reshape([], (-1, 3), dtype=np.int32)
+
+
+    def __init__(self, points, data=None, cells=None):
         self._points = np.reshape(np.asarray(points, dtype=np.float64), (-1, 3))
         self._data = np.asarray(data, dtype=np.float64)
-        self._cells = np.asarray(cells, dtype=np.int32)
-        self._celltypes = np.asarray(celltypes, dtype=np.int8)
+        self.cells = cells
+
 
     @classmethod
     def load(cls, meshname):
-        points, cells, celltypes, data = read_mesh(meshname)
-        return cls(points, data, cells, celltypes)
+        points, cells, _, data = read_mesh(meshname)
+        return cls(points, data, cells)
 
     @property
     def data(self):
@@ -45,20 +55,44 @@ class Mesh:
         self._points = np.reshape(np.asarray(points, np.float64), (-1, 3))
 
     @property
+    def edges(self):
+        return self._edges
+
+    @edges.setter
+    def set_edges(self, edges):
+        self._edges = np.unique(
+            np.asarray(edges, (-1, 2), dtype=np.int32),
+            axis=0)
+
+    @property
+    def triangles(self):
+        return self._triangles
+
+    @triangles.setter
+    def set_triangles(self, triangles):
+        self._triangles = np.unique(
+            np.asarray(triangles, (-1, 3), dtype=np.int32),
+            axis=0)
+
+    @property
     def cells(self):
-        return self._cells
+        return self.edges.to_list() + self.triangles.to_list()
 
     @cells.setter
     def set_cells(self, cells):
-        self._cells = np.int32(cells)
+        cellsbysize = itertools.groupby(cells, lambda cell: len(cell))
+        self.edges = np.reshape(list(cellsbysize.get(2, default=[])), (-1, 2), dtype=np.int32)
+        self.triangles = np.reshape(list(cellsbysize.get(3, default=[])), (-1, 3), dtype=np.int32)
+        self.validate()
 
     @property
     def celltypes(self):
-        return self._celltypes
-
-    @celltypes.setter
-    def set_celltypes(self, celltypes):
-        self.celltypes = np.int8(celltypes)
+        edge_type = get_cell_type(2)
+        triangle_type = get_cell_type(3)
+        return np.append(
+            np.full_like(self.edges, edge_type),
+            np.full_like(self.triangles, triangle_type)
+        )
 
     def __repr__(self):
         return "{} Vertices {} data, {} Cells".format(
@@ -73,6 +107,9 @@ class Mesh:
             columns["data"] = self.data
         return pandas.DataFrame(columns)
 
+    def save(self, filename):
+        write_mesh(filename, self.points, self.cells, self.celltypes, self.data)
+
     def save_to_aste(self, filename):
         write_txt(filename, self.points, self.cells, self.data)
 
@@ -84,6 +121,27 @@ class Mesh:
 
     def has_data(self):
         return len(self.data) > 0
+
+    def append(self, other):
+        assert(isinstance(other, Mesh))
+        assert(self.has_data() == other.has_data())
+        assert(self.has_connectivity() == other.has_connectivity())
+        offset = len(self.points)
+
+        self.points = np.append(self.points, other.points)
+        self.data = np.append(self.data, other.data)
+        self.edges = np.append(self.edges, other.cells + offset)
+        self.triangles = np.append(self.triangles, other.cells + offset)
+
+        self.validate()
+
+    def validate(self):
+        npoints = len(self._points)
+        assert(npoints in (0, len(self._data)))
+        assert(np.alltrue(self._edges < npoints))
+        assert(np.alltrue(self._triangles < npoints))
+        assert(np.alltrue(np.unique(self._edges, axis=0, return_counts=True)[1] == 1))
+        assert(np.alltrue(np.unique(self._triangles, axis=0, return_counts=True)[1] == 1))
 
 
 def printable_cell_type(celltype):
@@ -106,6 +164,11 @@ def printable_cell_type(celltype):
 
 
 def get_cell_type(cell):
+    import collections
+    if(isinstance(cell, collections.Sequence)):
+        elements = len(cell)
+    else:
+        elements = cell
     try:
         import vtk
     except ImportError:
