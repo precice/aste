@@ -135,17 +135,20 @@ class Mesh:
         assert (self.has_data() == other.has_data())
         assert (self.has_connectivity() == other.has_connectivity())
         offset = len(self.points)
+        print(self)
+        print(other)
 
-        self.points = np.append(self.points, other.points)
-        self.data = np.append(self.data, other.data)
-        self.edges = np.append(self.edges, other.cells + offset)
-        self.triangles = np.append(self.triangles, other.cells + offset)
+        self._points = np.append(self.points, other.points, 0)
+        self._data = np.append(self.data, other.data)
+        self._edges = np.append(self.edges, other.edges + offset, 0)
+        self._triangles = np.append(self.triangles, other.triangles + offset, 0)
+        print(self)
 
         self.validate()
 
     def validate(self):
         npoints = len(self._points)
-        assert (npoints in (0, len(self._data)))
+        assert (len(self._data) in (0, npoints))
         assert (np.alltrue(self._edges < npoints))
         assert (np.alltrue(self._triangles < npoints))
         if (self.edges.size > 0):
