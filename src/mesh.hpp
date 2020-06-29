@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/filesystem.hpp>
+#include <boost/container/flat_set.hpp>
 #include <string>
 #include <vector>
 #include <exception>
@@ -65,13 +66,25 @@ private:
 };
 
 struct Mesh {
-  std::vector<std::array<double, 3>> positions;
-  std::vector<std::array<size_t, 2>> edges;
-  std::vector<std::array<size_t, 3>> triangles;
+  using Vertex = std::array<double, 3>;
+  using Edge = std::array<size_t, 2>;
+  using Triangle = std::array<size_t, 3>;
+  std::vector<Vertex> positions;
+  std::vector<Edge> edges;
+  std::vector<Triangle> triangles;
   std::vector<double> data;
 
   std::string previewData(std::size_t max = 10) const;
   std::string summary() const;
 };
+
+struct EdgeCompare {
+  bool operator()(const Mesh::Edge& lhs, const Mesh::Edge& rhs) const {
+    return lhs[0] < rhs[0] || (lhs[0] == rhs[0] && lhs[1] < rhs[1]);
+  }
+};
+
+using EdgeSet = boost::container::flat_set<Mesh::Edge, EdgeCompare>;
+EdgeSet gather_unique_edges(const Mesh& mesh);
 
 } // namespace aste

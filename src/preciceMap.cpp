@@ -1,6 +1,7 @@
 #include <string>
 #include <boost/filesystem.hpp>
 #include <boost/container/flat_map.hpp>
+#include <boost/container/flat_set.hpp>
 #include <mpi.h>
 #include "precice/SolverInterface.hpp"
 //#include "utils/EventUtils.hpp"
@@ -53,73 +54,55 @@ aste::ExecutionContext initializeMPI(int argc, char* argv[]) {
   return {rank, size};
 }
 
-std::vector<int> setupMesh(precice::SolverInterface& interface, const aste::Mesh& mesh, int meshID) {
-  auto tstart = std::chrono::steady_clock::now();
 
-  VLOG(1) << "Mesh Setup: 1) Vertices";
-  // Feed vertices to preCICE
+std::vector<int> setupVertexIDs(precice::SolverInterface& interface, const aste::Mesh& mesh, int meshID) {
   std::vector<int> vertexIDs;
   vertexIDs.reserve(mesh.positions.size());
   for (auto const & pos : mesh.positions)
     vertexIDs.push_back(interface.setMeshVertex(meshID, pos.data()));
+  return vertexIDs;
+}
 
-  auto tconnectivity = std::chrono::steady_clock::now();
+using EdgeIdMap = boost::container::flat_map<Edge, EdgeID>;
 
-  boost::container::flat_map<Edge, EdgeID> edgeMap;
-  edgeMap.reserve(mesh.edges.size() + 2*mesh.triangles.size());
+EdgeIdMap setupEdgeIDs(precice::SolverInterface& interface, const aste::Mesh& mesh, int meshID, const std::vector<int>& vertexIDs) {
+    VLOG(1) << "Mesh Setup: 2.1) Gather Unique Edges";
+    const auto unique_edges{gather_unique_edges(mesh)};
 
-  VLOG(1) << "Mesh Setup: 2) Explicit Edges";
-  for (auto const & edge : mesh.edges) {
+    VLOG(1) << "Mesh Setup: 2.2) Register Edges";
+    boost::container::flat_map<Edge, EdgeID> edgeMap;
+    edgeMap.reserve(unique_edges.size());
+
+    for (auto const &edge : unique_edges) {
       const auto a = vertexIDs.at(edge[0]);
       const auto b = vertexIDs.at(edge[1]);
       assert(a != b);
+      EdgeID eid = interface.setMeshEdge(meshID, a, b);
+      edgeMap.emplace(Edge{a, b}, eid);
+    }
+    return edgeMap;
+}
 
-      auto iter = edgeMap.find(Edge{a, b});
-      if (iter == edgeMap.end()) {
-          EdgeID eid = interface.setMeshEdge(meshID, a, b);
-          edgeMap.emplace(Edge{a, b}, eid);
-      }
-  }
+std::vector<int> setupMesh(precice::SolverInterface& interface, const aste::Mesh& mesh, int meshID) {
+  auto tstart = std::chrono::steady_clock::now();
 
-  VLOG(1) << "Mesh Setup: 3) Implicit Edges";
-  for (auto const & triangle : mesh.triangles) {
-      const auto a = vertexIDs.at(triangle[0]);
-      const auto b = vertexIDs.at(triangle[1]);
-      const auto c = vertexIDs.at(triangle[2]);
-      assert(a != b);
-      assert(b != c);
-      assert(c != a);
+  VLOG(1) << "Mesh Setup: 1) Vertices";
+  const auto vertexIDs = setupVertexIDs(interface, mesh, meshID);
 
-      const Edge ab{a, b};
-      auto ab_pos = edgeMap.find(ab);
-      if (ab_pos == edgeMap.end()) {
-          EdgeID eid = interface.setMeshEdge(meshID, a, b);
-          edgeMap.emplace(ab, eid);
-      }
-      const Edge bc{b, c};
-      auto bc_pos = edgeMap.find(bc);
-      if (bc_pos == edgeMap.end()) {
-          EdgeID eid = interface.setMeshEdge(meshID, b, c);
-          edgeMap.emplace(bc, eid);
-      }
-      const Edge ca{c, a};
-      auto ca_pos = edgeMap.find(ca);
-      if (ca_pos == edgeMap.end()) {
-          EdgeID eid = interface.setMeshEdge(meshID, c, a);
-          edgeMap.emplace(ca, eid);
-      }
-  }
+  auto tconnectivity = std::chrono::steady_clock::now();
+  VLOG(1) << "Mesh Setup: 2) Edges";
+  const auto edgeMap = setupEdgeIDs(interface, mesh, meshID, vertexIDs);
 
-  VLOG(1) << "Mesh Setup: 4) Triangles";
+  VLOG(1) << "Mesh Setup: 3) Triangles";
   for (auto const & triangle : mesh.triangles) {
       const auto a = vertexIDs[triangle[0]];
       const auto b = vertexIDs[triangle[1]];
       const auto c = vertexIDs[triangle[2]];
 
       interface.setMeshTriangle( meshID, 
-              edgeMap[Edge{a,b}],
-              edgeMap[Edge{b,c}],
-              edgeMap[Edge{c,a}]
+              edgeMap.at(Edge{a,b}),
+              edgeMap.at(Edge{b,c}),
+              edgeMap.at(Edge{c,a})
               );
   }
   auto tend = std::chrono::steady_clock::now();
