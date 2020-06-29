@@ -165,23 +165,26 @@ std::string Mesh::summary() const
 /// Creates a unique and element-wise ordered set of undirected edges.
 EdgeSet gather_unique_edges(const Mesh& mesh) 
 {
-  EdgeSet edges;
-  edges.reserve(mesh.edges.size() + 3 * mesh.triangles.size());
+  std::vector<Mesh::Edge> sorted;
+  sorted.reserve(mesh.edges.size() + 3 * mesh.triangles.size());
+
   for (auto const & edge : mesh.edges) {
       const auto a = edge[0];
       const auto b = edge[1];
-      edges.insert(Mesh::Edge{std::min(a, b), std::max(a, b)});
+      sorted.push_back(Mesh::Edge{std::min(a, b), std::max(a, b)});
   }
 
   for (auto const & triangle : mesh.triangles) {
       const auto a = triangle[0];
       const auto b = triangle[1];
       const auto c = triangle[2];
-      edges.insert(Mesh::Edge{std::min(a, b), std::max(a, b)});
-      edges.insert(Mesh::Edge{std::min(a, c), std::max(a, c)});
-      edges.insert(Mesh::Edge{std::min(b, c), std::max(b, c)});
+      sorted.push_back(Mesh::Edge{std::min(a, b), std::max(a, b)});
+      sorted.push_back(Mesh::Edge{std::min(a, c), std::max(a, c)});
+      sorted.push_back(Mesh::Edge{std::min(b, c), std::max(b, c)});
   }
-  return edges;
+  std::sort(sorted.begin(), sorted.end(), EdgeCompare());
+  auto end = std::unique(sorted.begin(), sorted.end());
+  return EdgeSet(boost::container::ordered_unique_range_t{}, sorted.begin(), end);
 }
 
 }
