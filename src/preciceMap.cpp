@@ -78,7 +78,7 @@ EdgeIdMap setupEdgeIDs(precice::SolverInterface& interface, const aste::Mesh& me
       const auto b = vertexIDs.at(edge[1]);
       assert(a != b);
       EdgeID eid = interface.setMeshEdge(meshID, a, b);
-      edgeMap.emplace(Edge{a, b}, eid);
+      edgeMap.emplace_hint(edgeMap.end(), Edge{a, b}, eid);
     }
     return edgeMap;
 }
