@@ -1,7 +1,6 @@
 #pragma once
 
 #include <boost/filesystem.hpp>
-#include <boost/container/flat_set.hpp>
 #include <string>
 #include <vector>
 #include <exception>
@@ -84,7 +83,6 @@ struct EdgeCompare {
   }
 };
 
-using EdgeSet = boost::container::flat_set<Mesh::Edge, EdgeCompare>;
-EdgeSet gather_unique_edges(const Mesh& mesh);
+std::vector<Mesh::Edge> gather_unique_edges(const Mesh& mesh);
 
 } // namespace aste

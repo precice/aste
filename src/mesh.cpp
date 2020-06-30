@@ -163,7 +163,7 @@ std::string Mesh::summary() const
 }
 
 /// Creates a unique and element-wise ordered set of undirected edges.
-EdgeSet gather_unique_edges(const Mesh& mesh) 
+std::vector<Mesh::Edge> gather_unique_edges(const Mesh& mesh) 
 {
   std::vector<Mesh::Edge> sorted;
   sorted.reserve(mesh.edges.size() + 3 * mesh.triangles.size());
@@ -184,7 +184,7 @@ EdgeSet gather_unique_edges(const Mesh& mesh)
   }
   std::sort(sorted.begin(), sorted.end(), EdgeCompare());
   auto end = std::unique(sorted.begin(), sorted.end());
-  return EdgeSet(boost::container::ordered_unique_range_t{}, sorted.begin(), end);
+  return std::vector<Mesh::Edge>(sorted.begin(), end);
 }
 
 }
