@@ -7,13 +7,16 @@ import matplotlib.pyplot as plt
 import math
 import itertools
 
+
 def parseArguments(args):
     parser = argparse.ArgumentParser(description="Creates convergence plots from gathered stats")
     parser.add_argument('-f', '--file', type=argparse.FileType('r'), default="stats.csv", help='The CSV file containing the gathered stats.')
     return parser.parse_args(args)
 
+
 def lavg(l):
     return math.exp(sum(map(math.log, l)) / len(l))
+
 
 def getStyler():
     styles = ['solid', 'dashed', 'dashdot']
@@ -21,6 +24,22 @@ def getStyler():
     markers = ['o', 'v', '^', 'D', '*']
     for style in itertools.product(styles, markers, colors):
         yield style
+
+
+def plot_order(ax, nth, xmin, xmax, ymin, ymax):
+    x1, y1 = xmax, ymax
+
+    x2 = xmin
+    y2 = y1 * ((x2 / x1)**nth)
+
+    xs, ys = [x1, x2], [y1, y2]
+    ax.plot(xs, ys, color="lightgray", linewidth=1.0, zorder=-1)
+    ax.annotate(
+        "{} order".format(nth),
+        xy=(lavg(xs), lavg(ys)),
+        color="gray",
+        zorder=-1
+    )
 
 
 def main(argv):
@@ -48,6 +67,7 @@ def plot(df, inverse, idfilter):
         xname = "mesh A"
         groupname = "mesh B"
         fmt = "{} onto {}"
+    yname="relative-l2"
     styler = getStyler()
 
     df.sort_values(xname, inplace=True)
@@ -63,41 +83,19 @@ def plot(df, inverse, idfilter):
             ax=ax,
             loglog=True,
             x=xname,
-            y="relative-l2",
+            y=yname,
             label=fmt.format(*name),
             marker=m,
             linestyle=l,
             color=c
         )
     ax.set_xlabel("edge length(h) of {}".format(xname))
-    ax.set_ylabel("relative-l2 error mapping to mesh B")
+    ax.set_ylabel("{} error mapping to mesh B".format(yname))
 
-    # # 1st order line
-    # fox = [0.0003, 0.1]
-    # foy1 = 1e-6
-    # foy2 = foy1 * (fox[1]/fox[0])
-    # foy = [foy1, foy2]
-    # ax.plot(fox, foy, color="lightgray", linewidth=1.0, zorder=-1)
-    # ax.annotate(
-    #     "1st order",
-    #     xy=(lavg(fox), lavg(foy)),
-    #     color="gray",
-    #     zorder=-1
-    # )
 
-    # # # 2nd order line
-    # sox = [0.0004, 0.01]
-    # soy1 = 3e-9
-    # soy2 = soy1 * ((sox[1]/sox[0])**2)
-    # soy = [soy1, soy2]
-    # ax.plot(sox, soy, color="lightgray", linewidth=1.0, zorder=-1)
-
-    # ax.annotate(
-    #     "2nd order",
-    #     xy=(lavg(sox), lavg(soy)),
-    #     color="gray",
-    #     zorder=-1
-    # )
+    filtered = df[df['mesh A'] != df['mesh B']][yname]
+    plot_order(ax, 1, df[xname].min(), df[xname].max(), filtered.min(), filtered.max())
+    plot_order(ax, 2, df[xname].min(), df[xname].max(), filtered.min(), filtered.max())
 
     plt.gca().invert_xaxis()
     plt.grid()
