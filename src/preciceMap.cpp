@@ -136,8 +136,9 @@ int main(int argc, char* argv[])
   const int meshID = interface.getMeshID( (participant == "A") ? "MeshA" : "MeshB" ); // participant = A => MeshID = MeshA
   const int dataID = interface.getDataID("Data", meshID);
   
+  VLOG(1) << "Loading mesh from " << meshes.front().filename();
   // reads in mesh, 0 data for participant B
-  auto mesh = meshes[0].load();
+  auto mesh = meshes.front().load();
   VLOG(1) << "The mesh contains: " << mesh.summary();
 
   std::vector<int> vertexIDs = setupMesh(interface, mesh, meshID);
