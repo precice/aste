@@ -41,7 +41,7 @@
       {% if mapping.constraint == "consistent" %}
       <use-mesh name="MeshA" provide="no" from="A" />
 
-      <mapping:{{ mapping.kind }} constraint="consistent" direction="read" from="MeshA" to="MeshB" />
+      <mapping:{{ mapping.kind }} {{ mapping.options }} constraint="consistent" direction="read" from="MeshA" to="MeshB" />
       {% endif %}
     </participant>
     
