@@ -1,3 +1,5 @@
+#! python3
+
 import json
 import csv
 import os

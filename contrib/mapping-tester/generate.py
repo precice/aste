@@ -1,3 +1,5 @@
+#! python3 
+
 import json
 import os
 import argparse
@@ -9,35 +11,39 @@ def generateConfig(template, setup):
 
 
 def generateCases(setup):
-    cases = []
+    meshes = setup["general"]["meshes"]
 
-    for name, mapping in setup["mapping"]["cases"].items():
-        for constraint in setup["mapping"]["constraints"]:
-            for inname, infile in setup["meshes"]["A"].items():
-                for outname, outfile in setup["meshes"]["B"].items():
-                    cases.append({
-                        "function": setup["general"]["function"],
-                        "mapping": {
-                            "name": name,
-                            "kind": mapping["kind"],
-                            "constraint": constraint,
-                            "options": mapping.get("options", "")
-                        },
-                        "A" : {
-                            "ranks": setup["general"]["ranks"].get("A", 1),
-                            "mesh": {
-                                "name": inname,
-                                "file": infile,
+    cases = []
+    for group in setup["groups"]:
+        for name, mapping in group["mapping"]["cases"].items():
+            for constraint in group["mapping"]["constraints"]:
+                for inname in group["meshes"]["A"]:
+                    infile = meshes["A"][inname]
+                    for outname in group["meshes"]["B"]:
+                        outfile = meshes["B"][outname]
+                        cases.append({
+                            "function": setup["general"]["function"],
+                            "mapping": {
+                                "name": name,
+                                "kind": mapping["kind"],
+                                "constraint": constraint,
+                                "options": mapping.get("options", "")
+                            },
+                            "A" : {
+                                "ranks": setup["general"]["ranks"].get("A", 1),
+                                "mesh": {
+                                    "name": inname,
+                                    "file": infile,
+                                }
+                            },
+                            "B" : {
+                                "ranks": setup["general"]["ranks"].get("B", 1),
+                                "mesh": {
+                                    "name": outname,
+                                    "file": outfile,
+                                }
                             }
-                        },
-                        "B" : {
-                            "ranks": setup["general"]["ranks"].get("B", 1),
-                            "mesh": {
-                                "name": outname,
-                                "file": outfile,
-                            }
-                        }
-                    })
+                        })
 
     return cases
 

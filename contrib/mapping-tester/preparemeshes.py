@@ -1,3 +1,5 @@
+#! python3
+
 import json
 import os
 import argparse
@@ -43,7 +45,7 @@ def main(argv):
     partitions = set(map(int, setup["general"]["ranks"].values()))
     partitions.discard(1)
 
-    for name, file in set(itertools.chain(setup["meshes"]["A"].items(), setup["meshes"]["B"].items())):
+    for name, file in set(itertools.chain(setup["general"]["meshes"]["A"].items(), setup["general"]["meshes"]["B"].items())):
         prepareMainMesh(meshdir, name, file, function)
         for p in partitions:
             preparePartMesh(meshdir, name, p)
