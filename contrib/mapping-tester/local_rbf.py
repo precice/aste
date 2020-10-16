@@ -74,7 +74,7 @@ def main(argv):
             assert (name not in cases)
             config = getConfigurator(type)(a, coverage)
             cases[name] = {
-                "kind": type,
+                "kind": f"rbf-{type}",
                 "options": f"{config} polynomial=\"{polynomial}\""
             }
         section = {
