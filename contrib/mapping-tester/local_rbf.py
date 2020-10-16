@@ -7,9 +7,16 @@ import math
 import json
 
 
+class ArgumentSanitizationError(BaseException):
+    def __init__(self, message):
+        super().__init__(message)
+
+
 def sanitize(element, options):
     if (element not in options):
-        raise f"Argument {element} is not a valid option {list(options)}"
+        raise ArgumentSanitizationError(
+            f"Argument {element} is not one of the following valid options: {', '.join(options)}"
+        )
     return element
 
 
@@ -54,18 +61,36 @@ def parseArguments(argv):
     return args
 
 
+class NotImplementedError(BaseException):
+    def __init__(self, type):
+        super().__init__(f"The rbf mapping type {type} is not implemented.")
+
+
 def getConfigurator(type):
+    """
+    Provides a configuration function for given types of mappings.
+    The returned resulting function takes the edge lenght h and the coverage n
+    as arguments and returns an option string for the rbf mapping.
+    """
+    # The various configuration functions
     def gauss(h, n):
         GAUSSIAN_DECAY = 1e-9
         shape = math.sqrt(-math.log(GAUSSIAN_DECAY)) / (float(h) * int(n))
         return f"shape-parameter=\"{shape}\""
 
-    return {"gaussian": gauss}.get(type)
+    # This dictionary maps a type to a configuration function defined above
+    res = {"gaussian": gauss}.get(type)
+    if res is None:
+        raise NotImplementedError(type)
+    return res
 
 
 def main(argv):
     args = parseArguments(argv)
     sections = []
+    # We group by a meshes as we only produce conservative mappings.
+    # For conservative mappings, the shape function depends on the edge lenght
+    # of mesh a.
     for a in args.a:
         cases = {}
         for polynomial, coverage, type in itertools.product(
@@ -91,5 +116,11 @@ def main(argv):
 
     json.dump(sections, args.output, indent=2)
 
+
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    try:
+        main(sys.argv)
+    except Exception as e:
+        print(e)
+        sys.exit(1)
+    sys.exit(0)
