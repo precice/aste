@@ -108,8 +108,8 @@ def main(argv):
                 "cases": cases
             },
             "meshes": {
-                "A": [a],
-                "B": args.b
+                "A": ["{:g}".format(a)],
+                "B": ["{:g}".format(b) for b in args.b]
             }
         }
         sections.append(section)
