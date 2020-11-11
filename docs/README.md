@@ -67,7 +67,7 @@ and execute cmake like `cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
 ## Demo
 A simple demonstration of aste is provided in `contrib/` and can be run with `./demo.sh`. A bunny-shaped mesh is mapped onto a red blood cell. The result can be seen in `result.vtk`.
 
-Load the original vtk files `bunny.vtk` and `rbc.vtk` in ParaView, and visualize them as "surface with edges". Afterwards, load the `result.vtk`, apply a `Delaunay3D1` filter on it, and visualize it as a wireframe. You can also load the file `colored.vtk` and apply a glyph filter on it. This is only a (very) artifical test case, so don't try to extract meaningful results out of it.
+Load the original vtk files `bunny.vtk` and `rbc.vtk` in ParaView, and visualize them as "surface with edges". Afterwards, load the `result.vtk` and visualize it as a wireframe. You can also load the file `colored.vtk` and apply a glyph filter on it. This is only a (very) artifical test case, so don't try to extract meaningful results out of it.
 
 ## Demo with multiple timesteps
 A similar demo with multiple timesteps can be run with `./timesteps.py` inside `contrib/timestep-demo`. Make sure to set `astedir` inside `timesteps.py` to the correct value (By using the environment variable `ASTEDIR`). For details look into the `timesteps.py` and the corresponding `timesteps-precice.xml` file.
