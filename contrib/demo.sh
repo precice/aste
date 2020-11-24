@@ -28,4 +28,6 @@ mpirun -n 2 preciceMap -v -p A --mesh colored &
 mpirun -n 2 preciceMap -v -p B --mesh rbc --output mapped
 
 # Join the output files together to result.vtk
-join_mesh.py mapped -i rbc.vtk -o result.vtk
+join_mesh.py -o result.vtk -r colored.dt0 -n 2 rbc.vtk
+# but it should actually be something like:
+# join_mesh.py -o result.vtk -r colored.dt0 -n 2 mapped
