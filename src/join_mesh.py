@@ -90,7 +90,7 @@ def join_mesh_recovery(dirname, partitions, recoveryPath):
     assert(len(all_values) in [0, len(all_points)])
 
     logging.info("Assembling recovered mesh")
-    return mesh_io.Mesh(all_points, all_cells, all_values)
+    return mesh_io.Mesh(all_points, all_values, all_cells)
 
 
 def read_mesh(dirname, partitions = None, recoveryPath = None):
