@@ -56,8 +56,13 @@ def join_mesh_recovery(dirname, partitions, recoveryPath):
     for i in range(partitions):
         logging.debug("Processing parititon {}".format(i))
         partmapping = {int(key): int(value) for key, value in recovery["mapping"][str(i)].items()}
-        partpoints, _, _, partvalues = read_txt(os.path.join(dirname, str(i)+".txt"))
-        partcells, _ = read_conn(os.path.join(recoveryPath, str(i)+".conn.txt"))
+
+        partfile = os.path.join(dirname, str(i)+".txt")
+        partconnfile = os.path.join(recoveryPath, str(i)+".conn.txt")
+        logging.debug("Partition mesh file: "+partfile)
+        logging.debug("Recovery connectivity file: "+partconnfile)
+        partpoints, _, _, partvalues = read_txt(partfile)
+        partcells, _ = read_conn(partconnfile)
 
         for local, point in enumerate(partpoints):
             points[partmapping[local]] = point
