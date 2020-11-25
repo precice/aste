@@ -30,5 +30,10 @@ mkdir -p mapped
 mpirun -n 2 preciceMap -v -p A --mesh colored &
 mpirun -n 2 preciceMap -v -p B --mesh rbc --output mapped
 
-# Join the output files together to result.vtk
-join_mesh.py -o result.vtk -r colored.dt0 -n 2 mapped
+# Join the output files together to result.vtk,
+# recovering the connectivity from the rbc mesh
+# and using all 2 partitions of each mesh.
+join_mesh.py -o result.vtk -r rbc.dt0 -n 2 mapped
+
+# Measure the difference between the original function and the mapped values
+eval_mesh.py result.vtk -d "x + y"
