@@ -93,23 +93,33 @@ def join_mesh_recovery(dirname, partitions, recoveryPath):
     return mesh_io.Mesh(all_points, all_values, all_cells)
 
 
+def count_partitions(dirname):
+    detected = 0
+    while True:
+        partitionFile = os.path.join(dirname, str(detected)+".txt")
+        if (not os.path.isfile(partitionFile)):
+            break
+        detected += 1
+    return detected
+
+
 def read_mesh(dirname, partitions = None, recoveryPath = None):
     """
-    Reads a mesh from the given directory. If length is given, only the first length parts are read,
-    else length is inferred from the files.
+    Reads a mesh from the given directory.
     """
     if not partitions:
-        length = 0
-        while os.path.isfile(os.path.join(dirname, str(length)+".txt")):
-            length += 1
+        partitions = count_partitions(dirname)
+        logging.debug("Detected "+str(partitions)+" partitions from directory "+dirname)
     dirname = os.path.abspath(dirname)
     if not os.path.exists(dirname):
         raise Exception("Directory not found")
     if not os.path.isdir(dirname):
         raise Exception("In mesh must be a directory")
+    if partitions == 0:
+        raise Exception("No partitions found")
 
     if recoveryPath is None:
-        return join_mesh_partitionwise(dirname, length)
+        return join_mesh_partitionwise(dirname, partitions)
     else:
         return join_mesh_recovery(dirname, partitions, recoveryPath)
 
