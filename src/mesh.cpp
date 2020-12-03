@@ -1,3 +1,4 @@
+#include <boost/filesystem/operations.hpp>
 #include <mesh.hpp>
 
 #include <iostream>
@@ -75,6 +76,7 @@ Mesh MeshName::load() const
 void MeshName::save(const Mesh& mesh) const
 {
   assert(mesh.positions.size() == mesh.data.size());
+  fs::create_directories(fs::path(filename()).parent_path());
   std::ofstream out(filename(), std::ios::trunc);
   out.precision(std::numeric_limits<long double>::max_digits10);
   for (size_t i = 0; i < mesh.positions.size(); i++) {
