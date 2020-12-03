@@ -95,6 +95,10 @@ class Mesh:
         self.validate()
 
     @property
+    def empty(self):
+        return self.points.size == 0
+
+    @property
     def celltypes(self):
         edge_type = get_cell_type(2)
         triangle_type = get_cell_type(3)
@@ -132,8 +136,10 @@ class Mesh:
 
     def append(self, other):
         assert (isinstance(other, Mesh))
-        assert (self.has_data() == other.has_data())
-        assert (self.has_connectivity() == other.has_connectivity())
+        if (not self.empty):
+            assert (self.has_data() == other.has_data())
+            assert (self.has_connectivity() == other.has_connectivity())
+
         offset = len(self.points)
         print(self)
         print(other)
