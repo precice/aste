@@ -94,7 +94,8 @@ def createRunScript(outdir, path, case):
         "#!/bin/bash",
         'cd "$( dirname "${BASH_SOURCE[0]}" )"',
         "echo '=========='",
-        "rm -f memory-A.log memory-B.log",
+        "rm -f memory-A.log memory-B.log done running",
+        "touch running",
         "echo '= {} ({}) {} - {}'".format(
             case["mapping"]["name"],
             case["mapping"]["constraint"],
@@ -104,7 +105,9 @@ def createRunScript(outdir, path, case):
         "",
         acmd,
         bcmd,
-        ""
+        "",
+        "rm -f running",
+        "touch done"
     ]
 
     if (branks == 1):
