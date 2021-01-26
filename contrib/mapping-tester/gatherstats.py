@@ -13,6 +13,41 @@ def parseArguments(args):
     return parser.parse_args(args)
 
 
+def statsFromTimings(dir):
+    stats = {}
+    assert(os.path.isdir(dir))
+    file = os.path.join(dir, "precice-B-events.json")
+    if os.path.isfile(file):
+        try:
+            timings={}
+            with open(file,"r") as jsonfile:
+                timings = json.load(jsonfile)["Ranks"][0]["Timings"]
+            stats["globalTime"] = timings["_GLOBAL"]["Max"]
+            stats["initializeTime"] = timings["initialize"]["Max"]
+            mapname = [ x for x in timings.keys() if x.endswith("computeMapping.FromMeshAToMeshB") ][0]
+            stats["computeMappingTime"] = timings[mapname]["Max"]
+        except:
+            pass
+    return stats
+
+
+def memoryStats(dir):
+    stats = {}
+    assert(os.path.isdir(dir))
+    for P in "A", "B":
+        memfile = os.path.join(dir, f"memory-{P}.log")
+        total = 0
+        if os.path.isfile(memfile):
+            try:
+                with open(memfile, "r") as file:
+                    total = sum([float(e) / 1024.0 for e in file.readlines()])
+            except:
+                pass
+        stats[f"peakMem{P}"] = total
+
+    return stats
+
+
 def main(argv):
     args = parseArguments(argv[1:])
 
@@ -25,6 +60,7 @@ def main(argv):
     fields = []
     for file in statFiles:
         print("Found: "+file)
+        casedir= os.path.join(args.outdir, os.path.dirname(file))
         parts = os.path.normpath(file).split(os.sep)
         assert(len(parts) >= 4)
         mapping, constraint, meshes, _ = parts[-4:]
@@ -32,13 +68,15 @@ def main(argv):
 
         with open(os.path.join(args.outdir, file),"r") as jsonfile:
             stats = json.load(jsonfile)
-            if not fields:
-                fields += stats.keys()
             stats["mapping"] = mapping
             stats["constraint"] = constraint
             stats["mesh A"] = meshA
             stats["mesh B"] = meshB
+            stats.update(statsFromTimings(casedir))
+            stats.update(memoryStats(casedir))
             allstats.append(stats)
+            if not fields:
+                fields += stats.keys()
 
     fields = ["mapping", "constraint", "mesh A", "mesh B"] + fields
     writer = csv.DictWriter(args.file, fieldnames=fields)

@@ -80,20 +80,21 @@ def createRunScript(outdir, path, case):
     aranks = case["A"]["ranks"]
     ameshLocation = os.path.relpath(os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path)
 
-    acmd = "preciceMap -v -p A --mesh {} &".format(ameshLocation)
+    acmd = "/usr/bin/time -f %M -a -o memory-A.log preciceMap -v -p A --mesh {} &".format(ameshLocation)
     if aranks > 1: acmd.append("mpirun -n {} ".format(aranks))
 
     bmesh = case["B"]["mesh"]["name"]
     branks = case["B"]["ranks"]
     bmeshLocation = os.path.relpath(os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path)
 
-    bcmd = "preciceMap -v -p B --mesh {} --output mapped".format(bmeshLocation)
+    bcmd = "/usr/bin/time -f %M -a -o memory-B.log preciceMap -v -p B --mesh {} --output mapped".format(bmeshLocation)
     if branks > 1: bcmd.append("mpirun -n {} ".format(branks))
 
     content = [
         "#!/bin/bash",
         'cd "$( dirname "${BASH_SOURCE[0]}" )"',
         "echo '=========='",
+        "rm -f memory-A.log memory-B.log",
         "echo '= {} ({}) {} - {}'".format(
             case["mapping"]["name"],
             case["mapping"]["constraint"],
