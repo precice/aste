@@ -57,19 +57,32 @@ def getCaseFolders(case):
             )]
 
 
+def caseToSortable(case):
+    parts = case.split(os.path.sep)
+    kind = parts[0]
+    mesha, meshb = map(float, parts[-1].split("-"))
+
+    kindCost = 0
+    if kind.startswith("gaussian"):
+        kindCost = 1
+    elif kind.startswith("tps"):
+        kindCost = 2
+
+    return (kindCost, -mesha, -meshb)
+
+
 def createMasterRunScript(casedirs, dir):
-    reldirs = [
+    reldirs = sorted([
         os.path.relpath(casedir, dir)
         for casedir in casedirs
-    ]
+    ], key=caseToSortable)
+
     content = ["#!/bin/bash",
                "",
                'cd "$( dirname "${BASH_SOURCE[0]}" )"',
+               "RUNNER=/bin/bash",
                ""] + [
-                   "/bin/bash {} 2>&1 | tee {}".format(
-                       os.path.join(reldir, "run.sh"),
-                       os.path.join(reldir, "run.log")
-                   )
+                   "${RUNNER} " + os.path.join(reldir, "run-wrapper.sh")
                    for reldir in reldirs
                ]
     open(os.path.join(dir, "runall.sh"),"w").writelines([ line + "\n" for line in content ])
@@ -119,6 +132,14 @@ def createRunScript(outdir, path, case):
         diffcmd = "eval_mesh.py result.vtk -o error.vtk --diff --stats \"{}\" | tee diff.log".format(case["function"])
         content += [joincmd,diffcmd]
     open(os.path.join(path, "run.sh"),"w").writelines([ line + "\n" for line in content ])
+
+    wrapper = [
+        "#!/bin/bash",
+        'cd "$( dirname "${BASH_SOURCE[0]}" )"',
+        "/bin/bash run.sh 2>&1 | tee run.log"
+    ]
+    open(os.path.join(path, "run-wrapper.sh"),"w").writelines([ line + "\n" for line in wrapper ])
+
 
 
 
