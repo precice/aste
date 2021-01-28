@@ -164,16 +164,17 @@ def setupCases(outdir, template, cases):
     for case in cases:
         name = [outdir] + getCaseFolders(case)
         path=os.path.join(*name)
-        print(name, path)
         casedirs.append(path)
         config=os.path.join(path, "precice.xml")
 
+        print(f"Generating {path}")
         os.makedirs(path, exist_ok=True)
         with open(config, "w") as config:
             config.write(generateConfig(template, case))
         createRunScript(outdir, path, case)
 
     createMasterRunScript(casedirs, outdir)
+    print(f"Generated {len(cases)} cases")
 
 
 def parseArguments(args):
