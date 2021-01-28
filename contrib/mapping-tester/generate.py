@@ -131,7 +131,9 @@ def createRunScript(outdir, path, case):
         "echo '=========='",
         "",
         acmd,
+        "APID=$?",
         bcmd,
+        "wait ${APID}",
         "",
         "rm -f running",
         "touch done"
