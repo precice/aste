@@ -9,6 +9,14 @@ import json
 import os
 
 
+def defaultPool():
+    try:
+        size = int(os.getenv("ASTE_MESH_JOBS"))
+        return Pool(size)
+    except:
+        return Pool()
+
+
 def relativel2(mesh):
     return math.sqrt(np.nansum(np.square(mesh.data)) / len(mesh.data))
 
@@ -32,7 +40,7 @@ def weightedl2(mesh):
     if (not mesh.has_connectivity()):
         return None
 
-    with Pool() as pool:
+    with defaultPool() as pool:
         areas = np.concatenate(pool.map(
             weightedl2_apply_area,
             [(chunk, mesh.points) for chunk in np.array_split(mesh.triangles, os.cpu_count())]
@@ -105,7 +113,7 @@ class Evaluator:
 
 def user_func(points, f_str):
     evaluator = Evaluator(f_str)
-    with Pool() as pool:
+    with defaultPool() as pool:
         vals = np.array(pool.map(evaluator.evaluate, enumerate(points)), dtype=np.float64)
 
     logging.info("Evaluated {} on {} vertices".format(f_str, len(vals)))
