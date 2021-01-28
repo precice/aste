@@ -81,7 +81,7 @@ def main(argv):
             if not fields:
                 fields += stats.keys()
 
-    fields = ["mapping", "constraint", "mesh A", "mesh B", "ranks A", "ranks B"] + fields
+    assert(fields)
     writer = csv.DictWriter(args.file, fieldnames=fields)
     writer.writeheader()
     writer.writerows(allstats)
