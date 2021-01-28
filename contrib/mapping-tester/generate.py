@@ -9,6 +9,13 @@ def generateConfig(template, setup):
     template = Template(template)
     return template.render(setup)
 
+def as_iter(something):
+    try:
+        iter(something)
+        return something
+    except TypeError:
+        return [something]
+
 
 def generateCases(setup):
     meshes = setup["general"]["meshes"]
@@ -21,29 +28,32 @@ def generateCases(setup):
                     infile = meshes["A"][inname]
                     for outname in group["meshes"]["B"]:
                         outfile = meshes["B"][outname]
-                        cases.append({
-                            "function": setup["general"]["function"],
-                            "mapping": {
-                                "name": name,
-                                "kind": mapping["kind"],
-                                "constraint": constraint,
-                                "options": mapping.get("options", "")
-                            },
-                            "A" : {
-                                "ranks": setup["general"]["ranks"].get("A", 1),
-                                "mesh": {
-                                    "name": inname,
-                                    "file": infile,
+                        for ranksA, ranksB in zip(
+                                as_iter(setup["general"]["ranks"].get("A", 1)),
+                                as_iter(setup["general"]["ranks"].get("B", 1))):
+                            cases.append({
+                                "function": setup["general"]["function"],
+                                "mapping": {
+                                    "name": name,
+                                    "kind": mapping["kind"],
+                                    "constraint": constraint,
+                                    "options": mapping.get("options", "")
+                                },
+                                "A" : {
+                                    "ranks": ranksA,
+                                    "mesh": {
+                                        "name": inname,
+                                        "file": infile,
+                                    }
+                                },
+                                "B" : {
+                                    "ranks": ranksB,
+                                    "mesh": {
+                                        "name": outname,
+                                        "file": outfile,
+                                    }
                                 }
-                            },
-                            "B" : {
-                                "ranks": setup["general"]["ranks"].get("B", 1),
-                                "mesh": {
-                                    "name": outname,
-                                    "file": outfile,
-                                }
-                            }
-                        })
+                            })
 
     return cases
 
@@ -54,13 +64,17 @@ def getCaseFolders(case):
             "{}-{}".format(
                 case["A"]["mesh"]["name"],
                 case["B"]["mesh"]["name"]
+            ),
+            "{}-{}".format(
+                case["A"]["ranks"],
+                case["B"]["ranks"]
             )]
 
 
 def caseToSortable(case):
     parts = case.split(os.path.sep)
     kind = parts[0]
-    mesha, meshb = map(float, parts[-1].split("-"))
+    mesha, meshb = map(float, parts[-2].split("-"))
 
     kindCost = 0
     if kind.startswith("gaussian"):
@@ -94,14 +108,14 @@ def createRunScript(outdir, path, case):
     ameshLocation = os.path.relpath(os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path)
 
     acmd = "/usr/bin/time -f %M -a -o memory-A.log preciceMap -v -p A --mesh {} &".format(ameshLocation)
-    if aranks > 1: acmd.append("mpirun -n {} ".format(aranks))
+    if aranks > 1: acmd = "mpirun -n {} {}".format(aranks, acmd)
 
     bmesh = case["B"]["mesh"]["name"]
     branks = case["B"]["ranks"]
     bmeshLocation = os.path.relpath(os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path)
 
     bcmd = "/usr/bin/time -f %M -a -o memory-B.log preciceMap -v -p B --mesh {} --output mapped".format(bmeshLocation)
-    if branks > 1: bcmd.append("mpirun -n {} ".format(branks))
+    if branks > 1: bcmd = "mpirun -n {} {}".format(branks, bcmd)
 
     content = [
         "#!/bin/bash",
@@ -148,6 +162,7 @@ def setupCases(outdir, template, cases):
     for case in cases:
         name = [outdir] + getCaseFolders(case)
         path=os.path.join(*name)
+        print(name, path)
         casedirs.append(path)
         config=os.path.join(path, "precice.xml")
 

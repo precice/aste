@@ -62,9 +62,10 @@ def main(argv):
         print("Found: "+file)
         casedir= os.path.join(args.outdir, os.path.dirname(file))
         parts = os.path.normpath(file).split(os.sep)
-        assert(len(parts) >= 4)
-        mapping, constraint, meshes, _ = parts[-4:]
+        assert(len(parts) >= 5)
+        mapping, constraint, meshes, ranks, _ = parts[-5:]
         meshA, meshB = meshes.split('-')
+        ranksA, ranksB = meshes.split('-')
 
         with open(os.path.join(args.outdir, file),"r") as jsonfile:
             stats = json.load(jsonfile)
@@ -72,13 +73,15 @@ def main(argv):
             stats["constraint"] = constraint
             stats["mesh A"] = meshA
             stats["mesh B"] = meshB
+            stats["ranks A"] = ranksA
+            stats["ranks B"] = ranksB
             stats.update(statsFromTimings(casedir))
             stats.update(memoryStats(casedir))
             allstats.append(stats)
             if not fields:
                 fields += stats.keys()
 
-    fields = ["mapping", "constraint", "mesh A", "mesh B"] + fields
+    fields = ["mapping", "constraint", "mesh A", "mesh B", "ranks A", "ranks B"] + fields
     writer = csv.DictWriter(args.file, fieldnames=fields)
     writer.writeheader()
     writer.writerows(allstats)
