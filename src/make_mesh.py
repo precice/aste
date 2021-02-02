@@ -63,8 +63,8 @@ def coords_in_linspace(x0, x1, y0, y1, nx, ny):
     x = np.linspace(x0, x1, nx)
     y = np.linspace(y0, y1, ny)
     xx, yy = np.meshgrid(x, y)
-    return np.append(np.full(xx.size, 0.0), xx.reshape((-1, 1)),
-                     yy.reshape((-1, 1)), 1)
+    zz = np.zeros_like(xx)
+    return np.stack([zz.flat, xx.flat, yy.flat]).transpose()
 
 
 def triangles_on_plate(nx, ny):
