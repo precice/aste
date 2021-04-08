@@ -126,7 +126,7 @@ def createRunScript(outdir, path, case):
     branks = case["B"]["ranks"]
     bmeshLocation = os.path.relpath(os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path)
 
-    bcmd = "/usr/bin/time -f %M -a -o memory-B.log preciceMap -v -p B --mesh {} --output mapped".format(bmeshLocation)
+    bcmd = "/usr/bin/time -f %M -a -o memory-B.log preciceMap -v -p B --mesh {} --output mapped &".format(bmeshLocation)
     if branks > 1: bcmd = "mpirun -n {} $ASTE_B_MPIARGS {}".format(branks, bcmd)
 
     content = [
@@ -143,9 +143,8 @@ def createRunScript(outdir, path, case):
         "echo '=========='",
         "",
         acmd,
-        "APID=$?",
         bcmd,
-        "wait ${APID}",
+        "wait",
         "",
         "rm -f running",
         "touch done"
