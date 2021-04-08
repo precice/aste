@@ -186,11 +186,8 @@ def main():
 
     mesh = gen_mesh(args.x0, args.x1, args.nx, args.y0, args.y1, args.ny,
                     args.connectivity)
-    mesh.save_txt(args.out_mesh)
-    logging.info("Wrote mesh to %s", args.out_mesh + ".txt")
-    if args.connectivity:
-        logging.info("Wrote mesh connectivity to %s",
-                     args.out_mesh + ".conn.txt")
+    mesh.save(args.out_mesh)
+    logging.info("Wrote mesh to %s", args.out_mesh)
 
 
 if __name__ == "__main__":
