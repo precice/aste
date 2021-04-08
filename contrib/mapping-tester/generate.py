@@ -85,12 +85,7 @@ def caseToSortable(case):
     return (kindCost, -mesha, -meshb)
 
 
-def createMasterRunScript(casedirs, dir):
-    reldirs = sorted([
-        os.path.relpath(casedir, dir)
-        for casedir in casedirs
-    ], key=caseToSortable)
-
+def createMasterRunScripts(casemap, dir):
     common = ["#!/bin/bash",
                "",
                'cd "$( dirname "${BASH_SOURCE[0]}" )"',
@@ -99,17 +94,32 @@ def createMasterRunScript(casedirs, dir):
 
     # Generate master runner script
     content = common + [
-                   "${RUNNER} " + os.path.join(reldir, "run-wrapper.sh")
-                   for reldir in reldirs
+                   "${RUNNER} " + os.path.join(case, "runall.sh")
+                   for case in casemap.keys()
                ]
     open(os.path.join(dir, "runall.sh"),"w").writelines([ line + "\n" for line in content ])
 
     # Generate master postprocessing script
     post = common + [
-                   "${RUNNER} " + os.path.join(reldir, "post.sh")
-                   for reldir in reldirs
+                   "${RUNNER} " + os.path.join(case, "postprocessall.sh")
+                   for case in casemap.keys()
                ]
     open(os.path.join(dir, "postprocessall.sh"),"w").writelines([ line + "\n" for line in post ])
+
+    for case, instances in casemap.items():
+        # Generate master runner script
+        content = common + [
+                       "${RUNNER} " + os.path.join(*instance, "run-wrapper.sh")
+                       for instance in instances
+                   ]
+        open(os.path.join(dir, case, "runall.sh"),"w").writelines([ line + "\n" for line in content ])
+
+        # Generate master postprocessing script
+        post = common + [
+                       "${RUNNER} " + os.path.join(*instance, "post.sh")
+                       for instance in instances
+                   ]
+        open(os.path.join(dir, case, "postprocessall.sh"),"w").writelines([ line + "\n" for line in post ])
 
 
 
@@ -181,11 +191,12 @@ def createRunScript(outdir, path, case):
 
 
 def setupCases(outdir, template, cases):
-    casedirs = []
+    casemap = {}
     for case in cases:
-        name = [outdir] + getCaseFolders(case)
+        folders = getCaseFolders(case)
+        casemap.setdefault(folders[0], []).append(folders[1:])
+        name = [outdir] + folders
         path=os.path.join(*name)
-        casedirs.append(path)
         config=os.path.join(path, "precice.xml")
 
         print(f"Generating {path}")
@@ -193,9 +204,10 @@ def setupCases(outdir, template, cases):
         with open(config, "w") as config:
             config.write(generateConfig(template, case))
         createRunScript(outdir, path, case)
-
-    createMasterRunScript(casedirs, outdir)
     print(f"Generated {len(cases)} cases")
+
+    print(f"Generating master scripts")
+    createMasterRunScripts(casemap, outdir)
 
 
 def parseArguments(args):
