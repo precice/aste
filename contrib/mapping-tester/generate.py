@@ -91,15 +91,26 @@ def createMasterRunScript(casedirs, dir):
         for casedir in casedirs
     ], key=caseToSortable)
 
-    content = ["#!/bin/bash",
+    common = ["#!/bin/bash",
                "",
                'cd "$( dirname "${BASH_SOURCE[0]}" )"',
                "RUNNER=/bin/bash",
-               ""] + [
+               ""]
+
+    # Generate master runner script
+    content = common + [
                    "${RUNNER} " + os.path.join(reldir, "run-wrapper.sh")
                    for reldir in reldirs
                ]
     open(os.path.join(dir, "runall.sh"),"w").writelines([ line + "\n" for line in content ])
+
+    # Generate master postprocessing script
+    post = common + [
+                   "${RUNNER} " + os.path.join(reldir, "post.sh")
+                   for reldir in reldirs
+               ]
+    open(os.path.join(dir, "postprocessall.sh"),"w").writelines([ line + "\n" for line in post ])
+
 
 
 def createRunScript(outdir, path, case):
@@ -107,6 +118,7 @@ def createRunScript(outdir, path, case):
     aranks = case["A"]["ranks"]
     ameshLocation = os.path.relpath(os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path)
 
+    # Generate runner script
     acmd = "/usr/bin/time -f %M -a -o memory-A.log preciceMap -v -p A --mesh {} &".format(ameshLocation)
     if aranks > 1: acmd = "mpirun -n {} $ASTE_A_MPIARGS {}".format(aranks, acmd)
 
@@ -138,17 +150,9 @@ def createRunScript(outdir, path, case):
         "rm -f running",
         "touch done"
     ]
-
-    if (branks == 1):
-        copycmd = "cp {}.conn.txt mapped.conn.txt".format(bmeshLocation)
-        diffcmd = "eval_mesh.py mapped.txt -o error.vtk --diff --stats \"{}\" | tee diff.log".format(case["function"])
-        content += [copycmd, diffcmd]
-    else:
-        joincmd = "join_mesh.py mapped -r {} -o result.vtk".format(bmeshLocation)
-        diffcmd = "eval_mesh.py result.vtk -o error.vtk --diff --stats \"{}\" | tee diff.log".format(case["function"])
-        content += [joincmd,diffcmd]
     open(os.path.join(path, "run.sh"),"w").writelines([ line + "\n" for line in content ])
 
+    # Generate wrapper script for runner
     wrapper = [
         "#!/bin/bash",
         'cd "$( dirname "${BASH_SOURCE[0]}" )"',
@@ -156,7 +160,25 @@ def createRunScript(outdir, path, case):
     ]
     open(os.path.join(path, "run-wrapper.sh"),"w").writelines([ line + "\n" for line in wrapper ])
 
-
+    # Generate post processing script
+    post_content = [
+        "#!/bin/bash",
+        'cd "$( dirname "${BASH_SOURCE[0]}" )"',
+        "echo '= {} ({}) {} - {}'".format(
+            case["mapping"]["name"],
+            case["mapping"]["constraint"],
+            amesh, bmesh
+        ),
+    ]
+    if (branks == 1):
+        copycmd = "cp {}.conn.txt mapped.conn.txt".format(bmeshLocation)
+        diffcmd = "eval_mesh.py mapped.txt -o error.vtk --diff --stats \"{}\" | tee diff.log".format(case["function"])
+        post_content += [copycmd, diffcmd]
+    else:
+        joincmd = "join_mesh.py mapped -r {} -o result.vtk".format(bmeshLocation)
+        diffcmd = "eval_mesh.py result.vtk -o error.vtk --diff --stats \"{}\" | tee diff.log".format(case["function"])
+        post_content += [joincmd,diffcmd]
+    open(os.path.join(path, "post.sh"),"w").writelines([ line + "\n" for line in post_content ])
 
 
 def setupCases(outdir, template, cases):
