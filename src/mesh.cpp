@@ -73,10 +73,18 @@ Mesh MeshName::load() const
   return mesh;
 }
 
+void MeshName::createDirectories() const
+{
+  auto dir = fs::path(filename()).parent_path();
+  if(!dir.empty()) {
+     fs::create_directories(dir);
+  }
+}
+
 void MeshName::save(const Mesh& mesh) const
 {
   assert(mesh.positions.size() == mesh.data.size());
-  // fs::create_directories(fs::path(filename()).parent_path());
+  createDirectories();
   std::ofstream out(filename(), std::ios::trunc);
   out.precision(std::numeric_limits<long double>::max_digits10);
   for (size_t i = 0; i < mesh.positions.size(); i++) {

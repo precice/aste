@@ -45,6 +45,8 @@ private:
 
   MeshName(std::string meshname) : _mname(std::move(meshname)) {}
 
+  void createDirectories() const;
+
   std::string _mname;
 
   friend BaseName;
