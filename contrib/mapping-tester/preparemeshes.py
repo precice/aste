@@ -35,7 +35,7 @@ def preparePartMesh(meshdir, name, p, force=False):
     assert(p > 1)
     mainMesh = os.path.join(meshdir, name, "1", name+".txt")
     partDir = os.path.join(meshdir, name, str(p))
-    partMesh = os.path.join(partDir, name+".txt")
+    partMesh = os.path.join(partDir, name)
     print("Preparing Mesh {} with {} paritions in {}".format(name, p, partDir))
 
     if os.path.isdir(partDir):
