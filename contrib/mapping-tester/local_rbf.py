@@ -46,6 +46,7 @@ def parseArguments(argv):
                         "--output",
                         default=sys.stdout,
                         type=argparse.FileType('w'))
+    parser.add_argument("-r", "--solver-rtol", default=1e-9, type=float)
 
     args = parser.parse_args(argv[1:])
 
@@ -100,7 +101,7 @@ def main(argv):
             config = getConfigurator(type)(a, coverage)
             cases[name] = {
                 "kind": f"rbf-{type}",
-                "options": f"{config} polynomial=\"{polynomial}\""
+                "options": f"{config} polynomial=\"{polynomial}\" solver-rtol=\"{args.solver_rtol}\""
             }
         section = {
             "mapping": {
