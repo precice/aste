@@ -28,7 +28,7 @@ mpirun -n 2 ../../build/preciceMap -v -p A --mesh coarseMeshWithData &
 mpirun -n 4 ../../build/preciceMap -v -p B --mesh turbineFine --output mapped
 
 ### Join the output files together to result.vtk
-python3 ../../src/join_mesh.py mapped -i turbineFine.vtk -o result.vtk
+python3 ../../src/join_mesh.py mapped -r turbineFine -o result.vtk
 
 python3 ../../src/eval_mesh.py --diff -o difference.vtk result.vtk "y"
 
