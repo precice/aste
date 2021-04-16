@@ -19,6 +19,7 @@ def as_iter(something):
 
 def generateCases(setup):
     meshes = setup["general"]["meshes"]
+    network = setup["general"].get("network", "lo")
 
     cases = []
     for group in setup["groups"]:
@@ -52,7 +53,8 @@ def generateCases(setup):
                                         "name": outname,
                                         "file": outfile,
                                     }
-                                }
+                                },
+                                "network": network
                             })
 
     return cases
