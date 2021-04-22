@@ -60,10 +60,10 @@ std::vector<int> setupVertexIDs(precice::SolverInterface &interface,
 #ifdef ASTE_SET_MESH_BLOCK
   const auto nvertices = mesh.positions.size();
   std::vector<double> posData(3 * nvertices);
-  auto out = posData.begin();
-  std::for_each(
-      mesh.positions.cbegin(), mesh.positions.cend(),
-      [&out](const auto &pos) { std::copy(pos.cbegin(), pos.cend(), out); });
+  for (unsigned long i = 0; i<nvertices; ++i) {
+    const auto& pos = mesh.positions[i];
+    std::copy(pos.begin(), pos.end(), &posData[i*3]);
+  }
 
   std::vector<int> vertexIDs(nvertices);
   interface.setMeshVertices(meshID, nvertices, posData.data(), vertexIDs.data());
