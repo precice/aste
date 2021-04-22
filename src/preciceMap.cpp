@@ -55,12 +55,26 @@ aste::ExecutionContext initializeMPI(int argc, char* argv[]) {
 }
 
 
-std::vector<int> setupVertexIDs(precice::SolverInterface& interface, const aste::Mesh& mesh, int meshID) {
+std::vector<int> setupVertexIDs(precice::SolverInterface &interface,
+                                const aste::Mesh &mesh, int meshID) {
+#ifdef ASTE_SET_MESH_BLOCK
+  const auto nvertices = mesh.positions.size();
+  std::vector<double> posData(3 * nvertices);
+  auto out = posData.begin();
+  std::for_each(
+      mesh.positions.cbegin(), mesh.positions.cend(),
+      [&out](const auto &pos) { std::copy(pos.cbegin(), pos.cend(), out); });
+
+  std::vector<int> vertexIDs(nvertices);
+  interface.setMeshVertices(meshID, nvertices, posData.data(), vertexIDs.data());
+  return vertexIDs;
+#else
   std::vector<int> vertexIDs;
   vertexIDs.reserve(mesh.positions.size());
-  for (auto const & pos : mesh.positions)
+  for (auto const &pos : mesh.positions)
     vertexIDs.push_back(interface.setMeshVertex(meshID, pos.data()));
   return vertexIDs;
+#endif
 }
 
 using EdgeIdMap = boost::container::flat_map<Edge, EdgeID>;

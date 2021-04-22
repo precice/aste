@@ -5,7 +5,9 @@ project(ASTE)
 
 list (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake-modules")
 
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 14)
+set (CMAKE_CXX_STANDARD_REQUIRED YES)
+set (CMAKE_CXX_EXTENSIONS NO)
 
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build." FORCE)
@@ -14,6 +16,8 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 message(STATUS "Build configuration: " ${CMAKE_BUILD_TYPE})
+
+option(ASTE_SET_MESH_BLOCK "Use block versions to set mesh primitives." ON)
 
 find_package (Threads REQUIRED)
 
@@ -40,6 +44,10 @@ target_link_libraries(preciceMap
   Boost::system
   MPI::MPI_CXX
 )
+
+if(ASTE_SET_MESH_BLOCK)
+  target_compile_definitions(preciceMap PRIVATE ASTE_SET_MESH_BLOCK)
+endif()
 
 if(METIS_FOUND)
   target_link_libraries(preciceMap metisAPI)
