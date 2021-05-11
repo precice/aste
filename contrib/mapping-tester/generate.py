@@ -131,21 +131,22 @@ def createRunScript(outdir, path, case):
     ameshLocation = os.path.relpath(os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path)
 
     # Generate runner script
-    acmd = "/usr/bin/time -f %M -a -o memory-A.log preciceMap -v -p A --mesh {} &".format(ameshLocation)
+    acmd = "/usr/bin/time -f %M -a -o memory-A.log preciceMap -v -p A --mesh {} || kill 0 &".format(ameshLocation)
     if aranks > 1: acmd = "mpirun -n {} $ASTE_A_MPIARGS {}".format(aranks, acmd)
 
     bmesh = case["B"]["mesh"]["name"]
     branks = case["B"]["ranks"]
     bmeshLocation = os.path.relpath(os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path)
 
-    bcmd = "/usr/bin/time -f %M -a -o memory-B.log preciceMap -v -p B --mesh {} --output mapped &".format(bmeshLocation)
+    bcmd = "/usr/bin/time -f %M -a -o memory-B.log preciceMap -v -p B --mesh {} --output mapped || kill 0 &".format(bmeshLocation)
     if branks > 1: bcmd = "mpirun -n {} $ASTE_B_MPIARGS {}".format(branks, bcmd)
 
     content = [
         "#!/bin/bash",
         'cd "$( dirname "${BASH_SOURCE[0]}" )"',
         "echo '=========='",
-        "rm -f memory-A.log memory-B.log done running",
+        "rm -f memory-A.log memory-B.log done running failed",
+        "rm -fr mapped && mkdir mapped",
         "touch running",
         "echo '= {} ({}) {} - {}'".format(
             case["mapping"]["name"],
@@ -154,12 +155,18 @@ def createRunScript(outdir, path, case):
         ),
         "echo '=========='",
         "",
+        "set -m",
+        "(",
         acmd,
         bcmd,
         "wait",
-        "",
+        ")",
+        'if [[ "$?" -eq 0 ]]; then',
+        "touch done",
+        "else",
+        "touch failed",
+        "fi",
         "rm -f running",
-        "touch done"
     ]
     open(os.path.join(path, "run.sh"),"w").writelines([ line + "\n" for line in content ])
 
