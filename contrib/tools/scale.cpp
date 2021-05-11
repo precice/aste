@@ -76,7 +76,11 @@ int main(int argc, char **argv)
   gmsh::model::occ::dilate(v, 0,0,0 , scale, scale, scale);
   const auto b2 = getBoundingBox(v);
   gmsh::model::occ::translate(v, -b2.xmin, -b2.ymin, -b2.zmin);
-  gmsh::model::occ::removeAllDuplicates();
+  try {
+    gmsh::model::occ::removeAllDuplicates();
+  } catch (...) {
+    std::cerr << "Deduplication failed\n";
+  }
   gmsh::model::occ::synchronize();
   gmsh::vectorpair v2;
   gmsh::model::getEntities(v2);

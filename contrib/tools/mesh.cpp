@@ -14,7 +14,6 @@ std::string formatSize(double size) {
 
 int main(int argc, char **argv)
 {
-
   if (argc < 3) {
     std::cerr << "Usage: exe INPUT SIZE, [SIZE, ...]\n";
     return 1;
