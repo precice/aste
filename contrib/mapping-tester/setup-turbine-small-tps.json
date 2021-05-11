@@ -1,0 +1,60 @@
+{
+  "general": {
+    "function": "0.78 + math.cos(10*(x+y+z))",
+    "ranks": {
+      "A": [
+        2
+      ],
+      "B": [
+        4
+      ]
+    },
+    "meshes": {
+      "A": {
+        "0.05": "$ASTE_MESHES/0.05.vtk",
+        "0.025": "$ASTE_MESHES/0.025.vtk",
+        "0.01": "$ASTE_MESHES/0.01.vtk",
+        "0.008": "$ASTE_MESHES/0.008.vtk",
+        "0.007": "$ASTE_MESHES/0.007.vtk",
+        "0.0075": "$ASTE_MESHES/0.0075.vtk",
+        "0.006": "$ASTE_MESHES/0.006.vtk",
+        "0.005": "$ASTE_MESHES/0.005.vtk",
+        "0.004": "$ASTE_MESHES/0.004.vtk"
+      },
+      "B": {
+        "0.009": "$ASTE_MESHES/0.009.vtk"
+      }
+    }
+  },
+  "groups": [
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "tps": {
+            "kind": "rbf-thin-plate-splines",
+            "options": "use-qr-decomposition=\"1\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.05",
+          "0.025",
+          "0.01",
+          "0.008",
+          "0.007",
+          "0.0075",
+          "0.006",
+          "0.005",
+          "0.004"
+        ],
+        "B": [
+          "0.009"
+        ]
+      }
+    }
+  ]
+}

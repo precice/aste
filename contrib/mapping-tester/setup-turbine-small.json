@@ -75,35 +75,35 @@
         "cases": {
           "gaussian-n3-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"30.348542587702923\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"30.348542587702923\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"18.209125552621757\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"18.209125552621757\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"9.104562776310878\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"9.104562776310878\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"6.069708517540586\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"6.069708517540586\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n3-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"30.348542587702923\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"30.348542587702923\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"18.209125552621757\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"18.209125552621757\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"9.104562776310878\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"9.104562776310878\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"6.069708517540586\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"6.069708517540586\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           }
         }
       },
@@ -124,35 +124,35 @@
         "cases": {
           "gaussian-n3-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"60.697085175405846\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"60.697085175405846\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"36.41825110524351\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"36.41825110524351\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"18.209125552621757\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"18.209125552621757\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"12.139417035081172\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"12.139417035081172\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n3-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"60.697085175405846\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"60.697085175405846\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"36.41825110524351\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"36.41825110524351\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"18.209125552621757\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"18.209125552621757\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"12.139417035081172\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"12.139417035081172\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           }
         }
       },
@@ -173,35 +173,35 @@
         "cases": {
           "gaussian-n3-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"151.74271293851464\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"151.74271293851464\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"91.04562776310878\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"91.04562776310878\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"45.52281388155439\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"45.52281388155439\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"30.34854258770293\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"30.34854258770293\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n3-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"151.74271293851464\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"151.74271293851464\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"91.04562776310878\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"91.04562776310878\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"45.52281388155439\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"45.52281388155439\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"30.34854258770293\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"30.34854258770293\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           }
         }
       },
@@ -222,35 +222,35 @@
         "cases": {
           "gaussian-n3-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"189.6783911731433\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"189.6783911731433\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"113.80703470388598\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"113.80703470388598\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"56.90351735194299\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"56.90351735194299\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"37.93567823462866\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"37.93567823462866\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n3-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"189.6783911731433\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"189.6783911731433\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"113.80703470388598\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"113.80703470388598\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"56.90351735194299\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"56.90351735194299\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"37.93567823462866\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"37.93567823462866\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           }
         }
       },
@@ -271,35 +271,35 @@
         "cases": {
           "gaussian-n3-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"216.77530419787803\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"216.77530419787803\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"130.06518251872683\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"130.06518251872683\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"65.03259125936341\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"65.03259125936341\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"43.355060839575614\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"43.355060839575614\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n3-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"216.77530419787803\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"216.77530419787803\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"130.06518251872683\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"130.06518251872683\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"65.03259125936341\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"65.03259125936341\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"43.355060839575614\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"43.355060839575614\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           }
         }
       },
@@ -320,35 +320,35 @@
         "cases": {
           "gaussian-n3-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"202.32361725135286\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"202.32361725135286\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"121.39417035081172\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"121.39417035081172\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"60.69708517540586\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"60.69708517540586\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"40.464723450270576\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"40.464723450270576\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n3-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"202.32361725135286\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"202.32361725135286\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"121.39417035081172\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"121.39417035081172\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"60.69708517540586\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"60.69708517540586\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"40.464723450270576\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"40.464723450270576\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           }
         }
       },
@@ -369,35 +369,35 @@
         "cases": {
           "gaussian-n3-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"252.90452156419104\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"252.90452156419104\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"151.74271293851464\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"151.74271293851464\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"75.87135646925732\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"75.87135646925732\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"50.580904312838214\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"50.580904312838214\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n3-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"252.90452156419104\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"252.90452156419104\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"151.74271293851464\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"151.74271293851464\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"75.87135646925732\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"75.87135646925732\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"50.580904312838214\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"50.580904312838214\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           }
         }
       },
@@ -418,35 +418,35 @@
         "cases": {
           "gaussian-n3-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"303.4854258770293\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"303.4854258770293\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"182.09125552621757\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"182.09125552621757\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"91.04562776310878\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"91.04562776310878\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"60.69708517540586\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"60.69708517540586\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n3-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"303.4854258770293\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"303.4854258770293\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"182.09125552621757\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"182.09125552621757\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"91.04562776310878\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"91.04562776310878\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"60.69708517540586\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"60.69708517540586\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           }
         }
       },
@@ -467,35 +467,35 @@
         "cases": {
           "gaussian-n3-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"379.3567823462866\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"379.3567823462866\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"227.61406940777195\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"227.61406940777195\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"113.80703470388598\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"113.80703470388598\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-on": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"75.87135646925732\" polynomial=\"on\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"75.87135646925732\" polynomial=\"on\" solver-rtol=\"1e-06\""
           },
           "gaussian-n3-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"379.3567823462866\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"379.3567823462866\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n5-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"227.61406940777195\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"227.61406940777195\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n10-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"113.80703470388598\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"113.80703470388598\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           },
           "gaussian-n15-separate": {
             "kind": "rbf-gaussian",
-            "options": "shape-parameter=\"75.87135646925732\" polynomial=\"separate\" solver-rtol=1e-06"
+            "options": "shape-parameter=\"75.87135646925732\" polynomial=\"separate\" solver-rtol=\"1e-06\""
           }
         }
       },
