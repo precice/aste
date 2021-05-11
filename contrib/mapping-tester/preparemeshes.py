@@ -28,7 +28,7 @@ def prepareMainMesh(meshdir, name, file, function, force=False):
             return
 
     os.makedirs(mainDir, exist_ok=True)
-    subprocess.run(["eval_mesh.py", file, "-o", mainMesh, function])
+    subprocess.run(["eval_mesh.py", os.path.expandvars(file), "-o", mainMesh, function])
 
 
 def preparePartMesh(meshdir, name, p, force=False):
@@ -47,7 +47,7 @@ def preparePartMesh(meshdir, name, p, force=False):
             return
 
     os.makedirs(partDir, exist_ok=True)
-    subprocess.run(["partition_mesh.py", mainMesh, "-o", partMesh, "-n", str(p)])
+    subprocess.run(["partition_mesh.py", mainMesh, "--algorithm", "topology", "-o", partMesh, "-n", str(p)])
 
 
 def main(argv):
@@ -59,8 +59,7 @@ def main(argv):
     meshdir = os.path.join(outdir, "meshes")
     function =  setup["general"]["function"]
 
-    partitions = set(map(int, setup["general"]["ranks"].values()))
-    partitions.discard(1)
+    partitions = set([int(rank) for pranks in setup["general"]["ranks"].values() for rank in pranks])
 
     for name, file in set(itertools.chain(setup["general"]["meshes"]["A"].items(), setup["general"]["meshes"]["B"].items())):
         prepareMainMesh(meshdir, name, file, function, args.force)
