@@ -13,11 +13,11 @@
     <data:scalar name="Data" />
 
     <!-- A common mesh that uses these data fields -->
-    <mesh name="MeshA" flip-normals="no">
+    <mesh name="MeshA">
       <use-data name="Data" />
     </mesh>
 
-    <mesh name="MeshB" flip-normals="no">
+    <mesh name="MeshB">
       <use-data name="Data" />
     </mesh>
     
@@ -28,7 +28,7 @@
       <write-data name="Data" mesh="MeshA" />
 
       {% if mapping.constraint == "conservative" %}
-      <use-mesh name="MeshB" provide="no" from="B" />
+      <use-mesh name="MeshB" from="B" />
 
       <mapping:{{ mapping.kind }} {{ mapping.options }} constraint="conservative" direction="write" from="MeshA" to="MeshB" />
       {% endif %}
@@ -39,7 +39,7 @@
       <read-data name="Data" mesh="MeshB" />
 
       {% if mapping.constraint == "consistent" %}
-      <use-mesh name="MeshA" provide="no" from="A" />
+      <use-mesh name="MeshA" from="A" />
 
       <mapping:{{ mapping.kind }} {{ mapping.options }} constraint="consistent" direction="read" from="MeshA" to="MeshB" />
       {% endif %}
