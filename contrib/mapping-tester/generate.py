@@ -20,6 +20,7 @@ def as_iter(something):
 def generateCases(setup):
     meshes = setup["general"]["meshes"]
     network = setup["general"].get("network", "lo")
+    syncmode = setup["general"].get("syncmode", "false")
 
     cases = []
     for group in setup["groups"]:
@@ -54,7 +55,8 @@ def generateCases(setup):
                                         "file": outfile,
                                     }
                                 },
-                                "network": network
+                                "network": network,
+                                "syncmode": syncmode
                             })
 
     return cases

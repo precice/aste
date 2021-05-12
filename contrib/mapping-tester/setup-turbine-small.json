@@ -10,6 +10,7 @@
       ]
     },
     "network": "ib0",
+    "syncmode": true,
     "meshes": {
       "A": {
         "0.03": "$ASTE_MESHES/0.03.vtk",

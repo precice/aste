@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<precice-configuration>
+<precice-configuration {% if syncmode %} sync-mode="1" {% endif %} >
 
   <log enabled="true">
     <sink type="stream" output="stdout" filter="%Severity% > debug" enabled="true" />
