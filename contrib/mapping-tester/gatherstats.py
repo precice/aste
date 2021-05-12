@@ -24,8 +24,10 @@ def statsFromTimings(dir):
                 timings = json.load(jsonfile)["Ranks"][0]["Timings"]
             stats["globalTime"] = timings["_GLOBAL"]["Max"]
             stats["initializeTime"] = timings["initialize"]["Max"]
-            mapname = [ x for x in timings.keys() if x.endswith("computeMapping.FromMeshAToMeshB") ][0]
-            stats["computeMappingTime"] = timings[mapname]["Max"]
+            computeMappingName = [ x for x in timings.keys() if x.startswith("advance/map") and x.endswith("computeMapping.FromMeshAToMeshB")][0]
+            mapDataName = [ x for x in timings.keys() if x.startswith("advance/map") and x.endswith("mapData.FromMeshAToMeshB")][0]
+            stats["computeMappingTime"] = timings[computeMappingName]["Max"]
+            stats["mapDataTime"] = timings[mapDataName]["Max"]
         except:
             pass
     return stats
