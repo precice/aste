@@ -73,14 +73,21 @@ def getConfigurator(type):
     The returned resulting function takes the edge lenght h and the coverage n
     as arguments and returns an option string for the rbf mapping.
     """
+
     # The various configuration functions
     def gauss(h, n):
         GAUSSIAN_DECAY = 1e-9
         shape = math.sqrt(-math.log(GAUSSIAN_DECAY)) / (float(h) * int(n))
         return f"shape-parameter=\"{shape}\""
 
+    def compact_tps_c2(h, n):
+        return f"shape-parameter=\"{h*n}\""
+
     # This dictionary maps a type to a configuration function defined above
-    res = {"gaussian": gauss}.get(type)
+    res = {
+        "gaussian": gauss,
+        "compact-tps-c2": compact_tps_c2,
+    }.get(type)
     if res is None:
         raise NotImplementedError(type)
     return res
@@ -100,8 +107,10 @@ def main(argv):
             assert (name not in cases)
             config = getConfigurator(type)(a, coverage)
             cases[name] = {
-                "kind": f"rbf-{type}",
-                "options": f"{config} polynomial=\"{polynomial}\" solver-rtol=\"{args.solver_rtol}\""
+                "kind":
+                f"rbf-{type}",
+                "options":
+                f"{config} polynomial=\"{polynomial}\" solver-rtol=\"{args.solver_rtol}\""
             }
         section = {
             "mapping": {
