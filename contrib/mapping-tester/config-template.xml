@@ -3,8 +3,8 @@
 <precice-configuration {% if syncmode %} sync-mode="1" {% endif %} >
 
   <log enabled="true">
-    <sink type="stream" output="stdout" filter="%Severity% > debug" enabled="true" />
-    <sink type="file" output="debug.log" filter="" enabled="true"/>
+    <sink type="stream" output="stdout" filter="%Severity% > debug" format="%TimeStamp(format=\"%H:%M:%S.%f\")%|%Participant%|%Rank%|%Module%|l%Line%|%Function%|%Severity%%Message%" enabled="true" />
+    <sink type="file" output="debug.log" filter="" format="%TimeStamp(format=\"%H:%M:%S.%f\")%|%Participant%|%Rank%|%Module%|l%Line%|%Function%|%Severity%%Message%" enabled="true"/>
   </log>
   
   <solver-interface dimensions="3">
