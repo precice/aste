@@ -81,7 +81,7 @@ def getConfigurator(type):
         return f"shape-parameter=\"{shape}\""
 
     def compact_tps_c2(h, n):
-        return f"shape-parameter=\"{h*n}\""
+        return f"support-radius=\"{h*n}\""
 
     # This dictionary maps a type to a configuration function defined above
     res = {
