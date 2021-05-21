@@ -37,6 +37,10 @@
           },
           "nn": {
             "kind": "nearest-neighbor"
+          },
+          "tps": {
+            "kind": "rbf-thin-plate-splines",
+            "options": "use-qr-decomposition=\"1\""
           }
         }
       },
