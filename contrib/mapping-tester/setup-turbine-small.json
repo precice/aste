@@ -543,6 +543,156 @@
           "0.009"
         ]
       }
+    },
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "compact-tps-c2-n15-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.44999999999999996\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          },
+          "compact-tps-c2-n20-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.6\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.03"
+        ],
+        "B": [
+          "0.009"
+        ]
+      }
+    },
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "compact-tps-c2-n15-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.3\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          },
+          "compact-tps-c2-n20-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.4\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.02"
+        ],
+        "B": [
+          "0.009"
+        ]
+      }
+    },
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "compact-tps-c2-n15-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.15\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          },
+          "compact-tps-c2-n20-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.2\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.01"
+        ],
+        "B": [
+          "0.009"
+        ]
+      }
+    },
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "compact-tps-c2-n15-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.12\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          },
+          "compact-tps-c2-n20-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.16\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.008"
+        ],
+        "B": [
+          "0.009"
+        ]
+      }
+    },
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "compact-tps-c2-n15-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.09\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          },
+          "compact-tps-c2-n20-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.12\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.006"
+        ],
+        "B": [
+          "0.009"
+        ]
+      }
+    },
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "compact-tps-c2-n15-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.06\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          },
+          "compact-tps-c2-n20-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.08\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.004"
+        ],
+        "B": [
+          "0.009"
+        ]
+      }
     }
   ]
 }
