@@ -10,12 +10,14 @@ Create a simple text mesh on `[x0, x1] x [y0, y1]` with `nx x ny` points. The me
 
 ### eval_mesh.py
 Reads a mesh as either `.vtk` or `.txt` and evaluates a function given by `-f` on it. The function gets the mesh points a numpy array of the form `x = [[x_1, y_1, z_1], ...]` and should store the result in `y`.
+Using the `-d` flag, it can compute the difference between the mesh values and the values of the analytical solution (usually applied after a mapping).
 
 ### partition_mesh.py
 Reads a mesh as either `.vtk` or `.txt`, partitions it and stores the parts in a directory like `dirname/0, 1, ...`. For partitioning two algorithms are available. The meshfree algorithm does not need any mesh topology information, whereas the topological algorithm needs topology information. This python module needs the C++ module `libmetisAPI.so` if the topological algorithm is used.
 
 ### join_mesh.py
 Reads a partitioned mesh from a directory like `dirname/0, 1, ...` and saves it to a single file.
+Using the `-r` flag, it also recovers the connectivity information from a mesh.
 
 ### libMetisAPI
 This is a small C++ wrapper around METIS. It is only required if `partition_mesh.py` should use a topological algorithm. 

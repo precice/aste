@@ -23,9 +23,17 @@ partition_mesh.py rbc.vtk -n 2
 rm -rf colored.dt0 && mv colored colored.dt0
 rm -rf rbc.dt0 && mv rbc rbc.dt0
 
+# The result directory of preciceMap needs to exist beforehand
+mkdir -p mapped
+
 # Map from the bunny to the red blood cell (yeah, that doesn't really make sense)
 mpirun -n 2 preciceMap -v -p A --mesh colored &
 mpirun -n 2 preciceMap -v -p B --mesh rbc --output mapped
 
-# Join the output files together to result.vtk
-join_mesh.py mapped -i rbc.vtk -o result.vtk
+# Join the output files together to result.vtk,
+# recovering the connectivity from the rbc mesh
+# and using all 2 partitions of each mesh.
+join_mesh.py -o result.vtk -r rbc.dt0 -n 2 mapped
+
+# Measure the difference between the original function and the mapped values
+eval_mesh.py result.vtk -d "x + y"
