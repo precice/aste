@@ -290,7 +290,8 @@ def write_meshes(meshes, recoveryInfo, dirname):
     os.mkdir(dirname)
     for i in range(len(meshes)):
         mesh = meshes[i]
-        mesh_io.write_txt(dirname + "/" + str(i), mesh.points, mesh.cells, mesh.pointdata)
+  mesh_io.write_vtk(dirname + "/" + str(i) + ".vtk", mesh.points,
+                          mesh.cells, mesh.cell_types, mesh.pointdata)
     json.dump(recoveryInfo, open(recoveryName, "w"))
         
 def parse_args():
