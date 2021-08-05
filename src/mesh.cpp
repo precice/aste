@@ -7,6 +7,10 @@
 #include <limits>
 #include <boost/algorithm/string.hpp>
 
+#include <vtkGenericDataObjectReader.h>
+#include <vtkSmartPointer.h>
+#include <vtkPoints.h>
+
 namespace aste {
 
 // --- MeshName
@@ -23,15 +27,50 @@ void readMainFile(Mesh& mesh, const std::string& filename)
   if (!fs::is_regular_file(filename)) {
     throw std::invalid_argument{"The mesh file does not exist: " + filename};
   }
-  std::ifstream mainFile{filename};
-  std::string line;
-  while (std::getline(mainFile, line)){
-    double x, y, z, val;
-    std::istringstream iss(line);
-    iss >> x >> y >> z >> val; // split up by whitespace
-    std::array<double, 3> vertexPos{x, y, z};
+  vtkSmartPointer<vtkGenericDataObjectReader> reader =
+		vtkSmartPointer<vtkGenericDataObjectReader>::New();
+	reader->SetFileName(filename.c_str());
+	reader->SetReadAllScalars(true);
+	reader->SetReadAllVectors(true);
+	reader->ReadAllFieldsOn();
+	reader->Update();
+	//Get Points
+	vtkPoints *Points = reader->GetUnstructuredGridOutput()->GetPoints();
+	double vertexPos[3];
+	for (vtkIdType point = 0; point < NumPoints; point++)
+	{
+		Points->GetPoint(point, pointArr);
     mesh.positions.push_back(vertexPos);
-    mesh.data.push_back(val);
+	}
+ 
+
+ 	vtkPointData *PD = reader->GetUnstructuredGridOutput()->GetPointData();
+	int NumArrays = PD->GetNumberOfArrays();
+	for (int aryId = 0; aryId < NumArrays; aryId++)
+	{
+		vtkDataArray *ArrayData = PD->GetArray(PD->GetArrayName(aryId));
+		int NumComp = ArrayData->GetNumberOfComponents();
+		switch (NumComp)
+		{
+		case 1: // Scalar
+			double scalar;
+			for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++)
+			{
+				scalar = ArrayData->GetTuple1(tupleIdx);
+        mesh.data.push_back(scalar);
+			}
+			break;
+
+		case 3: // Vector ?????
+			double *vectorref;
+			for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++)
+			{
+				vectorref = ArrayData->GetTuple3(tupleIdx);
+			}
+			break;
+		}
+	}
+
   }
 }
 
