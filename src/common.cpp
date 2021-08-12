@@ -16,6 +16,7 @@ OptionMap getOptions(int argc, char *argv[])
     ("precice-config,c", po::value<std::string>()->default_value("precice.xml"), "preCICE configuratio file")
     ("participant,p", po::value<std::string>()->required(), "Participant Name")
     ("runName", po::value<std::string>()->default_value(""), "Name of the run")
+    ("data", po::value<std::string>()->required(), "Name of Data Array to be Mapped")
     ("mesh", po::value<string>()->required(), "Mesh directory. For each timestep i there will be .dti (e.g. .dt4) appended to the directory name")
     ("output", po::value<string>()->default_value("output"), "Output file name.")
     ("verbose,v", po::bool_switch(), "Enable verbose output") // not explicitely used, handled by easylogging
