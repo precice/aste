@@ -7,84 +7,98 @@
 #include <iosfwd>
 #include <cassert>
 
-namespace aste {
+namespace aste
+{
 
-namespace fs = boost::filesystem;
-class BaseName;
-struct Mesh;
-class MeshName;
+  namespace fs = boost::filesystem;
+  class BaseName;
+  struct Mesh;
+  class MeshName;
 
-class MeshException : public std::runtime_error {
+  class MeshException : public std::runtime_error
+  {
   public:
-    MeshException(const std::string& what_arg):std::runtime_error(what_arg){};
-};
-
-struct ExecutionContext {
-  ExecutionContext() = default;
-  ExecutionContext(int rank, int size) : rank(rank), size(size) {
-    assert(0 <= rank && rank < size);
+    MeshException(const std::string &what_arg) : std::runtime_error(what_arg){};
   };
-  int rank{0};
-  int size{1};
-  bool isParallel() const { return size > 1; }
-};
 
-class MeshName {
-public:
-  MeshName() = default;
+  struct ExecutionContext
+  {
+    ExecutionContext() = default;
+    ExecutionContext(int rank, int size) : rank(rank), size(size)
+    {
+      assert(0 <= rank && rank < size);
+    };
+    int rank{0};
+    int size{1};
+    bool isParallel() const { return size > 1; }
+  };
 
-  std::string filename() const;
+  class MeshName
+  {
+  public:
+    MeshName() = default;
 
-  std::string connectivityfilename() const;
+    std::string filename() const;
 
-  Mesh load() const;
+    std::string dataname() const;
 
-  void save(const Mesh& mesh) const;
+    std::string connectivityfilename() const;
 
-private:
+    Mesh load() const;
 
-  MeshName(std::string meshname) : _mname(std::move(meshname)) {}
+    void save(const Mesh &mesh) const;
 
-  void createDirectories() const;
+    void setDataname(std::string);
 
-  std::string _mname;
+  private:
+    MeshName(std::string meshname) : _mname(std::move(meshname)) {}
 
-  friend BaseName;
-};
+    void createDirectories() const;
 
-std::ostream& operator<<(std::ostream& out, const MeshName& mname);
+    std::string _mname;
 
-class BaseName {
-public:
-  BaseName(std::string basename) : _bname(std::move(basename)) {}
+    std::string _dname;
 
-  MeshName with(const ExecutionContext &context) const;
+    friend BaseName;
+  };
 
-  std::vector<MeshName> findAll(const ExecutionContext &context) const;
+  std::ostream &operator<<(std::ostream &out, const MeshName &mname);
 
-private:
-  std::string _bname;
-};
+  class BaseName
+  {
+  public:
+    BaseName(std::string basename) : _bname(std::move(basename)) {}
 
-struct Mesh {
-  using Vertex = std::array<double, 3>;
-  using Edge = std::array<size_t, 2>;
-  using Triangle = std::array<size_t, 3>;
-  std::vector<Vertex> positions;
-  std::vector<Edge> edges;
-  std::vector<Triangle> triangles;
-  std::vector<double> data;
+    MeshName with(const ExecutionContext &context) const;
 
-  std::string previewData(std::size_t max = 10) const;
-  std::string summary() const;
-};
+    std::vector<MeshName> findAll(const ExecutionContext &context) const;
 
-struct EdgeCompare {
-  bool operator()(const Mesh::Edge& lhs, const Mesh::Edge& rhs) const {
-    return lhs[0] < rhs[0] || (lhs[0] == rhs[0] && lhs[1] < rhs[1]);
-  }
-};
+  private:
+    std::string _bname;
+  };
 
-std::vector<Mesh::Edge> gather_unique_edges(const Mesh& mesh);
+  struct Mesh
+  {
+    using Vertex = std::array<double, 3>;
+    using Edge = std::array<size_t, 2>;
+    using Triangle = std::array<size_t, 3>;
+    std::vector<Vertex> positions;
+    std::vector<Edge> edges;
+    std::vector<Triangle> triangles;
+    std::vector<double> data;
+
+    std::string previewData(std::size_t max = 10) const;
+    std::string summary() const;
+  };
+
+  struct EdgeCompare
+  {
+    bool operator()(const Mesh::Edge &lhs, const Mesh::Edge &rhs) const
+    {
+      return lhs[0] < rhs[0] || (lhs[0] == rhs[0] && lhs[1] < rhs[1]);
+    }
+  };
+
+  std::vector<Mesh::Edge> gather_unique_edges(const Mesh &mesh);
 
 } // namespace aste

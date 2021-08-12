@@ -10,230 +10,273 @@
 #include <vtkGenericDataObjectReader.h>
 #include <vtkSmartPointer.h>
 #include <vtkPoints.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkPointData.h>
 
-namespace aste {
-
-// --- MeshName
-
-std::string MeshName::filename() const { return _mname + ".txt"; }
-
-std::string MeshName::connectivityfilename() const { return _mname + ".conn.txt"; }
-
-
-namespace {
-// Reads the main file containing the vertices and data
-void readMainFile(Mesh& mesh, const std::string& filename)
+namespace aste
 {
-  if (!fs::is_regular_file(filename)) {
-    throw std::invalid_argument{"The mesh file does not exist: " + filename};
-  }
-  vtkSmartPointer<vtkGenericDataObjectReader> reader =
-		vtkSmartPointer<vtkGenericDataObjectReader>::New();
-	reader->SetFileName(filename.c_str());
-	reader->SetReadAllScalars(true);
-	reader->SetReadAllVectors(true);
-	reader->ReadAllFieldsOn();
-	reader->Update();
-	//Get Points
-	vtkPoints *Points = reader->GetUnstructuredGridOutput()->GetPoints();
-	double vertexPos[3];
-	for (vtkIdType point = 0; point < NumPoints; point++)
-	{
-		Points->GetPoint(point, pointArr);
-    mesh.positions.push_back(vertexPos);
-	}
- 
 
- 	vtkPointData *PD = reader->GetUnstructuredGridOutput()->GetPointData();
-	int NumArrays = PD->GetNumberOfArrays();
-	for (int aryId = 0; aryId < NumArrays; aryId++)
-	{
-		vtkDataArray *ArrayData = PD->GetArray(PD->GetArrayName(aryId));
-		int NumComp = ArrayData->GetNumberOfComponents();
-		switch (NumComp)
-		{
-		case 1: // Scalar
-			double scalar;
-			for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++)
-			{
-				scalar = ArrayData->GetTuple1(tupleIdx);
-        mesh.data.push_back(scalar);
-			}
-			break;
+  // --- MeshName
 
-		case 3: // Vector ?????
-			double *vectorref;
-			for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++)
-			{
-				vectorref = ArrayData->GetTuple3(tupleIdx);
-			}
-			break;
-		}
-	}
+  std::string MeshName::filename() const { return _mname + ".vtk"; }
 
-  }
-}
+  void MeshName::setDataname(std::string dataname) { _dname = dataname; }
 
-// Reads the connectivity file containing the triangle and edge information
-void readConnFile(Mesh& mesh, const std::string& filename)
-{
-  if (!fs::is_regular_file(filename)) {
-    throw std::invalid_argument{"The mesh connectivity file does not exist: " + filename};
-  }
-  std::ifstream connFile{filename};
-  std::string line;
-  while (std::getline(connFile, line)){
-    std::vector<std::string> parts;
-    boost::split(parts, line, [](char c){ return c == ' '; });
-    std::vector<size_t> indices(parts.size());
-    std::transform(parts.begin(), parts.end(), indices.begin(), [](const std::string& s) -> size_t {return std::stol(s);});
+  std::string MeshName::dataname() const { return _dname; }
 
-    if (indices.size() == 3) {
-      std::array<size_t, 3> elem{indices[0], indices[1], indices[2]};
-      mesh.triangles.push_back(elem);
-    } else if (indices.size() == 2) {
-      std::array<size_t, 2> elem{indices[0], indices[1]};
-      mesh.edges.push_back(elem);
-    } else {
-      throw std::runtime_error{std::string{"Invalid entry in connectivitiy file \""}.append(line).append("\"")};
-    }
-  }
-}
-}
+  std::string MeshName::connectivityfilename() const { return _mname + ".conn.txt"; }
 
-Mesh MeshName::load() const
-{
-  Mesh mesh;
-  readMainFile(mesh, filename());
-  auto connFile = connectivityfilename();
-  if (boost::filesystem::exists(connFile)) {
-    readConnFile(mesh, connFile);
-  }
-  return mesh;
-}
+  namespace
+  {
+    // Reads the main file containing the vertices and data
+    void readMainFile(Mesh &mesh, const std::string &filename, const std::string &dataname)
+    {
 
-void MeshName::createDirectories() const
-{
-  auto dir = fs::path(filename()).parent_path();
-  if(!dir.empty()) {
-     fs::create_directories(dir);
-  }
-}
+      if (!fs::is_regular_file(filename))
+      {
+        throw std::invalid_argument{"The mesh file does not exist: " + filename};
+      }
 
-void MeshName::save(const Mesh& mesh) const
-{
-  assert(mesh.positions.size() == mesh.data.size());
-  createDirectories();
-  std::ofstream out(filename(), std::ios::trunc);
-  out.precision(std::numeric_limits<long double>::max_digits10);
-  for (size_t i = 0; i < mesh.positions.size(); i++) {
-    out << mesh.positions[i][0] << " "
-      << mesh.positions[i][1] << " "
-      << mesh.positions[i][2] << " "
-      << mesh.data[i] << '\n';
-  }
-}
+      vtkSmartPointer<vtkGenericDataObjectReader> reader =
+          vtkSmartPointer<vtkGenericDataObjectReader>::New();
+      reader->SetFileName(filename.c_str());
+      reader->SetReadAllScalars(true);
+      reader->SetReadAllVectors(true);
+      reader->ReadAllFieldsOn();
+      reader->Update();
 
-std::ostream& operator<<(std::ostream& out, const MeshName& mname) {
-  return out << mname.filename();
-}
+      // Get Point Data
+      vtkPointData *PD = reader->GetUnstructuredGridOutput()->GetPointData();
+      // Check it has data array
 
+      int check = PD->HasArray(dataname.c_str());
+      if (check == 0)
+      {
+        throw std::invalid_argument{"The mesh file does not contain data array: " + dataname};
+      }
 
-// --- BaseName
+      //Get Points
+      vtkPoints *Points = reader->GetUnstructuredGridOutput()->GetPoints();
+      vtkIdType NumPoints = reader->GetUnstructuredGridOutput()->GetNumberOfPoints();
+      double vertexPos[3];
+      for (vtkIdType point = 0; point < NumPoints; point++)
+      {
+        Points->GetPoint(point, vertexPos);
+        std::array<double, 3> vertexPosArr{vertexPos[0], vertexPos[1], vertexPos[2]};
+        mesh.positions.push_back(vertexPosArr);
+      }
 
-MeshName BaseName::with(const ExecutionContext &context) const
-{
-    if (context.isParallel()) {
-      return {_bname + fs::path::preferred_separator + std::to_string(context.rank)};
-    } else {
-      return {_bname};
-    }
-}
+      // Get Data and Add to Mesh
+      vtkDataArray *ArrayData = PD->GetArray(dataname.c_str());
+      int NumComp = ArrayData->GetNumberOfComponents();
+      switch (NumComp)
+      {
+      case 1: // Scalar
+        double scalar;
+        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++)
+        {
+          scalar = ArrayData->GetTuple1(tupleIdx);
+          mesh.data.push_back(scalar);
+        }
+        break;
 
-std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
-{
-  if (!context.isParallel()) {
-    // Check single timestep/meshfiles first
-    // Case: a single mesh
-    if (fs::is_regular_file(_bname+".txt")) {
-      return {MeshName{_bname}};
-    }
-
-    // Check multiple timesteps
-    std::vector<MeshName> meshNames;
-    for(int t = 0; true; ++t) {
-      std::string stepMeshName = _bname+".dt"+std::to_string(t);
-      if (!fs::is_regular_file(stepMeshName + ".txt")) break;
-      meshNames.push_back(MeshName{stepMeshName});
-    }
-    std::cerr << "Names: " << meshNames.size() << '\n';
-    return meshNames;
-  } else {
-    fs::path rank{std::to_string(context.rank)};
-    // Is there a single partitioned mesh?
-    if (fs::is_directory(_bname)) {
-      auto rankMeshName = (fs::path(_bname) / rank).string();
-      if (fs::is_regular_file(rankMeshName + ".txt")) {
-        return {MeshName{rankMeshName}};
+      case 3: // Vector ?????
+        double *vectorref;
+        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++)
+        {
+          vectorref = ArrayData->GetTuple3(tupleIdx);
+        }
+        break;
       }
     }
 
-    // Check multiple timesteps
-    std::vector<MeshName> meshNames;
-    for(int t = 0; true; ++t) {
-      fs::path stepDirectory{_bname + ".dt"+std::to_string(t)};
-      auto rankMeshName = (stepDirectory / rank).string();
-      if (!(fs::is_directory(stepDirectory) && fs::is_regular_file(rankMeshName+".txt"))) break;
-      meshNames.push_back(MeshName{rankMeshName});
+    // Reads the connectivity file containing the triangle and edge information
+    void readConnFile(Mesh &mesh, const std::string &filename)
+    {
+      if (!fs::is_regular_file(filename))
+      {
+        throw std::invalid_argument{"The mesh connectivity file does not exist: " + filename};
+      }
+      std::ifstream connFile{filename};
+      std::string line;
+      while (std::getline(connFile, line))
+      {
+        std::vector<std::string> parts;
+        boost::split(parts, line, [](char c)
+                     { return c == ' '; });
+        std::vector<size_t> indices(parts.size());
+        std::transform(parts.begin(), parts.end(), indices.begin(), [](const std::string &s) -> size_t
+                       { return std::stol(s); });
+
+        if (indices.size() == 3)
+        {
+          std::array<size_t, 3> elem{indices[0], indices[1], indices[2]};
+          mesh.triangles.push_back(elem);
+        }
+        else if (indices.size() == 2)
+        {
+          std::array<size_t, 2> elem{indices[0], indices[1]};
+          mesh.edges.push_back(elem);
+        }
+        else
+        {
+          throw std::runtime_error{std::string{"Invalid entry in connectivitiy file \""}.append(line).append("\"")};
+        }
+      }
     }
-    std::cerr << "Names: " << meshNames.size() << '\n';
-    return meshNames;
   }
-}
 
-std::string Mesh::previewData(std::size_t max) const
-{
-  if (data.empty() || max == 0)
-    return "<nothing>";
+  Mesh MeshName::load() const
+  {
+    Mesh mesh;
+    readMainFile(mesh, filename(), dataname());
+    auto connFile = connectivityfilename();
+    if (boost::filesystem::exists(connFile))
+    {
+      readConnFile(mesh, connFile);
+    }
+    return mesh;
+  }
 
-  std::stringstream oss;
-  oss << data.front();
-  for(size_t i = 1; i < std::min(max, data.size()); ++i)
-    oss << ", " << data[i];
-  oss << " ...";
-  return oss.str();
-}
+  void MeshName::createDirectories() const
+  {
+    auto dir = fs::path(filename()).parent_path();
+    if (!dir.empty())
+    {
+      fs::create_directories(dir);
+    }
+  }
 
-std::string Mesh::summary() const
-{
-  std::stringstream oss;
-  oss << positions.size() << " Vertices, " << data.size() << " Data Points, " << edges.size()  << " Edges, " << triangles.size() << " Triangles";
-  return oss.str();
-}
+  void MeshName::save(const Mesh &mesh) const
+  {
+    assert(mesh.positions.size() == mesh.data.size());
+    createDirectories();
+    std::ofstream out(filename(), std::ios::trunc);
+    out.precision(std::numeric_limits<long double>::max_digits10);
+    for (size_t i = 0; i < mesh.positions.size(); i++)
+    {
+      out << mesh.positions[i][0] << " "
+          << mesh.positions[i][1] << " "
+          << mesh.positions[i][2] << " "
+          << mesh.data[i] << '\n';
+    }
+  }
 
-/// Creates a unique and element-wise ordered set of undirected edges.
-std::vector<Mesh::Edge> gather_unique_edges(const Mesh& mesh) 
-{
-  std::vector<Mesh::Edge> sorted;
-  sorted.reserve(mesh.edges.size() + 3 * mesh.triangles.size());
+  std::ostream &operator<<(std::ostream &out, const MeshName &mname)
+  {
+    return out << mname.filename();
+  }
 
-  for (auto const & edge : mesh.edges) {
+  // --- BaseName
+
+  MeshName BaseName::with(const ExecutionContext &context) const
+  {
+    if (context.isParallel())
+    {
+      return {_bname + fs::path::preferred_separator + std::to_string(context.rank)};
+    }
+    else
+    {
+      return {_bname};
+    }
+  }
+
+  std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
+  {
+    if (!context.isParallel())
+    {
+      // Check single timestep/meshfiles first
+      // Case: a single mesh
+      if (fs::is_regular_file(_bname + ".vtk"))
+      {
+        return {MeshName{_bname}};
+      }
+
+      // Check multiple timesteps
+      std::vector<MeshName> meshNames;
+      for (int t = 0; true; ++t)
+      {
+        std::string stepMeshName = _bname + ".dt" + std::to_string(t);
+        if (!fs::is_regular_file(stepMeshName + ".vtk"))
+          break;
+        meshNames.push_back(MeshName{stepMeshName});
+      }
+      std::cerr << "Names: " << meshNames.size() << '\n';
+      return meshNames;
+    }
+    else
+    {
+      fs::path rank{std::to_string(context.rank)};
+      // Is there a single partitioned mesh?
+      if (fs::is_directory(_bname))
+      {
+        auto rankMeshName = (fs::path(_bname) / rank).string();
+        if (fs::is_regular_file(rankMeshName + ".vtk"))
+        {
+          return {MeshName{rankMeshName}};
+        }
+      }
+
+      // Check multiple timesteps
+      std::vector<MeshName> meshNames;
+      for (int t = 0; true; ++t)
+      {
+        fs::path stepDirectory{_bname + ".dt" + std::to_string(t)};
+        auto rankMeshName = (stepDirectory / rank).string();
+        if (!(fs::is_directory(stepDirectory) && fs::is_regular_file(rankMeshName + ".vtk")))
+          break;
+        meshNames.push_back(MeshName{rankMeshName});
+      }
+      std::cerr << "Names: " << meshNames.size() << '\n';
+      return meshNames;
+    }
+  }
+
+  std::string Mesh::previewData(std::size_t max) const
+  {
+    if (data.empty() || max == 0)
+      return "<nothing>";
+
+    std::stringstream oss;
+    oss << data.front();
+    for (size_t i = 1; i < std::min(max, data.size()); ++i)
+      oss << ", " << data[i];
+    oss << " ...";
+    return oss.str();
+  }
+
+  std::string Mesh::summary() const
+  {
+    std::stringstream oss;
+    oss << positions.size() << " Vertices, " << data.size() << " Data Points, " << edges.size() << " Edges, " << triangles.size() << " Triangles";
+    return oss.str();
+  }
+
+  /// Creates a unique and element-wise ordered set of undirected edges.
+  std::vector<Mesh::Edge> gather_unique_edges(const Mesh &mesh)
+  {
+    std::vector<Mesh::Edge> sorted;
+    sorted.reserve(mesh.edges.size() + 3 * mesh.triangles.size());
+
+    for (auto const &edge : mesh.edges)
+    {
       const auto a = edge[0];
       const auto b = edge[1];
       sorted.push_back(Mesh::Edge{std::min(a, b), std::max(a, b)});
-  }
+    }
 
-  for (auto const & triangle : mesh.triangles) {
+    for (auto const &triangle : mesh.triangles)
+    {
       const auto a = triangle[0];
       const auto b = triangle[1];
       const auto c = triangle[2];
       sorted.push_back(Mesh::Edge{std::min(a, b), std::max(a, b)});
       sorted.push_back(Mesh::Edge{std::min(a, c), std::max(a, c)});
       sorted.push_back(Mesh::Edge{std::min(b, c), std::max(b, c)});
+    }
+    std::sort(sorted.begin(), sorted.end(), EdgeCompare());
+    auto end = std::unique(sorted.begin(), sorted.end());
+    return std::vector<Mesh::Edge>(sorted.begin(), end);
   }
-  std::sort(sorted.begin(), sorted.end(), EdgeCompare());
-  auto end = std::unique(sorted.begin(), sorted.end());
-  return std::vector<Mesh::Edge>(sorted.begin(), end);
-}
 
 }
