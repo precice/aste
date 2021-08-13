@@ -45,27 +45,26 @@ namespace aste
       reader->ReadAllFieldsOn();
       reader->Update();
 
+           //Get Points
+      vtkPoints *Points = reader->GetUnstructuredGridOutput()->GetPoints();
+      vtkIdType NumPoints = reader->GetUnstructuredGridOutput()->GetNumberOfPoints();
+      std::cout << "Number of Points = " << NumPoints << std::endl;
+      double vertexPos[3];
+      for (vtkIdType point = 0; point < NumPoints; point++)
+      {
+        Points->GetPoint(point, vertexPos);
+       // std::cout << "vertex = " << point <<  "x = " <<  vertexPos[0] << " y = " << vertexPos[1] << " z = " << vertexPos[2] << std::endl;
+        std::array<double, 3> vertexPosArr{vertexPos[0], vertexPos[1], vertexPos[2]};
+        mesh.positions.push_back(vertexPosArr);
+      }
+
       // Get Point Data
       vtkPointData *PD = reader->GetUnstructuredGridOutput()->GetPointData();
       // Check it has data array
 
       int check = PD->HasArray(dataname.c_str());
-      if (check == 0)
+      if (check == 1)
       {
-        throw std::invalid_argument{"The mesh file does not contain data array: " + dataname};
-      }
-
-      //Get Points
-      vtkPoints *Points = reader->GetUnstructuredGridOutput()->GetPoints();
-      vtkIdType NumPoints = reader->GetUnstructuredGridOutput()->GetNumberOfPoints();
-      double vertexPos[3];
-      for (vtkIdType point = 0; point < NumPoints; point++)
-      {
-        Points->GetPoint(point, vertexPos);
-        std::array<double, 3> vertexPosArr{vertexPos[0], vertexPos[1], vertexPos[2]};
-        mesh.positions.push_back(vertexPosArr);
-      }
-
       // Get Data and Add to Mesh
       vtkDataArray *ArrayData = PD->GetArray(dataname.c_str());
       int NumComp = ArrayData->GetNumberOfComponents();
@@ -88,6 +87,14 @@ namespace aste
         }
         break;
       }
+      } else { // Threre is no data in mesh file fill with zeros.
+           for (vtkIdType point = 0; point < NumPoints; point++)
+      {
+   mesh.data.push_back(0.0);
+      }
+      }
+
+ 
     }
 
     // Reads the connectivity file containing the triangle and edge information
