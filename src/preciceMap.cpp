@@ -175,6 +175,12 @@ int main(int argc, char* argv[])
       VLOG(1) << "Read mesh for t=" << round << " from " << meshes[round];
       auto roundmesh = meshes[round].load();
       VLOG(1) << "This roundmesh contains: " << roundmesh.summary();
+      if (round == 2) {
+        VLOG(1) << "Reinitializeing the mesh on Rank " << context.rank;
+        interface.resetMesh(meshID);
+        vertexIDs = setupMesh(interface, roundmesh, meshID);
+        VLOG(1) << "Mesh reinit completed on Rank " << context.rank;
+      }
       assert(roundmesh.data.size() == vertexIDs.size());
       interface.writeBlockScalarData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
       VLOG(1) << "Data written: " << mesh.previewData();
