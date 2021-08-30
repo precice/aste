@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<precice-configuration>
+<precice-configuration sync-mode="1">
 
   <log enabled="true">
     <sink type="stream" output="stdout" filter="%Severity% > debug" enabled="true" />
@@ -22,6 +22,7 @@
       <use-data name="Data" />
     </mesh>
     
+    <!-- <m2n:sockets from="A" to="B" network="lo" exchange-directory="." use-two-level-initialization="1" /> -->
     <m2n:sockets from="A" to="B" network="lo" exchange-directory="." />
 
     <participant name="A">
@@ -36,10 +37,11 @@
       <read-data name="Data" mesh="MeshB" />
 
       <!-- <mapping:nearest-neighbor constraint="consistent" direction="read" from="MeshA" to="MeshB" /> -->
-       <mapping:nearest-projection constraint="consistent" direction="read" from="MeshA" to="MeshB" />
+      <!-- <mapping:nearest-projection constraint="consistent" direction="read" from="MeshA" to="MeshB" /> -->
       <!-- <mapping:rbf-gaussian shape-parameter="4" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="false" z-dead="false" /> -->
       <!-- <mapping:rbf-gaussian shape-parameter="5600" solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="true" y-dead="false" z-dead="false" polynomial="separate" preallocation="tree"/> -->
-      <!-- <mapping:rbf-volume-splines solver-rtol="1e-9" constraint="consistent" direction="read" from="MeshA" to="MeshB" x-dead="false" y-dead="false" z-dead="false" /> -->
+
+      <mapping:rbf-compact-tps-c2 from="MeshA" to="MeshB" constraint="consistent" direction="read" support-radius="0.028" polynomial="separate" solver-rtol="1e-06" />
       
       <export:vtk every-n-time-windows="1" directory="vtkB/" />
     </participant>
