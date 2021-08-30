@@ -138,6 +138,9 @@ int main(int argc, char* argv[])
   const std::string meshname = options["mesh"].as<std::string>();
   const std::string participant = options["participant"].as<std::string>();
 
+  el::Loggers::reconfigureAllLoggers(el::ConfigurationType::Format, "(" + participant + ":" + std::to_string(context.rank)+") %datetime %level: %msg");
+  el::Loggers::reconfigureAllLoggers(el::ConfigurationType::Filename, participant+".log");
+
   auto meshes = aste::BaseName(meshname).findAll(context);
   if (meshes.empty()) {
     throw std::invalid_argument("ERROR: Could not find meshes for name: " + meshname);
@@ -170,10 +173,14 @@ int main(int argc, char* argv[])
   interface.initializeData();
 
   size_t round = 0;
-  while (interface.isCouplingOngoing() and round < meshes.size()) {
+  while (interface.isCouplingOngoing()) {
     if (participant == "A") {
+      if (round >= meshes.size()) {
+        VLOG(1) << "Attempted to read mesh for t=" << round << " which doesn't exit.\n";
+        std::abort();
+      }
       VLOG(1) << "Read mesh for t=" << round << " from " << meshes[round];
-      auto roundmesh = meshes[round].load();
+      auto roundmesh = meshes.at(round).load();
       VLOG(1) << "This roundmesh contains: " << roundmesh.summary();
       if (round == 2) {
         VLOG(1) << "Reinitializeing the mesh on Rank " << context.rank;
@@ -181,18 +188,20 @@ int main(int argc, char* argv[])
         vertexIDs = setupMesh(interface, roundmesh, meshID);
         VLOG(1) << "Mesh reinit completed on Rank " << context.rank;
       }
+      assert(roundmesh.positions.size() == vertexIDs.size());
       assert(roundmesh.data.size() == vertexIDs.size());
-      interface.writeBlockScalarData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
-      VLOG(1) << "Data written: " << mesh.previewData();
+      interface.writeBlockScalarData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.data.data());
+      VLOG(1) << "Data written: " << roundmesh.previewData();
     }
     interface.advance(1);
 
     if (participant == "B") {
-      interface.readBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+      interface.readBlockScalarData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.data.data());
       VLOG(1) << "Data read: " << mesh.previewData();
     }
     round++;
   }
+  VLOG(1) << "Coupling finished";
 
   interface.finalize();
     
