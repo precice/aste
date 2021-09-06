@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <limits>
+#include <algorithm>
 #include <boost/algorithm/string.hpp>
 
 #include <vtkGenericDataObjectReader.h>
@@ -12,6 +13,9 @@
 #include <vtkPoints.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkPointData.h>
+#include <vtkDoubleArray.h>
+#include <vtkUnstructuredGridWriter.h>
+
 
 namespace aste
 {
@@ -45,15 +49,14 @@ namespace aste
       reader->ReadAllFieldsOn();
       reader->Update();
 
-           //Get Points
+      //Get Points
       vtkPoints *Points = reader->GetUnstructuredGridOutput()->GetPoints();
       vtkIdType NumPoints = reader->GetUnstructuredGridOutput()->GetNumberOfPoints();
-      std::cout << "Number of Points = " << NumPoints << std::endl;
       double vertexPos[3];
       for (vtkIdType point = 0; point < NumPoints; point++)
       {
         Points->GetPoint(point, vertexPos);
-       // std::cout << "vertex = " << point <<  "x = " <<  vertexPos[0] << " y = " << vertexPos[1] << " z = " << vertexPos[2] << std::endl;
+        // std::cout << "vertex = " << point <<  "x = " <<  vertexPos[0] << " y = " << vertexPos[1] << " z = " << vertexPos[2] << std::endl;
         std::array<double, 3> vertexPosArr{vertexPos[0], vertexPos[1], vertexPos[2]};
         mesh.positions.push_back(vertexPosArr);
       }
@@ -65,36 +68,40 @@ namespace aste
       int check = PD->HasArray(dataname.c_str());
       if (check == 1)
       {
-      // Get Data and Add to Mesh
-      vtkDataArray *ArrayData = PD->GetArray(dataname.c_str());
-      int NumComp = ArrayData->GetNumberOfComponents();
-      switch (NumComp)
-      {
-      case 1: // Scalar
-        double scalar;
-        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++)
+        // Get Data and Add to Mesh
+        vtkDataArray *ArrayData = PD->GetArray(dataname.c_str());
+        int NumComp = ArrayData->GetNumberOfComponents();
+        switch (NumComp)
         {
-          scalar = ArrayData->GetTuple1(tupleIdx);
-          mesh.data.push_back(scalar);
-        }
-        break;
+        case 1: // Scalar
+          double scalar;
+          for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++)
+          {
+            scalar = ArrayData->GetTuple1(tupleIdx);
+            mesh.data.push_back(scalar);
+          }
+          break;
 
-      case 3: // Vector ?????
-        double *vectorref;
-        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++)
+        case 3: // Vector ?????
+          double *vectorref;
+          for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++)
+          {
+            vectorref = ArrayData->GetTuple3(tupleIdx);
+          }
+          break;
+        }
+      }
+      else
+      { // Threre is no data in mesh file fill with zeros.  
+        mesh.data.resize(NumPoints);
+        std::fill(mesh.data.begin(), mesh.data.end(), 0.0);
+       /*
+        for (vtkIdType point = 0; point < NumPoints; point++)
         {
-          vectorref = ArrayData->GetTuple3(tupleIdx);
+          mesh.data.push_back(0.0);
         }
-        break;
+        */
       }
-      } else { // Threre is no data in mesh file fill with zeros.
-           for (vtkIdType point = 0; point < NumPoints; point++)
-      {
-   mesh.data.push_back(0.0);
-      }
-      }
-
- 
     }
 
     // Reads the connectivity file containing the triangle and edge information
@@ -157,16 +164,30 @@ namespace aste
   void MeshName::save(const Mesh &mesh) const
   {
     assert(mesh.positions.size() == mesh.data.size());
-    createDirectories();
-    std::ofstream out(filename(), std::ios::trunc);
-    out.precision(std::numeric_limits<long double>::max_digits10);
-    for (size_t i = 0; i < mesh.positions.size(); i++)
-    {
-      out << mesh.positions[i][0] << " "
-          << mesh.positions[i][1] << " "
-          << mesh.positions[i][2] << " "
-          << mesh.data[i] << '\n';
-    }
+
+vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid = vtkSmartPointer<vtkUnstructuredGrid>::New();
+vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+vtkDoubleArray *data = vtkDoubleArray::New();
+data->SetName("scalar");
+data->SetNumberOfComponents(1);
+
+
+  for (size_t i = 0; i < mesh.positions.size()-1; i++) {
+    points->InsertNextPoint(mesh.positions[i][0], mesh.positions[i][1], mesh.positions[i][2]);
+data->InsertNextTuple(&mesh.data[i]);
+  }
+  
+unstructuredGrid->SetPoints(points);
+unstructuredGrid->GetPointData()->AddArray(data);
+
+
+  // Write file
+  vtkSmartPointer<vtkUnstructuredGridWriter> writer = vtkSmartPointer<vtkUnstructuredGridWriter>::New();
+  writer->SetInputData(unstructuredGrid);
+  writer->SetFileName(filename().c_str());
+
+  writer->Write();
+
   }
 
   std::ostream &operator<<(std::ostream &out, const MeshName &mname)
