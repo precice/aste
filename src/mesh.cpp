@@ -54,8 +54,6 @@ void readMainFile(Mesh &mesh, const std::string &filename,
   double vertexPos[3];
   for (vtkIdType point = 0; point < NumPoints; point++) {
     Points->GetPoint(point, vertexPos);
-    // std::cout << "vertex = " << point <<  "x = " <<  vertexPos[0] << " y = "
-    // << vertexPos[1] << " z = " << vertexPos[2] << std::endl;
     std::array<double, 3> vertexPosArr{vertexPos[0], vertexPos[1],
                                        vertexPos[2]};
     mesh.positions.push_back(vertexPosArr);
