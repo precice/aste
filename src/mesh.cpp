@@ -68,9 +68,9 @@ void readMainFile(Mesh &mesh, const std::string &filename,
     int NumComp = ArrayData->GetNumberOfComponents();
     switch (NumComp) {
     case 1: // Scalar Data
-      double scalar;
+     
       for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
-        scalar = ArrayData->GetTuple1(tupleIdx);
+        const double scalar = ArrayData->GetTuple1(tupleIdx);
         mesh.data.push_back(scalar);
       }
       break;
