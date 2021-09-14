@@ -84,8 +84,7 @@ void readMainFile(Mesh &mesh, const std::string &filename,
   } else { // There is no data in mesh file fill with zeros.
     std::clog << "There is no data found in the mesh file it will be replaced "
                  "by dummy data.\n";
-    mesh.data.resize(NumPoints);
-    std::fill(mesh.data.begin(), mesh.data.end(), 0.0);
+    mesh.data.resize(NumPoints, 0.0);
   }
 }
 
