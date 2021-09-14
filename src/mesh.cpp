@@ -61,8 +61,7 @@ void readMainFile(Mesh &mesh, const std::string &filename,
   // Get Point Data
   vtkPointData *PD = reader->GetUnstructuredGridOutput()->GetPointData();
   // Check it has data array
-  int check = PD->HasArray(dataname.c_str());
-  if (check == 1) {
+  if (PD->HasArray(dataname.c_str()) == 1) {
     // Get Data and Add to Mesh
     vtkDataArray *ArrayData = PD->GetArray(dataname.c_str());
     int NumComp = ArrayData->GetNumberOfComponents();
