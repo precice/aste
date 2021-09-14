@@ -136,14 +136,14 @@ void MeshName::createDirectories() const {
   }
 }
 
-void MeshName::save(const Mesh &mesh) const {
+void MeshName::save(const Mesh &mesh, const std::string &dataname) const {
   assert(mesh.positions.size() == mesh.data.size()); // Scalar Data ???
 
   vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid =
       vtkSmartPointer<vtkUnstructuredGrid>::New();
   vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
   vtkDoubleArray *data = vtkDoubleArray::New();
-  data->SetName("scalar"); // This should be changed
+  data->SetName(dataname.c_str());
   data->SetNumberOfComponents(1);
 
   for (size_t i = 0; i < mesh.positions.size() - 1; i++) {

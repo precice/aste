@@ -46,7 +46,7 @@ namespace aste
 
     Mesh load() const;
 
-    void save(const Mesh &mesh) const;
+    void save(const Mesh &mesh, const std::string &dataname) const;
 
     void setDataname(std::string);
 
