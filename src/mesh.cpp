@@ -68,7 +68,7 @@ void readMainFile(Mesh &mesh, const std::string &filename,
     int NumComp = ArrayData->GetNumberOfComponents();
     switch (NumComp) {
     case 1: // Scalar Data
-     
+
       for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
         const double scalar = ArrayData->GetTuple1(tupleIdx);
         mesh.data.push_back(scalar);
@@ -82,7 +82,9 @@ void readMainFile(Mesh &mesh, const std::string &filename,
       }
       break;
     }
-  } else { // Threre is no data in mesh file fill with zeros. (Scalar Data ???)
+  } else { // There is no data in mesh file fill with zeros.
+    std::clog << "There is no data found in the mesh file it will be replaced "
+                 "by dummy data.\n";
     mesh.data.resize(NumPoints);
     std::fill(mesh.data.begin(), mesh.data.end(), 0.0);
   }

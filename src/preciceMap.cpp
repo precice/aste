@@ -231,7 +231,7 @@ int main(int argc, char *argv[]) {
     MPI_Barrier(MPI_COMM_WORLD);
 
     VLOG(1) << "Writing results to " << filename;
-    meshName.save(mesh,dataname);
+    meshName.save(mesh, dataname);
   }
 
   MPI_Finalize();
