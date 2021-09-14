@@ -90,32 +90,9 @@ void readMainFile(Mesh &mesh, const std::string &filename,
 
 // Reads the connectivity file containing the triangle and edge information
 void readConnFile(Mesh &mesh, const std::string &filename) {
-  if (!fs::is_regular_file(filename)) {
-    throw std::invalid_argument{"The mesh connectivity file does not exist: " +
-                                filename};
-  }
-  std::ifstream connFile{filename};
-  std::string line;
-  while (std::getline(connFile, line)) {
-    std::vector<std::string> parts;
-    boost::split(parts, line, [](char c) { return c == ' '; });
-    std::vector<size_t> indices(parts.size());
-    std::transform(parts.begin(), parts.end(), indices.begin(),
-                   [](const std::string &s) -> size_t { return std::stol(s); });
-
-    if (indices.size() == 3) {
-      std::array<size_t, 3> elem{indices[0], indices[1], indices[2]};
-      mesh.triangles.push_back(elem);
-    } else if (indices.size() == 2) {
-      std::array<size_t, 2> elem{indices[0], indices[1]};
-      mesh.edges.push_back(elem);
-    } else {
-      throw std::runtime_error{
-          std::string{"Invalid entry in connectivitiy file \""}
-              .append(line)
-              .append("\"")};
-    }
-  }
+  /*
+  This function will be removed/changed in next PR
+  */
 }
 } // namespace
 
