@@ -1,32 +1,37 @@
 #include <boost/filesystem/operations.hpp>
 #include <mesh.hpp>
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <limits>
 #include <boost/algorithm/string.hpp>
+#include <fstream>
+#include <iostream>
+#include <limits>
+#include <sstream>
 
 namespace aste {
 
 // --- MeshName
 
-std::string MeshName::filename() const { return _mname + ".txt"; }
+std::string MeshName::filename() const
+{
+  return _mname + ".txt";
+}
 
-std::string MeshName::connectivityfilename() const { return _mname + ".conn.txt"; }
-
+std::string MeshName::connectivityfilename() const
+{
+  return _mname + ".conn.txt";
+}
 
 namespace {
 // Reads the main file containing the vertices and data
-void readMainFile(Mesh& mesh, const std::string& filename)
+void readMainFile(Mesh &mesh, const std::string &filename)
 {
   if (!fs::is_regular_file(filename)) {
     throw std::invalid_argument{"The mesh file does not exist: " + filename};
   }
   std::ifstream mainFile{filename};
-  std::string line;
-  while (std::getline(mainFile, line)){
-    double x, y, z, val;
+  std::string   line;
+  while (std::getline(mainFile, line)) {
+    double             x, y, z, val;
     std::istringstream iss(line);
     iss >> x >> y >> z >> val; // split up by whitespace
     std::array<double, 3> vertexPos{x, y, z};
@@ -36,18 +41,18 @@ void readMainFile(Mesh& mesh, const std::string& filename)
 }
 
 // Reads the connectivity file containing the triangle and edge information
-void readConnFile(Mesh& mesh, const std::string& filename)
+void readConnFile(Mesh &mesh, const std::string &filename)
 {
   if (!fs::is_regular_file(filename)) {
     throw std::invalid_argument{"The mesh connectivity file does not exist: " + filename};
   }
   std::ifstream connFile{filename};
-  std::string line;
-  while (std::getline(connFile, line)){
+  std::string   line;
+  while (std::getline(connFile, line)) {
     std::vector<std::string> parts;
-    boost::split(parts, line, [](char c){ return c == ' '; });
+    boost::split(parts, line, [](char c) { return c == ' '; });
     std::vector<size_t> indices(parts.size());
-    std::transform(parts.begin(), parts.end(), indices.begin(), [](const std::string& s) -> size_t {return std::stol(s);});
+    std::transform(parts.begin(), parts.end(), indices.begin(), [](const std::string &s) -> size_t { return std::stol(s); });
 
     if (indices.size() == 3) {
       std::array<size_t, 3> elem{indices[0], indices[1], indices[2]};
@@ -60,7 +65,7 @@ void readConnFile(Mesh& mesh, const std::string& filename)
     }
   }
 }
-}
+} // namespace
 
 Mesh MeshName::load() const
 {
@@ -76,12 +81,12 @@ Mesh MeshName::load() const
 void MeshName::createDirectories() const
 {
   auto dir = fs::path(filename()).parent_path();
-  if(!dir.empty()) {
-     fs::create_directories(dir);
+  if (!dir.empty()) {
+    fs::create_directories(dir);
   }
 }
 
-void MeshName::save(const Mesh& mesh) const
+void MeshName::save(const Mesh &mesh) const
 {
   assert(mesh.positions.size() == mesh.data.size());
   createDirectories();
@@ -89,26 +94,26 @@ void MeshName::save(const Mesh& mesh) const
   out.precision(std::numeric_limits<long double>::max_digits10);
   for (size_t i = 0; i < mesh.positions.size(); i++) {
     out << mesh.positions[i][0] << " "
-      << mesh.positions[i][1] << " "
-      << mesh.positions[i][2] << " "
-      << mesh.data[i] << '\n';
+        << mesh.positions[i][1] << " "
+        << mesh.positions[i][2] << " "
+        << mesh.data[i] << '\n';
   }
 }
 
-std::ostream& operator<<(std::ostream& out, const MeshName& mname) {
+std::ostream &operator<<(std::ostream &out, const MeshName &mname)
+{
   return out << mname.filename();
 }
-
 
 // --- BaseName
 
 MeshName BaseName::with(const ExecutionContext &context) const
 {
-    if (context.isParallel()) {
-      return {_bname + fs::path::preferred_separator + std::to_string(context.rank)};
-    } else {
-      return {_bname};
-    }
+  if (context.isParallel()) {
+    return {_bname + fs::path::preferred_separator + std::to_string(context.rank)};
+  } else {
+    return {_bname};
+  }
 }
 
 std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
@@ -116,15 +121,16 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
   if (!context.isParallel()) {
     // Check single timestep/meshfiles first
     // Case: a single mesh
-    if (fs::is_regular_file(_bname+".txt")) {
+    if (fs::is_regular_file(_bname + ".txt")) {
       return {MeshName{_bname}};
     }
 
     // Check multiple timesteps
     std::vector<MeshName> meshNames;
-    for(int t = 0; true; ++t) {
-      std::string stepMeshName = _bname+".dt"+std::to_string(t);
-      if (!fs::is_regular_file(stepMeshName + ".txt")) break;
+    for (int t = 0; true; ++t) {
+      std::string stepMeshName = _bname + ".dt" + std::to_string(t);
+      if (!fs::is_regular_file(stepMeshName + ".txt"))
+        break;
       meshNames.push_back(MeshName{stepMeshName});
     }
     std::cerr << "Names: " << meshNames.size() << '\n';
@@ -141,10 +147,11 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
 
     // Check multiple timesteps
     std::vector<MeshName> meshNames;
-    for(int t = 0; true; ++t) {
-      fs::path stepDirectory{_bname + ".dt"+std::to_string(t)};
-      auto rankMeshName = (stepDirectory / rank).string();
-      if (!(fs::is_directory(stepDirectory) && fs::is_regular_file(rankMeshName+".txt"))) break;
+    for (int t = 0; true; ++t) {
+      fs::path stepDirectory{_bname + ".dt" + std::to_string(t)};
+      auto     rankMeshName = (stepDirectory / rank).string();
+      if (!(fs::is_directory(stepDirectory) && fs::is_regular_file(rankMeshName + ".txt")))
+        break;
       meshNames.push_back(MeshName{rankMeshName});
     }
     std::cerr << "Names: " << meshNames.size() << '\n';
@@ -159,7 +166,7 @@ std::string Mesh::previewData(std::size_t max) const
 
   std::stringstream oss;
   oss << data.front();
-  for(size_t i = 1; i < std::min(max, data.size()); ++i)
+  for (size_t i = 1; i < std::min(max, data.size()); ++i)
     oss << ", " << data[i];
   oss << " ...";
   return oss.str();
@@ -168,33 +175,33 @@ std::string Mesh::previewData(std::size_t max) const
 std::string Mesh::summary() const
 {
   std::stringstream oss;
-  oss << positions.size() << " Vertices, " << data.size() << " Data Points, " << edges.size()  << " Edges, " << triangles.size() << " Triangles";
+  oss << positions.size() << " Vertices, " << data.size() << " Data Points, " << edges.size() << " Edges, " << triangles.size() << " Triangles";
   return oss.str();
 }
 
 /// Creates a unique and element-wise ordered set of undirected edges.
-std::vector<Mesh::Edge> gather_unique_edges(const Mesh& mesh) 
+std::vector<Mesh::Edge> gather_unique_edges(const Mesh &mesh)
 {
   std::vector<Mesh::Edge> sorted;
   sorted.reserve(mesh.edges.size() + 3 * mesh.triangles.size());
 
-  for (auto const & edge : mesh.edges) {
-      const auto a = edge[0];
-      const auto b = edge[1];
-      sorted.push_back(Mesh::Edge{std::min(a, b), std::max(a, b)});
+  for (auto const &edge : mesh.edges) {
+    const auto a = edge[0];
+    const auto b = edge[1];
+    sorted.push_back(Mesh::Edge{std::min(a, b), std::max(a, b)});
   }
 
-  for (auto const & triangle : mesh.triangles) {
-      const auto a = triangle[0];
-      const auto b = triangle[1];
-      const auto c = triangle[2];
-      sorted.push_back(Mesh::Edge{std::min(a, b), std::max(a, b)});
-      sorted.push_back(Mesh::Edge{std::min(a, c), std::max(a, c)});
-      sorted.push_back(Mesh::Edge{std::min(b, c), std::max(b, c)});
+  for (auto const &triangle : mesh.triangles) {
+    const auto a = triangle[0];
+    const auto b = triangle[1];
+    const auto c = triangle[2];
+    sorted.push_back(Mesh::Edge{std::min(a, b), std::max(a, b)});
+    sorted.push_back(Mesh::Edge{std::min(a, c), std::max(a, c)});
+    sorted.push_back(Mesh::Edge{std::min(b, c), std::max(b, c)});
   }
   std::sort(sorted.begin(), sorted.end(), EdgeCompare());
   auto end = std::unique(sorted.begin(), sorted.end());
   return std::vector<Mesh::Edge>(sorted.begin(), end);
 }
 
-}
+} // namespace aste

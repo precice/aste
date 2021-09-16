@@ -1,11 +1,11 @@
 #pragma once
 
 #include <boost/filesystem.hpp>
-#include <string>
-#include <vector>
+#include <cassert>
 #include <exception>
 #include <iosfwd>
-#include <cassert>
+#include <string>
+#include <vector>
 
 namespace aste {
 
@@ -15,18 +15,24 @@ struct Mesh;
 class MeshName;
 
 class MeshException : public std::runtime_error {
-  public:
-    MeshException(const std::string& what_arg):std::runtime_error(what_arg){};
+public:
+  MeshException(const std::string &what_arg)
+      : std::runtime_error(what_arg){};
 };
 
 struct ExecutionContext {
   ExecutionContext() = default;
-  ExecutionContext(int rank, int size) : rank(rank), size(size) {
+  ExecutionContext(int rank, int size)
+      : rank(rank), size(size)
+  {
     assert(0 <= rank && rank < size);
   };
-  int rank{0};
-  int size{1};
-  bool isParallel() const { return size > 1; }
+  int  rank{0};
+  int  size{1};
+  bool isParallel() const
+  {
+    return size > 1;
+  }
 };
 
 class MeshName {
@@ -39,11 +45,11 @@ public:
 
   Mesh load() const;
 
-  void save(const Mesh& mesh) const;
+  void save(const Mesh &mesh) const;
 
 private:
-
-  MeshName(std::string meshname) : _mname(std::move(meshname)) {}
+  MeshName(std::string meshname)
+      : _mname(std::move(meshname)) {}
 
   void createDirectories() const;
 
@@ -52,11 +58,12 @@ private:
   friend BaseName;
 };
 
-std::ostream& operator<<(std::ostream& out, const MeshName& mname);
+std::ostream &operator<<(std::ostream &out, const MeshName &mname);
 
 class BaseName {
 public:
-  BaseName(std::string basename) : _bname(std::move(basename)) {}
+  BaseName(std::string basename)
+      : _bname(std::move(basename)) {}
 
   MeshName with(const ExecutionContext &context) const;
 
@@ -67,24 +74,25 @@ private:
 };
 
 struct Mesh {
-  using Vertex = std::array<double, 3>;
-  using Edge = std::array<size_t, 2>;
+  using Vertex   = std::array<double, 3>;
+  using Edge     = std::array<size_t, 2>;
   using Triangle = std::array<size_t, 3>;
-  std::vector<Vertex> positions;
-  std::vector<Edge> edges;
+  std::vector<Vertex>   positions;
+  std::vector<Edge>     edges;
   std::vector<Triangle> triangles;
-  std::vector<double> data;
+  std::vector<double>   data;
 
   std::string previewData(std::size_t max = 10) const;
   std::string summary() const;
 };
 
 struct EdgeCompare {
-  bool operator()(const Mesh::Edge& lhs, const Mesh::Edge& rhs) const {
+  bool operator()(const Mesh::Edge &lhs, const Mesh::Edge &rhs) const
+  {
     return lhs[0] < rhs[0] || (lhs[0] == rhs[0] && lhs[1] < rhs[1]);
   }
 };
 
-std::vector<Mesh::Edge> gather_unique_edges(const Mesh& mesh);
+std::vector<Mesh::Edge> gather_unique_edges(const Mesh &mesh);
 
 } // namespace aste
