@@ -143,10 +143,15 @@ int main(int argc, char *argv[])
   auto              options     = getOptions(argc, argv);
   const std::string meshname    = options["mesh"].as<std::string>();
   const std::string participant = options["participant"].as<std::string>();
+  const std::string dataname    = options["data"].as<std::string>();
 
   auto meshes = aste::BaseName(meshname).findAll(context);
   if (meshes.empty()) {
     throw std::invalid_argument("ERROR: Could not find meshes for name: " + meshname);
+  }
+
+  for (auto &mesh : meshes) {
+    mesh.setDataname(dataname);
   }
 
   // Create and configure solver interface

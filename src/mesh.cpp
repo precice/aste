@@ -1,11 +1,20 @@
 #include <boost/filesystem/operations.hpp>
 #include <mesh.hpp>
 
+#include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <iostream>
 #include <limits>
 #include <sstream>
+
+#include <vtkDoubleArray.h>
+#include <vtkGenericDataObjectReader.h>
+#include <vtkPointData.h>
+#include <vtkPoints.h>
+#include <vtkSmartPointer.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkUnstructuredGridWriter.h>
 
 namespace aste {
 
@@ -13,68 +22,95 @@ namespace aste {
 
 std::string MeshName::filename() const
 {
-  return _mname + ".txt";
+  return _mname + ".vtk";
 }
 
-std::string MeshName::connectivityfilename() const
+void MeshName::setDataname(std::string dataname)
 {
-  return _mname + ".conn.txt";
+  _dname = dataname;
+}
+
+std::string MeshName::dataname() const
+{
+  return _dname;
 }
 
 namespace {
 // Reads the main file containing the vertices and data
-void readMainFile(Mesh &mesh, const std::string &filename)
+void readMainFile(Mesh &mesh, const std::string &filename, const std::string &dataname)
 {
+
   if (!fs::is_regular_file(filename)) {
     throw std::invalid_argument{"The mesh file does not exist: " + filename};
   }
-  std::ifstream mainFile{filename};
-  std::string   line;
-  while (std::getline(mainFile, line)) {
-    double             x, y, z, val;
-    std::istringstream iss(line);
-    iss >> x >> y >> z >> val; // split up by whitespace
-    std::array<double, 3> vertexPos{x, y, z};
-    mesh.positions.push_back(vertexPos);
-    mesh.data.push_back(val);
-  }
-}
 
-// Reads the connectivity file containing the triangle and edge information
-void readConnFile(Mesh &mesh, const std::string &filename)
-{
-  if (!fs::is_regular_file(filename)) {
-    throw std::invalid_argument{"The mesh connectivity file does not exist: " + filename};
-  }
-  std::ifstream connFile{filename};
-  std::string   line;
-  while (std::getline(connFile, line)) {
-    std::vector<std::string> parts;
-    boost::split(parts, line, [](char c) { return c == ' '; });
-    std::vector<size_t> indices(parts.size());
-    std::transform(parts.begin(), parts.end(), indices.begin(), [](const std::string &s) -> size_t { return std::stol(s); });
+  vtkSmartPointer<vtkGenericDataObjectReader> reader =
+      vtkSmartPointer<vtkGenericDataObjectReader>::New();
+  reader->SetFileName(filename.c_str());
+  reader->SetReadAllScalars(true);
+  reader->SetReadAllVectors(true);
+  reader->ReadAllFieldsOn();
+  reader->Update();
 
-    if (indices.size() == 3) {
-      std::array<size_t, 3> elem{indices[0], indices[1], indices[2]};
-      mesh.triangles.push_back(elem);
-    } else if (indices.size() == 2) {
-      std::array<size_t, 2> elem{indices[0], indices[1]};
-      mesh.edges.push_back(elem);
-    } else {
-      throw std::runtime_error{std::string{"Invalid entry in connectivitiy file \""}.append(line).append("\"")};
+  // Get Points
+  vtkPoints *Points = reader->GetUnstructuredGridOutput()->GetPoints();
+  vtkIdType  NumPoints =
+      reader->GetUnstructuredGridOutput()->GetNumberOfPoints();
+  double vertexPos[3];
+  for (vtkIdType point = 0; point < NumPoints; point++) {
+    Points->GetPoint(point, vertexPos);
+    std::array<double, 3> vertexPosArr{vertexPos[0], vertexPos[1],
+                                       vertexPos[2]};
+    mesh.positions.push_back(vertexPosArr);
+  }
+  // Get Point Data
+  vtkPointData *PD = reader->GetUnstructuredGridOutput()->GetPointData();
+  // Check it has data array
+  if (PD->HasArray(dataname.c_str()) == 1) {
+    // Get Data and Add to Mesh
+    vtkDataArray *ArrayData = PD->GetArray(dataname.c_str());
+    int           NumComp   = ArrayData->GetNumberOfComponents();
+    switch (NumComp) {
+    case 1: // Scalar Data
+      for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
+        const double scalar = ArrayData->GetTuple1(tupleIdx);
+        mesh.data.push_back(scalar);
+      }
+      break;
+    case 2: // Vector Data with 2 component
+      double *vector2ref;
+      for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
+        vector2ref = ArrayData->GetTuple2(tupleIdx);
+        mesh.data.push_back(vector2ref[0]);
+        mesh.data.push_back(vector2ref[1]);
+      }
+      break;
+    case 3: // Vector Data with 3 component
+      double *vector3ref;
+      for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
+        vector3ref = ArrayData->GetTuple3(tupleIdx);
+        mesh.data.push_back(vector3ref[0]);
+        mesh.data.push_back(vector3ref[1]);
+        mesh.data.push_back(vector3ref[2]);
+      }
+      break;
     }
+  } else { // There is no data in mesh file fill with zeros.
+    std::clog << "There is no data found. Dummy data will be used!.\n";
+    mesh.data.resize(NumPoints, 0.0);
   }
+
+
+  /*
+  !!Add Mesh Connecivity information in next PR!!
+  */
 }
 } // namespace
 
 Mesh MeshName::load() const
 {
   Mesh mesh;
-  readMainFile(mesh, filename());
-  auto connFile = connectivityfilename();
-  if (boost::filesystem::exists(connFile)) {
-    readConnFile(mesh, connFile);
-  }
+  readMainFile(mesh, filename(), dataname());
   return mesh;
 }
 
@@ -121,7 +157,7 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
   if (!context.isParallel()) {
     // Check single timestep/meshfiles first
     // Case: a single mesh
-    if (fs::is_regular_file(_bname + ".txt")) {
+    if (fs::is_regular_file(_bname + ".vtk")) {
       return {MeshName{_bname}};
     }
 
@@ -129,7 +165,7 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
     std::vector<MeshName> meshNames;
     for (int t = 0; true; ++t) {
       std::string stepMeshName = _bname + ".dt" + std::to_string(t);
-      if (!fs::is_regular_file(stepMeshName + ".txt"))
+      if (!fs::is_regular_file(stepMeshName + ".vtk"))
         break;
       meshNames.push_back(MeshName{stepMeshName});
     }
@@ -140,7 +176,7 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
     // Is there a single partitioned mesh?
     if (fs::is_directory(_bname)) {
       auto rankMeshName = (fs::path(_bname) / rank).string();
-      if (fs::is_regular_file(rankMeshName + ".txt")) {
+      if (fs::is_regular_file(rankMeshName + ".vtk")) {
         return {MeshName{rankMeshName}};
       }
     }
@@ -150,7 +186,7 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
     for (int t = 0; true; ++t) {
       fs::path stepDirectory{_bname + ".dt" + std::to_string(t)};
       auto     rankMeshName = (stepDirectory / rank).string();
-      if (!(fs::is_directory(stepDirectory) && fs::is_regular_file(rankMeshName + ".txt")))
+      if (!(fs::is_directory(stepDirectory) && fs::is_regular_file(rankMeshName + ".vtk")))
         break;
       meshNames.push_back(MeshName{rankMeshName});
     }
