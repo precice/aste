@@ -25,6 +25,10 @@ find_package(precice REQUIRED CONFIG)
 
 find_package(Boost 1.65.1 REQUIRED COMPONENTS system program_options filesystem)
 
+find_package(VTK REQUIRED)
+
+include(${VTK_USE_FILE})
+
 find_package(METIS)
 if (METIS_FOUND)
     add_library(metisAPI SHARED src/metisAPI.cpp)
@@ -43,6 +47,7 @@ target_link_libraries(preciceMap
   Boost::program_options
   Boost::system
   MPI::MPI_CXX
+  ${VTK_LIBRARIES}
 )
 
 if(ASTE_SET_MESH_BLOCK)
