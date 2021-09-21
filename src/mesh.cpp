@@ -37,7 +37,7 @@ std::string MeshName::dataname() const
 
 namespace {
 // Reads the main file containing the vertices and data
-void readMainFile(Mesh &mesh, const std::string &filename, const std::string &dataname)
+void readMainFile(Mesh &mesh, const std::string &filename, const std::string &dataname, const int &dim)
 {
 
   if (!fs::is_regular_file(filename)) {
@@ -94,12 +94,14 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
         mesh.data.push_back(vector3ref[2]);
       }
       break;
+    default: // Unknown number of component
+      std::cerr << "Please check your VTK file there is/are " << NumComp << " for data " << dataname << std::endl;
+      break;
     }
   } else { // There is no data in mesh file fill with zeros.
-    std::clog << "There is no data found. Dummy data will be used!.\n";
-    mesh.data.resize(NumPoints, 0.0);
+    std::clog << "There is no data found for " << dataname << ". Dummy data will be used!.\n";
+    mesh.data.resize(NumPoints * dim, 0.0);
   }
-
 
   /*
   !!Add Mesh Connecivity information in next PR!!
@@ -107,10 +109,10 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
 }
 } // namespace
 
-Mesh MeshName::load() const
+Mesh MeshName::load(const int &dim) const
 {
   Mesh mesh;
-  readMainFile(mesh, filename(), dataname());
+  readMainFile(mesh, filename(), dataname(), dim);
   return mesh;
 }
 
