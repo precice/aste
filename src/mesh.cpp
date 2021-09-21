@@ -99,7 +99,7 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
       break;
     }
   } else { // There is no data in mesh file fill with zeros.
-    std::clog << "There is no data found for " << dataname << ". Dummy data will be used!.\n";
+    std::cout << "There is no data found for " << dataname << ". Dummy data will be used!.\n";
     mesh.data.resize(NumPoints * dim, 0.0);
   }
 
