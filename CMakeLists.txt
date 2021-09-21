@@ -26,7 +26,11 @@ find_package(precice REQUIRED CONFIG)
 find_package(Boost 1.65.1 REQUIRED COMPONENTS system program_options filesystem)
 
 find_package(VTK REQUIRED)
-
+if (VTK_FOUND)
+  if(${VTK_VERSION} LESS 7.1.1)
+    message(WARNING "The detected VTK version has not been tested and might have compatibility issues.")
+  endif()
+endif()
 include(${VTK_USE_FILE})
 
 find_package(METIS)
