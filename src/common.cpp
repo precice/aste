@@ -27,7 +27,7 @@ OptionMap getOptions(int argc, char *argv[])
       "output", po::value<string>()->default_value("output"),
       "Output file name.")(
       "vector", po::bool_switch(),
-      "Is used data a vector")(
+      "Distinguish between vector valued data and scalar data")(
       "verbose,v", po::bool_switch(),
       "Enable verbose output") // not explicitely used, handled by easylogging
       ;
