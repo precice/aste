@@ -7,6 +7,7 @@
 #include <iostream>
 #include <limits>
 #include <sstream>
+#include <stdexcept>
 
 #include <vtkDoubleArray.h>
 #include <vtkGenericDataObjectReader.h>
@@ -53,23 +54,27 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
   reader->Update();
 
   // Get Points
-  vtkPoints *Points = reader->GetUnstructuredGridOutput()->GetPoints();
-  vtkIdType  NumPoints =
-      reader->GetUnstructuredGridOutput()->GetNumberOfPoints();
-  double vertexPos[3];
+  vtkSmartPointer<vtkPoints> Points    = reader->GetUnstructuredGridOutput()->GetPoints();
+  vtkIdType                  NumPoints = reader->GetUnstructuredGridOutput()->GetNumberOfPoints();
   for (vtkIdType point = 0; point < NumPoints; point++) {
-    Points->GetPoint(point, vertexPos);
-    std::array<double, 3> vertexPosArr{vertexPos[0], vertexPos[1],
-                                       vertexPos[2]};
+    std::array<double, 3> vertexPosArr;
+    Points->GetPoint(point, vertexPosArr.data());
     mesh.positions.push_back(vertexPosArr);
   }
   // Get Point Data
-  vtkPointData *PD = reader->GetUnstructuredGridOutput()->GetPointData();
+  vtkSmartPointer<vtkPointData> PD = reader->GetUnstructuredGridOutput()->GetPointData();
   // Check it has data array
   if (PD->HasArray(dataname.c_str()) == 1) {
     // Get Data and Add to Mesh
-    vtkDataArray *ArrayData = PD->GetArray(dataname.c_str());
-    int           NumComp   = ArrayData->GetNumberOfComponents();
+    vtkSmartPointer<vtkDataArray> ArrayData = PD->GetArray(dataname.c_str());
+    int                           NumComp   = ArrayData->GetNumberOfComponents();
+
+    if (NumComp != dim) {
+      throw std::runtime_error("Dimensions of data provided and simulation does not match!.");
+    }
+    // Reserve enough space for data
+    mesh.data.reserve(NumPoints * dim);
+
     switch (NumComp) {
     case 1: // Scalar Data
       for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
