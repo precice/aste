@@ -160,10 +160,7 @@ int main(int argc, char *argv[])
   //precice::utils::EventRegistry::instance().runName =  options["runName"].as<std::string>();
 
   // Get dimension/components of data
-  int dim = 1;
-  if (isVector) {
-    dim = interface.getDimensions();
-  }
+  const int dim = isVector ? interface.getDimensions() : 1;
 
   const int meshID = interface.getMeshID((participant == "A") ? "MeshA" : "MeshB"); // participant = A => MeshID = MeshA
   const int dataID = interface.getDataID("Data", meshID);
