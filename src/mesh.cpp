@@ -73,6 +73,7 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
       throw std::runtime_error("Dimensions of data provided and simulation does not match!.");
     }
     // Reserve enough space for data
+    mesh.data.clear();
     mesh.data.reserve(NumPoints * dim);
 
     switch (NumComp) {
