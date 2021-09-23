@@ -43,7 +43,7 @@ public:
 
   std::string connectivityfilename() const;
 
-  Mesh load() const;
+  Mesh load(const int &dim, const std::string &dataname) const;
 
   void save(const Mesh &mesh) const;
 
