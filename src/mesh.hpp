@@ -41,11 +41,9 @@ public:
 
   std::string filename() const;
 
-  std::string connectivityfilename() const;
-
   Mesh load(const int &dim, const std::string &dataname) const;
 
-  void save(const Mesh &mesh) const;
+  void save(const Mesh &mesh, const std::string &dataname) const;
 
 private:
   MeshName(std::string meshname)

@@ -148,18 +148,62 @@ void MeshName::createDirectories() const
   }
 }
 
-void MeshName::save(const Mesh &mesh) const
+void MeshName::save(const Mesh &mesh, const std::string &dataname) const
 {
-  assert(mesh.positions.size() == mesh.data.size());
-  createDirectories();
-  std::ofstream out(filename(), std::ios::trunc);
-  out.precision(std::numeric_limits<long double>::max_digits10);
-  for (size_t i = 0; i < mesh.positions.size(); i++) {
-    out << mesh.positions[i][0] << " "
-        << mesh.positions[i][1] << " "
-        << mesh.positions[i][2] << " "
-        << mesh.data[i] << '\n';
+  const int                            numComp          = mesh.positions.size() / mesh.data.size();
+  vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid = vtkSmartPointer<vtkUnstructuredGrid>::New();
+  vtkSmartPointer<vtkPoints>           points           = vtkSmartPointer<vtkPoints>::New();
+  vtkSmartPointer<vtkDoubleArray>      data             = vtkDoubleArray::New();
+
+  data->SetName(dataname.c_str());
+  data->SetNumberOfComponents(numComp);
+
+  // Insert Points and Point Data
+  for (size_t i = 0; i < mesh.positions.size() - 1; i++) {
+    points->InsertNextPoint(mesh.positions[i][0], mesh.positions[i][1], mesh.positions[i][2]);
+    for (int j = 0; j < numComp; j++)
+      data->InsertNextTuple(&mesh.data[i * numComp + j]);
   }
+
+  unstructuredGrid->SetPoints(points);
+  unstructuredGrid->GetPointData()->AddArray(data);
+
+  // Connectivity Information
+
+  if (mesh.triangles.size() > 0) {
+    vtkSmartPointer<vtkCellArray> triArray = vtkSmartPointer<vtkCellArray>::New();
+    for (size_t i = 0; i <= mesh.triangles.size(); i++) {
+      vtkSmartPointer<vtkTriangle> triangle = vtkSmartPointer<vtkTriangle>::New();
+
+      triangle->GetPointIds()->SetId(0, mesh.triangles[i][0]);
+      triangle->GetPointIds()->SetId(1, mesh.triangles[i][1]);
+      triangle->GetPointIds()->SetId(2, mesh.triangles[i][2]);
+
+      triArray->InsertNextCell(triangle);
+    }
+    unstructuredGrid->SetCells(VTK_TRIANGLE, triArray);
+  }
+
+  if (mesh.edges.size() > 0) {
+    vtkSmartPointer<vtkCellArray> lineArray = vtkSmartPointer<vtkCellArray>::New();
+    for (size_t i = 0; i <= mesh.edges.size(); i++) {
+      vtkSmartPointer<vtkLine> line = vtkSmartPointer<vtkLine>::New();
+
+      line->GetPointIds()->SetId(0, mesh.edges[i][0]);
+      line->GetPointIds()->SetId(1, mesh.edges[i][1]);
+
+      lineArray->InsertNextCell(line);
+    }
+    unstructuredGrid->SetCells(VTK_LINE, lineArray);
+  }
+
+  // Write file
+  vtkSmartPointer<vtkUnstructuredGridWriter> writer =
+      vtkSmartPointer<vtkUnstructuredGridWriter>::New();
+  writer->SetInputData(unstructuredGrid);
+  writer->SetFileName(filename().c_str());
+
+  writer->Write();
 }
 
 std::ostream &operator<<(std::ostream &out, const MeshName &mname)
