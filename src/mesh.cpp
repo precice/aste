@@ -17,6 +17,20 @@
 #include <vtkUnstructuredGrid.h>
 #include <vtkUnstructuredGridWriter.h>
 
+#include <vtkCell.h>
+#include <vtkCellArray.h>
+#include <vtkDoubleArray.h>
+#include <vtkGenericDataObjectReader.h>
+#include <vtkIdList.h>
+#include <vtkLine.h>
+#include <vtkNew.h>
+#include <vtkPointData.h>
+#include <vtkPoints.h>
+#include <vtkSmartPointer.h>
+#include <vtkTriangle.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkUnstructuredGridWriter.h>
+
 namespace aste {
 
 // --- MeshName
