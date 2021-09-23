@@ -41,7 +41,6 @@ public:
 
   std::string filename() const;
 
-
   std::string connectivityfilename() const;
 
   Mesh load(const int &dim, const std::string &dataname) const;

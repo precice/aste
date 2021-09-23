@@ -92,7 +92,7 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
       break;
     default: // Unknown number of component
       std::cerr << "Please check your VTK file there is/are " << NumComp << " component for data " << dataname << std::endl;
-      throw std::runtime_error(std::string{"Dimensions of data provided = "}.append(std::to_string(NumComp)).append("and simulation".append(std::to_string(dim)).append("does not match for data =").append(dataname));
+      throw std::runtime_error(std::string{"Dimensions of data provided = "}.append(std::to_string(NumComp)).append("and simulation = ").append(std::to_string(dim)).append("does not match for data =").append(dataname));
       break;
     }
   } else { // There is no data in mesh file fill with zeros.
@@ -106,7 +106,7 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
 }
 } // namespace
 
-Mesh MeshName::load(const int &dim,const std::string &dataname) const
+Mesh MeshName::load(const int &dim, const std::string &dataname) const
 {
   Mesh mesh;
   readMainFile(mesh, filename(), dataname, dim);
