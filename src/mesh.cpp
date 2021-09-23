@@ -44,20 +44,20 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
   reader->Update();
 
   // Get Points
-  vtkSmartPointer<vtkPoints> Points    = reader->GetUnstructuredGridOutput()->GetPoints();
-  vtkIdType                  NumPoints = reader->GetUnstructuredGridOutput()->GetNumberOfPoints();
+  vtkPoints *Points    = reader->GetUnstructuredGridOutput()->GetPoints();
+  vtkIdType  NumPoints = reader->GetUnstructuredGridOutput()->GetNumberOfPoints();
   for (vtkIdType point = 0; point < NumPoints; point++) {
     std::array<double, 3> vertexPosArr;
     Points->GetPoint(point, vertexPosArr.data());
     mesh.positions.push_back(vertexPosArr);
   }
   // Get Point Data
-  vtkSmartPointer<vtkPointData> PD = reader->GetUnstructuredGridOutput()->GetPointData();
+  vtkPointData *PD = reader->GetUnstructuredGridOutput()->GetPointData();
   // Check it has data array
   if (PD->HasArray(dataname.c_str()) == 1) {
     // Get Data and Add to Mesh
-    vtkSmartPointer<vtkDataArray> ArrayData = PD->GetArray(dataname.c_str());
-    int                           NumComp   = ArrayData->GetNumberOfComponents();
+    vtkDataArray *ArrayData = PD->GetArray(dataname.c_str());
+    int           NumComp   = ArrayData->GetNumberOfComponents();
 
     if (NumComp != dim) {
       throw std::runtime_error("Dimensions of data provided and simulation does not match!.");
