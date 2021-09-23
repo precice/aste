@@ -41,15 +41,12 @@ public:
 
   std::string filename() const;
 
-  std::string dataname() const;
 
   std::string connectivityfilename() const;
 
-  Mesh load(const int &dim) const;
+  Mesh load(const int &dim, const std::string &dataname) const;
 
   void save(const Mesh &mesh) const;
-
-  void setDataname(std::string);
 
 private:
   MeshName(std::string meshname)
@@ -58,8 +55,6 @@ private:
   void createDirectories() const;
 
   std::string _mname;
-
-  std::string _dname;
 
   friend BaseName;
 };

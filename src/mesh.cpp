@@ -26,16 +26,6 @@ std::string MeshName::filename() const
   return _mname + ".vtk";
 }
 
-void MeshName::setDataname(std::string dataname)
-{
-  _dname = dataname;
-}
-
-std::string MeshName::dataname() const
-{
-  return _dname;
-}
-
 namespace {
 // Reads the main file containing the vertices and data
 void readMainFile(Mesh &mesh, const std::string &filename, const std::string &dataname, const int &dim)
@@ -116,10 +106,10 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
 }
 } // namespace
 
-Mesh MeshName::load(const int &dim) const
+Mesh MeshName::load(const int &dim,const std::string &dataname) const
 {
   Mesh mesh;
-  readMainFile(mesh, filename(), dataname(), dim);
+  readMainFile(mesh, filename(), dataname, dim);
   return mesh;
 }
 

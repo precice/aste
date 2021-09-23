@@ -151,10 +151,6 @@ int main(int argc, char *argv[])
     throw std::invalid_argument("ERROR: Could not find meshes for name: " + meshname);
   }
 
-  for (auto &mesh : meshes) {
-    mesh.setDataname(dataname);
-  }
-
   // Create and configure solver interface
   precice::SolverInterface interface(participant, options["precice-config"].as<std::string>(), context.rank, context.size);
   //precice::utils::EventRegistry::instance().runName =  options["runName"].as<std::string>();
@@ -167,7 +163,7 @@ int main(int argc, char *argv[])
 
   VLOG(1) << "Loading mesh from " << meshes.front().filename();
   // reads in mesh, 0 data for participant B
-  auto mesh = meshes.front().load(dim);
+  auto mesh = meshes.front().load(dim,dataname);
   VLOG(1) << "The mesh contains: " << mesh.summary();
 
   std::vector<int> vertexIDs = setupMesh(interface, mesh, meshID);
@@ -188,7 +184,7 @@ int main(int argc, char *argv[])
   while (interface.isCouplingOngoing() and round < meshes.size()) {
     if (participant == "A") {
       VLOG(1) << "Read mesh for t=" << round << " from " << meshes[round];
-      auto roundmesh = meshes[round].load(dim);
+      auto roundmesh = meshes[round].load(dim,dataname);
       VLOG(1) << "This roundmesh contains: " << roundmesh.summary();
       assert(roundmesh.data.size() == vertexIDs.size());
       interface.writeBlockScalarData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
