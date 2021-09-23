@@ -114,9 +114,22 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
     mesh.data.resize(NumPoints * dim, 0.0);
   }
 
-  /*
-  !!Add Mesh Connecivity information in next PR!!
-  */
+  for (int i = 0; i < reader->GetUnstructuredGridOutput()->GetNumberOfCells(); i++) {
+    int cellType = reader->GetUnstructuredGridOutput()->GetCell(1)->GetCellType();
+
+    if (cellType == 5) { // Triangular Element
+
+      std::array<size_t, 3> elem{reader->GetUnstructuredGridOutput()->GetCell(i)->GetPointId(0), reader->GetUnstructuredGridOutput()->GetCell(i)->GetPointId(1), reader->GetUnstructuredGridOutput()->GetCell(i)->GetPointId(2)};
+      mesh.triangles.push_back(elem);
+    } else if (cellType == 3) { // Line Element
+
+      std::array<size_t, 2> elem{reader->GetUnstructuredGridOutput()->GetCell(i)->GetPointId(0), reader->GetUnstructuredGridOutput()->GetCell(i)->GetPointId(1)};
+      mesh.edges.push_back(elem);
+    } else {
+      throw std::runtime_error{
+          std::string{"Invalid cell type in VTK file."}};
+    }
+  }
 }
 } // namespace
 
