@@ -172,7 +172,7 @@ void MeshName::save(const Mesh &mesh, const std::string &dataname) const
 
   if (mesh.triangles.size() > 0) {
     vtkSmartPointer<vtkCellArray> triArray = vtkSmartPointer<vtkCellArray>::New();
-    for (size_t i = 0; i <= mesh.triangles.size(); i++) {
+    for (size_t i = 0; i < mesh.triangles.size(); i++) {
       vtkSmartPointer<vtkTriangle> triangle = vtkSmartPointer<vtkTriangle>::New();
 
       triangle->GetPointIds()->SetId(0, mesh.triangles[i][0]);
@@ -186,7 +186,7 @@ void MeshName::save(const Mesh &mesh, const std::string &dataname) const
 
   if (mesh.edges.size() > 0) {
     vtkSmartPointer<vtkCellArray> lineArray = vtkSmartPointer<vtkCellArray>::New();
-    for (size_t i = 0; i <= mesh.edges.size(); i++) {
+    for (size_t i = 0; i < mesh.edges.size(); i++) {
       vtkSmartPointer<vtkLine> line = vtkSmartPointer<vtkLine>::New();
 
       line->GetPointIds()->SetId(0, mesh.edges[i][0]);
