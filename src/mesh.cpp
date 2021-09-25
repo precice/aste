@@ -26,11 +26,11 @@
 #include <vtkNew.h>
 #include <vtkPointData.h>
 #include <vtkPoints.h>
+#include <vtkQuad.h>
 #include <vtkSmartPointer.h>
 #include <vtkTriangle.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkUnstructuredGridWriter.h>
-#include <vtkQuad.h>
 
 namespace aste {
 
@@ -301,7 +301,7 @@ std::string Mesh::previewData(std::size_t max) const
 std::string Mesh::summary() const
 {
   std::stringstream oss;
-  oss << positions.size() << " Vertices, " << data.size() << " Data Points, " << edges.size() << " Edges, " << triangles.size() << " Triangles";
+  oss << positions.size() << " Vertices, " << data.size() << " Data Points, " << edges.size() << " Edges, " << triangles.size() << " Triangles" << quadrilaterals.size() << "Quadrilaterals";
   return oss.str();
 }
 
