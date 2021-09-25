@@ -325,6 +325,18 @@ std::vector<Mesh::Edge> gather_unique_edges(const Mesh &mesh)
     sorted.push_back(Mesh::Edge{std::min(a, c), std::max(a, c)});
     sorted.push_back(Mesh::Edge{std::min(b, c), std::max(b, c)});
   }
+
+  for (auto const &quadrilateral : mesh.quadrilaterals) {
+    const auto a = quadrilateral[0];
+    const auto b = quadrilateral[1];
+    const auto c = quadrilateral[2];
+    const auto d = quadrilateral[3];
+    sorted.push_back(Mesh::Edge{std::min(a, b), std::max(a, b)});
+    sorted.push_back(Mesh::Edge{std::min(a, d), std::max(a, d)});
+    sorted.push_back(Mesh::Edge{std::min(b, c), std::max(b, c)});
+    sorted.push_back(Mesh::Edge{std::min(c, d), std::max(c, d)});
+  }
+
   std::sort(sorted.begin(), sorted.end(), EdgeCompare());
   auto end = std::unique(sorted.begin(), sorted.end());
   return std::vector<Mesh::Edge>(sorted.begin(), end);
