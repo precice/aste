@@ -30,6 +30,7 @@
 #include <vtkTriangle.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkUnstructuredGridWriter.h>
+#include <vtkQuad.h>
 
 namespace aste {
 
@@ -125,9 +126,13 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
       vtkCell *             cell = reader->GetUnstructuredGridOutput()->GetCell(i);
       std::array<size_t, 2> elem{cell->GetPointId(0), cell->GetPointId(1)};
       mesh.edges.push_back(elem);
+    } else if (cellType == VTK_QUAD) {
+      vtkCell *             cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      std::array<size_t, 4> elem{cell->GetPointId(0), cell->GetPointId(1), cell->GetPointId(2), cell->GetPointId(3)};
+      mesh.quadrilaterals.push_back(elem);
     } else {
       throw std::runtime_error{
-          std::string{"Invalid cell type in VTK file. Valid cell types are, VTK_LINE and VTK_TRIANGLE."}};
+          std::string{"Invalid cell type in VTK file. Valid cell types are, VTK_LINE, VTK_TRIANGLE, and VTK_QUAD."}};
     }
   }
 }
@@ -169,6 +174,21 @@ void MeshName::save(const Mesh &mesh, const std::string &dataname) const
   unstructuredGrid->GetPointData()->AddArray(data);
 
   // Connectivity Information
+
+  if (mesh.quadrilaterals.size() > 0) {
+    vtkSmartPointer<vtkCellArray> quadArray = vtkSmartPointer<vtkCellArray>::New();
+    for (size_t i = 0; i < mesh.quadrilaterals.size(); i++) {
+      vtkSmartPointer<vtkQuad> quadrilateral = vtkSmartPointer<vtkQuad>::New();
+
+      quadrilateral->GetPointIds()->SetId(0, mesh.quadrilaterals[i][0]);
+      quadrilateral->GetPointIds()->SetId(0, mesh.quadrilaterals[i][1]);
+      quadrilateral->GetPointIds()->SetId(0, mesh.quadrilaterals[i][2]);
+      quadrilateral->GetPointIds()->SetId(0, mesh.quadrilaterals[i][3]);
+
+      quadArray->InsertNextCell(quadrilateral);
+    }
+    unstructuredGrid->SetCells(VTK_QUAD, quadArray);
+  }
 
   if (mesh.triangles.size() > 0) {
     vtkSmartPointer<vtkCellArray> triArray = vtkSmartPointer<vtkCellArray>::New();
