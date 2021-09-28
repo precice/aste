@@ -41,11 +41,9 @@ public:
 
   std::string filename() const;
 
-  std::string connectivityfilename() const;
-
   Mesh load(const int &dim, const std::string &dataname) const;
 
-  void save(const Mesh &mesh) const;
+  void save(const Mesh &mesh, const std::string &dataname) const;
 
 private:
   MeshName(std::string meshname)
@@ -77,9 +75,11 @@ struct Mesh {
   using Vertex   = std::array<double, 3>;
   using Edge     = std::array<size_t, 2>;
   using Triangle = std::array<size_t, 3>;
+  using Quad     = std::array<size_t, 4>;
   std::vector<Vertex>   positions;
   std::vector<Edge>     edges;
   std::vector<Triangle> triangles;
+  std::vector<Quad>     quadrilaterals;
   std::vector<double>   data;
 
   std::string previewData(std::size_t max = 10) const;

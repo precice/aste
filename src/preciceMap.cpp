@@ -126,6 +126,21 @@ std::vector<int> setupMesh(precice::SolverInterface &interface, const aste::Mesh
                               edgeMap.at(Edge{b, c}),
                               edgeMap.at(Edge{c, a}));
   }
+
+  VLOG(1) << "Mesh Setup: 4) Quadrilaterals";
+  for (auto const &quadrilateral : mesh.quadrilaterals) {
+    const auto a = vertexIDs[quadrilateral[0]];
+    const auto b = vertexIDs[quadrilateral[1]];
+    const auto c = vertexIDs[quadrilateral[2]];
+    const auto d = vertexIDs[quadrilateral[3]];
+
+    interface.setMeshQuad(meshID,
+                          edgeMap.at(Edge{a, b}),
+                          edgeMap.at(Edge{b, c}),
+                          edgeMap.at(Edge{c, d}),
+                          edgeMap.at(Edge{d, a}));
+  }
+
   auto tend = std::chrono::steady_clock::now();
 
   VLOG(1)
@@ -221,7 +236,7 @@ int main(int argc, char *argv[])
     MPI_Barrier(MPI_COMM_WORLD);
 
     VLOG(1) << "Writing results to " << filename;
-    meshName.save(mesh);
+    meshName.save(mesh, dataname);
   }
 
   MPI_Finalize();

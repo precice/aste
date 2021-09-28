@@ -17,6 +17,21 @@
 #include <vtkUnstructuredGrid.h>
 #include <vtkUnstructuredGridWriter.h>
 
+#include <vtkCell.h>
+#include <vtkCellArray.h>
+#include <vtkDoubleArray.h>
+#include <vtkGenericDataObjectReader.h>
+#include <vtkIdList.h>
+#include <vtkLine.h>
+#include <vtkNew.h>
+#include <vtkPointData.h>
+#include <vtkPoints.h>
+#include <vtkQuad.h>
+#include <vtkSmartPointer.h>
+#include <vtkTriangle.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkUnstructuredGridWriter.h>
+
 namespace aste {
 
 // --- MeshName
@@ -100,9 +115,26 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
     mesh.data.resize(NumPoints * dim, 0.0);
   }
 
-  /*
-  !!Add Mesh Connecivity information in next PR!!
-  */
+  for (int i = 0; i < reader->GetUnstructuredGridOutput()->GetNumberOfCells(); i++) {
+    int cellType = reader->GetUnstructuredGridOutput()->GetCell(1)->GetCellType();
+
+    if (cellType == VTK_TRIANGLE) {
+      vtkCell *             cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      std::array<size_t, 3> elem{cell->GetPointId(0), cell->GetPointId(1), cell->GetPointId(2)};
+      mesh.triangles.push_back(elem);
+    } else if (cellType == VTK_LINE) {
+      vtkCell *             cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      std::array<size_t, 2> elem{cell->GetPointId(0), cell->GetPointId(1)};
+      mesh.edges.push_back(elem);
+    } else if (cellType == VTK_QUAD) {
+      vtkCell *             cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      std::array<size_t, 4> elem{cell->GetPointId(0), cell->GetPointId(1), cell->GetPointId(2), cell->GetPointId(3)};
+      mesh.quadrilaterals.push_back(elem);
+    } else {
+      throw std::runtime_error{
+          std::string{"Invalid cell type in VTK file. Valid cell types are, VTK_LINE, VTK_TRIANGLE, and VTK_QUAD."}};
+    }
+  }
 }
 } // namespace
 
@@ -121,18 +153,77 @@ void MeshName::createDirectories() const
   }
 }
 
-void MeshName::save(const Mesh &mesh) const
+void MeshName::save(const Mesh &mesh, const std::string &dataname) const
 {
-  assert(mesh.positions.size() == mesh.data.size());
-  createDirectories();
-  std::ofstream out(filename(), std::ios::trunc);
-  out.precision(std::numeric_limits<long double>::max_digits10);
-  for (size_t i = 0; i < mesh.positions.size(); i++) {
-    out << mesh.positions[i][0] << " "
-        << mesh.positions[i][1] << " "
-        << mesh.positions[i][2] << " "
-        << mesh.data[i] << '\n';
+  const int                            numComp          = mesh.positions.size() / mesh.data.size();
+  vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid = vtkSmartPointer<vtkUnstructuredGrid>::New();
+  vtkSmartPointer<vtkPoints>           points           = vtkSmartPointer<vtkPoints>::New();
+  vtkSmartPointer<vtkDoubleArray>      data             = vtkDoubleArray::New();
+
+  data->SetName(dataname.c_str());
+  data->SetNumberOfComponents(numComp);
+
+  // Insert Points and Point Data
+  for (size_t i = 0; i < mesh.positions.size() - 1; i++) {
+    points->InsertNextPoint(mesh.positions[i][0], mesh.positions[i][1], mesh.positions[i][2]);
+    for (int j = 0; j < numComp; j++)
+      data->InsertNextTuple(&mesh.data[i * numComp + j]);
   }
+
+  unstructuredGrid->SetPoints(points);
+  unstructuredGrid->GetPointData()->AddArray(data);
+
+  // Connectivity Information
+
+  if (mesh.quadrilaterals.size() > 0) {
+    vtkSmartPointer<vtkCellArray> quadArray = vtkSmartPointer<vtkCellArray>::New();
+    for (size_t i = 0; i < mesh.quadrilaterals.size(); i++) {
+      vtkSmartPointer<vtkQuad> quadrilateral = vtkSmartPointer<vtkQuad>::New();
+
+      quadrilateral->GetPointIds()->SetId(0, mesh.quadrilaterals[i][0]);
+      quadrilateral->GetPointIds()->SetId(0, mesh.quadrilaterals[i][1]);
+      quadrilateral->GetPointIds()->SetId(0, mesh.quadrilaterals[i][2]);
+      quadrilateral->GetPointIds()->SetId(0, mesh.quadrilaterals[i][3]);
+
+      quadArray->InsertNextCell(quadrilateral);
+    }
+    unstructuredGrid->SetCells(VTK_QUAD, quadArray);
+  }
+
+  if (mesh.triangles.size() > 0) {
+    vtkSmartPointer<vtkCellArray> triArray = vtkSmartPointer<vtkCellArray>::New();
+    for (size_t i = 0; i < mesh.triangles.size(); i++) {
+      vtkSmartPointer<vtkTriangle> triangle = vtkSmartPointer<vtkTriangle>::New();
+
+      triangle->GetPointIds()->SetId(0, mesh.triangles[i][0]);
+      triangle->GetPointIds()->SetId(1, mesh.triangles[i][1]);
+      triangle->GetPointIds()->SetId(2, mesh.triangles[i][2]);
+
+      triArray->InsertNextCell(triangle);
+    }
+    unstructuredGrid->SetCells(VTK_TRIANGLE, triArray);
+  }
+
+  if (mesh.edges.size() > 0) {
+    vtkSmartPointer<vtkCellArray> lineArray = vtkSmartPointer<vtkCellArray>::New();
+    for (size_t i = 0; i < mesh.edges.size(); i++) {
+      vtkSmartPointer<vtkLine> line = vtkSmartPointer<vtkLine>::New();
+
+      line->GetPointIds()->SetId(0, mesh.edges[i][0]);
+      line->GetPointIds()->SetId(1, mesh.edges[i][1]);
+
+      lineArray->InsertNextCell(line);
+    }
+    unstructuredGrid->SetCells(VTK_LINE, lineArray);
+  }
+
+  // Write file
+  vtkSmartPointer<vtkUnstructuredGridWriter> writer =
+      vtkSmartPointer<vtkUnstructuredGridWriter>::New();
+  writer->SetInputData(unstructuredGrid);
+  writer->SetFileName(filename().c_str());
+
+  writer->Write();
 }
 
 std::ostream &operator<<(std::ostream &out, const MeshName &mname)
@@ -210,7 +301,7 @@ std::string Mesh::previewData(std::size_t max) const
 std::string Mesh::summary() const
 {
   std::stringstream oss;
-  oss << positions.size() << " Vertices, " << data.size() << " Data Points, " << edges.size() << " Edges, " << triangles.size() << " Triangles";
+  oss << positions.size() << " Vertices, " << data.size() << " Data Points, " << edges.size() << " Edges, " << triangles.size() << " Triangles" << quadrilaterals.size() << "Quadrilaterals";
   return oss.str();
 }
 
@@ -234,6 +325,18 @@ std::vector<Mesh::Edge> gather_unique_edges(const Mesh &mesh)
     sorted.push_back(Mesh::Edge{std::min(a, c), std::max(a, c)});
     sorted.push_back(Mesh::Edge{std::min(b, c), std::max(b, c)});
   }
+
+  for (auto const &quadrilateral : mesh.quadrilaterals) {
+    const auto a = quadrilateral[0];
+    const auto b = quadrilateral[1];
+    const auto c = quadrilateral[2];
+    const auto d = quadrilateral[3];
+    sorted.push_back(Mesh::Edge{std::min(a, b), std::max(a, b)});
+    sorted.push_back(Mesh::Edge{std::min(a, d), std::max(a, d)});
+    sorted.push_back(Mesh::Edge{std::min(b, c), std::max(b, c)});
+    sorted.push_back(Mesh::Edge{std::min(c, d), std::max(c, d)});
+  }
+
   std::sort(sorted.begin(), sorted.end(), EdgeCompare());
   auto end = std::unique(sorted.begin(), sorted.end());
   return std::vector<Mesh::Edge>(sorted.begin(), end);
