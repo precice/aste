@@ -189,10 +189,8 @@ int main(int argc, char *argv[])
   if (interface.isActionRequired(precice::constants::actionWriteInitialData())) {
     VLOG(1) << "Write initial data for participant " << participant;
     if (isVector) {
-      assert(mesh.data.size() == vertexIDs.size() * dim);
       interface.writeBlockVectorData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
     } else {
-      assert(mesh.data.size() == vertexIDs.size());
       interface.writeBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
     }
     VLOG(1) << "Data written: " << mesh.previewData();
@@ -208,7 +206,6 @@ int main(int argc, char *argv[])
       auto roundmesh = meshes[round].load(dim, dataname);
       VLOG(1) << "This roundmesh contains: " << roundmesh.summary();
       if (isVector) {
-        assert(roundmesh.data.size() == vertexIDs.size() * dim);
         interface.writeBlockVectorData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
       } else {
         assert(roundmesh.data.size() == vertexIDs.size());
