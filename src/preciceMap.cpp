@@ -188,7 +188,11 @@ int main(int argc, char *argv[])
 
   if (interface.isActionRequired(precice::constants::actionWriteInitialData())) {
     VLOG(1) << "Write initial data for participant " << participant;
-    interface.writeBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+    if (isVector) {
+      interface.writeBlockVectorData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+    } else {
+      interface.writeBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+    }
     VLOG(1) << "Data written: " << mesh.previewData();
 
     interface.markActionFulfilled(precice::constants::actionWriteInitialData());
@@ -201,14 +205,22 @@ int main(int argc, char *argv[])
       VLOG(1) << "Read mesh for t=" << round << " from " << meshes[round];
       auto roundmesh = meshes[round].load(dim, dataname);
       VLOG(1) << "This roundmesh contains: " << roundmesh.summary();
-      assert(roundmesh.data.size() == vertexIDs.size());
-      interface.writeBlockScalarData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
+      if (isVector) {
+        interface.writeBlockVectorData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
+      } else {
+        assert(roundmesh.data.size() == vertexIDs.size());
+        interface.writeBlockScalarData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
+      }
       VLOG(1) << "Data written: " << mesh.previewData();
     }
     interface.advance(1);
 
     if (participant == "B") {
-      interface.readBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+      if (isVector) {
+        interface.readBlockVectorData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+      } else {
+        interface.readBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+      }
       VLOG(1) << "Data read: " << mesh.previewData();
     }
     round++;
