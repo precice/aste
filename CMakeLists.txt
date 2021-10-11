@@ -62,6 +62,20 @@ if(METIS_FOUND)
   target_link_libraries(preciceMap metisAPI)
 endif()
 
+add_executable(write_test src/tests/write_test.cpp src/mesh.cpp)
+target_include_directories(write_test PRIVATE src)
+target_link_libraries(write_test
+  Boost::filesystem
+  ${VTK_LIBRARIES}
+)
+
+add_executable(read_test src/tests/read_test.cpp src/mesh.cpp)
+target_include_directories(read_test PRIVATE src)
+target_link_libraries(read_test
+  Boost::filesystem
+  ${VTK_LIBRARIES}
+)
+
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/make_mesh.py           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/visualize_partition.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -70,3 +84,21 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/eval_mesh.py           DESTINATION ${C
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk_calculator.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/mesh_io.py             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/mesh.py                DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+enable_testing()
+
+add_test(write_scalar write_test scalar)
+add_test(check_scalar md5sum -c ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/scalarmd5)
+set_tests_properties (check_scalar PROPERTIES PASS_REGULAR_EXPRESSION "OK")
+
+add_test(write_vector2d write_test vector2d)
+add_test(check_vector2d md5sum -c ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/vector2dmd5)
+set_tests_properties (check_vector2d PROPERTIES PASS_REGULAR_EXPRESSION "OK")
+
+add_test(write_vector3d write_test vector3d)
+add_test(check_vector3d md5sum -c ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/vector3dmd5)
+set_tests_properties (check_vector3d PROPERTIES PASS_REGULAR_EXPRESSION "OK")
+
+add_test(read_scalar read_test ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/reference_scalars 1 Scalars)
+add_test(read_vector2d read_test ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/reference_vector2d 2 Vector2D)
+add_test(read_vector3d read_test ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/reference_vector3d 3 Vector3D)
