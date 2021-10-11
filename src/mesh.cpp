@@ -9,14 +9,6 @@
 #include <sstream>
 #include <stdexcept>
 
-#include <vtkDoubleArray.h>
-#include <vtkGenericDataObjectReader.h>
-#include <vtkPointData.h>
-#include <vtkPoints.h>
-#include <vtkSmartPointer.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkUnstructuredGridWriter.h>
-
 #include <vtkCell.h>
 #include <vtkCellArray.h>
 #include <vtkDoubleArray.h>
