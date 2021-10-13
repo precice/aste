@@ -23,7 +23,7 @@ find_package (Threads REQUIRED)
 
 find_package(precice REQUIRED CONFIG)
 
-find_package(Boost 1.65.1 REQUIRED COMPONENTS system program_options filesystem)
+find_package(Boost 1.65.1 REQUIRED COMPONENTS system program_options filesystem unit_test_framework)
 
 find_package(VTK REQUIRED)
 if (VTK_FOUND)
@@ -66,6 +66,8 @@ add_executable(write_test src/tests/write_test.cpp src/mesh.cpp)
 target_include_directories(write_test PRIVATE src)
 target_link_libraries(write_test
   Boost::filesystem
+  Boost::boost
+  Boost::unit_test_framework
   ${VTK_LIBRARIES}
 )
 
@@ -73,7 +75,9 @@ add_executable(read_test src/tests/read_test.cpp src/mesh.cpp)
 target_include_directories(read_test PRIVATE src)
 target_link_libraries(read_test
   Boost::filesystem
-  ${VTK_LIBRARIES}
+  Boost::boost
+  Boost::unit_test_framework
+   ${VTK_LIBRARIES}
 )
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/make_mesh.py           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -98,7 +102,3 @@ set_tests_properties (check_vector2d PROPERTIES PASS_REGULAR_EXPRESSION "OK")
 add_test(write_vector3d write_test vector3d)
 add_test(check_vector3d md5sum -c ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/vector3dmd5)
 set_tests_properties (check_vector3d PROPERTIES PASS_REGULAR_EXPRESSION "OK")
-
-add_test(read_scalar read_test ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/reference_scalars 1 Scalars)
-add_test(read_vector2d read_test ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/reference_vector2d 2 Vector2D)
-add_test(read_vector3d read_test ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/reference_vector3d 3 Vector3D)
