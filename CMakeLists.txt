@@ -62,22 +62,13 @@ if(METIS_FOUND)
   target_link_libraries(preciceMap metisAPI)
 endif()
 
-add_executable(write_test src/tests/write_test.cpp src/mesh.cpp)
-target_include_directories(write_test PRIVATE src)
-target_link_libraries(write_test
+add_executable(testing src/tests/testing.cpp src/tests/read_test.cpp src/tests/write_test.cpp src/mesh.cpp)
+target_include_directories(testing PRIVATE src)
+target_link_libraries(testing
   Boost::filesystem
   Boost::boost
   Boost::unit_test_framework
   ${VTK_LIBRARIES}
-)
-
-add_executable(read_test src/tests/read_test.cpp src/mesh.cpp)
-target_include_directories(read_test PRIVATE src)
-target_link_libraries(read_test
-  Boost::filesystem
-  Boost::boost
-  Boost::unit_test_framework
-   ${VTK_LIBRARIES}
 )
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/make_mesh.py           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -91,14 +82,5 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/mesh.py                DESTINATION ${C
 
 enable_testing()
 
-add_test(write_scalar write_test scalar)
-add_test(check_scalar md5sum -c ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/scalarmd5)
-set_tests_properties (check_scalar PROPERTIES PASS_REGULAR_EXPRESSION "OK")
+add_test(read_write_test testing)
 
-add_test(write_vector2d write_test vector2d)
-add_test(check_vector2d md5sum -c ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/vector2dmd5)
-set_tests_properties (check_vector2d PROPERTIES PASS_REGULAR_EXPRESSION "OK")
-
-add_test(write_vector3d write_test vector3d)
-add_test(check_vector3d md5sum -c ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/vector3dmd5)
-set_tests_properties (check_vector3d PROPERTIES PASS_REGULAR_EXPRESSION "OK")
