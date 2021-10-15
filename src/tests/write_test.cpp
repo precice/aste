@@ -1,18 +1,9 @@
-#include <mesh.hpp>
-#include <numeric>
-#include <stdexcept>
+#include "testing.hpp"
 
-int main(int argc, char *argv[])
+void writetest(const Case &current_case)
 {
-  //if (argc != 2) {
-  //  throw std::invalid_argument("Usage is ./executable test_type");
-  //  return 1;
-  //}
-
-  auto test_name = std::string{argv[1]};
 
   aste::Mesh testMesh;
-
   testMesh.positions.reserve(12);
 
   // Points for Quads and Tri Elements
@@ -50,26 +41,36 @@ int main(int argc, char *argv[])
   testMesh.quadrilaterals.push_back(quad1);
   testMesh.quadrilaterals.push_back(quad2);
 
-  if (test_name == "scalar") {
-    //Create Scalar Data
-    testMesh.data.resize(testMesh.positions.size());
-    std::iota(testMesh.data.begin(), testMesh.data.end(), 0);
-    auto scalar_test = aste::BaseName{"write_test_scalars"}.with(aste::ExecutionContext());
-    scalar_test.save(testMesh, "Scalars");
-  } else if (test_name == "vector2d") {
-    // Create 2D Vector Data
-    testMesh.data.resize(testMesh.positions.size() * 2);
-    std::iota(testMesh.data.begin(), testMesh.data.end(), 0);
-    auto vector2d_test = aste::BaseName{"write_test_vector2d"}.with(aste::ExecutionContext());
-    vector2d_test.save(testMesh, "Vector2D");
-  } else if (test_name == "vector3d") {
-    // Create 3D Vector Data
-    testMesh.data.resize(testMesh.positions.size() * 3);
-    std::iota(testMesh.data.begin(), testMesh.data.end(), 0);
-    auto vector3d_test = aste::BaseName{"write_test_vector3d"}.with(aste::ExecutionContext());
-    vector3d_test.save(testMesh, "Vector3D");
-  } else {
-    throw std::invalid_argument("Invalid Test Type. Valid Test Types : scalar vector2d vector3d");
-    return 1;
+  testMesh.data.resize(testMesh.positions.size() * current_case.dim);
+  std::iota(testMesh.data.begin(), testMesh.data.end(), 0);
+  auto scalar_test = aste::BaseName{current_case.fname}.with(aste::ExecutionContext());
+  scalar_test.save(testMesh, current_case.dataname);
+
+  // Read written data and compare with created data
+  auto read       = aste::BaseName{current_case.fname}.with(aste::ExecutionContext());
+  auto loadedMesh = read.load(current_case.dim, current_case.dataname);
+
+  //Check Elements are correctly written
+  BOOST_TEST(loadedMesh.positions.size() == testMesh.positions.size());
+  BOOST_TEST(loadedMesh.edges.size() == testMesh.edges.size());
+  BOOST_TEST(loadedMesh.quadrilaterals.size() == testMesh.quadrilaterals.size());
+  BOOST_TEST(loadedMesh.triangles.size() == testMesh.triangles.size());
+  //Check Edges
+  BOOST_TEST(loadedMesh.edges[1][0] == testMesh.edges[1][0]);
+  BOOST_TEST(loadedMesh.edges[1][1] == testMesh.edges[1][1]);
+  //Check Triangles
+  BOOST_TEST(loadedMesh.triangles[0][0] == testMesh.triangles[0][0]);
+  BOOST_TEST(loadedMesh.triangles[0][1] == testMesh.triangles[0][1]);
+  BOOST_TEST(loadedMesh.triangles[0][2] == testMesh.triangles[0][2]);
+  //Check Quads
+  BOOST_TEST(loadedMesh.quadrilaterals[1][0] == testMesh.quadrilaterals[1][0]);
+  BOOST_TEST(loadedMesh.quadrilaterals[1][1] == testMesh.quadrilaterals[1][1]);
+  BOOST_TEST(loadedMesh.quadrilaterals[1][2] == testMesh.quadrilaterals[1][2]);
+  BOOST_TEST(loadedMesh.quadrilaterals[1][3] == testMesh.quadrilaterals[1][3]);
+  //Check Datasize
+  BOOST_TEST(loadedMesh.data.size() == testMesh.data.size());
+  //Check Data Values
+  for (size_t i = 0; i < loadedMesh.data.size(); ++i) {
+    BOOST_TEST(loadedMesh.data[i] == testMesh.data[i]);
   }
 }
