@@ -27,3 +27,4 @@ testMesh.txt
 *.synctex.gz
 compile_commands.json
 build/
+.vscode/*
