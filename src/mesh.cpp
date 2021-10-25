@@ -112,16 +112,16 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
 
     //Here we use static cast since VTK library returns a long long unsigned int however preCICE uses int for PointId's
     if (cellType == VTK_TRIANGLE) {
-      vtkCell *             cell = reader->GetUnstructuredGridOutput()->GetCell(i);
-      std::array<size_t, 3> elem{static_cast<int>(cell->GetPointId(0)), static_cast<int>(cell->GetPointId(1)), static_cast<int>(cell->GetPointId(2))};
+      vtkCell *          cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      std::array<int, 3> elem{static_cast<int>(cell->GetPointId(0)), static_cast<int>(cell->GetPointId(1)), static_cast<int>(cell->GetPointId(2))};
       mesh.triangles.push_back(elem);
     } else if (cellType == VTK_LINE) {
-      vtkCell *             cell = reader->GetUnstructuredGridOutput()->GetCell(i);
-      std::array<size_t, 2> elem{static_cast<int>(cell->GetPointId(0)), static_cast<int>(cell->GetPointId(1))};
+      vtkCell *          cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      std::array<int, 2> elem{static_cast<int>(cell->GetPointId(0)), static_cast<int>(cell->GetPointId(1))};
       mesh.edges.push_back(elem);
     } else if (cellType == VTK_QUAD) {
-      vtkCell *             cell = reader->GetUnstructuredGridOutput()->GetCell(i);
-      std::array<size_t, 4> elem{static_cast<int>(cell->GetPointId(0)), static_cast<int>(cell->GetPointId(1)), static_cast<int>(cell->GetPointId(2)), static_cast<int>(cell->GetPointId(3))};
+      vtkCell *          cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      std::array<int, 4> elem{static_cast<int>(cell->GetPointId(0)), static_cast<int>(cell->GetPointId(1)), static_cast<int>(cell->GetPointId(2)), static_cast<int>(cell->GetPointId(3))};
       mesh.quadrilaterals.push_back(elem);
     } else {
       throw std::runtime_error{

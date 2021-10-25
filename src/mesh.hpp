@@ -73,9 +73,9 @@ private:
 
 struct Mesh {
   using Vertex   = std::array<double, 3>;
-  using Edge     = std::array<size_t, 2>;
-  using Triangle = std::array<size_t, 3>;
-  using Quad     = std::array<size_t, 4>;
+  using Edge     = std::array<int, 2>;
+  using Triangle = std::array<int, 3>;
+  using Quad     = std::array<int, 4>;
   std::vector<Vertex>   positions;
   std::vector<Edge>     edges;
   std::vector<Triangle> triangles;
