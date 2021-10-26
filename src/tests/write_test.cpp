@@ -2,6 +2,7 @@
 
 void writetest(const Case &current_case)
 {
+  using VID = aste::Mesh::VID;
 
   aste::Mesh testMesh;
   testMesh.positions.reserve(12);
@@ -20,24 +21,24 @@ void writetest(const Case &current_case)
   }
 
   //Create Lines
-  std::array<int, 2> line1{9, 10};
-  std::array<int, 2> line2{10, 11};
+  std::array<VID, 2> line1{9, 10};
+  std::array<VID, 2> line2{10, 11};
   testMesh.edges.push_back(line1);
   testMesh.edges.push_back(line2);
 
   // Create Triangles
-  std::array<int, 3> tri1{0, 1, 3};
-  std::array<int, 3> tri2{1, 4, 3};
-  std::array<int, 3> tri3{1, 2, 4};
-  std::array<int, 3> tri4{2, 4, 5};
+  std::array<VID, 3> tri1{0, 1, 3};
+  std::array<VID, 3> tri2{1, 4, 3};
+  std::array<VID, 3> tri3{1, 2, 4};
+  std::array<VID, 3> tri4{2, 4, 5};
   testMesh.triangles.push_back(tri1);
   testMesh.triangles.push_back(tri2);
   testMesh.triangles.push_back(tri3);
   testMesh.triangles.push_back(tri4);
 
   //Create Quad Elements
-  std::array<int, 4> quad1{3, 4, 7, 6};
-  std::array<int, 4> quad2{4, 5, 8, 7};
+  std::array<VID, 4> quad1{3, 4, 7, 6};
+  std::array<VID, 4> quad2{4, 5, 8, 7};
   testMesh.quadrilaterals.push_back(quad1);
   testMesh.quadrilaterals.push_back(quad2);
 
