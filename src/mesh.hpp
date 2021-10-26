@@ -71,11 +71,15 @@ private:
   std::string _bname;
 };
 
+namespace aste {
+
+} // namespace aste
 struct Mesh {
   using Vertex   = std::array<double, 3>;
-  using Edge     = std::array<size_t, 2>;
-  using Triangle = std::array<size_t, 3>;
-  using Quad     = std::array<size_t, 4>;
+  using VID      = std::vector<Vertex>::size_type;
+  using Edge     = std::array<VID, 2>;
+  using Triangle = std::array<VID, 3>;
+  using Quad     = std::array<VID, 4>;
   std::vector<Vertex>   positions;
   std::vector<Edge>     edges;
   std::vector<Triangle> triangles;
