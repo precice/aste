@@ -33,11 +33,21 @@ std::string MeshName::filename() const
   return _mname + ".vtk";
 }
 
+namespace aste {
+
+}
+namespace {
+Mesh::VID vtkToPos(vtkIdType id)
+{
+  assert(id >= 0);
+  return static_cast<Mesh::VID>(id);
+}
+} // namespace
+
 namespace {
 // Reads the main file containing the vertices and data
 void readMainFile(Mesh &mesh, const std::string &filename, const std::string &dataname, const int &dim)
 {
-
   if (!fs::is_regular_file(filename)) {
     throw std::invalid_argument{"The mesh file does not exist: " + filename};
   }
@@ -112,16 +122,16 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
 
     //Here we use static cast since VTK library returns a long long unsigned int however preCICE uses int for PointId's
     if (cellType == VTK_TRIANGLE) {
-      vtkCell *          cell = reader->GetUnstructuredGridOutput()->GetCell(i);
-      std::array<int, 3> elem{static_cast<int>(cell->GetPointId(0)), static_cast<int>(cell->GetPointId(1)), static_cast<int>(cell->GetPointId(2))};
+      vtkCell *                cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      std::array<Mesh::VID, 3> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2))};
       mesh.triangles.push_back(elem);
     } else if (cellType == VTK_LINE) {
-      vtkCell *          cell = reader->GetUnstructuredGridOutput()->GetCell(i);
-      std::array<int, 2> elem{static_cast<int>(cell->GetPointId(0)), static_cast<int>(cell->GetPointId(1))};
+      vtkCell *                cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      std::array<Mesh::VID, 2> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1))};
       mesh.edges.push_back(elem);
     } else if (cellType == VTK_QUAD) {
-      vtkCell *          cell = reader->GetUnstructuredGridOutput()->GetCell(i);
-      std::array<int, 4> elem{static_cast<int>(cell->GetPointId(0)), static_cast<int>(cell->GetPointId(1)), static_cast<int>(cell->GetPointId(2)), static_cast<int>(cell->GetPointId(3))};
+      vtkCell *                cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      std::array<Mesh::VID, 4> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2)), vtkToPos(cell->GetPointId(3))};
       mesh.quadrilaterals.push_back(elem);
     } else {
       throw std::runtime_error{
