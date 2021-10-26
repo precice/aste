@@ -250,11 +250,21 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
 
     // Check multiple timesteps
     std::vector<MeshName> meshNames;
-    for (int t = 0; true; ++t) {
+    for (int t = 1; true; ++t) {
       std::string stepMeshName = _bname + ".dt" + std::to_string(t);
       if (!fs::is_regular_file(stepMeshName + ".vtk"))
         break;
       meshNames.push_back(MeshName{stepMeshName});
+    }
+    {
+      auto initMeshName = std::string{_bname + ".init" + ".vtk"};
+      if (fs::is_regular_file(initMeshName))
+        meshNames.push_back(MeshName{initMeshName});
+    }
+    {
+      auto finalMeshName = std::string{_bname + ".final" + ".vtk"};
+      if (fs::is_regular_file(finalMeshName))
+        meshNames.push_back(MeshName{finalMeshName});
     }
     std::cerr << "Names: " << meshNames.size() << '\n';
     return meshNames;
