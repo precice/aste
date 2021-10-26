@@ -9,14 +9,6 @@
 #include <sstream>
 #include <stdexcept>
 
-#include <vtkDoubleArray.h>
-#include <vtkGenericDataObjectReader.h>
-#include <vtkPointData.h>
-#include <vtkPoints.h>
-#include <vtkSmartPointer.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkUnstructuredGridWriter.h>
-
 #include <vtkCell.h>
 #include <vtkCellArray.h>
 #include <vtkDoubleArray.h>
@@ -41,11 +33,21 @@ std::string MeshName::filename() const
   return _mname + ".vtk";
 }
 
+namespace aste {
+
+}
+namespace {
+Mesh::VID vtkToPos(vtkIdType id)
+{
+  assert(id >= 0);
+  return static_cast<Mesh::VID>(id);
+}
+} // namespace
+
 namespace {
 // Reads the main file containing the vertices and data
 void readMainFile(Mesh &mesh, const std::string &filename, const std::string &dataname, const int &dim)
 {
-
   if (!fs::is_regular_file(filename)) {
     throw std::invalid_argument{"The mesh file does not exist: " + filename};
   }
@@ -116,19 +118,20 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
   }
 
   for (int i = 0; i < reader->GetUnstructuredGridOutput()->GetNumberOfCells(); i++) {
-    int cellType = reader->GetUnstructuredGridOutput()->GetCell(1)->GetCellType();
+    int cellType = reader->GetUnstructuredGridOutput()->GetCell(i)->GetCellType();
 
+    //Here we use static cast since VTK library returns a long long unsigned int however preCICE uses int for PointId's
     if (cellType == VTK_TRIANGLE) {
-      vtkCell *             cell = reader->GetUnstructuredGridOutput()->GetCell(i);
-      std::array<size_t, 3> elem{cell->GetPointId(0), cell->GetPointId(1), cell->GetPointId(2)};
+      vtkCell *                cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      std::array<Mesh::VID, 3> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2))};
       mesh.triangles.push_back(elem);
     } else if (cellType == VTK_LINE) {
-      vtkCell *             cell = reader->GetUnstructuredGridOutput()->GetCell(i);
-      std::array<size_t, 2> elem{cell->GetPointId(0), cell->GetPointId(1)};
+      vtkCell *                cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      std::array<Mesh::VID, 2> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1))};
       mesh.edges.push_back(elem);
     } else if (cellType == VTK_QUAD) {
-      vtkCell *             cell = reader->GetUnstructuredGridOutput()->GetCell(i);
-      std::array<size_t, 4> elem{cell->GetPointId(0), cell->GetPointId(1), cell->GetPointId(2), cell->GetPointId(3)};
+      vtkCell *                cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      std::array<Mesh::VID, 4> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2)), vtkToPos(cell->GetPointId(3))};
       mesh.quadrilaterals.push_back(elem);
     } else {
       throw std::runtime_error{
@@ -155,7 +158,7 @@ void MeshName::createDirectories() const
 
 void MeshName::save(const Mesh &mesh, const std::string &dataname) const
 {
-  const int                            numComp          = mesh.positions.size() / mesh.data.size();
+  const int                            numComp          = mesh.data.size() / mesh.positions.size();
   vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid = vtkSmartPointer<vtkUnstructuredGrid>::New();
   vtkSmartPointer<vtkPoints>           points           = vtkSmartPointer<vtkPoints>::New();
   vtkSmartPointer<vtkDoubleArray>      data             = vtkDoubleArray::New();
@@ -164,58 +167,62 @@ void MeshName::save(const Mesh &mesh, const std::string &dataname) const
   data->SetNumberOfComponents(numComp);
 
   // Insert Points and Point Data
-  for (size_t i = 0; i < mesh.positions.size() - 1; i++) {
+  for (size_t i = 0; i < mesh.positions.size(); i++) {
     points->InsertNextPoint(mesh.positions[i][0], mesh.positions[i][1], mesh.positions[i][2]);
-    for (int j = 0; j < numComp; j++)
-      data->InsertNextTuple(&mesh.data[i * numComp + j]);
+    std::vector<double> pointData;
+    for (int j = 0; j < numComp; j++) {
+      pointData.push_back(mesh.data[i * numComp + j]);
+    }
+    data->InsertNextTuple(pointData.data());
   }
 
   unstructuredGrid->SetPoints(points);
   unstructuredGrid->GetPointData()->AddArray(data);
 
   // Connectivity Information
+  vtkSmartPointer<vtkCellArray> cellArray = vtkSmartPointer<vtkCellArray>::New();
+
+  std::vector<int> cellTypes;
+  cellTypes.reserve(mesh.quadrilaterals.size() + mesh.triangles.size() + mesh.edges.size());
 
   if (mesh.quadrilaterals.size() > 0) {
-    vtkSmartPointer<vtkCellArray> quadArray = vtkSmartPointer<vtkCellArray>::New();
+
     for (size_t i = 0; i < mesh.quadrilaterals.size(); i++) {
       vtkSmartPointer<vtkQuad> quadrilateral = vtkSmartPointer<vtkQuad>::New();
-
       quadrilateral->GetPointIds()->SetId(0, mesh.quadrilaterals[i][0]);
-      quadrilateral->GetPointIds()->SetId(0, mesh.quadrilaterals[i][1]);
-      quadrilateral->GetPointIds()->SetId(0, mesh.quadrilaterals[i][2]);
-      quadrilateral->GetPointIds()->SetId(0, mesh.quadrilaterals[i][3]);
+      quadrilateral->GetPointIds()->SetId(1, mesh.quadrilaterals[i][1]);
+      quadrilateral->GetPointIds()->SetId(2, mesh.quadrilaterals[i][2]);
+      quadrilateral->GetPointIds()->SetId(3, mesh.quadrilaterals[i][3]);
 
-      quadArray->InsertNextCell(quadrilateral);
+      cellArray->InsertNextCell(quadrilateral);
+      cellTypes.push_back(VTK_QUAD);
     }
-    unstructuredGrid->SetCells(VTK_QUAD, quadArray);
   }
 
   if (mesh.triangles.size() > 0) {
-    vtkSmartPointer<vtkCellArray> triArray = vtkSmartPointer<vtkCellArray>::New();
     for (size_t i = 0; i < mesh.triangles.size(); i++) {
       vtkSmartPointer<vtkTriangle> triangle = vtkSmartPointer<vtkTriangle>::New();
-
       triangle->GetPointIds()->SetId(0, mesh.triangles[i][0]);
       triangle->GetPointIds()->SetId(1, mesh.triangles[i][1]);
       triangle->GetPointIds()->SetId(2, mesh.triangles[i][2]);
 
-      triArray->InsertNextCell(triangle);
+      cellArray->InsertNextCell(triangle);
+      cellTypes.push_back(VTK_TRIANGLE);
     }
-    unstructuredGrid->SetCells(VTK_TRIANGLE, triArray);
   }
 
   if (mesh.edges.size() > 0) {
-    vtkSmartPointer<vtkCellArray> lineArray = vtkSmartPointer<vtkCellArray>::New();
     for (size_t i = 0; i < mesh.edges.size(); i++) {
       vtkSmartPointer<vtkLine> line = vtkSmartPointer<vtkLine>::New();
-
       line->GetPointIds()->SetId(0, mesh.edges[i][0]);
       line->GetPointIds()->SetId(1, mesh.edges[i][1]);
 
-      lineArray->InsertNextCell(line);
+      cellArray->InsertNextCell(line);
+      cellTypes.push_back(VTK_LINE);
     }
-    unstructuredGrid->SetCells(VTK_LINE, lineArray);
   }
+
+  unstructuredGrid->SetCells(cellTypes.data(), cellArray);
 
   // Write file
   vtkSmartPointer<vtkUnstructuredGridWriter> writer =
@@ -253,11 +260,21 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
 
     // Check multiple timesteps
     std::vector<MeshName> meshNames;
-    for (int t = 0; true; ++t) {
+    for (int t = 1; true; ++t) {
       std::string stepMeshName = _bname + ".dt" + std::to_string(t);
       if (!fs::is_regular_file(stepMeshName + ".vtk"))
         break;
       meshNames.push_back(MeshName{stepMeshName});
+    }
+    {
+      auto initMeshName = std::string{_bname + ".init" + ".vtk"};
+      if (fs::is_regular_file(initMeshName))
+        meshNames.push_back(MeshName{initMeshName});
+    }
+    {
+      auto finalMeshName = std::string{_bname + ".final" + ".vtk"};
+      if (fs::is_regular_file(finalMeshName))
+        meshNames.push_back(MeshName{finalMeshName});
     }
     std::cerr << "Names: " << meshNames.size() << '\n';
     return meshNames;

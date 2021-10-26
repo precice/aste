@@ -23,7 +23,7 @@ find_package (Threads REQUIRED)
 
 find_package(precice REQUIRED CONFIG)
 
-find_package(Boost 1.65.1 REQUIRED COMPONENTS system program_options filesystem)
+find_package(Boost 1.65.1 REQUIRED COMPONENTS system program_options filesystem unit_test_framework)
 
 find_package(VTK REQUIRED)
 if (VTK_FOUND)
@@ -62,6 +62,15 @@ if(METIS_FOUND)
   target_link_libraries(preciceMap metisAPI)
 endif()
 
+add_executable(testing src/tests/testing.cpp src/tests/read_test.cpp src/tests/write_test.cpp src/mesh.cpp)
+target_include_directories(testing PRIVATE src)
+target_link_libraries(testing
+  Boost::filesystem
+  Boost::boost
+  Boost::unit_test_framework
+  ${VTK_LIBRARIES}
+)
+
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/make_mesh.py           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/visualize_partition.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -70,3 +79,8 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/eval_mesh.py           DESTINATION ${C
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk_calculator.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/mesh_io.py             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/mesh.py                DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+enable_testing()
+
+add_test(read_write_test testing)
+
