@@ -279,18 +279,18 @@ def apply_partition(orig_mesh, part, numparts):
     return meshes, recoveryInfo
 
 
-def write_meshes(meshes, recoveryInfo, dirname):
+def write_meshes(meshes, recoveryInfo, meshname):
     """
     Writes meshes to given directory.
     """
-    dirname = os.path.abspath(dirname)
+    dirname = os.path.abspath(meshname)
     recoveryName = os.path.join(dirname, 'recovery.json')
     if os.path.exists(dirname):
         shutil.rmtree(dirname)
     os.mkdir(dirname)
     for i in range(len(meshes)):
         mesh = meshes[i]
-        mesh_io.write_txt(dirname + "/" + str(i), mesh.points, mesh.cells, mesh.pointdata)
+        mesh_io.write_vtk(dirname + "/" + meshname + "_r"+  str(i) + ".vtu", mesh.points, mesh.cells, mesh.cell_types, mesh.pointdata)
     json.dump(recoveryInfo, open(recoveryName, "w"))
         
 def parse_args():
