@@ -1,6 +1,6 @@
 """
-Mesh I/O utility script. One can read meshes from .vtk, .txt, .vtu, .vtp,... files
- and save to .txt, .vtk and .vtu
+Mesh I/O utility script. One can read meshes from .vtk, .vtu, .vtp,... files
+ and save to  .vtk and .vtu
 """
 
 import os
@@ -18,7 +18,7 @@ class MeshFormatError(MeshIOError):
 
 
 class Mesh:
-    def __init__(self, points=[], data=[], cells=[], edges=[], triangles=[]):
+    def __init__(self, points=[], data=[], cells=[], edges=[], triangles=[],quads=[]):
         self._points = np.reshape(np.asarray(points, dtype=np.float64),
                                   (-1, 3))
         self._data = np.asarray(data, dtype=np.float64)
@@ -32,6 +32,8 @@ class Mesh:
                                      (-1, 2))
             self._triangles = np.reshape(np.asarray(triangles, dtype=np.int32),
                                          (-1, 3))
+            self._quads = np.reshape(np.asarray(quads, dtype=np.int32),
+                                         (-1, 4))
 
     @classmethod
     def load(cls, meshname):
@@ -79,10 +81,23 @@ class Mesh:
                                         axis=0)
         else:
             self._triangles = np.empty((0, 3))
+            
+    @property
+    def quads(self):
+        return self._quads
+
+    @quads.setter
+    def quads(self, quads):
+        if (quads):
+            self._triangles = np.unique(np.reshape(
+                np.asarray(quads, dtype=np.int32), (-1, 4)),
+                                        axis=0)
+        else:
+            self._quads = np.empty((0, 4))
 
     @property
     def cells(self):
-        return self.edges.tolist() + self.triangles.tolist()
+        return self.edges.tolist() + self.triangles.tolist() + self.quads.tolist()
 
     @cells.setter
     def cells(self, cells):
@@ -92,6 +107,7 @@ class Mesh:
         }
         self.edges = list(cellsbysize.get(2, []))
         self.triangles = list(cellsbysize.get(3, []))
+        self.quads = list(cellsbysize.get(4, []))
         self.validate()
 
     @property
@@ -102,6 +118,7 @@ class Mesh:
     def celltypes(self):
         edge_type = get_cell_type(2)
         triangle_type = get_cell_type(3)
+        quad_type = get_cell_type(9)
         return np.append(np.full(len(self.edges), edge_type),
                          np.full(len(self.triangles), triangle_type))
 
@@ -121,9 +138,6 @@ class Mesh:
     def save(self, filename):
         write_mesh(filename, self.points, self.cells, self.celltypes,
                    self.data)
-
-    def save_to_aste(self, filename):
-        write_txt(filename, self.points, self.cells, self.data)
 
     def save_to_vtk(self, filename):
         write_vtk(filename, self.points, self.cells, self.celltypes, self.data)
@@ -148,6 +162,7 @@ class Mesh:
         self._data = np.append(self.data, other.data)
         self._edges = np.append(self.edges, other.edges + offset, 0)
         self._triangles = np.append(self.triangles, other.triangles + offset, 0)
+        self._quads = np.append(self.quads, other.quads + offset, 0)
         print(self)
 
         self.validate()
@@ -157,6 +172,7 @@ class Mesh:
         assert (len(self._data) in (0, npoints))
         assert (np.alltrue(self._edges < npoints))
         assert (np.alltrue(self._triangles < npoints))
+        assert (np.alltrue(self._quads < npoints))
         if (self.edges.size > 0):
             assert (np.alltrue(
                 np.unique(self._edges, axis=0, return_counts=True)[1] == 1))
@@ -164,23 +180,32 @@ class Mesh:
             assert (np.alltrue(
                 np.unique(self._triangles, axis=0, return_counts=True)[1] == 1)
                     )
+        if (self.quads.size > 0):
+            assert (np.alltrue(
+                np.unique(self._quads, axis=0, return_counts=True)[1] == 1)
+                    )
+
 
 
 def printable_cell_type(celltype):
     linetype = [3]
     triangletype = [5]
+    quadtype = [9]
 
     try:
         import vtk
         linetype.append(vtk.VTK_LINE)
         triangletype.append(vtk.VTK_TRIANGLE)
+        quadtype.append(vtk.VTK_QUAD)
     except ImportError:
         pass
 
     if celltype in linetype:
         return "line"
-    else:
+    elif celltype in triangletype:
         return "triangle"
+    elif celltype in quadtype:
+        return "quad"
 
     return None
 
@@ -196,11 +221,13 @@ def get_cell_type(cell):
     except ImportError:
         VTK_LINE = 3
         VTK_TRIANGLE = 5
+        VTK_QUAD = 9
     else:
         VTK_LINE = vtk.VTK_LINE
         VTK_TRIANGLE = vtk.VTK_TRIANGLE
+        VTK_QUAD = vtk.VTK_QUAD
 
-    return {2: VTK_LINE, 3: VTK_TRIANGLE}.get(elements)
+    return {2: VTK_LINE, 3: VTK_TRIANGLE, 4: VTK_QUAD}.get(elements)
 
 
 def read_mesh(filename, tag=None):
@@ -208,28 +235,17 @@ def read_mesh(filename, tag=None):
     Returns Mesh Points, Mesh Cells, Mesh Celltypes, 
     Mesh Pointdata in this order
     """
-    if os.path.isdir(filename):
-        logging.error(
-            "Reading of partitioned meshes is not supported. Join it first using join_mesh."
-        )
-        raise MeshFormatError()
 
     if not os.path.isfile(filename):
         logging.error(
             "Cannot read mesh with filename \"{}\".".format(filename))
         raise MeshFormatError()
 
-    if os.path.splitext(filename)[1] == ".txt":
-        return read_txt(filename)
-    else:
-        return read_vtk(filename, tag)
+    return read_vtk(filename, tag)
 
 
 def write_mesh(filename, points, cells=None, cell_types=None, values=None):
-    if os.path.splitext(filename)[1] == ".txt":
-        return write_txt(filename, points, cells, values)
-    else:
-        return write_vtk(filename, points, cells, cell_types, values)
+    return write_vtk(filename, points, cells, cell_types, values)
 
 
 def read_vtk(filename, tag=None):
@@ -243,7 +259,7 @@ def read_vtk(filename, tag=None):
     for i in range(vtkmesh.GetNumberOfCells()):
         cell = vtkmesh.GetCell(i)
         cell_type = cell.GetCellType()
-        if cell_type not in [vtk.VTK_LINE, vtk.VTK_TRIANGLE]:
+        if cell_type not in [vtk.VTK_LINE, vtk.VTK_TRIANGLE,vtk.VTK_QUAD]:
             continue
         cell_types.append(cell_type)
         entry = ()
@@ -286,41 +302,6 @@ def read_dataset(filename):
     reader.Update()
     return reader.GetOutput()
 
-
-def read_conn(filename):
-    with open(filename, "r") as fh:
-        cells, cell_types = [], []
-        for line in fh:
-            coords = tuple([int(e) for e in line.split(" ")])
-            assert (len(coords) in [2, 3])
-            cells.append(coords)
-            cell_types.append(get_cell_type(coords))
-        assert (len(cells) == len(cell_types))
-        return cells, cell_types
-
-
-def read_txt(filename):
-    points = []
-    cells = []
-    cell_types = []
-    pointdata = []
-    with open(filename, "r") as fh:
-        for line in fh:
-            point = ()
-            parts = line.split(" ")
-            for i in range(3):
-                point += (float(parts[i]), )
-            points.append(point)
-            if len(parts) > 3:
-                pointdata.append(float(parts[3]))
-    base, ext = os.path.splitext(filename)
-    connFileName = base + ".conn" + ext
-    if os.path.exists(connFileName):
-        cells, cell_types = read_conn(connFileName)
-
-    assert (len(pointdata) in [0, len(points)])
-    assert (len(cell_types) in [0, len(cells)])
-    return points, cells, cell_types, pointdata
 
 
 def write_vtk(filename,
@@ -379,22 +360,3 @@ def write_dataset(filename, dataset):
     writer.Write()
 
 
-def write_txt(filename, points, cells=[], pointdata=None):
-    assert (len(pointdata) in [0, len(points)])
-
-    base, ext = os.path.splitext(filename)
-    if (ext != ".txt"):
-        base = filename
-        ext = ".txt"
-    mainFileName = base + ext
-
-    with open(mainFileName, "w") as fh:
-        for i, point in enumerate(points):
-            entry = (str(point[0]), str(point[1]), str(point[2]))
-            if pointdata is not None and len(pointdata) > 0:
-                entry += (str(float(pointdata[i])), )
-            fh.write(" ".join(entry) + "\n")
-
-    connFileName = base + ".conn" + ext
-    with open(connFileName, "w") as fh:
-        fh.writelines([" ".join(map(str, cell)) + "\n" for cell in cells])
