@@ -23,6 +23,7 @@
 #include <vtkTriangle.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkUnstructuredGridWriter.h>
+#include <vtkXMLUnstructuredGridWriter.h>
 
 namespace aste {
 
@@ -30,7 +31,11 @@ namespace aste {
 
 std::string MeshName::filename() const
 {
-  return _mname + ".vtk";
+  if (_context.isParallel()) {
+    return _mname + ".vtu";
+  } else {
+    return _mname + ".vtk";
+  }
 }
 
 namespace aste {
@@ -225,12 +230,20 @@ void MeshName::save(const Mesh &mesh, const std::string &dataname) const
   unstructuredGrid->SetCells(cellTypes.data(), cellArray);
 
   // Write file
-  vtkSmartPointer<vtkUnstructuredGridWriter> writer =
-      vtkSmartPointer<vtkUnstructuredGridWriter>::New();
-  writer->SetInputData(unstructuredGrid);
-  writer->SetFileName(filename().c_str());
+  if (_context.isParallel()) {
+    vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer =
+        vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
+    writer->SetInputData(unstructuredGrid);
+    writer->SetFileName(filename().c_str());
+    writer->Write();
 
-  writer->Write();
+  } else {
+    vtkSmartPointer<vtkUnstructuredGridWriter> writer =
+        vtkSmartPointer<vtkUnstructuredGridWriter>::New();
+    writer->SetInputData(unstructuredGrid);
+    writer->SetFileName(filename().c_str());
+    writer->Write();
+  }
 }
 
 std::ostream &operator<<(std::ostream &out, const MeshName &mname)
@@ -243,9 +256,9 @@ std::ostream &operator<<(std::ostream &out, const MeshName &mname)
 MeshName BaseName::with(const ExecutionContext &context) const
 {
   if (context.isParallel()) {
-    return {_bname + fs::path::preferred_separator + std::to_string(context.rank)};
+    return {_bname + "_r" + std::to_string(context.rank), context};
   } else {
-    return {_bname};
+    return {_bname, context};
   }
 }
 
@@ -255,47 +268,54 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
     // Check single timestep/meshfiles first
     // Case: a single mesh
     if (fs::is_regular_file(_bname + ".vtk")) {
-      return {MeshName{_bname}};
+      return {MeshName{_bname, context}};
     }
 
     // Check multiple timesteps
     std::vector<MeshName> meshNames;
+    {
+      auto initMeshName = std::string{_bname + ".init"};
+      if (fs::is_regular_file(initMeshName + ".vtk"))
+        meshNames.push_back(MeshName{initMeshName, context});
+    }
     for (int t = 1; true; ++t) {
       std::string stepMeshName = _bname + ".dt" + std::to_string(t);
       if (!fs::is_regular_file(stepMeshName + ".vtk"))
         break;
-      meshNames.push_back(MeshName{stepMeshName});
+      meshNames.push_back(MeshName{stepMeshName, context});
     }
     {
-      auto initMeshName = std::string{_bname + ".init" + ".vtk"};
-      if (fs::is_regular_file(initMeshName))
-        meshNames.push_back(MeshName{initMeshName});
-    }
-    {
-      auto finalMeshName = std::string{_bname + ".final" + ".vtk"};
-      if (fs::is_regular_file(finalMeshName))
-        meshNames.push_back(MeshName{finalMeshName});
+      auto finalMeshName = std::string{_bname + ".final"};
+      if (fs::is_regular_file(finalMeshName + ".vtk"))
+        meshNames.push_back(MeshName{finalMeshName, context});
     }
     std::cerr << "Names: " << meshNames.size() << '\n';
     return meshNames;
-  } else {
-    fs::path rank{std::to_string(context.rank)};
-    // Is there a single partitioned mesh?
-    if (fs::is_directory(_bname)) {
-      auto rankMeshName = (fs::path(_bname) / rank).string();
-      if (fs::is_regular_file(rankMeshName + ".vtk")) {
-        return {MeshName{rankMeshName}};
-      }
+
+  } else { // Parallel Case
+    // Check if there is a single mesh
+    std::string rankMeshName{_bname + "_r" + std::to_string(context.rank)};
+    if (fs::is_regular_file(rankMeshName + ".vtu")) {
+      return {MeshName{rankMeshName, context}};
     }
 
     // Check multiple timesteps
     std::vector<MeshName> meshNames;
-    for (int t = 0; true; ++t) {
-      fs::path stepDirectory{_bname + ".dt" + std::to_string(t)};
-      auto     rankMeshName = (stepDirectory / rank).string();
-      if (!(fs::is_directory(stepDirectory) && fs::is_regular_file(rankMeshName + ".vtk")))
+    {
+      auto initMeshName = std::string{_bname + ".init" + "_r" + std::to_string(context.rank)};
+      if (fs::is_regular_file(initMeshName + ".vtu"))
+        meshNames.push_back(MeshName{initMeshName, context});
+    }
+    for (int t = 1; true; ++t) {
+      std::string rankMeshName{_bname + ".dt" + std::to_string(t) + "_r" + std::to_string(context.rank)};
+      if (!fs::is_regular_file(rankMeshName + ".vtu"))
         break;
-      meshNames.push_back(MeshName{rankMeshName});
+      meshNames.push_back(MeshName{rankMeshName, context});
+    }
+    {
+      auto finalMeshName = std::string{_bname + ".final" + "_r" + std::to_string(context.rank)};
+      if (fs::is_regular_file(finalMeshName + ".vtu"))
+        meshNames.push_back(MeshName{finalMeshName, context});
     }
     std::cerr << "Names: " << meshNames.size() << '\n';
     return meshNames;

@@ -46,12 +46,13 @@ public:
   void save(const Mesh &mesh, const std::string &dataname) const;
 
 private:
-  MeshName(std::string meshname)
-      : _mname(std::move(meshname)) {}
+  MeshName(std::string meshname, const ExecutionContext &context)
+      : _mname(std::move(meshname)), _context(context) {}
 
   void createDirectories() const;
 
-  std::string _mname;
+  std::string            _mname;
+  const ExecutionContext _context;
 
   friend BaseName;
 };
