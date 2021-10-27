@@ -190,10 +190,10 @@ int main(int argc, char *argv[])
     VLOG(1) << "Write initial data for participant " << participant;
     if (isVector) {
       assert(mesh.data.size() == vertexIDs.size() * dim);
-      interface.writeBlockVectorData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+      interface.writeBlockVectorData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.data.data());
     } else {
       assert(mesh.data.size() == vertexIDs.size());
-      interface.writeBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+      interface.writeBlockScalarData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.data.data());
     }
     VLOG(1) << "Data written: " << mesh.previewData();
 
@@ -203,16 +203,17 @@ int main(int argc, char *argv[])
 
   size_t round = 0;
   while (interface.isCouplingOngoing() and round < meshes.size()) {
+
     if (participant == "A") {
       VLOG(1) << "Read mesh for t=" << round << " from " << meshes[round];
       auto roundmesh = meshes[round].load(dim, dataname);
       VLOG(1) << "This roundmesh contains: " << roundmesh.summary();
       if (isVector) {
         assert(roundmesh.data.size() == vertexIDs.size() * dim);
-        interface.writeBlockVectorData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
+        interface.writeBlockVectorData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.data.data());
       } else {
         assert(roundmesh.data.size() == vertexIDs.size());
-        interface.writeBlockScalarData(dataID, roundmesh.data.size(), vertexIDs.data(), roundmesh.data.data());
+        interface.writeBlockScalarData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.data.data());
       }
       VLOG(1) << "Data written: " << mesh.previewData();
     }
@@ -220,9 +221,9 @@ int main(int argc, char *argv[])
 
     if (participant == "B") {
       if (isVector) {
-        interface.readBlockVectorData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+        interface.readBlockVectorData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.data.data());
       } else {
-        interface.readBlockScalarData(dataID, mesh.data.size(), vertexIDs.data(), mesh.data.data());
+        interface.readBlockScalarData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.data.data());
       }
       VLOG(1) << "Data read: " << mesh.previewData();
     }
