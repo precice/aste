@@ -82,5 +82,5 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/mesh.py                DESTINATION ${C
 
 enable_testing()
 
-add_test(read_write_test testing)
+add_test(NAME read_write_test  COMMAND testing WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/tests")
 
