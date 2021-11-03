@@ -1,52 +1,112 @@
 #!/usr/bin/env python3
 """Evaluates a function on a given mesh, using the VTK Calculator."""
 
-import argparse, logging, os.path
-import mesh_io
+import argparse
+import logging
+import os.path
 import vtk
+import json
+import numpy as np
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description = __doc__)
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("in_meshname", metavar="inputmesh", help="The mesh used as input")
-    parser.add_argument("function", 
-            help="""The function to evalutate on the mesh. 
-            Syntax is the same as used in the calculator object, coordinates are given as e.g. 'coordX'.""")
-    parser.add_argument("--out", "-o", dest="out_meshname", help="""The output meshname. 
+    parser.add_argument("function",
+                        help="""The function to evalutate on the mesh.
+            Syntax is the same as used in the calculator object, coordinates are given as e.g. 'coordsX+coordsY'.""")
+    parser.add_argument("--out", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
-    parser.add_argument("--log", "-l", dest="logging", default="INFO", 
-            choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="""Set the log level. 
+    parser.add_argument("--tag", "-t", dest="tag", default="MyScalar", help="""The tag for data.
+            Default is MyScalar""")
+    parser.add_argument("--log", "-l", dest="logging", default="INFO",
+                        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="""Set the log level.
             Default is INFO""")
-
+    parser.add_argument("--diff", "-d", action='store_true', help="Calculate the difference to present data.")
+    parser.add_argument("--stats", "-s", action='store_true',
+                        help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
     args = parser.parse_args()
     args.out_meshname = args.out_meshname or args.in_meshname
     return args
 
+
 def main():
     args = parse_args()
-    logging.basicConfig(level = getattr(logging, args.logging))
+    logging.basicConfig(level=getattr(logging, args.logging))
 
     assert os.path.isfile(args.in_meshname), "Input mesh file not found!"
-    data = mesh_io.read_dataset(args.in_meshname)
-    logging.info("Read in {} points.".format(data.GetNumberOfPoints()))
 
-    calc = vtk.vtkArrayCalculator()
-    calc.SetInputData(data)
-    calc.AddCoordinateScalarVariable("coordsX", 0)
-    calc.AddCoordinateScalarVariable("coordsY", 1)
-    calc.AddCoordinateScalarVariable("coordsZ", 2)
-    calc.SetFunction(args.function)
-    calc.SetResultArrayName("scalars")
-    calc.Update()
-    logging.info("Evaluated '{}' on the mesh.".format(args.function))
+    out_meshname = args.out_meshname
+    if args.out_meshname is None:
+        out_meshname = args.in_meshname
 
-    writer = vtk.vtkUnstructuredGridWriter()
-    writer.SetInputData(calc.GetOutput())
-    writer.SetFileName(args.out_meshname)
-    writer.Write()
-    logging.info("Written output to {}.".format(args.out_meshname))
+    reader = vtk.vtkGenericDataObjectReader()
+    reader.SetFileName(args.in_meshname)
+    reader.Update()
+    vtk_dataset = reader.GetOutput()
+    logging.info("Read in {} points.".format(vtk_dataset.GetNumberOfPoints()))
 
+    if not args.diff:
+        calc = vtk.vtkArrayCalculator()
+        calc.SetInputData(vtk_dataset)
+        calc.AddCoordinateScalarVariable("coordsX", 0)
+        calc.AddCoordinateScalarVariable("coordsY", 1)
+        calc.AddCoordinateScalarVariable("coordsZ", 2)
+        calc.SetFunction(args.function)
+        calc.SetResultArrayName(args.tag)
+        calc.Update()
 
+        logging.info("Evaluated '{}' on the mesh.".format(args.function))
+        writer = vtk.vtkUnstructuredGridWriter()
+        writer.SetInputData(calc.GetOutput())
+        writer.SetFileName(out_meshname)
+        writer.Write()
+        logging.info("Written output to {}.".format(out_meshname))
+
+    if args.diff:
+        diff_calc = vtk.vtkArrayCalculator()
+        diff_calc.SetInputData(vtk_dataset)
+        diff_calc.AddCoordinateScalarVariable("coordsX", 0)
+        diff_calc.AddCoordinateScalarVariable("coordsY", 1)
+        diff_calc.AddCoordinateScalarVariable("coordsZ", 2)
+        diff_calc.SetFunction(args.function)
+        diff_calc.SetResultArrayName("Calculated Value")
+        diff_calc.Update()
+
+        org_val = []
+        calc_val = []
+        orgArr = diff_calc.GetOutput().GetPointData().GetAbstractArray(args.tag)
+        calcArr = diff_calc.GetOutput().GetPointData().GetAbstractArray("Calculated Value")
+        num_points = vtk_dataset.GetNumberOfPoints()
+        for i in range(num_points):
+            org_val.append(orgArr.GetTuple1(i))
+            calc_val.append(calcArr.GetTuple1(i))
+        
+        org_val = np.array(org_val)
+        calc_val = np.array(calc_val)
+        difference = np.abs(org_val - calc_val)
+        cnt, min, max = num_points, np.nanmin(difference), np.nanmax(difference)
+        p99, p95, p90, median = np.percentile(difference, [99, 95, 90, 50])
+
+        logging.info("Vertex count {}".format(cnt))
+        logging.info("Maximum error per vertex {}".format(max))
+        logging.info("Minimum error per vertex {}".format(min))
+        logging.info("Median error per vertex {}".format(median))
+        logging.info("99th percentile of error per vertex {}".format(p99))
+        logging.info("95th percentile of error per vertex {}".format(p95))
+        logging.info("90th percentile of error per vertex {}".format(p90))
+
+        if args.stats:
+            base = os.path.splitext(out_meshname)[0]
+            json.dump({
+                "count": cnt,
+                "min": min,
+                "max": max,
+                "median": median,
+                "99th percentile": p99,
+                "95th percentile": p95,
+                "90th percentile": p90
+            }, open(base + ".stats.json", "w"))
 
 
 if __name__ == "__main__":
