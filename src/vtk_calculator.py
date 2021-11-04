@@ -99,7 +99,13 @@ def main():
                 "90th percentile": p90
             }, open(base + ".stats.json", "w"))
 
+    if os.path.splitext(out_meshname) == ".vtk":
     writer = vtk.vtkUnstructuredGridWriter()
+    elif os.path.splitext(out_meshname) == ".vtu":
+        writer = vtk.vtkXMLUnstructuredGridWriter()
+    else:
+        raise Exception("Output mesh extension should be '.vtk' and '.vtu'")
+
     writer.SetInputData(calc.GetOutput())
     writer.SetFileName(out_meshname)
     writer.Write()
