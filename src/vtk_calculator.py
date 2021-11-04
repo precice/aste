@@ -27,7 +27,6 @@ def parse_args():
     parser.add_argument("--stats", "-s", action='store_true',
                         help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
     args = parser.parse_args()
-    args.out_meshname = args.out_meshname or args.in_meshname
     return args
 
 
@@ -105,9 +104,9 @@ def main():
                 "90th percentile": p90
             }, open(stat_file, "w"))
 
-    if os.path.splitext(out_meshname) == ".vtk":
+    if os.path.splitext(out_meshname)[1] == ".vtk":
         writer = vtk.vtkUnstructuredGridWriter()
-    elif os.path.splitext(out_meshname) == ".vtu":
+    elif os.path.splitext(out_meshname)[1] == ".vtu":
         writer = vtk.vtkXMLUnstructuredGridWriter()
     else:
         raise Exception("Output mesh extension should be '.vtk' and '.vtu'")
