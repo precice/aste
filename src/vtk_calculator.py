@@ -39,6 +39,7 @@ def main():
 
     out_meshname = args.out_meshname
     if args.out_meshname is None:
+        logging.info("No output mesh name is given {} will be used.".format(args.in_meshname))
         out_meshname = args.in_meshname
 
     if args.diff and args.intag is None:
@@ -49,7 +50,7 @@ def main():
     reader.SetFileName(args.in_meshname)
     reader.Update()
     vtk_dataset = reader.GetOutput()
-    logging.info("Read in {} points.".format(vtk_dataset.GetNumberOfPoints()))
+    logging.info("Mesh contains {} points.".format(vtk_dataset.GetNumberOfPoints()))
 
     calc = vtk.vtkArrayCalculator()
     calc.SetInputData(vtk_dataset)
@@ -81,6 +82,7 @@ def main():
         relative = np.sqrt(np.nansum(np.square(difference)) / difference.size)
 
         logging.info("Vertex count {}".format(cnt))
+        logging.info("Relative l2 error {}".format(relative))
         logging.info("Maximum error per vertex {}".format(max))
         logging.info("Minimum error per vertex {}".format(min))
         logging.info("Median error per vertex {}".format(median))
@@ -90,6 +92,7 @@ def main():
 
         if args.stats:
             stat_file = os.path.splitext(out_meshname)[0] + ".stats.json"
+            logging.info("Saving stats data to {}".format(stat_file))
             json.dump({
                 "count": cnt,
                 "min": min,
