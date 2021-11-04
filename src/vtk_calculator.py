@@ -41,6 +41,10 @@ def main():
     if args.out_meshname is None:
         out_meshname = args.in_meshname
 
+    if args.diff and args.intag is None:
+        logging.info("No intag is given outtag '{}' will be used as intag.".format(args.tag))
+        intag = args.tag
+
     reader = vtk.vtkGenericDataObjectReader()
     reader.SetFileName(args.in_meshname)
     reader.Update()
