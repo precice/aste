@@ -57,26 +57,27 @@ def main():
     calc.AddCoordinateScalarVariable("x", 0)
     calc.AddCoordinateScalarVariable("y", 1)
     calc.AddCoordinateScalarVariable("z", 2)
-    calc.SetFunction(args.function)
-    calc.SetResultArrayName(args.tag)
-    calc.Update()    
-    logging.info("Evaluated '{}' on the mesh.".format(args.function))
-    
     if args.diff:
-        assert args.intag is not None, "Difference mode needs input array tag"
+        calc.SetFunction('abs({}-{})'.format(intag, args.function))
+        logging.info("Evaluated 'abs({}-{})' on the mesh.".format(intag, args.function))
+    else:
+        calc.SetFunction(args.function)
+        logging.info("Evaluated '{}' on the mesh.".format(args.function))
+    calc.SetResultArrayName(args.tag)
+    calc.Update()
+    logging.info("Evaluated function saved to {} variable".format(args.tag))
 
-        org_val = []
-        calc_val = []
-        orgArr = calc.GetOutput().GetPointData().GetAbstractArray(args.intag)
-        calcArr = calc.GetOutput().GetPointData().GetAbstractArray(args.tag)
+    if args.diff:
+
+        # Transfer Data to Numpy Array to Compute Statistics
+        difference = []
+        diffArr = calc.GetOutput().GetPointData().GetAbstractArray(args.tag)
         num_points = vtk_dataset.GetNumberOfPoints()
         for i in range(num_points):
-            org_val.append(orgArr.GetTuple1(i))
-            calc_val.append(calcArr.GetTuple1(i))
-        
-        org_val = np.array(org_val)
-        calc_val = np.array(calc_val)
-        difference = np.abs(org_val - calc_val)
+            difference.append(diffArr.GetTuple1(i))
+        difference = np.array(difference)
+
+        # Calculate Statistics
         cnt, min, max = num_points, np.nanmin(difference), np.nanmax(difference)
         p99, p95, p90, median = np.percentile(difference, [99, 95, 90, 50])
         relative = np.sqrt(np.nansum(np.square(difference)) / difference.size)
@@ -105,7 +106,7 @@ def main():
             }, open(stat_file, "w"))
 
     if os.path.splitext(out_meshname) == ".vtk":
-    writer = vtk.vtkUnstructuredGridWriter()
+        writer = vtk.vtkUnstructuredGridWriter()
     elif os.path.splitext(out_meshname) == ".vtu":
         writer = vtk.vtkXMLUnstructuredGridWriter()
     else:
