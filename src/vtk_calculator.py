@@ -78,6 +78,7 @@ def main():
         difference = np.abs(org_val - calc_val)
         cnt, min, max = num_points, np.nanmin(difference), np.nanmax(difference)
         p99, p95, p90, median = np.percentile(difference, [99, 95, 90, 50])
+        relative = np.sqrt(np.nansum(np.square(difference)) / difference.size)
 
         logging.info("Vertex count {}".format(cnt))
         logging.info("Maximum error per vertex {}".format(max))
@@ -94,6 +95,7 @@ def main():
                 "min": min,
                 "max": max,
                 "median": median,
+                "relative-l2": relative,
                 "99th percentile": p99,
                 "95th percentile": p95,
                 "90th percentile": p90
