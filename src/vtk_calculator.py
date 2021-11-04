@@ -53,9 +53,9 @@ def main():
 
     calc = vtk.vtkArrayCalculator()
     calc.SetInputData(vtk_dataset)
-    calc.AddCoordinateScalarVariable("coordsX", 0)
-    calc.AddCoordinateScalarVariable("coordsY", 1)
-    calc.AddCoordinateScalarVariable("coordsZ", 2)
+    calc.AddCoordinateScalarVariable("x", 0)
+    calc.AddCoordinateScalarVariable("y", 1)
+    calc.AddCoordinateScalarVariable("z", 2)
     calc.SetFunction(args.function)
     calc.SetResultArrayName(args.tag)
     calc.Update()    
