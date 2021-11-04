@@ -89,7 +89,7 @@ def main():
         logging.info("90th percentile of error per vertex {}".format(p90))
 
         if args.stats:
-            base = os.path.splitext(out_meshname)[0]
+            stat_file = os.path.splitext(out_meshname)[0] + ".stats.json"
             json.dump({
                 "count": cnt,
                 "min": min,
@@ -99,7 +99,7 @@ def main():
                 "99th percentile": p99,
                 "95th percentile": p95,
                 "90th percentile": p90
-            }, open(base + ".stats.json", "w"))
+            }, open(stat_file, "w"))
 
     if os.path.splitext(out_meshname) == ".vtk":
     writer = vtk.vtkUnstructuredGridWriter()
