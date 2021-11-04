@@ -11,16 +11,15 @@ import numpy as np
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("in_meshname", metavar="inputmesh", help="The mesh used as input")
-    parser.add_argument("function",
-                        help="""The function to evalutate on the mesh.
-            Syntax is the same as used in the calculator object, coordinates are given as e.g. 'coordsX+coordsY'.""")
+    parser.add_argument("in_meshname", metavar="inputmesh", help="The mesh (VTK Unstructured Grid) used as input")
+    parser.add_argument("function", help="""The function to evalutate on the mesh.
+            Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.""")
     parser.add_argument("--out", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
     parser.add_argument("--tag", "-t", dest="tag", default="MyScalar", help="""The tag for output data.
             Default is MyScalar""")
     parser.add_argument("--intag", "-it", dest="intag", help="""The tag for input data.
-            Required for diff mod""")      
+            Used in diff mode. If not given tag is used.""")
     parser.add_argument("--log", "-l", dest="logging", default="INFO",
                         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="""Set the log level.
             Default is INFO""")
