@@ -293,6 +293,7 @@ def read_mesh(filename: str)-> Mesh:
 def write_mesh(filename: str, points: List, data_index: List, cells=None, cell_types=None, orig_mesh=None) -> None:
     if (cell_types is not None):
         assert (len(cell_types) in [0, len(cells)])
+    assert (len(points) == len(data_index))
     import vtk
 
     vtkGrid = vtk.vtkUnstructuredGrid()
@@ -372,7 +373,7 @@ def write_meshes(meshes, recoveryInfo, meshname: str, orig_mesh) -> None:
     os.mkdir(dirname)
     for i in range(len(meshes)):
         mesh = meshes[i]
-        write_mesh(dirname + "/" + meshname + "_r" + str(i) + ".vtu", mesh.points,mesh.data_index, mesh.cells,
+        write_mesh(dirname + "/" + meshname + "_" + str(i) + ".vtu", mesh.points,mesh.data_index, mesh.cells,
                   mesh.cell_types, orig_mesh)
     json.dump(recoveryInfo, open(recoveryName, "w"))
     return
