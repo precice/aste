@@ -1,6 +1,32 @@
 #!/usr/bin/env python3
 """Evaluates a function on a given mesh, using the VTK Calculator."""
 
+"""
+This calculator can calculate vector or scalar field on given mesh.
+
+Example usage 
+
+Scalar calculation and writing to given file
+
+./vtk_calculator.py inputmesh.vtk exp(cos(x)+sin(y)) -t e^(cos(x)+sin(y)) -o outputmesh.vtk
+
+Vector field and appends to input mesh
+
+./vtk_calculator.py inputmesh.vtk x*iHat+cos(y)*jHat-sin(z)*kHat -t MyVectorField 
+
+There is also a diff mode which provides statistic between input data and function calculated
+(Note that it only works for scalar data)
+
+./vtk_calculator.py inputmesh.vtu x+y -t mydata --diff --stats 
+
+Calculates difference between given function and mydata data save over rides into variable tag and saves statistics
+
+./vtk_calculator.py inputmesh.vtu x+y -t diffence -it mydata --diff
+
+Calculates difference between given function and mydata data save into diffence tag
+
+"""
+
 import argparse
 import logging
 import os.path
