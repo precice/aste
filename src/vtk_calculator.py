@@ -57,8 +57,8 @@ def main():
     calc.AddCoordinateScalarVariable("y", 1)
     calc.AddCoordinateScalarVariable("z", 2)
     if args.diff:
-        calc.SetFunction('abs({}-{})'.format(intag, args.function))
-        logging.info("Evaluated 'abs({}-{})' on the mesh.".format(intag, args.function))
+        calc.SetFunction('{}-({})'.format(intag, args.function))
+        logging.info("Evaluated '{}-({})' on the mesh.".format(intag, args.function))
     else:
         calc.SetFunction(args.function)
         logging.info("Evaluated '{}' on the mesh.".format(args.function))
