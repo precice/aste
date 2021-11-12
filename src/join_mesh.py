@@ -1,140 +1,254 @@
 #!/usr/bin/env python3
+"""
+Joins meshes partitioned by ASTE mesh partitioner.
+
+There is two possible way of merging:
+- Partition-wise (does not recovery original mesh order and lack of discarded cells)
+- Recovery merge (maintain original mesh order and adds discarded cells)
+
+Sample usage 
+
+partitioned files:
+prefix_<#>.vtu
+
+./join_mesh.py prefix -o joined_mesh.vtk
+
+./join_mesh.py prefix -o joined_mesh.vtk -r ./recovery/path/
+
+"""
+
 import argparse
 import logging
 import os
-import numpy as np
 import json
-from mesh_io import read_txt, get_cell_type, read_conn
-import mesh_io
-
-
-def main():
-    args = parse_args()
-    logging.basicConfig(level=getattr(logging, args.logging))
-    out_meshname = args.out_meshname if args.out_meshname else args.in_meshname + ".vtk"
-
-    mesh = read_mesh(args.in_meshname, args.numparts, args.recovery)
-    print("Joined mesh: {}".format(mesh))
-    mesh.save(out_meshname)
-
-
-def join_mesh_partitionwise(dirname, length):
-    """
-    Partitionn-wise load and append
-
-    This does not contain connectivity.
-    The vertex and cell order will be scrambled wrt the original mesh due to the paritioning.
-    """
-    logging.info("Starting patitionwise mesh merge")
-    accumulated = mesh_io.Mesh()
-    for i in range(length):
-        mesh = mesh_io.Mesh.load(os.path.join(dirname, str(i)+".txt"))
-        accumulated.append(mesh)
-    return accumulated
-
-
-def join_mesh_recovery(dirname, partitions, recoveryPath):
-    """
-    Parition merge with full recovery
-
-    This uses the originally paritioned mesh as recovery information.
-    The result is in the same very order as the original mesh.
-    Original cells will be preserved, but will grouped partition-wise.
-    Cells between partitions will be appended.
-    """
-    logging.info("Starting mesh recovery")
-    recoveryFile = os.path.join(recoveryPath, "recovery.json")
-    recovery = json.load(open(recoveryFile, "r"))
-    mapping = recovery["mapping"]
-    size = recovery["size"]
-    assert(size == sum(map(len, mapping.values())))
-
-    points = {}
-    values = {}
-    all_cells = []
-
-    for i in range(partitions):
-        logging.debug("Processing parititon {}".format(i))
-        partmapping = {int(key): int(value) for key, value in recovery["mapping"][str(i)].items()}
-
-        partfile = os.path.join(dirname, str(i)+".txt")
-        partconnfile = os.path.join(recoveryPath, str(i)+".conn.txt")
-        logging.debug("Partition mesh file: "+partfile)
-        logging.debug("Recovery connectivity file: "+partconnfile)
-        partpoints, _, _, partvalues = read_txt(partfile)
-        partcells, _ = read_conn(partconnfile)
-
-        for local, point in enumerate(partpoints):
-            points[partmapping[local]] = point
-
-        for local, value in enumerate(partvalues):
-            values[partmapping[local]] = value
-
-        all_cells += [
-            tuple(map(lambda local: partmapping[local], cell))
-            for cell in partcells
-        ]
-
-    logging.debug("Recovering point order")
-    all_points = [ point for _, point in sorted(points.items(), key=lambda x: x[0]) ]
-    all_values = [ value for _, value in sorted(values.items(), key=lambda x: x[0]) ]
-
-    logging.debug("Recovering inter-partition connectivity")
-    recovery_cells = [
-        tuple(map(int, cell))
-        for cell in recovery["cells"]
-    ]
-    recovery_cell_types = list(map(get_cell_type, recovery_cells))
-    all_cells += recovery_cells
-
-    assert(len(all_values) in [0, len(all_points)])
-
-    logging.info("Assembling recovered mesh")
-    return mesh_io.Mesh(all_points, all_values, all_cells)
-
-
-def count_partitions(dirname):
-    detected = 0
-    while True:
-        partitionFile = os.path.join(dirname, str(detected)+".txt")
-        if (not os.path.isfile(partitionFile)):
-            break
-        detected += 1
-    return detected
-
-
-def read_mesh(dirname, partitions = None, recoveryPath = None):
-    """
-    Reads a mesh from the given directory.
-    """
-    if not partitions:
-        partitions = count_partitions(dirname)
-        logging.debug("Detected "+str(partitions)+" partitions from directory "+dirname)
-    dirname = os.path.abspath(dirname)
-    if not os.path.exists(dirname):
-        raise Exception("Directory not found")
-    if not os.path.isdir(dirname):
-        raise Exception("In mesh must be a directory")
-    if partitions == 0:
-        raise Exception("No partitions found")
-
-    if recoveryPath is None:
-        return join_mesh_partitionwise(dirname, partitions)
-    else:
-        return join_mesh_recovery(dirname, partitions, recoveryPath)
-
-
+import vtk
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Read a partitioned mesh and join it into a .vtk or .txt file.")
-    parser.add_argument("in_meshname", metavar="inputmesh", help="The partitioned mesh used as input")
-    parser.add_argument("--out", "-o", dest="out_meshname", help="The output mesh. Can be vtk or txt.")
-    parser.add_argument("-r", "--recovery", dest="recovery", help="The path to the original partitioned mesh to fully recover it's state.")
+    parser = argparse.ArgumentParser(description="Read a partitioned mesh and join it into a .vtk or .vtu file.")
+    parser.add_argument("in_meshname", metavar="inputmesh", help="The partitioned mesh prefix used as input")
+    parser.add_argument("--out", "-o", dest="out_meshname", help="The output mesh. Can be vtk or vtu.")
+    parser.add_argument("-r", "--recovery", dest="recovery", help="The path to recovery file to fully recover it's state.")
     parser.add_argument("--numparts", "-n", dest="numparts", type=int,
             help="The number of parts to read from the input mesh. By default the entire mesh is read.")
     parser.add_argument("--log", "-l", dest="logging", default="INFO",
             choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Set the log level. Default is INFO")
     return parser.parse_args()
+
+def main():
+    args = parse_args()
+    logging.basicConfig(level=getattr(logging, args.logging))
+    out_meshname = args.out_meshname if args.out_meshname else args.in_meshname + "_joined.vtk"
+    joined_mesh = read_meshes(args.in_meshname, args.numparts, args.recovery)
+    write_mesh(joined_mesh,out_meshname)
+
+def read_meshes(prefix : str, partitions = None, recoveryPath = None):
+    """
+    Reads meshes with given prefix.
+    """
+    if not partitions:
+        partitions = count_partitions(prefix)
+        logging.debug("Detected "+str(partitions)+" partitions with prefix "+ prefix)
+    if partitions == 0:
+        raise Exception("No partitions found")
+
+    if recoveryPath is None:
+        logging.info("No recovery data found. Meshes will be joined partition-wise")
+        return join_mesh_partitionwise(prefix, partitions)
+    else:
+        logging.info("Recovery data found. Full recovery will be executed")
+        return join_mesh_recovery(prefix, partitions, recoveryPath)
+
+def join_mesh_partitionwise(prefix : str, partitions : int):
+    """
+    Partition-wise load and append. 
+    Does not recover missing cells.
+    Cells and points may be scrambled wrt original mesh.
+    """
+    
+    logging.info("Starting partition-wise mesh merge")
+    joined_mesh = vtk.vtkUnstructuredGrid()
+    joined_points = vtk.vtkPoints()
+    joined_data_arrays = None
+    joined_cells = vtk.vtkCellArray()
+    joined_cell_types = []
+    offset = 0
+
+    for i in range(partitions):
+        fname = prefix + "_" + str(i) + ".vtu"
+        reader = vtk.vtkXMLUnstructuredGridReader()
+        reader.SetFileName(fname)
+        reader.Update()
+        part_mesh = reader.GetOutput()
+
+        logging.debug("File {} contains {} points".format(fname,part_mesh.GetNumberOfPoints()))
+        for i in range(part_mesh.GetNumberOfPoints()):
+            joined_points.InsertNextPoint(part_mesh.GetPoint(i))
+        
+        part_point_data = part_mesh.GetPointData()
+        num_arrays = part_point_data.GetNumberOfArrays()
+        
+        if joined_data_arrays is None:
+            joined_data_arrays = []
+            for j in range(num_arrays):
+                newArr = vtk.vtkDoubleArray()
+                newArr.SetName(part_point_data.GetArrayName(j))
+                joined_data_arrays.append(newArr)
+        
+        
+        for j in range(num_arrays):
+            array_name = part_point_data.GetArrayName(j)
+            logging.debug("Merging from file {} dataname {}".format(fname,array_name))
+            array_data = part_point_data.GetArray(array_name)
+            for k in range(array_data.GetNumberOfTuples()):
+                joined_data_arrays[j].InsertNextTuple(array_data.GetTuple(k))
+
+        for i in range(part_mesh.GetNumberOfCells()):
+            cell = part_mesh.GetCell(i)
+            vtkCell = vtk.vtkGenericCell()
+            vtkCell.SetCellType(cell.GetCellType())
+            idList = vtk.vtkIdList()
+            for j in range(cell.GetNumberOfPoints()):
+                idList.InsertNextId(cell.GetPointId(j)+ offset)
+            vtkCell.SetPointIds(idList)
+            joined_cell_types.append(cell.GetCellType())
+            joined_cells.InsertNextCell(vtkCell)
+
+        offset += part_mesh.GetNumberOfPoints()
+
+    joined_mesh.SetCells(joined_cell_types,joined_cells)
+    joined_mesh.SetPoints(joined_points)
+    for data_array in joined_data_arrays:
+        joined_mesh.GetPointData().AddArray(data_array)
+            
+    return joined_mesh
+
+
+def join_mesh_recovery(prefix : str, partitions : int, recoveryPath : str):
+    """
+    Partition merge with full recovery
+
+    This saves original mesh.
+    """
+    logging.info("Starting full mesh recovery")
+    recoveryFile = os.path.join(recoveryPath, "recovery.json")
+    recovery = json.load(open(recoveryFile, "r"))
+    cells = recovery["cells"]
+    size = recovery["size"]
+    cell_types = recovery["cell_types"]
+
+    logging.debug("Original Mesh contains {} points".format(size))
+    logging.debug("{} Cells discarded during partitioning".format(len(cells)))
+
+    # Initialize Joined Mesh
+    joined_mesh = vtk.vtkUnstructuredGrid()
+    joined_points = vtk.vtkPoints()
+    joined_points.SetNumberOfPoints(size)
+    joined_data_arrays = None
+    joined_cells = vtk.vtkCellArray()
+    joined_cell_types = []
+
+    for i in range(partitions):
+        global_ids= [] 
+
+        fname = prefix + "_" + str(i) + ".vtu"
+        reader = vtk.vtkXMLUnstructuredGridReader()
+        reader.SetFileName(fname)
+        reader.Update()
+        part_mesh = reader.GetOutput()
+        part_point_data = part_mesh.GetPointData()
+        num_arrays = part_point_data.GetNumberOfArrays()
+
+        #Prepare DataArrays
+        if joined_data_arrays is None:
+            joined_data_arrays = []
+            for j in range(num_arrays):
+                newArr = vtk.vtkDoubleArray()
+                newArr.SetName(part_point_data.GetArrayName(j))
+                newArr.SetNumberOfTuples(size)
+                joined_data_arrays.append(newArr)        
+
+        # Extract Global IDs
+        array_data = part_point_data.GetArray("GlobalIDs")
+        for k in range(array_data.GetNumberOfTuples()):
+            global_ids.append(array_data.GetTuple(k))
+
+        logging.debug("File {} contains {} points".format(fname,part_mesh.GetNumberOfPoints()))
+        for i in range(part_mesh.GetNumberOfPoints()):
+            joined_points.SetPoint(int(global_ids[i][0]),part_mesh.GetPoint(i))    
+        
+        # Append Point Data to Original Locations
+        for j in range(num_arrays):
+            array_name = part_point_data.GetArrayName(j)
+            logging.debug("Merging from file {} dataname {}".format(fname,array_name))
+            array_data = part_point_data.GetArray(array_name)
+            for k in range(array_data.GetNumberOfTuples()):
+                joined_data_arrays[j].SetTuple(int(global_ids[k][0]),array_data.GetTuple(k))
+
+        # Append Cells
+        for i in range(part_mesh.GetNumberOfCells()):
+            cell = part_mesh.GetCell(i)
+            vtkCell = vtk.vtkGenericCell()
+            vtkCell.SetCellType(cell.GetCellType())
+            idList = vtk.vtkIdList()
+            for j in range(cell.GetNumberOfPoints()):
+                idList.InsertNextId(int(global_ids[cell.GetPointId(j)][0]))
+            vtkCell.SetPointIds(idList)
+            joined_cell_types.append(cell.GetCellType())
+            joined_cells.InsertNextCell(vtkCell)
+    
+    # Append Recovery Cells
+    for cell, cell_type in zip(cells,cell_types):
+        vtkCell = vtk.vtkGenericCell()
+        vtkCell.SetCellType(cell_type)
+        idList = vtk.vtkIdList()
+        for pointid in cell:
+            idList.InsertNextId(pointid)
+        vtkCell.SetPointIds(idList)
+        joined_cell_types.append(cell_type)
+        joined_cells.InsertNextCell(vtkCell)
+
+    # Set Points, Cells, Data on Grid 
+    joined_mesh.SetCells(joined_cell_types,joined_cells)
+    joined_mesh.SetPoints(joined_points)
+    for data_array in joined_data_arrays:
+        joined_mesh.GetPointData().AddArray(data_array)
+
+    return joined_mesh
+
+
+
+def count_partitions(prefix : str) -> int:
+    """Count how many partitions available with given prefix
+
+    Args:
+        prefix (str): prefix of mesh
+
+    Returns:
+        int: number of partitions
+    """
+    detected = 0
+    while True:
+        partitionFile = prefix + "_" + str(detected) + ".vtu"
+        if (not os.path.isfile(partitionFile)):
+            break
+        detected += 1
+    return detected
+
+def write_mesh(meshfile,filename):
+
+    extension = os.path.splitext(filename)[1]
+    if (extension == ".vtk"):  # VTK Legacy format
+        writer = vtk.vtkUnstructuredGridWriter()
+    elif (extension == ".vtu"):  # VTK XML Unstructured Grid format
+        writer = vtk.vtkXMLUnstructuredGridWriter()
+    else:
+        raise Exception("Unkown File extension: " + extension)
+    writer.SetFileName(filename)
+    writer.SetInputData(meshfile)
+    writer.Write()
+
+
+
 
 
 if __name__ == "__main__":
