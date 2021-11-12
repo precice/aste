@@ -245,8 +245,9 @@ def apply_partition(orig_mesh: Mesh, part, numparts: int):
 
     assert(len(mapping) == len(orig_mesh.points))
     assert(len(orig_mesh.cells) == len(orig_mesh.cell_types))
-    # Save discarded cells to allow recovery
+    # Save discarded cells and their types to allow recovery
     discardedCells = []
+    discardedCellTypes = []
     for cell, type in zip(orig_mesh.cells, orig_mesh.cell_types):
         partitions = list(map(lambda idx: mapping[idx][0], cell))
         if len(set(partitions)) == 1:
@@ -254,9 +255,13 @@ def apply_partition(orig_mesh: Mesh, part, numparts: int):
             meshes[partitions[0]].cell_types.append(type)
         else:
             discardedCells.append(list(cell))
+            discardedCellTypes.append(type)
+            
 
     recoveryInfo = {
-        "cells": discardedCells
+        "size": len(orig_mesh.points),
+        "cells": discardedCells,
+        "cell_types": discardedCellTypes
     }
 
     return meshes, recoveryInfo
