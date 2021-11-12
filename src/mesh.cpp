@@ -256,7 +256,7 @@ std::ostream &operator<<(std::ostream &out, const MeshName &mname)
 MeshName BaseName::with(const ExecutionContext &context) const
 {
   if (context.isParallel()) {
-    return {_bname + "_r" + std::to_string(context.rank), context};
+    return {_bname + "_" + std::to_string(context.rank), context};
   } else {
     return {_bname, context};
   }
