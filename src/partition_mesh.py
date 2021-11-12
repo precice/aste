@@ -298,8 +298,8 @@ def write_mesh(filename: str, points: List, data_index: List, cells=None, cell_t
     vtkGrid = vtk.vtkUnstructuredGrid()
     vtkpoints = vtk.vtkPoints()
     vtkpoints.SetNumberOfPoints(len(points))
-    for point in points:
-        vtkpoints.InsertNextPoint(point)
+    for id, point in enumerate(points):
+        vtkpoints.SetPoint(id,point)
     vtkGrid.SetPoints(vtkpoints)
 
     if cells:
