@@ -2,8 +2,8 @@
 """
 Joins meshes partitioned by the ASTE mesh partitioner.
 
-There is two possible way of merging:
-- Partition-wise (does not recovery original mesh order and lack of discarded cells)
+There are two possible ways of joining the meshes:
+- Partition-wise (does not recover the original mesh order lacks of discarded cells)
 - Recovery merge (maintain original mesh order and adds discarded cells)
 
 Sample usage 
