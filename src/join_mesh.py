@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Joins meshes partitioned by ASTE mesh partitioner.
+Joins meshes partitioned by the ASTE mesh partitioner.
 
 There is two possible way of merging:
 - Partition-wise (does not recovery original mesh order and lack of discarded cells)
