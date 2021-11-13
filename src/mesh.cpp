@@ -256,7 +256,7 @@ std::ostream &operator<<(std::ostream &out, const MeshName &mname)
 MeshName BaseName::with(const ExecutionContext &context) const
 {
   if (context.isParallel()) {
-    return {_bname + "_r" + std::to_string(context.rank), context};
+    return {_bname + "_" + std::to_string(context.rank), context};
   } else {
     return {_bname, context};
   }
@@ -294,7 +294,7 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
 
   } else { // Parallel Case
     // Check if there is a single mesh
-    std::string rankMeshName{_bname + "_r" + std::to_string(context.rank)};
+    std::string rankMeshName{_bname + "_" + std::to_string(context.rank)};
     if (fs::is_regular_file(rankMeshName + ".vtu")) {
       return {MeshName{rankMeshName, context}};
     }
@@ -302,18 +302,18 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
     // Check multiple timesteps
     std::vector<MeshName> meshNames;
     {
-      auto initMeshName = std::string{_bname + ".init" + "_r" + std::to_string(context.rank)};
+      auto initMeshName = std::string{_bname + ".init" + "_" + std::to_string(context.rank)};
       if (fs::is_regular_file(initMeshName + ".vtu"))
         meshNames.push_back(MeshName{initMeshName, context});
     }
     for (int t = 1; true; ++t) {
-      std::string rankMeshName{_bname + ".dt" + std::to_string(t) + "_r" + std::to_string(context.rank)};
+      std::string rankMeshName{_bname + ".dt" + std::to_string(t) + "_" + std::to_string(context.rank)};
       if (!fs::is_regular_file(rankMeshName + ".vtu"))
         break;
       meshNames.push_back(MeshName{rankMeshName, context});
     }
     {
-      auto finalMeshName = std::string{_bname + ".final" + "_r" + std::to_string(context.rank)};
+      auto finalMeshName = std::string{_bname + ".final" + "_" + std::to_string(context.rank)};
       if (fs::is_regular_file(finalMeshName + ".vtu"))
         meshNames.push_back(MeshName{finalMeshName, context});
     }
@@ -338,7 +338,7 @@ std::string Mesh::previewData(std::size_t max) const
 std::string Mesh::summary() const
 {
   std::stringstream oss;
-  oss << positions.size() << " Vertices, " << data.size() << " Data Points, " << edges.size() << " Edges, " << triangles.size() << " Triangles" << quadrilaterals.size() << "Quadrilaterals";
+  oss << positions.size() << " Vertices, " << data.size() << " Data Points, " << edges.size() << " Edges, " << triangles.size() << " Triangles " << quadrilaterals.size() << " Quadrilaterals ";
   return oss.str();
 }
 
