@@ -127,7 +127,7 @@ def join_mesh_recovery(prefix : str, partitions : int, recoveryPath : str):
     """
     Partition merge with full recovery
 
-    This saves original mesh.
+    This recovers the original mesh.
     """
     logging.info("Starting full mesh recovery")
     recoveryFile = os.path.join(recoveryPath, "recovery.json")
