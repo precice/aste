@@ -26,12 +26,7 @@ find_package(precice REQUIRED CONFIG)
 find_package(Boost 1.65.1 REQUIRED COMPONENTS system program_options filesystem unit_test_framework)
 
 find_package(VTK REQUIRED)
-if (VTK_FOUND)
-  if(${VTK_VERSION} LESS 7.1.1)
-    message(WARNING "The detected VTK version has not been tested and might have compatibility issues.")
-  endif()
-endif()
-include(${VTK_USE_FILE})
+message (STATUS "VTK_VERSION: ${VTK_VERSION}")
 
 find_package(METIS)
 if (METIS_FOUND)
@@ -70,6 +65,18 @@ target_link_libraries(testing
   Boost::unit_test_framework
   ${VTK_LIBRARIES}
 )
+
+
+if (VTK_VERSION VERSION_LESS "8.90.0")
+  # old system
+  include(${VTK_USE_FILE})
+else ()
+  # vtk_module_autoinit is needed
+  vtk_module_autoinit(
+    TARGETS preciceMap testing
+    MODULES ${VTK_LIBRARIES}
+    )
+endif()
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/join_mesh.py           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
