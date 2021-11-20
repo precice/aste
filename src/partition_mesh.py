@@ -34,7 +34,7 @@ class Mesh:
     A Mesh consists of:
         - Points: A list of tuples of floats representing coordinates of points
         - Cells: A list of tuples of ints representing mesh elements
-        - data_index: A list represents indexes data elements in original mesh which should be in submesh
+        - data_index: A list ints representing indexes of Points/Data in original mesh
         - vtk_Dataset: VTK Unstructured Grid Object.
     """
 
@@ -379,10 +379,10 @@ def write_meshes(meshes, recoveryInfo, meshname: str, orig_mesh) -> None:
     return
     
 def parse_args():
-    parser = argparse.ArgumentParser(description="Read meshes, partition them and write them out in internal format.")
+    parser = argparse.ArgumentParser(description="Read meshes, partition them and write them out in VTU format.")
     parser.add_argument("in_meshname", metavar="inputmesh", help="The mesh used as input")
     parser.add_argument("--out", "-o", dest="out_meshname", default="partitioned_mesh",
-                        help="The output mesh directory name. Only works if single in_mesh is given.")
+                        help="The output mesh name.")
     parser.add_argument("--numparts", "-n", dest="numparts", default=1, type=int,
                         help="The number of parts to split into")
     parser.add_argument("--algorithm", "-a", dest="algorithm", choices=["meshfree", "topology", "uniform"],
