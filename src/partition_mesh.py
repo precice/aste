@@ -266,9 +266,17 @@ def apply_partition(orig_mesh: Mesh, part, numparts: int):
 
     return meshes, recoveryInfo
 
-def read_mesh(filename: str)-> Mesh:
+
+def read_mesh(filename: str) -> Mesh:
     import vtk
-    reader = vtk.vtkGenericDataObjectReader()
+    extension = os.path.splitext(filename)[1]
+    if (extension == ".vtu"):
+        reader = vtk.vtkXMLUnstructuredGridReader()
+    elif (extension == ".vtk"):
+        reader = vtk.vtkUnstructuredGridReader()
+    else:
+        print("Unkown input file extension please check your input file.")
+        os.exit()
     reader.SetFileName(filename)
     reader.Update()
     vtkmesh = reader.GetOutput()
