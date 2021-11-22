@@ -1,52 +1,47 @@
 #!/usr/bin/env python3
-import argparse, logging, math, os
+import argparse
+import logging
+import math
+import os
+from typing import List
 import numpy as np
 import shutil
 from ctypes import *
-import mesh_io
 import json
+
 
 def main():
     args = parse_args()
     logging.basicConfig(level=getattr(logging, args.logging))
-    if len(args.in_meshname) > 1 and args.out_meshname:
-        logging.warn("--out ignored")
-    mesh_names = args.in_meshname
-    for mesh_name in mesh_names:
-        assert os.path.isfile(mesh_name), ("Invalid filename: "  + mesh_name)
+    mesh_name = args.in_meshname
+    assert os.path.isfile(mesh_name), ("Invalid filename: " + mesh_name)
+
     algorithm = args.algorithm
     if not algorithm:
         logging.info("No algorithm given. Defaulting to \"meshfree\"")
         algorithm = "meshfree"
-    rootmesh = read_mesh(mesh_names[0], args.tag, args.datadim)
+    mesh = read_mesh(mesh_name)
     if args.numparts > 1:
-        part = partition(rootmesh, args.numparts, algorithm)
+        part = partition(mesh, args.numparts, algorithm)
     else:
-        part = [0] *  len(rootmesh.points)
-        
-    for mesh_name in mesh_names:
-        logging.info("Processing mesh " + mesh_name)
-        mesh = read_mesh(mesh_name, args.tag, args.datadim)
-        logging.debug("Checking if meshes are matching...")
-        assert mesh.points == rootmesh.points, ("Non-matching meshes detected!")
-        meshes, recoveryInfo = apply_partition(mesh, part, args.numparts)
-        if len(mesh_names) > 1 or not args.out_meshname:
-            out_meshname = os.path.splitext(mesh_name)[0]
-            logging.info("Writing output to: " + out_meshname)
-            # logging.info("No --out given. Setting output to: " + out_meshname)
-        else:
-            out_meshname = args.out_meshname
-        write_meshes(meshes, recoveryInfo, out_meshname)
+        part = [0] * len(mesh.points)
 
-    
+    logging.info("Processing mesh " + mesh_name)
+    meshes, recoveryInfo = apply_partition(mesh, part, args.numparts)
+    logging.info("Writing output to: " + args.out_meshname)
+    write_meshes(meshes, recoveryInfo, args.out_meshname, mesh.vtk_dataset)
+
+
 class Mesh:
     """
     A Mesh consists of:
         - Points: A list of tuples of floats representing coordinates of points
         - Cells: A list of tuples of ints representing mesh elements
-        - Pointdata: A list of floats representing data values at the respective point
+        - data_index: A list ints representing indexes of Points/Data in original mesh
+        - vtk_Dataset: VTK Unstructured Grid Object.
     """
-    def __init__(self, points = None, cells = None, cell_types = None, pointdata = None):
+
+    def __init__(self, points=None, cells=None, cell_types=None, vtk_dataset=None, data_index=None):
         if points is not None:
             self.points = points
         else:
@@ -58,24 +53,23 @@ class Mesh:
         else:
             self.cells = []
             self.cell_types = []
-        if pointdata is not None:
-            self.pointdata = pointdata
+
+        if data_index is not None:
+            self.data_index = data_index
         else:
-            self.pointdata = []
+            self.data_index = []
+
+        self.vtk_dataset = vtk_dataset
 
     def __str__(self):
-        return "Mesh with {} Points and {} Cells ({} Cell Types)".format(len(self.points), len(self.cells), len(self.cell_types))
+        return "Mesh with {} Points and {} Cells ({} Cell Types)".format(
+            len(self.points), len(self.cells), len(self.cell_types))
 
 
-def read_mesh(filename, tag, datadim=1):
-    points, cells, cell_types, pointdata = mesh_io.read_mesh(filename, tag)
-    return Mesh(points, cells, cell_types, pointdata)
-
-
-def partition(mesh, numparts, algorithm):
+def partition(mesh: Mesh, numparts: int, algorithm):
     """
-    Partitions a mesh using METIS or kmeans. This does not call METIS directly, 
-    but instead uses a small C++ Wrapper libmetisAPI.so for convenience. 
+    Partitions a mesh using METIS or kmeans. This does not call METIS directly,
+    but instead uses a small C++ Wrapper libmetisAPI.so for convenience.
     This shared library must be provided if this function should be called.
     """
     if algorithm == "meshfree":
@@ -88,8 +82,8 @@ def partition(mesh, numparts, algorithm):
             return partition(mesh, numparts, "meshfree")
         return labels
 
-    
-def partition_kmeans(mesh, numparts):
+
+def partition_kmeans(mesh: Mesh, numparts: int):
     """ Partitions a mesh using k-means. This is a meshfree algorithm and requires scipy"""
     from scipy.cluster.vq import kmeans2
     points = np.copy(mesh.points)
@@ -98,9 +92,9 @@ def partition_kmeans(mesh, numparts):
     return label
 
 
-def reduce_dimension_simple(mesh):
+def reduce_dimension_simple(mesh: Mesh):
     """
-    A simple, efficient algorithm for a dimension reduction for a mesh 
+    A simple, efficient algorithm for a dimension reduction for a mesh
     with one or more "dead dimensions"
     """
     testP = mesh[0]
@@ -111,12 +105,12 @@ def reduce_dimension_simple(mesh):
         if len(dead_dims) == 0:
             return mesh
     mesh = np.array(mesh)
-    full = np.array([0,1,2])
+    full = np.array([0, 1, 2])
     mask = np.setdiff1d(full, dead_dims)
-    return mesh[:,mask]
+    return mesh[:, mask]
 
 
-def reduce_dimension(mesh):
+def reduce_dimension(mesh: Mesh):
     """
     This function gets a list of points in 3d and if all of them are within one plane it
     returns a list of 2d points in the plane, else the unmodified list is returned.
@@ -131,40 +125,40 @@ def reduce_dimension(mesh):
     for x in mesh:
         if not np.dot(x - pA, n) == 0:
             return mesh
-    else: # All Points within plane
+    else:  # All Points within plane
         # Transform mesh so all points have form (0, y, z)
         # Compute Euler-Rodrigues rotation matrix
-        n /= np.linalg.norm(n) # Normalize
-        zUnit = np.array((0,0,1))
+        n /= np.linalg.norm(n)  # Normalize
+        zUnit = np.array((0, 0, 1))
         phi = math.acos(np.dot(n, zUnit))
-        logging.info("Rotating mesh with phi = " + str(360 * phi/(2 * math.pi)) + " degrees.")
+        logging.info("Rotating mesh with phi = " + str(360 * phi / (2 * math.pi)) + " degrees.")
         axis = np.cross(n, zUnit)
         axis /= np.linalg.norm(axis)
-        a = math.cos(phi/2)
-        b = math.sin(phi/2) * axis[0]
-        c = math.sin(phi/2) * axis[1]
-        d = math.sin(phi/2) * axis[2]
+        a = math.cos(phi / 2)
+        b = math.sin(phi / 2) * axis[0]
+        c = math.sin(phi / 2) * axis[1]
+        d = math.sin(phi / 2) * axis[2]
         rotMat = np.array((
-                (a**2 + b**2 - c**2 - d**2, 2*(b*c - a*d),              2*(b*d + a*c)),
-                (2*(b*c + a*d),             a**2 + c**2 - b**2 - d**2,  2*(c*d - a*b)),
-                (2*(b*d - a*c),             2*(c*d + a*b),              a**2 + d**2 - b**2 - c**2)))
-        for i, x in enumerate(mesh): # Translate & Rotate
+            (a**2 + b**2 - c**2 - d**2, 2 * (b * c - a * d), 2 * (b * d + a * c)),
+            (2 * (b * c + a * d), a**2 + c**2 - b**2 - d**2, 2 * (c * d - a * b)),
+            (2 * (b * d - a * c), 2 * (c * d + a * b), a**2 + d**2 - b**2 - c**2)))
+        for i, x in enumerate(mesh):  # Translate & Rotate
             x -= pA
             x = x @ rotMat
             mesh[i] = x
-        return mesh[:,:-1]
+        return mesh[:, :-1]
 
-    
-def partition_metis(mesh, numparts):
+
+def partition_metis(mesh: Mesh, numparts: int):
     """
-    Partitions a mesh using METIS. This does not call METIS directly, 
-    but instead uses a small C++ Wrapper libmetisAPI.so for convenience. 
+    Partitions a mesh using METIS. This does not call METIS directly,
+    but instead uses a small C++ Wrapper libmetisAPI.so for convenience.
     This shared library must be provided if this function should be called.
     """
     cellPtr = [0]
     cellData = []
     if len(mesh.cells) == 0:
-        logging.warning("No topology information provided. Partitioning with metis will likely provide bad partition");
+        logging.warning("No topology information provided. Partitioning with metis will likely provide bad partition")
     for i in range(len(mesh.cells)):
         cell = mesh.cells[i]
         cellData += list(cell)
@@ -178,12 +172,12 @@ def partition_metis(mesh, numparts):
     cell_ptr = (idx_t * len(cellPtr))(*cellPtr)
     cell_data = (idx_t * len(cellData))(*cellData)
     libmetis.partitionMetis(cell_count, point_count, cell_ptr, cell_data, num_parts, partition)
-    arr = np.ctypeslib.as_array(partition)
-    return arr
+    return np.ctypeslib.as_array(partition)
 
-def partition_uniform(mesh, numparts):
+
+def partition_uniform(mesh: Mesh, numparts: int):
     """
-    Partitions a mesh assuming it is uniform. It must be two-dimensional 
+    Partitions a mesh assuming it is uniform. It must be two-dimensional
     but is allowed to be layed out anyhow in three dimensions.
     """
     mesh = mesh.points[:]
@@ -238,24 +232,24 @@ def partition_uniform(mesh, numparts):
     return labels
 
 
-def apply_partition(orig_mesh, part, numparts):
+def apply_partition(orig_mesh: Mesh, part, numparts: int):
     """
     Partitions a mesh into many meshes when given a partition and a mesh.
     """
     meshes = [Mesh() for _ in range(numparts)]
     mapping = {}  # Maps global index to partition and local index
-    for i in range(len(orig_mesh.points)):
+    for i, point in enumerate(orig_mesh.points):
         partition = part[i]
         selected = meshes[partition]
         mapping[i] = (partition, len(selected.points))
-        selected.points.append(orig_mesh.points[i])
-        if orig_mesh.pointdata:
-            selected.pointdata.append(orig_mesh.pointdata[i])
+        selected.points.append(point)
+        selected.data_index.append(i)
 
     assert(len(mapping) == len(orig_mesh.points))
     assert(len(orig_mesh.cells) == len(orig_mesh.cell_types))
-    # Save discarded cells to allow recovery
+    # Save discarded cells and their types to allow recovery
     discardedCells = []
+    discardedCellTypes = []
     for cell, type in zip(orig_mesh.cells, orig_mesh.cell_types):
         partitions = list(map(lambda idx: mapping[idx][0], cell))
         if len(set(partitions)) == 1:
@@ -263,57 +257,156 @@ def apply_partition(orig_mesh, part, numparts):
             meshes[partitions[0]].cell_types.append(type)
         else:
             discardedCells.append(list(cell))
-
-    # Calculate the inverse mapping (partition, localID) -> globalID
-    inverseMapping = { part: {} for part in range(numparts)}
-    for globalID, info in mapping.items():
-        part, localID = info
-        inverseMapping[part][localID] = globalID
+            discardedCellTypes.append(type)
 
     recoveryInfo = {
         "size": len(orig_mesh.points),
-        "mapping": inverseMapping,
-        "cells": discardedCells
+        "cells": discardedCells,
+        "cell_types": discardedCellTypes
     }
 
     return meshes, recoveryInfo
 
 
-def write_meshes(meshes, recoveryInfo, dirname):
+def read_mesh(filename: str) -> Mesh:
+    import vtk
+    extension = os.path.splitext(filename)[1]
+    if (extension == ".vtu"):
+        reader = vtk.vtkXMLUnstructuredGridReader()
+    elif (extension == ".vtk"):
+        reader = vtk.vtkUnstructuredGridReader()
+    else:
+        print("Unkown input file extension please check your input file.")
+        os.exit()
+    reader.SetFileName(filename)
+    reader.Update()
+    vtkmesh = reader.GetOutput()
+    points = []
+    cells = []
+    cell_types = []
+    points = [vtkmesh.GetPoint(i) for i in range(vtkmesh.GetNumberOfPoints())]
+    for i in range(vtkmesh.GetNumberOfCells()):
+        cell = vtkmesh.GetCell(i)
+        cell_type = cell.GetCellType()
+        if cell_type not in [vtk.VTK_LINE, vtk.VTK_TRIANGLE, vtk.VTK_QUAD]:
+            continue
+        cell_types.append(cell_type)
+        entry = ()
+        for j in range(cell.GetNumberOfPoints()):
+            entry += (cell.GetPointId(j), )
+        cells.append(entry)
+
+    assert (len(cell_types) in [0, len(cells)])
+    return Mesh(points, cells, cell_types, vtkmesh)
+
+
+def write_mesh(filename: str, points: List, data_index: List, cells=None, cell_types=None, orig_mesh=None) -> None:
+    if (cell_types is not None):
+        assert (len(cell_types) in [0, len(cells)])
+    assert (len(points) == len(data_index))
+    import vtk
+
+    vtkGrid = vtk.vtkUnstructuredGrid()
+    vtkpoints = vtk.vtkPoints()
+    vtkpoints.SetNumberOfPoints(len(points))
+    for id, point in enumerate(points):
+        vtkpoints.SetPoint(id, point)
+    vtkGrid.SetPoints(vtkpoints)
+
+    if cells:
+        cellArray = vtk.vtkCellArray()
+        for i, cell in enumerate(cells):
+            vtkCell = vtk.vtkGenericCell()
+            vtkCell.SetCellType(cell_types[i])
+            idList = vtk.vtkIdList()
+            for cellid in cell:
+                idList.InsertNextId(cellid)
+            vtkCell.SetPointIds(idList)
+            cellArray.InsertNextCell(vtkCell)
+        vtkGrid.SetCells(cell_types, cellArray)
+
+    # Add GlobalIDs as a PointData
+    globalIdArr = vtk.vtkDoubleArray()
+    globalIdArr.SetNumberOfComponents(1)
+    globalIdArr.SetName("GlobalIDs")
+    for j in data_index:
+        globalIdArr.InsertNextTuple1(j)
+    vtkGrid.GetPointData().AddArray(globalIdArr)
+
+    if orig_mesh is not None:  # Take PointDatas
+        point_data = orig_mesh.GetPointData()
+        # Iterate over PointData
+        for i in range(point_data.GetNumberOfArrays()):
+            array_name = point_data.GetArrayName(i)
+            oldArr = point_data.GetAbstractArray(array_name)
+            newArr = vtk.vtkDoubleArray()
+            num_comp = oldArr.GetNumberOfComponents()
+            newArr.SetNumberOfComponents(num_comp)
+            newArr.SetName(array_name)
+            if num_comp == 1:
+                for j in data_index:
+                    data = oldArr.GetTuple1(j)
+                    newArr.InsertNextTuple1(data)
+            elif num_comp == 2:
+                for j in data_index:
+                    data = oldArr.GetTuple2(j)
+                    newArr.InsertNextTuple2(data[0], data[1])
+            elif num_comp == 3:
+                for j in data_index:
+                    data = oldArr.GetTuple3(j)
+                    newArr.InsertNextTuple3(data[0], data[1], data[2])
+            else:
+                logging.warning("Skipped data {} check dimension of data".format(array_name))
+            vtkGrid.GetPointData().AddArray(newArr)
+
+    extension = os.path.splitext(filename)[1]
+    if (extension == ".vtk"):  # VTK Legacy format
+        writer = vtk.vtkUnstructuredGridWriter()
+    elif (extension == ".vtu"):  # VTK XML Unstructured Grid format
+        writer = vtk.vtkXMLUnstructuredGridWriter()
+    else:
+        raise Exception("Unkown File extension: " + extension)
+    writer.SetFileName(filename)
+    writer.SetInputData(vtkGrid)
+    writer.Write()
+    return
+
+
+def write_meshes(meshes, recoveryInfo, meshname: str, orig_mesh) -> None:
     """
     Writes meshes to given directory.
     """
-    dirname = os.path.abspath(dirname)
+    dirname = os.path.abspath(meshname)
     recoveryName = os.path.join(dirname, 'recovery.json')
     if os.path.exists(dirname):
         shutil.rmtree(dirname)
     os.mkdir(dirname)
     for i in range(len(meshes)):
         mesh = meshes[i]
-        mesh_io.write_txt(dirname + "/" + str(i), mesh.points, mesh.cells, mesh.pointdata)
+        write_mesh(dirname + "/" + meshname + "_" + str(i) + ".vtu", mesh.points, mesh.data_index, mesh.cells,
+                   mesh.cell_types, orig_mesh)
     json.dump(recoveryInfo, open(recoveryName, "w"))
-        
-def parse_args():
-    parser = argparse.ArgumentParser(description=
-                                     "Read meshes, partition them and write them out in internal format.")
-    parser.add_argument("in_meshname", metavar="inputmesh", nargs="+", help="The meshes used as input")
-    parser.add_argument("--out", "-o", dest="out_meshname", help="The output mesh directory name. Only works if single in_mesh is given.")
-    parser.add_argument("--numparts", "-n", dest="numparts", default=1, type=int, 
-            help="The number of parts to split into")
-    parser.add_argument("--tag", "-t", dest="tag", default=None,
-            help="The PointData tag for vtk meshes")
-    parser.add_argument("--algorithm", "-a", dest="algorithm", choices=["meshfree", "topology", "uniform"],
-            help="""Change the algorithm used for determining a partition. 
-            A meshfree algorithm works on arbitrary meshes without needing topological information. 
-            A topology-based algorithm needs topology information 
-            and is therefore useless on point clouds.
+    return
 
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Read meshes, partition them and write them out in VTU format.")
+    parser.add_argument("in_meshname", metavar="inputmesh", help="The mesh used as input")
+    parser.add_argument("--out", "-o", dest="out_meshname", default="partitioned_mesh",
+                        help="The output mesh name.")
+    parser.add_argument("--numparts", "-n", dest="numparts", default=1, type=int,
+                        help="The number of parts to split into")
+    parser.add_argument("--algorithm", "-a", dest="algorithm", choices=["meshfree", "topology", "uniform"],
+                        help="""Change the algorithm used for determining a partition.
+            A meshfree algorithm works on arbitrary meshes without needing topological information.
+            A topology-based algorithm needs topology information
+            and is therefore useless on point clouds.
             A uniform algorithm will assume a uniform 2d mesh layed out somehow in 3d and partition accordingly.""")
-    parser.add_argument("--log", "-l", dest="logging", default="INFO", 
-            choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], 
-            help="Set the log level. Default is INFO")
-    parser.add_argument("--datadim", "-d", dest="datadim", default=1, type=int, help="Dimensions of the function. Default is 1 (Scalar function.")
+    parser.add_argument("--log", "-l", dest="logging", default="INFO",
+                        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+                        help="Set the log level. Default is INFO")
     return parser.parse_args()
+
 
 if __name__ == "__main__":
     main()
