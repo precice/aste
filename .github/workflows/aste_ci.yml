@@ -17,6 +17,7 @@ jobs:
     - name: install preCICE
       run: | 
          wget https://github.com/precice/precice/releases/download/v2.3.0/libprecice2_2.3.0_focal.deb && \
+         sudo apt-get -y update && \
          sudo apt-get -y install ./libprecice2_2.3.0_focal.deb
     - name: install VTK
       run: |
