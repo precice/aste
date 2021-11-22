@@ -9,6 +9,7 @@ import shutil
 from ctypes import *
 import json
 
+
 def main():
     args = parse_args()
     logging.basicConfig(level=getattr(logging, args.logging))
@@ -28,7 +29,9 @@ def main():
     logging.info("Processing mesh " + mesh_name)
     meshes, recoveryInfo = apply_partition(mesh, part, args.numparts)
     logging.info("Writing output to: " + args.out_meshname)
-    write_meshes(meshes, recoveryInfo, args.out_meshname,mesh.vtk_dataset)
+    write_meshes(meshes, recoveryInfo, args.out_meshname, mesh.vtk_dataset)
+
+
 class Mesh:
     """
     A Mesh consists of:
@@ -50,14 +53,13 @@ class Mesh:
         else:
             self.cells = []
             self.cell_types = []
-        
+
         if data_index is not None:
             self.data_index = data_index
         else:
             self.data_index = []
-            
-        self.vtk_dataset = vtk_dataset
 
+        self.vtk_dataset = vtk_dataset
 
     def __str__(self):
         return "Mesh with {} Points and {} Cells ({} Cell Types)".format(
@@ -256,7 +258,6 @@ def apply_partition(orig_mesh: Mesh, part, numparts: int):
         else:
             discardedCells.append(list(cell))
             discardedCellTypes.append(type)
-            
 
     recoveryInfo = {
         "size": len(orig_mesh.points),
@@ -298,6 +299,7 @@ def read_mesh(filename: str) -> Mesh:
     assert (len(cell_types) in [0, len(cells)])
     return Mesh(points, cells, cell_types, vtkmesh)
 
+
 def write_mesh(filename: str, points: List, data_index: List, cells=None, cell_types=None, orig_mesh=None) -> None:
     if (cell_types is not None):
         assert (len(cell_types) in [0, len(cells)])
@@ -308,7 +310,7 @@ def write_mesh(filename: str, points: List, data_index: List, cells=None, cell_t
     vtkpoints = vtk.vtkPoints()
     vtkpoints.SetNumberOfPoints(len(points))
     for id, point in enumerate(points):
-        vtkpoints.SetPoint(id,point)
+        vtkpoints.SetPoint(id, point)
     vtkGrid.SetPoints(vtkpoints)
 
     if cells:
@@ -331,7 +333,7 @@ def write_mesh(filename: str, points: List, data_index: List, cells=None, cell_t
         globalIdArr.InsertNextTuple1(j)
     vtkGrid.GetPointData().AddArray(globalIdArr)
 
-    if orig_mesh is not None: # Take PointDatas
+    if orig_mesh is not None:  # Take PointDatas
         point_data = orig_mesh.GetPointData()
         # Iterate over PointData
         for i in range(point_data.GetNumberOfArrays()):
@@ -341,18 +343,18 @@ def write_mesh(filename: str, points: List, data_index: List, cells=None, cell_t
             num_comp = oldArr.GetNumberOfComponents()
             newArr.SetNumberOfComponents(num_comp)
             newArr.SetName(array_name)
-            if num_comp == 1: 
+            if num_comp == 1:
                 for j in data_index:
                     data = oldArr.GetTuple1(j)
                     newArr.InsertNextTuple1(data)
             elif num_comp == 2:
                 for j in data_index:
                     data = oldArr.GetTuple2(j)
-                    newArr.InsertNextTuple2(data)        
+                    newArr.InsertNextTuple2(data[0], data[1])
             elif num_comp == 3:
                 for j in data_index:
                     data = oldArr.GetTuple3(j)
-                    newArr.InsertNextTuple3(data)                  
+                    newArr.InsertNextTuple3(data[0], data[1], data[2])
             else:
                 logging.warning("Skipped data {} check dimension of data".format(array_name))
             vtkGrid.GetPointData().AddArray(newArr)
@@ -381,11 +383,12 @@ def write_meshes(meshes, recoveryInfo, meshname: str, orig_mesh) -> None:
     os.mkdir(dirname)
     for i in range(len(meshes)):
         mesh = meshes[i]
-        write_mesh(dirname + "/" + meshname + "_" + str(i) + ".vtu", mesh.points,mesh.data_index, mesh.cells,
-                  mesh.cell_types, orig_mesh)
+        write_mesh(dirname + "/" + meshname + "_" + str(i) + ".vtu", mesh.points, mesh.data_index, mesh.cells,
+                   mesh.cell_types, orig_mesh)
     json.dump(recoveryInfo, open(recoveryName, "w"))
     return
-    
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Read meshes, partition them and write them out in VTU format.")
     parser.add_argument("in_meshname", metavar="inputmesh", help="The mesh used as input")
