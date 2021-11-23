@@ -1,3 +1,4 @@
+#include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <mesh.hpp>
 
@@ -12,7 +13,6 @@
 #include <vtkCell.h>
 #include <vtkCellArray.h>
 #include <vtkDoubleArray.h>
-#include <vtkGenericDataObjectReader.h>
 #include <vtkIdList.h>
 #include <vtkLine.h>
 #include <vtkNew.h>
@@ -22,7 +22,9 @@
 #include <vtkSmartPointer.h>
 #include <vtkTriangle.h>
 #include <vtkUnstructuredGrid.h>
+#include <vtkUnstructuredGridReader.h>
 #include <vtkUnstructuredGridWriter.h>
+#include <vtkXMLUnstructuredGridReader.h>
 #include <vtkXMLUnstructuredGridWriter.h>
 
 namespace aste {
@@ -57,24 +59,32 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
     throw std::invalid_argument{"The mesh file does not exist: " + filename};
   }
 
-  vtkSmartPointer<vtkGenericDataObjectReader> reader =
-      vtkSmartPointer<vtkGenericDataObjectReader>::New();
-  reader->SetFileName(filename.c_str());
-  reader->SetReadAllScalars(true);
-  reader->SetReadAllVectors(true);
-  reader->ReadAllFieldsOn();
-  reader->Update();
+  auto                                 ext = fs::path(filename).extension();
+  vtkSmartPointer<vtkUnstructuredGrid> grid;
+  if (ext == ".vtk") {
+    vtkSmartPointer<vtkUnstructuredGridReader> reader = vtkSmartPointer<vtkUnstructuredGridReader>::New();
+    reader->SetFileName(filename.c_str());
+    reader->Update();
+    grid = reader->GetOutput();
+  } else if (ext == ".vtu") {
+    vtkSmartPointer<vtkXMLUnstructuredGridReader> reader = vtkSmartPointer<vtkXMLUnstructuredGridReader>::New();
+    reader->SetFileName(filename.c_str());
+    reader->Update();
+    grid = reader->GetOutput();
+  } else {
+    throw std::runtime_error("Unknown File Extension for file " + filename + "Extension should be .vtk or .vtu");
+  }
 
   // Get Points
-  vtkPoints *Points    = reader->GetUnstructuredGridOutput()->GetPoints();
-  vtkIdType  NumPoints = reader->GetUnstructuredGridOutput()->GetNumberOfPoints();
+  vtkPoints *Points    = grid->GetPoints();
+  vtkIdType  NumPoints = grid->GetNumberOfPoints();
   for (vtkIdType point = 0; point < NumPoints; point++) {
     std::array<double, 3> vertexPosArr;
     Points->GetPoint(point, vertexPosArr.data());
     mesh.positions.push_back(vertexPosArr);
   }
   // Get Point Data
-  vtkPointData *PD = reader->GetUnstructuredGridOutput()->GetPointData();
+  vtkPointData *PD = grid->GetPointData();
   // Check it has data array
   if (PD->HasArray(dataname.c_str()) == 1) {
     // Get Data and Add to Mesh
@@ -122,20 +132,20 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
     mesh.data.resize(NumPoints * dim, 0.0);
   }
 
-  for (int i = 0; i < reader->GetUnstructuredGridOutput()->GetNumberOfCells(); i++) {
-    int cellType = reader->GetUnstructuredGridOutput()->GetCell(i)->GetCellType();
+  for (int i = 0; i < grid->GetNumberOfCells(); i++) {
+    int cellType = grid->GetCell(i)->GetCellType();
 
     //Here we use static cast since VTK library returns a long long unsigned int however preCICE uses int for PointId's
     if (cellType == VTK_TRIANGLE) {
-      vtkCell *                cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      vtkCell *                cell = grid->GetCell(i);
       std::array<Mesh::VID, 3> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2))};
       mesh.triangles.push_back(elem);
     } else if (cellType == VTK_LINE) {
-      vtkCell *                cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      vtkCell *                cell = grid->GetCell(i);
       std::array<Mesh::VID, 2> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1))};
       mesh.edges.push_back(elem);
     } else if (cellType == VTK_QUAD) {
-      vtkCell *                cell = reader->GetUnstructuredGridOutput()->GetCell(i);
+      vtkCell *                cell = grid->GetCell(i);
       std::array<Mesh::VID, 4> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2)), vtkToPos(cell->GetPointId(3))};
       mesh.quadrilaterals.push_back(elem);
     } else {
