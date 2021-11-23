@@ -70,6 +70,8 @@ def main():
     if args.diff and args.intag is None:
         logging.info("No intag is given outtag '{}' will be used as intag.".format(args.tag))
         intag = args.tag
+    else:
+        intag = args.intag
 
     reader = vtk.vtkGenericDataObjectReader()
     reader.SetFileName(args.in_meshname)
