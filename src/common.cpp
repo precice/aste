@@ -22,8 +22,8 @@ OptionMap getOptions(int argc, char *argv[])
       "Name of the run")("data", po::value<std::string>()->required(),
                          "Name of Data Array to be Mapped")(
       "mesh", po::value<string>()->required(),
-      "Mesh directory. For each timestep i there will be .dti (e.g. .dt4) "
-      "appended to the directory name")(
+      "Mesh prefix. For each timestep i there will be .dti (e.g. .dt4) "
+      "appended to the prefix")(
       "output", po::value<string>()->default_value("output"),
       "Output file name.")(
       "vector", po::bool_switch(),
