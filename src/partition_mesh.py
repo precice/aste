@@ -163,7 +163,10 @@ def partition_metis(mesh: Mesh, numparts: int):
         cell = mesh.cells[i]
         cellData += list(cell)
         cellPtr.append(cellPtr[-1] + len(cell))
-    libmetis = cdll.LoadLibrary(os.path.abspath("libmetisAPI.so"))
+    print(os.path.dirname(__file__))
+    print("libmetisAPI.so")
+    print(os.path.join(os.path.dirname(__file__),"libmetisAPI.so"))
+    libmetis = cdll.LoadLibrary(os.path.join(os.path.dirname(__file__),"libmetisAPI.so"))
     idx_t = c_int if libmetis.typewidth() == 32 else c_longlong
     cell_count = idx_t(len(mesh.cells))
     point_count = idx_t(len(mesh.points))
