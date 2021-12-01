@@ -376,14 +376,18 @@ def write_meshes(meshes, recoveryInfo, meshname: str, orig_mesh) -> None:
     """
     Writes meshes to given directory.
     """
+    # Get the absolute directory where we want to store the mesh
     dirname = os.path.abspath(meshname)
+    # Strip off the mesh-prefix for the directory creation
+    mesh_prefix=os.path.basename(os.path.normpath(meshname))
+    logging.info(dirname)
     recoveryName = os.path.join(dirname, 'recovery.json')
     if os.path.exists(dirname):
         shutil.rmtree(dirname)
     os.mkdir(dirname)
     for i in range(len(meshes)):
         mesh = meshes[i]
-        write_mesh(dirname + "/" + meshname + "_" + str(i) + ".vtu", mesh.points, mesh.data_index, mesh.cells,
+        write_mesh(dirname + "/" + mesh_prefix + "_" + str(i) + ".vtu", mesh.points, mesh.data_index, mesh.cells,
                    mesh.cell_types, orig_mesh)
     json.dump(recoveryInfo, open(recoveryName, "w"))
     return
