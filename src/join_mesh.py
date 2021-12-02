@@ -99,8 +99,9 @@ def join_mesh_partitionwise(prefix : str, partitions : int):
             array_name = part_point_data.GetArrayName(j)
             logging.debug("Merging from file {} dataname {}".format(fname,array_name))
             array_data = part_point_data.GetArray(array_name)
-            for k in range(array_data.GetNumberOfTuples()):
-                joined_data_arrays[j].InsertNextTuple(array_data.GetTuple(k))
+            join_arr = joined_data_arrays[j]
+            join_arr.SetNumberOfComponents(array_data.GetNumberOfComponents())
+            join_arr.InsertTuples(join_arr.GetNumberOfTuples(),array_data.GetNumberOfTuples(),0,array_data)
 
         for i in range(part_mesh.GetNumberOfCells()):
             cell = part_mesh.GetCell(i)
@@ -171,7 +172,6 @@ def join_mesh_recovery(prefix : str, partitions : int, recoveryPath : str):
         array_data = part_point_data.GetArray("GlobalIDs")
         for k in range(array_data.GetNumberOfTuples()):
             global_ids.append(array_data.GetTuple(k))
-
         logging.debug("File {} contains {} points".format(fname,part_mesh.GetNumberOfPoints()))
         for i in range(part_mesh.GetNumberOfPoints()):
             joined_points.SetPoint(int(global_ids[i][0]),part_mesh.GetPoint(i))    
@@ -181,8 +181,11 @@ def join_mesh_recovery(prefix : str, partitions : int, recoveryPath : str):
             array_name = part_point_data.GetArrayName(j)
             logging.debug("Merging from file {} dataname {}".format(fname,array_name))
             array_data = part_point_data.GetArray(array_name)
+            join_arr = joined_data_arrays[j]
+            join_arr.SetNumberOfComponents(array_data.GetNumberOfComponents())
+            join_arr.SetNumberOfTuples(size)
             for k in range(array_data.GetNumberOfTuples()):
-                joined_data_arrays[j].SetTuple(int(global_ids[k][0]),array_data.GetTuple(k))
+                join_arr.SetTuple(int(global_ids[k][0]),array_data.GetTuple(k))
 
         # Append Cells
         for i in range(part_mesh.GetNumberOfCells()):
