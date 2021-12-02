@@ -200,18 +200,19 @@ def join_mesh_recovery(prefix : str, partitions : int, recoveryPath : str):
             joined_cells.InsertNextCell(vtkCell)
     
     # Append Recovery Cells
-    for cell, cell_type in zip(cells,cell_types):
-        vtkCell = vtk.vtkGenericCell()
-        vtkCell.SetCellType(cell_type)
-        idList = vtk.vtkIdList()
-        for pointid in cell:
-            idList.InsertNextId(pointid)
-        vtkCell.SetPointIds(idList)
-        joined_cell_types.append(cell_type)
-        joined_cells.InsertNextCell(vtkCell)
+        for cell, cell_type in zip(cells,cell_types):
+            vtkCell = vtk.vtkGenericCell()
+            vtkCell.SetCellType(cell_type)
+            idList = vtk.vtkIdList()
+            for pointid in cell:
+                idList.InsertNextId(pointid)
+            vtkCell.SetPointIds(idList)
+            joined_cell_types.append(cell_type)
+            joined_cells.InsertNextCell(vtkCell)
 
     # Set Points, Cells, Data on Grid 
-    joined_mesh.SetCells(joined_cell_types,joined_cells)
+    if len(joined_cell_types) is not 0:
+        joined_mesh.SetCells(joined_cell_types,joined_cells)
     joined_mesh.SetPoints(joined_points)
     for data_array in joined_data_arrays:
         joined_mesh.GetPointData().AddArray(data_array)
