@@ -211,7 +211,7 @@ def join_mesh_recovery(prefix : str, partitions : int, recoveryPath : str):
             joined_cells.InsertNextCell(vtkCell)
 
     # Set Points, Cells, Data on Grid 
-    if len(joined_cell_types) is not 0:
+    if len(joined_cell_types) != 0:
         joined_mesh.SetCells(joined_cell_types,joined_cells)
     joined_mesh.SetPoints(joined_points)
     for data_array in joined_data_arrays:
