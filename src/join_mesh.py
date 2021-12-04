@@ -115,8 +115,9 @@ def join_mesh_partitionwise(prefix : str, partitions : int):
             joined_cells.InsertNextCell(vtkCell)
 
         offset += part_mesh.GetNumberOfPoints()
-
-    joined_mesh.SetCells(joined_cell_types,joined_cells)
+    
+    if len(joined_cell_types) != 0:
+        joined_mesh.SetCells(joined_cell_types,joined_cells)
     joined_mesh.SetPoints(joined_points)
     for data_array in joined_data_arrays:
         joined_mesh.GetPointData().AddArray(data_array)
