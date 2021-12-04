@@ -170,6 +170,11 @@ def join_mesh_recovery(prefix : str, partitions : int, recoveryPath : str):
 
         # Extract Global IDs
         array_data = part_point_data.GetArray("GlobalIDs")
+        # Check if GlobalIDs exist if not do partition-wise merge
+        if array_data is None:
+            logging.warning("GlobalIDs not found recovery merge is not possible.")
+            return join_mesh_partitionwise(prefix,partitions)
+
         for k in range(array_data.GetNumberOfTuples()):
             global_ids.append(array_data.GetTuple(k))
         logging.debug("File {} contains {} points".format(fname,part_mesh.GetNumberOfPoints()))
