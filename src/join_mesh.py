@@ -99,8 +99,9 @@ def join_mesh_partitionwise(prefix : str, partitions : int):
             array_name = part_point_data.GetArrayName(j)
             logging.debug("Merging from file {} dataname {}".format(fname,array_name))
             array_data = part_point_data.GetArray(array_name)
-            for k in range(array_data.GetNumberOfTuples()):
-                joined_data_arrays[j].InsertNextTuple(array_data.GetTuple(k))
+            join_arr = joined_data_arrays[j]
+            join_arr.SetNumberOfComponents(array_data.GetNumberOfComponents())
+            join_arr.InsertTuples(join_arr.GetNumberOfTuples(),array_data.GetNumberOfTuples(),0,array_data)
 
         for i in range(part_mesh.GetNumberOfCells()):
             cell = part_mesh.GetCell(i)
@@ -114,8 +115,9 @@ def join_mesh_partitionwise(prefix : str, partitions : int):
             joined_cells.InsertNextCell(vtkCell)
 
         offset += part_mesh.GetNumberOfPoints()
-
-    joined_mesh.SetCells(joined_cell_types,joined_cells)
+    
+    if len(joined_cell_types) != 0:
+        joined_mesh.SetCells(joined_cell_types,joined_cells)
     joined_mesh.SetPoints(joined_points)
     for data_array in joined_data_arrays:
         joined_mesh.GetPointData().AddArray(data_array)
@@ -169,9 +171,13 @@ def join_mesh_recovery(prefix : str, partitions : int, recoveryPath : str):
 
         # Extract Global IDs
         array_data = part_point_data.GetArray("GlobalIDs")
+        # Check if GlobalIDs exist if not do partition-wise merge
+        if array_data is None:
+            logging.warning("GlobalIDs were not found, a recovery merge is not possible.")
+            return join_mesh_partitionwise(prefix,partitions)
+
         for k in range(array_data.GetNumberOfTuples()):
             global_ids.append(array_data.GetTuple(k))
-
         logging.debug("File {} contains {} points".format(fname,part_mesh.GetNumberOfPoints()))
         for i in range(part_mesh.GetNumberOfPoints()):
             joined_points.SetPoint(int(global_ids[i][0]),part_mesh.GetPoint(i))    
@@ -181,8 +187,11 @@ def join_mesh_recovery(prefix : str, partitions : int, recoveryPath : str):
             array_name = part_point_data.GetArrayName(j)
             logging.debug("Merging from file {} dataname {}".format(fname,array_name))
             array_data = part_point_data.GetArray(array_name)
+            join_arr = joined_data_arrays[j]
+            join_arr.SetNumberOfComponents(array_data.GetNumberOfComponents())
+            join_arr.SetNumberOfTuples(size)
             for k in range(array_data.GetNumberOfTuples()):
-                joined_data_arrays[j].SetTuple(int(global_ids[k][0]),array_data.GetTuple(k))
+                join_arr.SetTuple(int(global_ids[k][0]),array_data.GetTuple(k))
 
         # Append Cells
         for i in range(part_mesh.GetNumberOfCells()):
@@ -197,18 +206,19 @@ def join_mesh_recovery(prefix : str, partitions : int, recoveryPath : str):
             joined_cells.InsertNextCell(vtkCell)
     
     # Append Recovery Cells
-    for cell, cell_type in zip(cells,cell_types):
-        vtkCell = vtk.vtkGenericCell()
-        vtkCell.SetCellType(cell_type)
-        idList = vtk.vtkIdList()
-        for pointid in cell:
-            idList.InsertNextId(pointid)
-        vtkCell.SetPointIds(idList)
-        joined_cell_types.append(cell_type)
-        joined_cells.InsertNextCell(vtkCell)
+        for cell, cell_type in zip(cells,cell_types):
+            vtkCell = vtk.vtkGenericCell()
+            vtkCell.SetCellType(cell_type)
+            idList = vtk.vtkIdList()
+            for pointid in cell:
+                idList.InsertNextId(pointid)
+            vtkCell.SetPointIds(idList)
+            joined_cell_types.append(cell_type)
+            joined_cells.InsertNextCell(vtkCell)
 
     # Set Points, Cells, Data on Grid 
-    joined_mesh.SetCells(joined_cell_types,joined_cells)
+    if len(joined_cell_types) != 0:
+        joined_mesh.SetCells(joined_cell_types,joined_cells)
     joined_mesh.SetPoints(joined_points)
     for data_array in joined_data_arrays:
         joined_mesh.GetPointData().AddArray(data_array)
