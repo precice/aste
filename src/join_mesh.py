@@ -173,7 +173,7 @@ def join_mesh_recovery(prefix : str, partitions : int, recoveryPath : str):
         array_data = part_point_data.GetArray("GlobalIDs")
         # Check if GlobalIDs exist if not do partition-wise merge
         if array_data is None:
-            logging.warning("GlobalIDs not found recovery merge is not possible.")
+            logging.warning("GlobalIDs were not found, a recovery merge is not possible.")
             return join_mesh_partitionwise(prefix,partitions)
 
         for k in range(array_data.GetNumberOfTuples()):
