@@ -86,6 +86,7 @@ struct Mesh {
   std::vector<Triangle> triangles;
   std::vector<Quad>     quadrilaterals;
   std::vector<double>   data;
+  std::string           fname;
 
   std::string previewData(std::size_t max = 10) const;
   std::string summary() const;
