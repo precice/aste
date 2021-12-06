@@ -24,7 +24,16 @@ def main():
     if args.numparts > 1:
         part = partition(mesh, args.numparts, algorithm)
     else:
-        part = [0] * len(mesh.points)
+        extension = os.path.splitext(mesh_name)[1]
+        if extension == ".vtk":
+            shutil.copy(mesh_name,args.out_meshname+".vtk")
+            return
+        elif extension == ".vtu":
+            vtu2vtk(mesh_name,args.out_meshname)
+            return
+        else:
+            print("Unkown input file extension please check your input file.")
+            os.exit()
 
     logging.info("Processing mesh " + mesh_name)
     meshes, recoveryInfo = apply_partition(mesh, part, args.numparts)
@@ -376,18 +385,12 @@ def write_meshes(meshes, recoveryInfo, meshname: str, orig_mesh) -> None:
     """
     Writes meshes to given directory.
     """
-    # Get the absolute directory where we want to store the mesh
-    dirname = os.path.abspath(meshname)
     # Strip off the mesh-prefix for the directory creation
     mesh_prefix=os.path.basename(os.path.normpath(meshname))
-    logging.info(dirname)
-    recoveryName = os.path.join(dirname, 'recovery.json')
-    if os.path.exists(dirname):
-        shutil.rmtree(dirname)
-    os.mkdir(dirname)
+    recoveryName = 'recovery.json'
     for i in range(len(meshes)):
         mesh = meshes[i]
-        write_mesh(dirname + "/" + mesh_prefix + "_" + str(i) + ".vtu", mesh.points, mesh.data_index, mesh.cells,
+        write_mesh(mesh_prefix + "_" + str(i) + ".vtu", mesh.points, mesh.data_index, mesh.cells,
                    mesh.cell_types, orig_mesh)
     json.dump(recoveryInfo, open(recoveryName, "w"))
     return
@@ -395,8 +398,8 @@ def write_meshes(meshes, recoveryInfo, meshname: str, orig_mesh) -> None:
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Read meshes, partition them and write them out in VTU format.")
-    parser.add_argument("in_meshname", metavar="inputmesh", help="The mesh used as input")
-    parser.add_argument("--out", "-o", dest="out_meshname", default="partitioned_mesh",
+    parser.add_argument("--mesh","-m", dest="in_meshname", help="The mesh used as input")
+    parser.add_argument("--output", "-o", dest="out_meshname", default="partitioned_mesh",
                         help="The output mesh name.")
     parser.add_argument("--numparts", "-n", dest="numparts", default=1, type=int,
                         help="The number of parts to split into")
@@ -411,6 +414,17 @@ def parse_args():
                         help="Set the log level. Default is INFO")
     return parser.parse_args()
 
+def vtu2vtk(inmesh,outmesh):
+    import vtk
+    reader = vtk.vtkXMLUnstructuredGridReader()
+    reader.SetFileName(inmesh)
+    reader.Update()
+    mesh = reader.GetOutput()
+    writer = vtk.vtkUnstructuredGridWriter()
+    writer.SetFileName(outmesh+".vtk")
+    writer.SetInputData(mesh)
+    writer.Write()
+    return
 
 if __name__ == "__main__":
     main()

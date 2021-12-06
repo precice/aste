@@ -13,7 +13,7 @@ prefix_<#>.vtu
 
 ./join_mesh.py prefix -o joined_mesh.vtk
 
-./join_mesh.py prefix -o joined_mesh.vtk -r ./recovery/path/
+./join_mesh.py prefix -o joined_mesh.vtk -r ./path/to/recovery.json
 
 """
 
@@ -25,8 +25,8 @@ import vtk
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Read a partitioned mesh and join it into a .vtk or .vtu file.")
-    parser.add_argument("in_meshname", metavar="inputmesh", help="The partitioned mesh prefix used as input (only VTU format is accepted) (Looking for <prefix>_<#filerank>.vtu) ")
-    parser.add_argument("--out", "-o", dest="out_meshname", help="The output mesh. Can be VTK or VTU format. If it is not given <inputmesh>_joined.vtk will be used.")
+    parser.add_argument("--mesh" ,"-m",dest="in_meshname", help="The partitioned mesh prefix used as input (only VTU format is accepted) (Looking for <prefix>_<#filerank>.vtu) ")
+    parser.add_argument("--output", "-o", dest="out_meshname", help="The output mesh. Can be VTK or VTU format. If it is not given <inputmesh>_joined.vtk will be used.")
     parser.add_argument("-r", "--recovery", dest="recovery", help="The path to the recovery file to fully recover it's state.")
     parser.add_argument("--numparts", "-n", dest="numparts", type=int,
             help="The number of parts to read from the input mesh. By default the entire mesh is read.")
@@ -132,8 +132,7 @@ def join_mesh_recovery(prefix : str, partitions : int, recoveryPath : str):
     This recovers the original mesh.
     """
     logging.info("Starting full mesh recovery")
-    recoveryFile = os.path.join(recoveryPath, "recovery.json")
-    recovery = json.load(open(recoveryFile, "r"))
+    recovery = json.load(open(recoveryPath, "r"))
     cells = recovery["cells"]
     size = recovery["size"]
     cell_types = recovery["cell_types"]
