@@ -1,6 +1,6 @@
 #include "testing.hpp"
 
-void readtest(const Case &current_case)
+void readtest(const ReadCase &current_case)
 {
 
   auto read_test = aste::BaseName{current_case.fname}.with(aste::ExecutionContext());
