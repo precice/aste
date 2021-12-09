@@ -30,7 +30,7 @@ def main():
             if os.path.exists(directory):
                 shutil.rmtree(directory)
             os.mkdir(directory)
-            out_meshname = directory + args.out_meshname
+            out_meshname = os.path.join(directory, args.out_meshname)
         else:
             out_meshname = args.out_meshname
         extension = os.path.splitext(mesh_name)[1]
@@ -409,8 +409,18 @@ def write_meshes(meshes, recoveryInfo, meshname: str, orig_mesh, directory=None)
     for i in range(len(meshes)):
         mesh = meshes[i]
         if directory:
-            write_mesh(directory + mesh_prefix + "_" + str(i) + ".vtu", mesh.points, mesh.data_index, mesh.cells,
-                       mesh.cell_types, orig_mesh)
+            write_mesh(
+                os.path.join(
+                    directory,
+                    mesh_prefix) +
+                "_" +
+                str(i) +
+                ".vtu",
+                mesh.points,
+                mesh.data_index,
+                mesh.cells,
+                mesh.cell_types,
+                orig_mesh)
         else:
             write_mesh(mesh_prefix + "_" + str(i) + ".vtu", mesh.points, mesh.data_index, mesh.cells,
                        mesh.cell_types, orig_mesh)
