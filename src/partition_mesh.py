@@ -24,12 +24,21 @@ def main():
     if args.numparts > 1:
         part = partition(mesh, args.numparts, algorithm)
     else:
+        if args.directory:
+            # Get the absolute directory where we want to store the mesh
+            directory = os.path.abspath(args.directory)
+            if os.path.exists(directory):
+                shutil.rmtree(directory)
+            os.mkdir(directory)
+            out_meshname = directory + args.out_meshname
+        else:
+            out_meshname = args.out_meshname
         extension = os.path.splitext(mesh_name)[1]
         if extension == ".vtk":
-            shutil.copy(mesh_name,args.out_meshname+".vtk")
+            shutil.copy(mesh_name, out_meshname + ".vtk")
             return
         elif extension == ".vtu":
-            vtu2vtk(mesh_name,args.out_meshname)
+            vtu2vtk(mesh_name, out_meshname)
             return
         else:
             print("Unkown input file extension please check your input file.")
@@ -38,7 +47,7 @@ def main():
     logging.info("Processing mesh " + mesh_name)
     meshes, recoveryInfo = apply_partition(mesh, part, args.numparts)
     logging.info("Writing output to: " + args.out_meshname)
-    write_meshes(meshes, recoveryInfo, args.out_meshname, mesh.vtk_dataset)
+    write_meshes(meshes, recoveryInfo, args.out_meshname, mesh.vtk_dataset, args.directory)
 
 
 class Mesh:
@@ -381,26 +390,41 @@ def write_mesh(filename: str, points: List, data_index: List, cells=None, cell_t
     return
 
 
-def write_meshes(meshes, recoveryInfo, meshname: str, orig_mesh) -> None:
+def write_meshes(meshes, recoveryInfo, meshname: str, orig_mesh, directory=None) -> None:
     """
     Writes meshes to given directory.
     """
-    # Strip off the mesh-prefix for the directory creation
-    mesh_prefix=os.path.basename(os.path.normpath(meshname))
+
     recoveryName = 'recovery.json'
+    # Strip off the mesh-prefix for the directory creation
+    mesh_prefix = os.path.basename(os.path.normpath(meshname))
+    if directory:
+        # Get the absolute directory where we want to store the mesh
+        directory = os.path.abspath(directory)
+        recoveryName = os.path.join(directory, 'recovery.json')
+        if os.path.exists(directory):
+            shutil.rmtree(directory)
+        os.mkdir(directory)
+
     for i in range(len(meshes)):
         mesh = meshes[i]
-        write_mesh(mesh_prefix + "_" + str(i) + ".vtu", mesh.points, mesh.data_index, mesh.cells,
-                   mesh.cell_types, orig_mesh)
+        if directory:
+            write_mesh(directory + mesh_prefix + "_" + str(i) + ".vtu", mesh.points, mesh.data_index, mesh.cells,
+                       mesh.cell_types, orig_mesh)
+        else:
+            write_mesh(mesh_prefix + "_" + str(i) + ".vtu", mesh.points, mesh.data_index, mesh.cells,
+                       mesh.cell_types, orig_mesh)
     json.dump(recoveryInfo, open(recoveryName, "w"))
     return
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Read meshes, partition them and write them out in VTU format.")
-    parser.add_argument("--mesh","-m", dest="in_meshname", help="The mesh used as input")
+    parser.add_argument("--mesh", "-m", dest="in_meshname", help="The mesh used as input")
     parser.add_argument("--output", "-o", dest="out_meshname", default="partitioned_mesh",
                         help="The output mesh name.")
+    parser.add_argument("--directory", "-dir", dest="directory", default=None,
+                        help="Directory for output files (optional)")
     parser.add_argument("--numparts", "-n", dest="numparts", default=1, type=int,
                         help="The number of parts to split into")
     parser.add_argument("--algorithm", "-a", dest="algorithm", choices=["meshfree", "topology", "uniform"],
@@ -414,17 +438,19 @@ def parse_args():
                         help="Set the log level. Default is INFO")
     return parser.parse_args()
 
-def vtu2vtk(inmesh,outmesh):
+
+def vtu2vtk(inmesh, outmesh):
     import vtk
     reader = vtk.vtkXMLUnstructuredGridReader()
     reader.SetFileName(inmesh)
     reader.Update()
     mesh = reader.GetOutput()
     writer = vtk.vtkUnstructuredGridWriter()
-    writer.SetFileName(outmesh+".vtk")
+    writer.SetFileName(outmesh + ".vtk")
     writer.SetInputData(mesh)
     writer.Write()
     return
+
 
 if __name__ == "__main__":
     main()
