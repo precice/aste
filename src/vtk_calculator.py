@@ -4,7 +4,7 @@
 """
 This calculator can calculate vector or scalar field on given mesh.
 
-Example usage 
+Example usage
 
 Scalar calculation and writing to given file
 
@@ -12,12 +12,12 @@ Scalar calculation and writing to given file
 
 Vector field and appends to input mesh
 
-./vtk_calculator.py inputmesh.vtk x*iHat+cos(y)*jHat-sin(z)*kHat -t MyVectorField 
+./vtk_calculator.py inputmesh.vtk x*iHat+cos(y)*jHat-sin(z)*kHat -t MyVectorField
 
 There is also a diff mode which provides statistic between input data and function calculated
 (Note that it only works for scalar data)
 
-./vtk_calculator.py inputmesh.vtu x+y -t mydata --diff --stats 
+./vtk_calculator.py inputmesh.vtu x+y -t mydata --diff --stats
 
 Calculates difference between given function and mydata data save over rides into variable tag and saves statistics
 
@@ -88,7 +88,7 @@ def main():
     calc.AddCoordinateScalarVariable("y", 1)
     calc.AddCoordinateScalarVariable("z", 2)
     if args.diff:
-        #Check VTK file has dataname
+        # Check VTK file has dataname
         if not vtk_dataset.GetPointData().HasArray(intag):
             logging.warning("Given mesh has no data for \"{}\".\n ABORTING! \n".format(intag))
             sys.exit()
@@ -99,9 +99,9 @@ def main():
         calc.SetResultArrayName("function")
         calc.Update()
         func = v2n(calc.GetOutput().GetPointData().GetAbstractArray("function"))
-        difference = data -func
+        difference = data - func
         logging.info("Evaluated \"{}\"-\"({})\" on the mesh.".format(intag, args.function))
-       
+
         # Calculate Statistics
         num_points = vtk_dataset.GetNumberOfPoints()
         cnt, min, max = num_points, np.nanmin(difference), np.nanmax(difference)
@@ -149,7 +149,7 @@ def main():
         diff_vtk = n2v(difference)
         diff_vtk.SetName(args.tag)
         num_comp = diff_vtk.GetNumberOfComponents()
-        if  num_comp > 1:
+        if num_comp > 1:
             vtk_dataset.GetPointData().SetVectors(diff_vtk)
         else:
             vtk_dataset.GetPointData().SetScalars(diff_vtk)
@@ -159,6 +159,7 @@ def main():
     writer.SetFileName(out_meshname)
     writer.Write()
     logging.info("Written output to \"{}\".".format(out_meshname))
+
 
 if __name__ == "__main__":
     main()
