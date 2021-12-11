@@ -32,7 +32,10 @@ import logging
 import os.path
 import vtk
 import json
+import sys
 import numpy as np
+from vtk.util.numpy_support import vtk_to_numpy as v2n
+from vtk.util.numpy_support import numpy_to_vtk as n2v
 
 
 def parse_args():
@@ -85,26 +88,22 @@ def main():
     calc.AddCoordinateScalarVariable("y", 1)
     calc.AddCoordinateScalarVariable("z", 2)
     if args.diff:
-        calc.SetFunction('{}-({})'.format(intag, args.function))
-        logging.info("Evaluated '{}-({})' on the mesh.".format(intag, args.function))
-    else:
+        #Check VTK file has dataname
+        if not vtk_dataset.GetPointData().HasArray(intag):
+            logging.warning("Given mesh has no data for \"{}\".\n ABORTING! \n".format(intag))
+            sys.exit()
+        else:
+            data = v2n(vtk_dataset.GetPointData().GetAbstractArray(intag))
+        # Calculate given function on the mesh
         calc.SetFunction(args.function)
-        logging.info("Evaluated '{}' on the mesh.".format(args.function))
-    calc.SetResultArrayName(args.tag)
-    calc.Update()
-    logging.info("Evaluated function saved to {} variable".format(args.tag))
-
-    if args.diff:
-
-        # Transfer Data to Numpy Array to Compute Statistics
-        difference = []
-        diffArr = calc.GetOutput().GetPointData().GetAbstractArray(args.tag)
-        num_points = vtk_dataset.GetNumberOfPoints()
-        for i in range(num_points):
-            difference.append(diffArr.GetTuple1(i))
-        difference = np.array(difference)
-
+        calc.SetResultArrayName("function")
+        calc.Update()
+        func = v2n(calc.GetOutput().GetPointData().GetAbstractArray("function"))
+        difference = data -func
+        logging.info("Evaluated \"{}\"-\"({})\" on the mesh.".format(intag, args.function))
+       
         # Calculate Statistics
+        num_points = vtk_dataset.GetNumberOfPoints()
         cnt, min, max = num_points, np.nanmin(difference), np.nanmax(difference)
         p99, p95, p90, median = np.percentile(difference, [99, 95, 90, 50])
         relative = np.sqrt(np.nansum(np.square(difference)) / difference.size)
@@ -120,7 +119,7 @@ def main():
 
         if args.stats:
             stat_file = os.path.splitext(out_meshname)[0] + ".stats.json"
-            logging.info("Saving stats data to {}".format(stat_file))
+            logging.info("Saving stats data to \"{}\"".format(stat_file))
             json.dump({
                 "count": cnt,
                 "min": min,
@@ -132,6 +131,13 @@ def main():
                 "90th percentile": p90
             }, open(stat_file, "w"))
 
+    else:
+        calc.SetFunction(args.function)
+        logging.info("Evaluated \"{}\" on the mesh.".format(args.function))
+    calc.SetResultArrayName(args.tag)
+    calc.Update()
+    logging.info("Evaluated function saved to \"{}\" variable".format(args.tag))
+
     if os.path.splitext(out_meshname)[1] == ".vtk":
         writer = vtk.vtkUnstructuredGridWriter()
     elif os.path.splitext(out_meshname)[1] == ".vtu":
@@ -139,10 +145,20 @@ def main():
     else:
         raise Exception("Output mesh extension should be '.vtk' and '.vtu'")
 
-    writer.SetInputData(calc.GetOutput())
+    if args.diff:
+        diff_vtk = n2v(difference)
+        diff_vtk.SetName(args.tag)
+        num_comp = diff_vtk.GetNumberOfComponents()
+        if  num_comp > 1:
+            vtk_dataset.GetPointData().SetVectors(diff_vtk)
+        else:
+            vtk_dataset.GetPointData().SetScalars(diff_vtk)
+        writer.SetInputData(vtk_dataset)
+    else:
+        writer.SetInputData(calc.GetOutput())
     writer.SetFileName(out_meshname)
     writer.Write()
-    logging.info("Written output to {}.".format(out_meshname))
+    logging.info("Written output to \"{}\".".format(out_meshname))
 
 if __name__ == "__main__":
     main()
