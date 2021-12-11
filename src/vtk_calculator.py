@@ -90,7 +90,9 @@ def main():
     if args.diff:
         # Check VTK file has dataname
         if not vtk_dataset.GetPointData().HasArray(intag):
-            logging.warning("Given mesh has no data for \"{}\".\n ABORTING! \n".format(intag))
+            logging.warning(
+                "Given mesh \"{}\" has no data with given name \"{}\".\nABORTING!\n".format(
+                    args.in_meshname, intag))
             sys.exit()
         else:
             data = v2n(vtk_dataset.GetPointData().GetAbstractArray(intag))
@@ -100,7 +102,7 @@ def main():
         calc.Update()
         func = v2n(calc.GetOutput().GetPointData().GetAbstractArray("function"))
         difference = data - func
-        logging.info("Evaluated \"{}\"-\"({})\" on the mesh.".format(intag, args.function))
+        logging.info("Evaluated \"{}\"-\"({})\" on the mesh \"{}\".".format(intag, args.function, args.in_meshname))
 
         # Calculate Statistics
         num_points = vtk_dataset.GetNumberOfPoints()
@@ -133,10 +135,10 @@ def main():
 
     else:
         calc.SetFunction(args.function)
-        logging.info("Evaluated \"{}\" on the mesh.".format(args.function))
+        logging.info("Evaluated \"{}\" on the input mesh \"{}\".".format(args.function, args.in_meshname))
     calc.SetResultArrayName(args.tag)
     calc.Update()
-    logging.info("Evaluated function saved to \"{}\" variable".format(args.tag))
+    logging.info("Evaluated function saved to \"{}\" variable on output mesh \"{}\"".format(args.tag, out_meshname))
 
     if os.path.splitext(out_meshname)[1] == ".vtk":
         writer = vtk.vtkUnstructuredGridWriter()
