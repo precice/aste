@@ -4,7 +4,7 @@
 """
 This calculator can calculate vector or scalar field on given mesh.
 
-Example usage 
+Example usage
 
 Scalar calculation and writing to given file
 
@@ -12,12 +12,12 @@ Scalar calculation and writing to given file
 
 Vector field and appends to input mesh
 
-./vtk_calculator.py inputmesh.vtk x*iHat+cos(y)*jHat-sin(z)*kHat -t MyVectorField 
+./vtk_calculator.py inputmesh.vtk x*iHat+cos(y)*jHat-sin(z)*kHat -t MyVectorField
 
 There is also a diff mode which provides statistic between input data and function calculated
 (Note that it only works for scalar data)
 
-./vtk_calculator.py inputmesh.vtu x+y -t mydata --diff --stats 
+./vtk_calculator.py inputmesh.vtu x+y -t mydata --diff --stats
 
 Calculates difference between given function and mydata data save over rides into variable data and saves statistics
 
@@ -32,7 +32,10 @@ import logging
 import os.path
 import vtk
 import json
+import sys
 import numpy as np
+from vtk.util.numpy_support import vtk_to_numpy as v2n
+from vtk.util.numpy_support import numpy_to_vtk as n2v
 
 
 def parse_args():
@@ -92,26 +95,24 @@ def main():
     calc.AddCoordinateScalarVariable("y", 1)
     calc.AddCoordinateScalarVariable("z", 2)
     if args.diff:
-        calc.SetFunction('{}-({})'.format(indata, args.function))
-        logging.info("Evaluated '{}-({})' on the mesh.".format(indata, args.function))
-    else:
+        # Check VTK file has dataname
+        if not vtk_dataset.GetPointData().HasArray(intag):
+            logging.warning(
+                "Given mesh \"{}\" has no data with given name \"{}\".\nABORTING!\n".format(
+                    args.in_meshname, intag))
+            sys.exit()
+        else:
+            data = v2n(vtk_dataset.GetPointData().GetAbstractArray(intag))
+        # Calculate given function on the mesh
         calc.SetFunction(args.function)
-        logging.info("Evaluated '{}' on the mesh.".format(args.function))
-    calc.SetResultArrayName(args.data)
-    calc.Update()
-    logging.info("Evaluated function saved to {} variable".format(args.data))
-
-    if args.diff:
-
-        # Transfer Data to Numpy Array to Compute Statistics
-        difference = []
-        diffArr = calc.GetOutput().GetPointData().GetAbstractArray(args.data)
-        num_points = vtk_dataset.GetNumberOfPoints()
-        for i in range(num_points):
-            difference.append(diffArr.GetTuple1(i))
-        difference = np.array(difference)
+        calc.SetResultArrayName("function")
+        calc.Update()
+        func = v2n(calc.GetOutput().GetPointData().GetAbstractArray("function"))
+        difference = data - func
+        logging.info("Evaluated \"{}\"-\"({})\" on the mesh \"{}\".".format(intag, args.function, args.in_meshname))
 
         # Calculate Statistics
+        num_points = vtk_dataset.GetNumberOfPoints()
         cnt, min, max = num_points, np.nanmin(difference), np.nanmax(difference)
         p99, p95, p90, median = np.percentile(difference, [99, 95, 90, 50])
         relative = np.sqrt(np.nansum(np.square(difference)) / difference.size)
@@ -127,7 +128,7 @@ def main():
 
         if args.stats:
             stat_file = os.path.splitext(out_meshname)[0] + ".stats.json"
-            logging.info("Saving stats data to {}".format(stat_file))
+            logging.info("Saving stats data to \"{}\"".format(stat_file))
             json.dump({
                 "count": cnt,
                 "min": min,
@@ -139,6 +140,13 @@ def main():
                 "90th percentile": p90
             }, open(stat_file, "w"))
 
+    else:
+        calc.SetFunction(args.function)
+        logging.info("Evaluated \"{}\" on the input mesh \"{}\".".format(args.function, args.in_meshname))
+    calc.SetResultArrayName(args.tag)
+    calc.Update()
+    logging.info("Evaluated function saved to \"{}\" variable on output mesh \"{}\"".format(args.tag, out_meshname))
+
     if os.path.splitext(out_meshname)[1] == ".vtk":
         writer = vtk.vtkUnstructuredGridWriter()
     elif os.path.splitext(out_meshname)[1] == ".vtu":
@@ -146,10 +154,21 @@ def main():
     else:
         raise Exception("Output mesh extension should be '.vtk' and '.vtu'")
 
-    writer.SetInputData(calc.GetOutput())
+    if args.diff:
+        diff_vtk = n2v(difference)
+        diff_vtk.SetName(args.tag)
+        num_comp = diff_vtk.GetNumberOfComponents()
+        if num_comp > 1:
+            vtk_dataset.GetPointData().SetVectors(diff_vtk)
+        else:
+            vtk_dataset.GetPointData().SetScalars(diff_vtk)
+        writer.SetInputData(vtk_dataset)
+    else:
+        writer.SetInputData(calc.GetOutput())
     writer.SetFileName(out_meshname)
     writer.Write()
-    logging.info("Written output to {}.".format(out_meshname))
+    logging.info("Written output to \"{}\".".format(out_meshname))
+
 
 if __name__ == "__main__":
     main()
