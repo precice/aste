@@ -71,7 +71,7 @@ def main():
         out_meshname = args.in_meshname
 
     if args.diff and args.indata is None:
-        logging.info("No indata is given outdata '{}' will be used as indata.".format(args.data))
+        logging.info("No input dataname is given outdata '{}' will be used as input dataname.".format(args.data))
         indata = args.data
     else:
         indata = args.indata
@@ -96,20 +96,20 @@ def main():
     calc.AddCoordinateScalarVariable("z", 2)
     if args.diff:
         # Check VTK file has dataname
-        if not vtk_dataset.GetPointData().HasArray(intag):
+        if not vtk_dataset.GetPointData().HasArray(indata):
             logging.warning(
                 "Given mesh \"{}\" has no data with given name \"{}\".\nABORTING!\n".format(
-                    args.in_meshname, intag))
+                    args.in_meshname, indata))
             sys.exit()
         else:
-            data = v2n(vtk_dataset.GetPointData().GetAbstractArray(intag))
+            data = v2n(vtk_dataset.GetPointData().GetAbstractArray(indata))
         # Calculate given function on the mesh
         calc.SetFunction(args.function)
         calc.SetResultArrayName("function")
         calc.Update()
         func = v2n(calc.GetOutput().GetPointData().GetAbstractArray("function"))
         difference = data - func
-        logging.info("Evaluated \"{}\"-\"({})\" on the mesh \"{}\".".format(intag, args.function, args.in_meshname))
+        logging.info("Evaluated \"{}\"-\"({})\" on the mesh \"{}\".".format(indata, args.function, args.in_meshname))
 
         # Calculate Statistics
         num_points = vtk_dataset.GetNumberOfPoints()
@@ -143,9 +143,10 @@ def main():
     else:
         calc.SetFunction(args.function)
         logging.info("Evaluated \"{}\" on the input mesh \"{}\".".format(args.function, args.in_meshname))
-    calc.SetResultArrayName(args.tag)
-    calc.Update()
-    logging.info("Evaluated function saved to \"{}\" variable on output mesh \"{}\"".format(args.tag, out_meshname))
+        calc.SetResultArrayName(args.data)
+        calc.Update()
+    
+    logging.info("Evaluated function saved to \"{}\" variable on output mesh \"{}\"".format(args.data, out_meshname))
 
     if os.path.splitext(out_meshname)[1] == ".vtk":
         writer = vtk.vtkUnstructuredGridWriter()
@@ -156,7 +157,7 @@ def main():
 
     if args.diff:
         diff_vtk = n2v(difference)
-        diff_vtk.SetName(args.tag)
+        diff_vtk.SetName(args.data)
         num_comp = diff_vtk.GetNumberOfComponents()
         if num_comp > 1:
             vtk_dataset.GetPointData().SetVectors(diff_vtk)
