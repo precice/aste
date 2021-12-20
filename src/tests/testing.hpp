@@ -3,11 +3,18 @@
 #include <numeric>
 #include <string>
 
-struct Case {
+struct ReadCase {
   std::string fname{};
   std::string dataname{};
   int         dim{};
 };
 
-void writetest(const Case &current_case);
-void readtest(const Case &current_case);
+struct WriteCase {
+  std::string basename{};
+  std::string fname{};
+  std::string dataname{};
+  int         dim{};
+};
+
+void writetest(const WriteCase &current_case);
+void readtest(const ReadCase &current_case);

@@ -59,8 +59,10 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
     throw std::invalid_argument{"The mesh file does not exist: " + filename};
   }
 
+  mesh.fname                               = filename; // Store data loaded from which mesh
   auto                                 ext = fs::path(filename).extension();
   vtkSmartPointer<vtkUnstructuredGrid> grid;
+
   if (ext == ".vtk") {
     vtkSmartPointer<vtkUnstructuredGridReader> reader = vtkSmartPointer<vtkUnstructuredGridReader>::New();
     reader->SetFileName(filename.c_str());
@@ -173,84 +175,54 @@ void MeshName::createDirectories() const
 
 void MeshName::save(const Mesh &mesh, const std::string &dataname) const
 {
-  const int                            numComp          = mesh.data.size() / mesh.positions.size();
-  vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid = vtkSmartPointer<vtkUnstructuredGrid>::New();
-  vtkSmartPointer<vtkPoints>           points           = vtkSmartPointer<vtkPoints>::New();
-  vtkSmartPointer<vtkDoubleArray>      data             = vtkDoubleArray::New();
+  const int                            numComp = mesh.data.size() / mesh.positions.size();
+  vtkSmartPointer<vtkDoubleArray>      data    = vtkDoubleArray::New();
+  auto                                 ext     = fs::path(mesh.fname).extension();
+  vtkSmartPointer<vtkUnstructuredGrid> grid;
+  if (ext == ".vtk") {
+    vtkSmartPointer<vtkUnstructuredGridReader> reader = vtkSmartPointer<vtkUnstructuredGridReader>::New();
+    reader->SetFileName(mesh.fname.c_str());
+    reader->Update();
+    grid = reader->GetOutput();
+  } else if (ext == ".vtu") {
+    vtkSmartPointer<vtkXMLUnstructuredGridReader> reader = vtkSmartPointer<vtkXMLUnstructuredGridReader>::New();
+    reader->SetFileName(mesh.fname.c_str());
+    reader->Update();
+    grid = reader->GetOutput();
+  } else {
+    throw std::runtime_error("Unknown File Extension for file " + mesh.fname + "Extension should be .vtk or .vtu");
+  }
 
   data->SetName(dataname.c_str());
   data->SetNumberOfComponents(numComp);
 
-  // Insert Points and Point Data
-  for (size_t i = 0; i < mesh.positions.size(); i++) {
-    points->InsertNextPoint(mesh.positions[i][0], mesh.positions[i][1], mesh.positions[i][2]);
+  // Insert Point Data
+  {
     std::vector<double> pointData;
-    for (int j = 0; j < numComp; j++) {
-      pointData.push_back(mesh.data[i * numComp + j]);
-    }
-    data->InsertNextTuple(pointData.data());
-  }
-
-  unstructuredGrid->SetPoints(points);
-  unstructuredGrid->GetPointData()->AddArray(data);
-
-  // Connectivity Information
-  vtkSmartPointer<vtkCellArray> cellArray = vtkSmartPointer<vtkCellArray>::New();
-
-  std::vector<int> cellTypes;
-  cellTypes.reserve(mesh.quadrilaterals.size() + mesh.triangles.size() + mesh.edges.size());
-
-  if (mesh.quadrilaterals.size() > 0) {
-
-    for (size_t i = 0; i < mesh.quadrilaterals.size(); i++) {
-      vtkSmartPointer<vtkQuad> quadrilateral = vtkSmartPointer<vtkQuad>::New();
-      quadrilateral->GetPointIds()->SetId(0, mesh.quadrilaterals[i][0]);
-      quadrilateral->GetPointIds()->SetId(1, mesh.quadrilaterals[i][1]);
-      quadrilateral->GetPointIds()->SetId(2, mesh.quadrilaterals[i][2]);
-      quadrilateral->GetPointIds()->SetId(3, mesh.quadrilaterals[i][3]);
-
-      cellArray->InsertNextCell(quadrilateral);
-      cellTypes.push_back(VTK_QUAD);
+    pointData.reserve(3);
+    for (size_t i = 0; i < mesh.positions.size(); i++) {
+      for (int j = 0; j < numComp; j++) {
+        pointData.push_back(mesh.data[i * numComp + j]);
+      }
+      data->InsertNextTuple(pointData.data());
+      pointData.clear();
     }
   }
 
-  if (mesh.triangles.size() > 0) {
-    for (size_t i = 0; i < mesh.triangles.size(); i++) {
-      vtkSmartPointer<vtkTriangle> triangle = vtkSmartPointer<vtkTriangle>::New();
-      triangle->GetPointIds()->SetId(0, mesh.triangles[i][0]);
-      triangle->GetPointIds()->SetId(1, mesh.triangles[i][1]);
-      triangle->GetPointIds()->SetId(2, mesh.triangles[i][2]);
-
-      cellArray->InsertNextCell(triangle);
-      cellTypes.push_back(VTK_TRIANGLE);
-    }
-  }
-
-  if (mesh.edges.size() > 0) {
-    for (size_t i = 0; i < mesh.edges.size(); i++) {
-      vtkSmartPointer<vtkLine> line = vtkSmartPointer<vtkLine>::New();
-      line->GetPointIds()->SetId(0, mesh.edges[i][0]);
-      line->GetPointIds()->SetId(1, mesh.edges[i][1]);
-
-      cellArray->InsertNextCell(line);
-      cellTypes.push_back(VTK_LINE);
-    }
-  }
-
-  unstructuredGrid->SetCells(cellTypes.data(), cellArray);
+  grid->GetPointData()->AddArray(data);
 
   // Write file
   if (_context.isParallel()) {
     vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer =
         vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
-    writer->SetInputData(unstructuredGrid);
+    writer->SetInputData(grid);
     writer->SetFileName(filename().c_str());
     writer->Write();
 
   } else {
     vtkSmartPointer<vtkUnstructuredGridWriter> writer =
         vtkSmartPointer<vtkUnstructuredGridWriter>::New();
-    writer->SetInputData(unstructuredGrid);
+    writer->SetInputData(grid);
     writer->SetFileName(filename().c_str());
     writer->Write();
   }
