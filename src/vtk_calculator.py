@@ -40,18 +40,20 @@ from vtk.util.numpy_support import numpy_to_vtk as n2v
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--mesh","-m",dest="in_meshname", help="The mesh (VTK Unstructured Grid) used as input")
-    parser.add_argument("--function","-f",dest="function", help="""The function to evalutate on the mesh.
+    parser.add_argument("--mesh", "-m", dest="in_meshname", help="The mesh (VTK Unstructured Grid) used as input")
+    parser.add_argument("--function", "-f", dest="function", help="""The function to evalutate on the mesh.
             Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.""")
     parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
-    parser.add_argument("--data", dest="data", default="MyData", help="""The name of output data.
+    parser.add_argument("--data", "-d", dest="data", default="MyData", help="""The name of output data.
             Default is MyData""")
-    parser.add_argument("--indata", dest="indata", help="""The name of input data.
+    parser.add_argument("--indata", "-ind", dest="indata", help="""The name of input data.
             Used in diff mode. If not given, output data is used.""")
     parser.add_argument("--log", "-l", dest="logging", default="INFO",
                         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="""Set the log level.
             Default is INFO""")
+    parser.add_argument("--directory", "-dir", dest="directory", default=None,
+                        help="Directory for output files (optional)")
     parser.add_argument("--diff", action='store_true', help="Calculate the difference to present data.")
     parser.add_argument("--stats", "-s", action='store_true',
                         help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
@@ -145,7 +147,7 @@ def main():
         logging.info("Evaluated \"{}\" on the input mesh \"{}\".".format(args.function, args.in_meshname))
         calc.SetResultArrayName(args.data)
         calc.Update()
-    
+
     logging.info("Evaluated function saved to \"{}\" variable on output mesh \"{}\"".format(args.data, out_meshname))
 
     if os.path.splitext(out_meshname)[1] == ".vtk":
@@ -166,6 +168,13 @@ def main():
         writer.SetInputData(vtk_dataset)
     else:
         writer.SetInputData(calc.GetOutput())
+
+    out_meshname = os.path.basename(os.path.normpath(out_meshname))
+    if args.directory:
+        directory = os.path.abspath(args.directory)
+        os.makedirs(directory, exist_ok=True)
+        out_meshname = os.path.join(directory, out_meshname)
+
     writer.SetFileName(out_meshname)
     writer.Write()
     logging.info("Written output to \"{}\".".format(out_meshname))
