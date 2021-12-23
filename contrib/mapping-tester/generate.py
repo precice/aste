@@ -1,4 +1,4 @@
-#! python3 
+#! /usr/bin/env python3
 
 import json
 import os
@@ -133,18 +133,19 @@ def createRunScript(outdir, path, case):
     ameshLocation = os.path.relpath(os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path)
 
     # Generate runner script
-    acmd = "/usr/bin/time -f %M -a -o memory-A.log preciceMap -v -p A --mesh {} || kill 0 &".format(ameshLocation)
+    acmd = "preciceMap -v -p A --data \"{}\" --mesh {} || kill 0 &".format(case["function"], ameshLocation)
     if aranks > 1: acmd = "mpirun -n {} $ASTE_A_MPIARGS {}".format(aranks, acmd)
 
     bmesh = case["B"]["mesh"]["name"]
     branks = case["B"]["ranks"]
     bmeshLocation = os.path.relpath(os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path)
 
-    bcmd = "/usr/bin/time -f %M -a -o memory-B.log preciceMap -v -p B --mesh {} --output mapped || kill 0 &".format(bmeshLocation)
+    bcmd = "preciceMap -v -p B --data \"{}\" --mesh {} --output mapped || kill 0 &".format(case["function"], bmeshLocation)
     if branks > 1: bcmd = "mpirun -n {} $ASTE_B_MPIARGS {}".format(branks, bcmd)
 
     content = [
         "#!/bin/bash",
+        "set -e -u",
         'cd "$( dirname "${BASH_SOURCE[0]}" )"',
         "echo '=========='",
         "rm -f memory-A.log memory-B.log done running failed",
@@ -183,6 +184,7 @@ def createRunScript(outdir, path, case):
     # Generate post processing script
     post_content = [
         "#!/bin/bash",
+        "set -e -u",
         'cd "$( dirname "${BASH_SOURCE[0]}" )"',
         "echo '= {} ({}) {} - {}'".format(
             case["mapping"]["name"],
@@ -192,11 +194,13 @@ def createRunScript(outdir, path, case):
     ]
     if (branks == 1):
         copycmd = "cp {}.conn.txt mapped.conn.txt".format(bmeshLocation)
-        diffcmd = "eval_mesh.py mapped.txt -o error.vtk --diff --stats \"{}\" | tee diff.log".format(case["function"])
+        diffcmd = "vtk_calculator.py --mesh mapped.txt -o error.vtk --diff --stats \"{}\" | tee diff.log".format(case["function"])
         post_content += [copycmd, diffcmd]
     else:
-        joincmd = "join_mesh.py mapped -r {} -o result.vtk".format(bmeshLocation)
-        diffcmd = "eval_mesh.py result.vtk -o error.vtk --diff --stats \"{}\" | tee diff.log".format(case["function"])
+        [recoveryFileLocation, tmpPrefix] = os.path.split(os.path.normpath(bmeshLocation))
+        tmprecoveryFile = recoveryFileLocation + "/recovery.json"
+        joincmd = "join_mesh.py --mesh mapped -r {} -o result.vtk".format(tmprecoveryFile)
+        diffcmd = "vtk_calculator.py --data error --diffdata \"{0}\" -o error.vtk --diff --stats --mesh result.vtk --function \"{0}\" | tee diff.log".format(case["function"])
         post_content += [joincmd,diffcmd]
     open(os.path.join(path, "post.sh"),"w").writelines([ line + "\n" for line in post_content ])
 
@@ -230,9 +234,13 @@ def parseArguments(args):
 
 
 def main(argv):
+    # Parse the input arguments
     args = parseArguments(argv[1:])
+    # Parse the json file using the json module
     setup = json.load(args.setup)
+    # Read the xml-template file
     template = args.template.read()
+    # Generate the actual cases
     cases = generateCases(setup)
     outdir = os.path.normpath(args.outdir)
     if (os.path.isdir(outdir)):

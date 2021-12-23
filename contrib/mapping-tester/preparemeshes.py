@@ -1,7 +1,8 @@
-#! python3
+#! /usr/bin/env python3
 
 import json
 import os
+import shutil
 import argparse
 import subprocess
 import itertools
@@ -16,24 +17,26 @@ def parseArguments(args):
 
 def prepareMainMesh(meshdir, name, file, function, force=False):
     mainDir = os.path.join(meshdir, name, "1")
-    mainMesh = os.path.join(mainDir, name+".txt")
+    mainMesh = os.path.join(mainDir, name+".vtu")
     print("Preparing Mesh {} in {}".format(name, mainDir))
 
     if os.path.isdir(mainDir):
         if force:
             print("  Regenerating the mesh.")
-            os.removedirs(mainDir)
+            shutil.rmtree(mainDir)
         else:
             print("  Mesh already exists.")
             return
 
     os.makedirs(mainDir, exist_ok=True)
-    subprocess.run(["eval_mesh.py", os.path.expandvars(file), "-o", mainMesh, function])
+    data_name = "{}".format(function)
+    [pathName, tmpfilename] = os.path.split(os.path.normpath(mainMesh))
+    subprocess.run(["vtk_calculator.py", "--mesh", os.path.expandvars(file), "--function", function, "--data", data_name, "--directory", pathName, "-o", tmpfilename])
 
 
 def preparePartMesh(meshdir, name, p, force=False):
     assert(p > 1)
-    mainMesh = os.path.join(meshdir, name, "1", name+".txt")
+    mainMesh = os.path.join(meshdir, name, "1", name+".vtu")
     partDir = os.path.join(meshdir, name, str(p))
     partMesh = os.path.join(partDir, name)
     print("Preparing Mesh {} with {} paritions in {}".format(name, p, partDir))
@@ -41,13 +44,14 @@ def preparePartMesh(meshdir, name, p, force=False):
     if os.path.isdir(partDir):
         if force:
             print("  Regenerating the partitioned mesh.")
-            os.removedirs(partDir)
+            shutil.rmtree(partDir)
         else:
             print("  Partitioned mesh already exists.")
             return
 
     os.makedirs(partDir, exist_ok=True)
-    subprocess.run(["partition_mesh.py", mainMesh, "--algorithm", "topology", "-o", partMesh, "-n", str(p)])
+    [pathName, tmpfilename] = os.path.split(os.path.normpath(partMesh))
+    subprocess.run(["partition_mesh.py", "--mesh", mainMesh, "--algorithm", "meshfree", "-o", partMesh, "--directory", pathName, "-n", str(p)])
 
 
 def main(argv):
@@ -62,6 +66,8 @@ def main(argv):
     partitions = set([int(rank) for pranks in setup["general"]["ranks"].values() for rank in pranks])
 
     for name, file in set(itertools.chain(setup["general"]["meshes"]["A"].items(), setup["general"]["meshes"]["B"].items())):
+        if not os.path.isfile(os.path.expandvars(file)):
+            raise Exception('\033[91m Unable to open file called \"{}\".\033[0m'.format(file))
         prepareMainMesh(meshdir, name, file, function, args.force)
         for p in partitions:
             preparePartMesh(meshdir, name, p, args.force)
