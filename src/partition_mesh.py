@@ -416,7 +416,7 @@ def write_meshes(meshes, recoveryInfo, meshname: str, orig_mesh, directory=None)
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Read meshes, partition them and write them out in VTU format.")
-    parser.add_argument("--mesh", "-m", dest="in_meshname", help="The mesh used as input")
+    parser.add_argument("--mesh", "-m", required=True, dest="in_meshname", help="The mesh used as input")
     parser.add_argument("--output", "-o", dest="out_meshname", default="partitioned_mesh",
                         help="The output mesh name.")
     parser.add_argument("--directory", "-dir", dest="directory", default=None,

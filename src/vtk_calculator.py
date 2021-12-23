@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+import argparse
+import logging
+import os.path
+import vtk
+import json
+import sys
+import numpy as np
+from vtk.util.numpy_support import vtk_to_numpy as v2n
+from vtk.util.numpy_support import numpy_to_vtk as n2v
+
 """Evaluates a function on a given mesh, using the VTK Calculator."""
 
 """
@@ -17,37 +27,29 @@ Vector field and appends to input mesh
 There is also a diff mode which provides statistic between input data and function calculated
 (Note that it only works for scalar data)
 
-./vtk_calculator.py inputmesh.vtu x+y -t mydata --diff --stats
+./vtk_calculator.py -m inputmesh.vtu -f x+y -d mydata --diff --stats
 
 Calculates difference between given function and mydata data save over rides into variable data and saves statistics
 
-./vtk_calculator.py inputmesh.vtu x+y -t diffence -it mydata --diff
+./vtk_calculator.py -m inputmesh.vtu -f x+y -d diffence -diffd mydata --diff
 
 Calculates difference between given function and mydata data save into diffence data
 
 """
 
-import argparse
-import logging
-import os.path
-import vtk
-import json
-import sys
-import numpy as np
-from vtk.util.numpy_support import vtk_to_numpy as v2n
-from vtk.util.numpy_support import numpy_to_vtk as n2v
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--mesh", "-m", dest="in_meshname", help="The mesh (VTK Unstructured Grid) used as input")
-    parser.add_argument("--function", "-f", dest="function", help="""The function to evalutate on the mesh.
+    parser.add_argument("--mesh", "-m", dest="in_meshname", required=True,
+                        help="The mesh (VTK Unstructured Grid) used as input")
+    parser.add_argument("--function", "-f", dest="function", required=True,
+                        help="""The function to evalutate on the mesh.
             Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.""")
     parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
-    parser.add_argument("--data", "-d", dest="data", default="MyData", help="""The name of output data.
+    parser.add_argument("--data", "-d", dest="data", required=True, default="MyData", help="""The name of output data.
             Default is MyData""")
-    parser.add_argument("--indata", "-ind", dest="indata", help="""The name of input data.
+    parser.add_argument("--diffdata", "-diffd", dest="diffdata", help="""The name of difference data.
             Used in diff mode. If not given, output data is used.""")
     parser.add_argument("--log", "-l", dest="logging", default="INFO",
                         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="""Set the log level.
@@ -72,11 +74,11 @@ def main():
         logging.info("No output mesh name is given {} will be used.".format(args.in_meshname))
         out_meshname = args.in_meshname
 
-    if args.diff and args.indata is None:
+    if args.diff and args.diffdata is None:
         logging.info("No input dataname is given outdata '{}' will be used as input dataname.".format(args.data))
-        indata = args.data
+        diffdata = args.data
     else:
-        indata = args.indata
+        diffdata = args.diffdata
 
     extension = os.path.splitext(args.in_meshname)[1]
     if (extension == ".vtu"):
@@ -98,20 +100,20 @@ def main():
     calc.AddCoordinateScalarVariable("z", 2)
     if args.diff:
         # Check VTK file has dataname
-        if not vtk_dataset.GetPointData().HasArray(indata):
+        if not vtk_dataset.GetPointData().HasArray(diffdata):
             logging.warning(
                 "Given mesh \"{}\" has no data with given name \"{}\".\nABORTING!\n".format(
-                    args.in_meshname, indata))
+                    args.in_meshname, diffdata))
             sys.exit()
         else:
-            data = v2n(vtk_dataset.GetPointData().GetAbstractArray(indata))
+            data = v2n(vtk_dataset.GetPointData().GetAbstractArray(diffdata))
         # Calculate given function on the mesh
         calc.SetFunction(args.function)
         calc.SetResultArrayName("function")
         calc.Update()
         func = v2n(calc.GetOutput().GetPointData().GetAbstractArray("function"))
         difference = data - func
-        logging.info("Evaluated \"{}\"-\"({})\" on the mesh \"{}\".".format(indata, args.function, args.in_meshname))
+        logging.info("Evaluated \"{}\"-\"({})\" on the mesh \"{}\".".format(diffdata, args.function, args.in_meshname))
 
         # Calculate Statistics
         num_points = vtk_dataset.GetNumberOfPoints()
