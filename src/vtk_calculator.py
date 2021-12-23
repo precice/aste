@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+import argparse
+import logging
+import os.path
+import vtk
+import json
+import sys
+import numpy as np
+from vtk.util.numpy_support import vtk_to_numpy as v2n
+from vtk.util.numpy_support import numpy_to_vtk as n2v
+
 """Evaluates a function on a given mesh, using the VTK Calculator."""
 
 """
@@ -17,42 +27,36 @@ Vector field and appends to input mesh
 There is also a diff mode which provides statistic between input data and function calculated
 (Note that it only works for scalar data)
 
-./vtk_calculator.py inputmesh.vtu x+y -t mydata --diff --stats
+./vtk_calculator.py -m inputmesh.vtu -f x+y -d mydata --diff --stats
 
-Calculates difference between given function and mydata data save over rides into variable tag and saves statistics
+Calculates difference between given function and mydata data save over rides into variable data and saves statistics
 
-./vtk_calculator.py inputmesh.vtu x+y -t diffence -it mydata --diff
+./vtk_calculator.py -m inputmesh.vtu -f x+y -d diffence -diffd mydata --diff
 
-Calculates difference between given function and mydata data save into diffence tag
+Calculates difference between given function and mydata data save into diffence data
 
 """
-
-import argparse
-import logging
-import os.path
-import vtk
-import json
-import sys
-import numpy as np
-from vtk.util.numpy_support import vtk_to_numpy as v2n
-from vtk.util.numpy_support import numpy_to_vtk as n2v
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("in_meshname", metavar="inputmesh", help="The mesh (VTK Unstructured Grid) used as input")
-    parser.add_argument("function", help="""The function to evalutate on the mesh.
+    parser.add_argument("--mesh", "-m", dest="in_meshname", required=True,
+                        help="The mesh (VTK Unstructured Grid) used as input")
+    parser.add_argument("--function", "-f", dest="function", required=True,
+                        help="""The function to evalutate on the mesh.
             Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.""")
-    parser.add_argument("--out", "-o", dest="out_meshname", default=None, help="""The output meshname.
+    parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
-    parser.add_argument("--tag", "-t", dest="tag", default="MyScalar", help="""The tag for output data.
-            Default is MyScalar""")
-    parser.add_argument("--intag", "-it", dest="intag", help="""The tag for input data.
-            Used in diff mode. If not given tag is used.""")
+    parser.add_argument("--data", "-d", dest="data", default="MyData", help="""The name of output data.
+            Default is MyData""")
+    parser.add_argument("--diffdata", "-diffd", dest="diffdata", help="""The name of difference data.
+            Used in diff mode. If not given, output data is used.""")
     parser.add_argument("--log", "-l", dest="logging", default="INFO",
                         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="""Set the log level.
             Default is INFO""")
-    parser.add_argument("--diff", "-d", action='store_true', help="Calculate the difference to present data.")
+    parser.add_argument("--directory", "-dir", dest="directory", default=None,
+                        help="Directory for output files (optional)")
+    parser.add_argument("--diff", action='store_true', help="Calculate the difference to present data.")
     parser.add_argument("--stats", "-s", action='store_true',
                         help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
     args = parser.parse_args()
@@ -70,13 +74,20 @@ def main():
         logging.info("No output mesh name is given {} will be used.".format(args.in_meshname))
         out_meshname = args.in_meshname
 
-    if args.diff and args.intag is None:
-        logging.info("No intag is given outtag '{}' will be used as intag.".format(args.tag))
-        intag = args.tag
+    if args.diff and args.diffdata is None:
+        logging.info("No input dataname is given outdata '{}' will be used as input dataname.".format(args.data))
+        diffdata = args.data
     else:
-        intag = args.intag
+        diffdata = args.diffdata
 
-    reader = vtk.vtkGenericDataObjectReader()
+    extension = os.path.splitext(args.in_meshname)[1]
+    if (extension == ".vtu"):
+        reader = vtk.vtkXMLUnstructuredGridReader()
+    elif (extension == ".vtk"):
+        reader = vtk.vtkUnstructuredGridReader()
+    else:
+        print("Unkown input file extension please check your input file.")
+        os.exit()
     reader.SetFileName(args.in_meshname)
     reader.Update()
     vtk_dataset = reader.GetOutput()
@@ -89,20 +100,20 @@ def main():
     calc.AddCoordinateScalarVariable("z", 2)
     if args.diff:
         # Check VTK file has dataname
-        if not vtk_dataset.GetPointData().HasArray(intag):
+        if not vtk_dataset.GetPointData().HasArray(diffdata):
             logging.warning(
                 "Given mesh \"{}\" has no data with given name \"{}\".\nABORTING!\n".format(
-                    args.in_meshname, intag))
+                    args.in_meshname, diffdata))
             sys.exit()
         else:
-            data = v2n(vtk_dataset.GetPointData().GetAbstractArray(intag))
+            data = v2n(vtk_dataset.GetPointData().GetAbstractArray(diffdata))
         # Calculate given function on the mesh
         calc.SetFunction(args.function)
         calc.SetResultArrayName("function")
         calc.Update()
         func = v2n(calc.GetOutput().GetPointData().GetAbstractArray("function"))
         difference = data - func
-        logging.info("Evaluated \"{}\"-\"({})\" on the mesh \"{}\".".format(intag, args.function, args.in_meshname))
+        logging.info("Evaluated \"{}\"-\"({})\" on the mesh \"{}\".".format(diffdata, args.function, args.in_meshname))
 
         # Calculate Statistics
         num_points = vtk_dataset.GetNumberOfPoints()
@@ -136,9 +147,10 @@ def main():
     else:
         calc.SetFunction(args.function)
         logging.info("Evaluated \"{}\" on the input mesh \"{}\".".format(args.function, args.in_meshname))
-    calc.SetResultArrayName(args.tag)
-    calc.Update()
-    logging.info("Evaluated function saved to \"{}\" variable on output mesh \"{}\"".format(args.tag, out_meshname))
+        calc.SetResultArrayName(args.data)
+        calc.Update()
+
+    logging.info("Evaluated function saved to \"{}\" variable on output mesh \"{}\"".format(args.data, out_meshname))
 
     if os.path.splitext(out_meshname)[1] == ".vtk":
         writer = vtk.vtkUnstructuredGridWriter()
@@ -149,7 +161,7 @@ def main():
 
     if args.diff:
         diff_vtk = n2v(difference)
-        diff_vtk.SetName(args.tag)
+        diff_vtk.SetName(args.data)
         num_comp = diff_vtk.GetNumberOfComponents()
         if num_comp > 1:
             vtk_dataset.GetPointData().SetVectors(diff_vtk)
@@ -158,6 +170,13 @@ def main():
         writer.SetInputData(vtk_dataset)
     else:
         writer.SetInputData(calc.GetOutput())
+
+    out_meshname = os.path.basename(os.path.normpath(out_meshname))
+    if args.directory:
+        directory = os.path.abspath(args.directory)
+        os.makedirs(directory, exist_ok=True)
+        out_meshname = os.path.join(directory, out_meshname)
+
     writer.SetFileName(out_meshname)
     writer.Write()
     logging.info("Written output to \"{}\".".format(out_meshname))
