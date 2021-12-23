@@ -47,7 +47,7 @@ def parse_args():
             Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.""")
     parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
-    parser.add_argument("--data", "-d", dest="data", required=True, default="MyData", help="""The name of output data.
+    parser.add_argument("--data", "-d", dest="data", default="MyData", help="""The name of output data.
             Default is MyData""")
     parser.add_argument("--diffdata", "-diffd", dest="diffdata", help="""The name of difference data.
             Used in diff mode. If not given, output data is used.""")
