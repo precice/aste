@@ -11,9 +11,9 @@ Sample usage
 partitioned files:
 prefix_<#>.vtu
 
-./join_mesh.py prefix -o joined_mesh.vtk
+./join_mesh.py -m prefix -o joined_mesh.vtk -dir joined_mesh_dir
 
-./join_mesh.py prefix -o joined_mesh.vtk -r ./path/to/recovery.json
+./join_mesh.py -m prefix -o joined_mesh.vtk -r ./path/to/recovery.json
 
 """
 
@@ -26,10 +26,12 @@ import vtk
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Read a partitioned mesh and join it into a .vtk or .vtu file.")
-    parser.add_argument("--mesh", "-m", dest="in_meshname", 
-    help="The partitioned mesh prefix used as input (only VTU format is accepted) (Looking for <prefix>_<#filerank>.vtu) ")
-    parser.add_argument("--output", "-o", dest="out_meshname", 
-    help="The output mesh. Can be VTK or VTU format. If it is not given <inputmesh>_joined.vtk will be used.")
+    parser.add_argument("--mesh", "-m", required=True, dest="in_meshname",
+                        help="""The partitioned mesh prefix used as input (only VTU format is accepted)
+    (Looking for <prefix>_<#filerank>.vtu) """)
+    parser.add_argument("--output", "-o", dest="out_meshname",
+                        help="""The output mesh. Can be VTK or VTU format.
+                        If it is not given <inputmesh>_joined.vtk will be used.""")
     parser.add_argument("-r", "--recovery", dest="recovery",
                         help="The path to the recovery file to fully recover it's state.")
     parser.add_argument("--numparts", "-n", dest="numparts", type=int,
