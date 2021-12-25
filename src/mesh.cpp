@@ -270,7 +270,7 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
           meshNames.emplace_back(MeshName{finalMeshName, ext, context});
       }
 
-      if (!meshNames.empty() || ext == extensions.back()) {
+      if (!meshNames.empty()) {
         std::cerr << "Names: " << meshNames.size() << '\n';
         return meshNames;
       }
