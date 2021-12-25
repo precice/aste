@@ -38,6 +38,8 @@ struct ExecutionContext {
 class MeshName {
 public:
   MeshName() = default;
+  MeshName(std::string meshname, std::string extension, const ExecutionContext &context)
+      : _mname(std::move(meshname)), _ext(std::move(extension)), _context(context) {}
 
   std::string filename() const;
 
@@ -46,12 +48,10 @@ public:
   void save(const Mesh &mesh, const std::string &dataname) const;
 
 private:
-  MeshName(std::string meshname, const ExecutionContext &context)
-      : _mname(std::move(meshname)), _context(context) {}
-
   void createDirectories() const;
 
   std::string            _mname;
+  std::string            _ext;
   const ExecutionContext _context;
 
   friend BaseName;
