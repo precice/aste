@@ -44,7 +44,8 @@ def parse_args():
                         help="The mesh (VTK Unstructured Grid) used as input")
     parser.add_argument("--function", "-f", dest="function", required=True,
                         help="""The function to evalutate on the mesh.
-            Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.""")
+            Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.
+            There also some predefined functions exist 'franke' 'eggholder' 'rosenbrock' """)
     parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
     parser.add_argument("--data", "-d", dest="data", default="MyData", help="""The name of output data.
@@ -56,11 +57,21 @@ def parse_args():
             Default is INFO""")
     parser.add_argument("--directory", "-dir", dest="directory", default=None,
                         help="Directory for output files (optional)")
-    parser.add_argument("--diff", action='store_true', help="Calculate the difference to present data.")
+    parser.add_argument("--diff", action='store_true',
+                        help="Calculate the difference to present data.")
     parser.add_argument("--stats", "-s", action='store_true',
                         help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
     args = parser.parse_args()
     return args
+
+
+preDefFunctions = {
+    "franke": """0.75*exp(-(9*x-2)^2/4-(9*y-2)^2/4)
+                +0.75*exp(-(9*x+1)^2/49-(9*y+1)/10)
+                +0.5*exp(-(9*x-7)^2/4-(9*y-3)^2/4)
+                -0.2*exp(-(9*x-4)^2-(9*y-7))""",
+    "eggholder": "-(y+47)*sin(sqrt(abs(y+x/2+47)))-x*sin(sqrt(abs(x-(y+47))))",
+    "rosenbrock": "(100*(y-x^2)^2+(x-1)^2)+(100*(z-y^2)^2+(y-1)^2)"}
 
 
 def main():
@@ -79,6 +90,11 @@ def main():
         diffdata = args.data
     else:
         diffdata = args.diffdata
+
+    if args.function in preDefFunctions:
+        inputfunc = preDefFunctions[args.function]
+    else:
+        inputfunc = args.func
 
     extension = os.path.splitext(args.in_meshname)[1]
     if (extension == ".vtu"):
@@ -108,19 +124,18 @@ def main():
         else:
             data = v2n(vtk_dataset.GetPointData().GetAbstractArray(diffdata))
         # Calculate given function on the mesh
-        calc.SetFunction(args.function)
+        calc.SetFunction(inputfunc)
         calc.SetResultArrayName("function")
         calc.Update()
         func = v2n(calc.GetOutput().GetPointData().GetAbstractArray("function"))
         difference = data - func
-        logging.info("Evaluated \"{}\"-\"({})\" on the mesh \"{}\".".format(diffdata, args.function, args.in_meshname))
+        logging.info("Evaluated \"{}\"-\"({})\" on the mesh \"{}\".".format(diffdata, inputfunc, args.in_meshname))
 
         # Calculate Statistics
         num_points = vtk_dataset.GetNumberOfPoints()
         cnt, min, max = num_points, np.nanmin(difference), np.nanmax(difference)
         p99, p95, p90, median = np.percentile(difference, [99, 95, 90, 50])
         relative = np.sqrt(np.nansum(np.square(difference)) / difference.size)
-
         logging.info("Vertex count {}".format(cnt))
         logging.info("Relative l2 error {}".format(relative))
         logging.info("Maximum error per vertex {}".format(max))
@@ -145,8 +160,8 @@ def main():
             }, open(stat_file, "w"))
 
     else:
-        calc.SetFunction(args.function)
-        logging.info("Evaluated \"{}\" on the input mesh \"{}\".".format(args.function, args.in_meshname))
+        calc.SetFunction(inputfunc)
+        logging.info("Evaluated \"{}\" on the input mesh \"{}\".".format(inputfunc, args.in_meshname))
         calc.SetResultArrayName(args.data)
         calc.Update()
 
