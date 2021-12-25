@@ -271,6 +271,7 @@ def write_mesh(meshfile, filename, directory=None):
         raise Exception("Unkown File extension: " + extension)
     writer.SetFileName(filename)
     writer.SetInputData(meshfile)
+    writer.SetFileTypeToBinary()
     writer.Write()
 
 

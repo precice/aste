@@ -178,6 +178,7 @@ def main():
         out_meshname = os.path.join(directory, out_meshname)
 
     writer.SetFileName(out_meshname)
+    writer.SetFileTypeToBinary()
     writer.Write()
     logging.info("Written output to \"{}\".".format(out_meshname))
 

@@ -384,6 +384,7 @@ def write_mesh(filename: str, points: List, data_index: List, cells=None, cell_t
         raise Exception("Unkown File extension: " + extension)
     writer.SetFileName(filename)
     writer.SetInputData(vtkGrid)
+    writer.SetFileTypeToBinary()
     writer.Write()
     return
 
@@ -444,6 +445,7 @@ def vtu2vtk(inmesh, outmesh):
     writer = vtk.vtkUnstructuredGridWriter()
     writer.SetFileName(outmesh + ".vtk")
     writer.SetInputData(mesh)
+    writer.SetFileTypeToBinary()
     writer.Write()
     return
 

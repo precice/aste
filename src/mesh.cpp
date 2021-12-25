@@ -137,17 +137,17 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
   for (int i = 0; i < grid->GetNumberOfCells(); i++) {
     int cellType = grid->GetCell(i)->GetCellType();
 
-    //Here we use static cast since VTK library returns a long long unsigned int however preCICE uses int for PointId's
+    // Here we use static cast since VTK library returns a long long unsigned int however preCICE uses int for PointId's
     if (cellType == VTK_TRIANGLE) {
-      vtkCell *                cell = grid->GetCell(i);
+      vtkCell                 *cell = grid->GetCell(i);
       std::array<Mesh::VID, 3> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2))};
       mesh.triangles.push_back(elem);
     } else if (cellType == VTK_LINE) {
-      vtkCell *                cell = grid->GetCell(i);
+      vtkCell                 *cell = grid->GetCell(i);
       std::array<Mesh::VID, 2> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1))};
       mesh.edges.push_back(elem);
     } else if (cellType == VTK_QUAD) {
-      vtkCell *                cell = grid->GetCell(i);
+      vtkCell                 *cell = grid->GetCell(i);
       std::array<Mesh::VID, 4> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2)), vtkToPos(cell->GetPointId(3))};
       mesh.quadrilaterals.push_back(elem);
     } else {
@@ -224,6 +224,7 @@ void MeshName::save(const Mesh &mesh, const std::string &dataname) const
         vtkSmartPointer<vtkUnstructuredGridWriter>::New();
     writer->SetInputData(grid);
     writer->SetFileName(filename().c_str());
+    writer->SetFileTypeToBinary();
     writer->Write();
   }
 }
