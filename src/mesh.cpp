@@ -33,11 +33,7 @@ namespace aste {
 
 std::string MeshName::filename() const
 {
-  if (_context.isParallel()) {
-    return _mname + ".vtu";
-  } else {
-    return _mname + ".vtk";
-  }
+  return _mname + _ext;
 }
 
 namespace aste {
@@ -137,17 +133,17 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
   for (int i = 0; i < grid->GetNumberOfCells(); i++) {
     int cellType = grid->GetCell(i)->GetCellType();
 
-    //Here we use static cast since VTK library returns a long long unsigned int however preCICE uses int for PointId's
+    // Here we use static cast since VTK library returns a long long unsigned int however preCICE uses int for PointId's
     if (cellType == VTK_TRIANGLE) {
-      vtkCell *                cell = grid->GetCell(i);
+      vtkCell                 *cell = grid->GetCell(i);
       std::array<Mesh::VID, 3> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2))};
       mesh.triangles.push_back(elem);
     } else if (cellType == VTK_LINE) {
-      vtkCell *                cell = grid->GetCell(i);
+      vtkCell                 *cell = grid->GetCell(i);
       std::array<Mesh::VID, 2> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1))};
       mesh.edges.push_back(elem);
     } else if (cellType == VTK_QUAD) {
-      vtkCell *                cell = grid->GetCell(i);
+      vtkCell                 *cell = grid->GetCell(i);
       std::array<Mesh::VID, 4> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2)), vtkToPos(cell->GetPointId(3))};
       mesh.quadrilaterals.push_back(elem);
     } else {
@@ -238,9 +234,9 @@ std::ostream &operator<<(std::ostream &out, const MeshName &mname)
 MeshName BaseName::with(const ExecutionContext &context) const
 {
   if (context.isParallel()) {
-    return {_bname + "_" + std::to_string(context.rank), context};
+    return {_bname + "_" + std::to_string(context.rank), ".vtu", context};
   } else {
-    return {_bname, context};
+    return {_bname, ".vtk", context};
   }
 }
 
@@ -248,60 +244,68 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
 {
   if (!context.isParallel()) {
     // Check single timestep/meshfiles first
+    std::vector<std::string> extensions{".vtk", ".vtu"};
     // Case: a single mesh
-    if (fs::is_regular_file(_bname + ".vtk")) {
-      return {MeshName{_bname, context}};
-    }
+    for (const auto ext : extensions) {
+      if (fs::is_regular_file(_bname + ext)) {
+        return {MeshName{_bname, ext, context}};
+      }
 
-    // Check multiple timesteps
-    std::vector<MeshName> meshNames;
-    {
-      auto initMeshName = std::string{_bname + ".init"};
-      if (fs::is_regular_file(initMeshName + ".vtk"))
-        meshNames.push_back(MeshName{initMeshName, context});
+      // Check multiple timesteps
+      std::vector<MeshName> meshNames;
+      {
+        auto initMeshName = std::string{_bname + ".init"};
+        if (fs::is_regular_file(initMeshName + ext))
+          meshNames.emplace_back(MeshName{initMeshName, ext, context});
+      }
+      for (int t = 1; true; ++t) {
+        std::string stepMeshName = _bname + ".dt" + std::to_string(t);
+        if (!fs::is_regular_file(stepMeshName + ext))
+          break;
+        meshNames.emplace_back(MeshName{stepMeshName, ext, context});
+      }
+      {
+        auto finalMeshName = std::string{_bname + ".final"};
+        if (fs::is_regular_file(finalMeshName + ext))
+          meshNames.emplace_back(MeshName{finalMeshName, ext, context});
+      }
+
+      if (!meshNames.empty()) {
+        std::cerr << "Names: " << meshNames.size() << '\n';
+        return meshNames;
+      }
     }
-    for (int t = 1; true; ++t) {
-      std::string stepMeshName = _bname + ".dt" + std::to_string(t);
-      if (!fs::is_regular_file(stepMeshName + ".vtk"))
-        break;
-      meshNames.push_back(MeshName{stepMeshName, context});
-    }
-    {
-      auto finalMeshName = std::string{_bname + ".final"};
-      if (fs::is_regular_file(finalMeshName + ".vtk"))
-        meshNames.push_back(MeshName{finalMeshName, context});
-    }
-    std::cerr << "Names: " << meshNames.size() << '\n';
-    return meshNames;
 
   } else { // Parallel Case
     // Check if there is a single mesh
+    std::string ext{".vtu"};
     std::string rankMeshName{_bname + "_" + std::to_string(context.rank)};
-    if (fs::is_regular_file(rankMeshName + ".vtu")) {
-      return {MeshName{rankMeshName, context}};
+    if (fs::is_regular_file(rankMeshName + ext)) {
+      return {MeshName{rankMeshName, ext, context}};
     }
 
     // Check multiple timesteps
     std::vector<MeshName> meshNames;
     {
       auto initMeshName = std::string{_bname + ".init" + "_" + std::to_string(context.rank)};
-      if (fs::is_regular_file(initMeshName + ".vtu"))
-        meshNames.push_back(MeshName{initMeshName, context});
+      if (fs::is_regular_file(initMeshName + ext))
+        meshNames.emplace_back(MeshName{initMeshName, ext, context});
     }
     for (int t = 1; true; ++t) {
       std::string rankMeshName{_bname + ".dt" + std::to_string(t) + "_" + std::to_string(context.rank)};
-      if (!fs::is_regular_file(rankMeshName + ".vtu"))
+      if (!fs::is_regular_file(rankMeshName + ext))
         break;
-      meshNames.push_back(MeshName{rankMeshName, context});
+      meshNames.emplace_back(rankMeshName, ext, context);
     }
     {
       auto finalMeshName = std::string{_bname + ".final" + "_" + std::to_string(context.rank)};
-      if (fs::is_regular_file(finalMeshName + ".vtu"))
-        meshNames.push_back(MeshName{finalMeshName, context});
+      if (fs::is_regular_file(finalMeshName + ext))
+        meshNames.emplace_back(MeshName{finalMeshName, ext, context});
     }
     std::cerr << "Names: " << meshNames.size() << '\n';
     return meshNames;
   }
+  throw std::runtime_error("Unable to handle basename " + _bname + " no meshes found");
 }
 
 std::string Mesh::previewData(std::size_t max) const
