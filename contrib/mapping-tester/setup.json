@@ -1,6 +1,6 @@
 {
     "general": {
-        "function": "math.cos(0.1*(x+y+z))",
+        "function": "cos(0.1*(x+y+z))",
         "ranks": {
             "A": [1, 2],
             "B": [1, 2]
