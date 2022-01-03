@@ -220,6 +220,7 @@ void MeshName::save(const Mesh &mesh, const std::string &dataname) const
         vtkSmartPointer<vtkUnstructuredGridWriter>::New();
     writer->SetInputData(grid);
     writer->SetFileName(filename().c_str());
+    writer->SetFileTypeToBinary();
     writer->Write();
   }
 }

@@ -154,6 +154,7 @@ def main():
 
     if os.path.splitext(out_meshname)[1] == ".vtk":
         writer = vtk.vtkUnstructuredGridWriter()
+        writer.SetFileTypeToBinary()
     elif os.path.splitext(out_meshname)[1] == ".vtu":
         writer = vtk.vtkXMLUnstructuredGridWriter()
     else:

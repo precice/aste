@@ -378,6 +378,7 @@ def write_mesh(filename: str, points: List, data_index: List, cells=None, cell_t
     extension = os.path.splitext(filename)[1]
     if (extension == ".vtk"):  # VTK Legacy format
         writer = vtk.vtkUnstructuredGridWriter()
+        writer.SetFileTypeToBinary()
     elif (extension == ".vtu"):  # VTK XML Unstructured Grid format
         writer = vtk.vtkXMLUnstructuredGridWriter()
     else:
@@ -444,6 +445,7 @@ def vtu2vtk(inmesh, outmesh):
     writer = vtk.vtkUnstructuredGridWriter()
     writer.SetFileName(outmesh + ".vtk")
     writer.SetInputData(mesh)
+    writer.SetFileTypeToBinary()
     writer.Write()
     return
 
