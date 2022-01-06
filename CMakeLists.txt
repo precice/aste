@@ -32,6 +32,7 @@ find_package(METIS)
 if (METIS_FOUND)
     add_library(metisAPI SHARED src/metisAPI.cpp)
     target_link_libraries(metisAPI ${METIS_LIBRARIES})
+    target_include_directories(metisAPI PRIVATE ${METIS_INCLUDE_DIR})
 endif()
 
 find_package(MPI REQUIRED)
@@ -83,7 +84,9 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/join_mesh.py           DESTINATION ${C
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk_calculator.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 install(TARGETS preciceMap DESTINATION bin)
+if(METIS_FOUND)
 install(TARGETS metisAPI DESTINATION lib)
+endif()
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py ${CMAKE_CURRENT_SOURCE_DIR}/src/join_mesh.py ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk_calculator.py DESTINATION bin)
 
 enable_testing()
