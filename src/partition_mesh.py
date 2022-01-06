@@ -10,6 +10,7 @@ from ctypes import *
 import json
 import platform
 
+
 def main():
     args = parse_args()
     logging.basicConfig(level=getattr(logging, args.logging))
@@ -179,21 +180,21 @@ def partition_metis(mesh: Mesh, numparts: int):
         cell = mesh.cells[i]
         cellData += list(cell)
         cellPtr.append(cellPtr[-1] + len(cell))
-    binpath=os.path.dirname(__file__)
-    libpath= os.path.normpath(os.path.join(binpath,"../lib"))
+    binpath = os.path.dirname(__file__)
+    libpath = os.path.normpath(os.path.join(binpath, "../lib"))
     os_type = platform.system()
     if os_type == "Linux":
-    	ext = ".so"
-    elif os_type == "Darwin": #MacOS
+        ext = ".so"
+    elif os_type == "Darwin":  # MacOS
         ext = ".dylib"
     else:
-       raise Exception("Unknown OS type")
-    if os.path.isfile(os.path.join(binpath,"libmetisAPI"+ext)):
-       libmetispath=os.path.join(binpath,"libmetisAPI"+ext)
-    elif os.path.isfile(os.path.join(libpath,"libmetisAPI"+ext)):
-       libmetispath=os.path.join(libpath,"libmetisAPI"+ext)
+        raise Exception("Unknown OS type")
+    if os.path.isfile(os.path.join(binpath, "libmetisAPI"+ext)):
+        libmetispath = os.path.join(binpath, "libmetisAPI"+ext)
+    elif os.path.isfile(os.path.join(libpath, "libmetisAPI"+ext)):
+        libmetispath = os.path.join(libpath, "libmetisAPI"+ext)
     else:
-       raise Exception("libmetisAPI"+ext+" cannot found!")
+        raise Exception("libmetisAPI"+ext+" cannot found!")
     libmetis = cdll.LoadLibrary(libmetispath)
     idx_t = c_int if libmetis.typewidth() == 32 else c_longlong
     cell_count = idx_t(len(mesh.cells))
