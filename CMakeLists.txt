@@ -82,6 +82,10 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py      DESTINATION ${C
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/join_mesh.py           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk_calculator.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
+install(TARGETS preciceMap DESTINATION bin)
+install(TARGETS metisAPI DESTINATION lib)
+install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py ${CMAKE_CURRENT_SOURCE_DIR}/src/join_mesh.py ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk_calculator.py DESTINATION bin)
+
 enable_testing()
 
 add_test(NAME read_write_test  COMMAND testing WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/tests")
