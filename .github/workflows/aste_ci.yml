@@ -22,9 +22,21 @@ jobs:
     - name: install VTK
       run: |
         sudo apt-get -y install libvtk7-dev
-    - name: build aste
+    - name: build aste gcc
       run: | 
-        cmake . && make all 
-    - name: run tests
+        mkdir build && cd build && cmake -DCMAKE_CXX_FLAGS="-Werror -Wall -Wextra" . && make all
+    - name: run test gcc
+      run: |
+        ctest
+    - name: install clang
+      run: |
+        sudo apt-get -y install clang
+    - name: switch directory
+      run: |
+        cd .. && mkdir build_clang && cd build_clang
+    - name: build aste clang
+      run: |
+        CC=clang CXX=clang++ cmake -DCMAKE_CXX_FLAGS="-Werror -Wall -Wextra" . && make all
+    - name: run test clang
       run: |
         ctest
