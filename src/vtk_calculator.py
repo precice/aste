@@ -45,7 +45,7 @@ def parse_args():
     parser.add_argument("--function", "-f", dest="function", required=True,
                         help="""The function to evalutate on the mesh.
             Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.
-            Alternatively, specify one of the following predefined functions: 'franke' 'eggholder' 'rosenbrock'.""")
+            Alternatively, you can use predefined function visit preCICE documentation.""")
     parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
     parser.add_argument("--data", "-d", dest="data", default="MyData", help="""The name of output data.
