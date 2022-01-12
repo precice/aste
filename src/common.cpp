@@ -14,7 +14,7 @@ OptionMap getOptions(int argc, char *argv[])
   po::options_description desc("ASTE: Artificial solver emulation tool");
   desc.add_options()("help,h", "produce help")(
       "precice-config,c",
-      po::value<std::string>()->default_value("precice.xml"),
+      po::value<std::string>()->default_value("precice-config.xml"),
       "preCICE configuratio file")("participant,p",
                                    po::value<std::string>()->required(),
                                    "Participant Name")(
