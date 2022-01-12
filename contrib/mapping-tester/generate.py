@@ -212,7 +212,7 @@ def setupCases(outdir, template, cases):
         casemap.setdefault(folders[0], []).append(folders[1:])
         name = [outdir] + folders
         path=os.path.join(*name)
-        config=os.path.join(path, "precice.xml")
+        config=os.path.join(path, "precice-config.xml")
 
         print(f"Generating {path}")
         os.makedirs(path, exist_ok=True)
