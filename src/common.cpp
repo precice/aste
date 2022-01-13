@@ -9,28 +9,28 @@ using namespace std;
 OptionMap getOptions(int argc, char *argv[])
 {
   namespace po = boost::program_options;
-  using std::cout;
-  using std::endl;
+
   po::options_description desc("ASTE: Artificial solver emulation tool");
-  desc.add_options()("help,h", "produce help")(
+  desc.add_options()("help,h", "Print this help message")(
       "precice-config,c",
       po::value<std::string>()->default_value("precice-config.xml"),
-      "preCICE configuratio file")("participant,p",
-                                   po::value<std::string>()->required(),
-                                   "Participant Name")(
-      "runName", po::value<std::string>()->default_value(""),
-      "Name of the run")("data", po::value<std::string>()->required(),
-                         "Name of Data Array to be Mapped")(
+      "preCICE configuratio file")(
+      "participant,p",
+      po::value<std::string>()->required(),
+      "Participant Name")(
+      "data", po::value<std::string>()->required(),
+      "Name of Data Array to be Mapped")(
       "mesh", po::value<string>()->required(),
-      "Mesh prefix. For each timestep i there will be .dti (e.g. .dt4) "
-      "appended to the prefix name")(
+      "Mesh prefix (i.e. mesh name without the format extension such as '.vtk' or '.vtu'). "
+      "Example: solution.vtk has the prefix 'solution'. "
+      "preciceMap will look for timeseries as well as distributed meshes (e.g. from preCICE exports) "
+      "automatically and load them if required.")(
       "output", po::value<string>()->default_value("output"),
       "Output file name.")(
       "vector", po::bool_switch(),
       "Distinguish between vector valued data and scalar data")(
       "verbose,v", po::bool_switch(),
-      "Enable verbose output") // not explicitely used, handled by easylogging
-      ;
+      "Enable verbose output"); // not explicitely used, handled by easylogging
 
   po::variables_map vm;
 
@@ -39,16 +39,19 @@ OptionMap getOptions(int argc, char *argv[])
 
     if (vm.count("help")) {
       std::cout << desc << std::endl;
-      std::exit(-1);
+      std::exit(EXIT_SUCCESS);
     }
+
+    // Needs to be called before we look for participants
+    po::notify(vm);
+
     if (vm["participant"].as<string>() != "A" &&
         vm["participant"].as<string>() != "B")
       throw runtime_error("Invalid participant, must be either 'A' or 'B'");
-    po::notify(vm);
   } catch (const std::exception &e) {
     LOG(ERROR) << "ERROR: " << e.what() << "\n";
     LOG(ERROR) << desc << std::endl;
-    std::exit(-1);
+    std::exit(EXIT_FAILURE);
   }
   return vm;
 }

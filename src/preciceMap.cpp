@@ -168,7 +168,6 @@ int main(int argc, char *argv[])
 
   // Create and configure solver interface
   precice::SolverInterface interface(participant, options["precice-config"].as<std::string>(), context.rank, context.size);
-  //precice::utils::EventRegistry::instance().runName =  options["runName"].as<std::string>();
 
   // Get dimension/components of data
   const int dim = isVector ? interface.getDimensions() : 1;
@@ -256,4 +255,5 @@ int main(int argc, char *argv[])
   }
 
   MPI_Finalize();
+  return EXIT_SUCCESS;
 }
