@@ -18,34 +18,37 @@ Example usage
 
 Scalar calculation and writing to given file
 
-./vtk_calculator.py inputmesh.vtk exp(cos(x)+sin(y)) -t e^(cos(x)+sin(y)) -o outputmesh.vtk
+vtk_calculator.py -m inputmesh.vtk -f "exp(cos(x)+sin(y))" --data "e^(cos(x)+sin(y))" -o outputmesh.vtk
 
 Vector field and appends to input mesh
 
-./vtk_calculator.py inputmesh.vtk x*iHat+cos(y)*jHat-sin(z)*kHat -t MyVectorField
+vtk_calculator.py -m "inputmesh.vtk" -f "x*iHat+cos(y)*jHat-sin(z)*kHat" -d "MyVectorField"
 
 There is also a diff mode which provides statistic between input data and function calculated
 (Note that it only works for scalar data)
 
-./vtk_calculator.py -m inputmesh.vtu -f x+y -d mydata --diff --stats
+For example to calculate difference between given function "x+y"
+and data "mydata" and override the result to "mydata" and to save statistics into a file
+following command is used.
 
-Calculates difference between given function and mydata data save over rides into variable data and saves statistics
+vtk_calculator.py -m inputmesh.vtu -f "x+y" -d "mydata" --diff --stats
 
-./vtk_calculator.py -m inputmesh.vtu -f x+y -d diffence -diffd mydata --diff
+If don't want to override "mydata" instead save into another variable "difference" following command is used.
 
-Calculates difference between given function and mydata data save into diffence data
-
+vtk_calculator.py -m inputmesh.vtu -f "x+y" -d "difference" --diffdata "mydata" --diff --stats
 """
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--mesh", "-m", dest="in_meshname", required=True,
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--mesh", "-m", dest="in_meshname",
                         help="The mesh (VTK Unstructured Grid) used as input")
-    parser.add_argument("--function", "-f", dest="function", required=True,
+    parser.add_argument("--function", "-f", dest="function", default="eggholder3d",
                         help="""The function to evalutate on the mesh.
             Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.
-            Alternatively, you can use predefined function visit preCICE documentation.""")
+            Default is Egg-Holder function in 3D.
+            Alternatively, you can use predefined function """)
     parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
     parser.add_argument("--data", "-d", dest="data", default="MyData", help="""The name of output data.
@@ -61,34 +64,54 @@ def parse_args():
                         help="Calculate the difference to present data.")
     parser.add_argument("--stats", "-s", action='store_true',
                         help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
+    group.add_argument("--listfunctions",action="store_true",help="Prints list of predefined functions.")
     args = parser.parse_args()
     return args
 
 
-preDefFunctions = {
-    "franke3d": """0.75*exp(((9*x-2)^2+(9*y-2)^2+(9*z-2)^2)/4)+0.75*exp(-(9*x+1)^2/49-(9*y+1)/10-(9*z+1)/10)
-    +0.5*exp(-((9*x-7)^2+(9*y-3)^2+(9*z-5)^2)/4)-0.2*exp(-(9*x-4)^2-(9*y-7)^2-(9*z-5)^2)""",
-    "franke2d(xy)": """0.75*exp(-((9*x-2)^2+(9*y-2)^2)/4)+0.75*exp(-(9*x+1)^2/49-(9*y+1)/10)
-    +0.5*exp(-((9*x-2)^2+(9*y-3)^2)/4)-0.2*exp(-(9*x-4)^2-(9*y-7)^2)""",
-    "franke2d(xz)": """0.75*exp(-((9*x-2)^2+(9*z-2)^2)/4)+0.75*exp(-(9*x+1)^2/49-(9*z+1)/10)
-    +0.5*exp(-((9*x-2)^2+(9*z-3)^2)/4)-0.2*exp(-(9*x-4)^2-(9*z-7)^2)""",
-    "franke2d(yz)": """0.75*exp(-((9*y-2)^2+(9*z-2)^2)/4)+0.75*exp(-(9*y+1)^2/49-(9*z+1)/10)
-    +0.5*exp(-((9*y-2)^2+(9*z-3)^2)/4)-0.2*exp(-(9*y-4)^2-(9*z-7)^2)""",
-    "eggholder2d(xy)": "-x*sin(sqrt(abs(x-y-47)))-(y+47)*sin(sqrt(abs(0.5*x+y+47)))",
-    "eggholder2d(xz)": "-x*sin(sqrt(abs(x-z-47)))-(z+47)*sin(sqrt(abs(0.5*x+z+47)))",
-    "eggholder2d(yz)": "-y*sin(sqrt(abs(y-z-47)))-(z+47)*sin(sqrt(abs(0.5*y+z+47)))",
-    "eggholder3d": """-x*sin(sqrt(abs(x-y-47)))-(y+47)*sin(sqrt(abs(0.5*x+y+47)))
-    -y*sin(sqrt(abs(y-z-47)))-(z+47)*sin(sqrt(abs(0.5*y+z+47)))""",
-    "rosenbrock2d(xy)": "(100*(y-x^2)^2+(x-1)^2)",
-    "rosenbrock2d(xz)": "(100*(z-x^2)^2+(x-1)^2)",
-    "rosenbrock2d(yz)": "(100*(z-y^2)^2+(y-1)^2)",
-    "rosenbrock3d": "(100*(y-x^2)^2+(x-1)^2)+(100*(z-y^2)^2+(y-1)^2)"
+twoDFunctions = {
+    "franke2d": """0.75*exp(-((9*{first}-2)^2+(9*{second}-2)^2)/4)
+    +0.75*exp(-(9*{first}+1)^2/49-(9*{second}+1)/10)
+    +0.5*exp(-((9*{first}-7)^2+(9*{second}-3)^2)/4)
+    -0.2*exp(-(9*{first}-4)^2-(9*{second}-7)^2)""",
+    "eggholder2d": """-{first}*sin(sqrt(abs({first}-{second}-47)))
+    -({second}+47)*sin(sqrt(abs(0.5*{first}+{second}+47)))""",
+    "rosenbrock2d": "(100*({second}-{first}^2)^2+({first}-1)^2)"
 }
 
+preDefFunctions = {
+    "franke3d": """0.75*exp(-((9*x-2)^2+(9*y-2)^2+(9*z-2)^2)/4)
+    +0.75*exp(-(9*x+1)^2/49-(9*y+1)/10-(9*z+1)/10)
+    +0.5*exp(-((9*x-7)^2+(9*y-3)^2+(9*y-5)^2)/4)
+    -0.2*exp(-(9*x-4)^2-(9*y-7)^2-(9*z-5)^2)""",
+    "eggholder3d": """-x*sin(sqrt(abs(x-y-47)))-(y+47)*sin(sqrt(abs(0.5*x+y+47)))
+    -y*sin(sqrt(abs(y-z-47)))-(z+47)*sin(sqrt(abs(0.5*y+z+47)))""",
+    "rosenbrock3d": "(100*(y-x^2)^2+(x-1)^2)+(100*(z-y^2)^2+(y-1)^2)",
+    "franke2d(xy)": twoDFunctions["franke2d"].format(first="x", second="y"),
+    "franke2d(xz)": twoDFunctions["franke2d"].format(first="x", second="z"),
+    "franke2d(yz)": twoDFunctions["franke2d"].format(first="y", second="z"),
+    "eggholder2d(xy)": twoDFunctions["eggholder2d"].format(first="x", second="y"),
+    "eggholder2d(xz)": twoDFunctions["eggholder2d"].format(first="x", second="y"),
+    "eggholder2d(yz)": twoDFunctions["eggholder2d"].format(first="x", second="y"),
+    "rosenbrock2d(xy)": twoDFunctions["rosenbrock2d"].format(first="x", second="y"),
+    "rosenbrock2d(xz)": twoDFunctions["rosenbrock2d"].format(first="x", second="z"),
+    "rosenbrock2d(yz)": twoDFunctions["rosenbrock2d"].format(first="y", second="z"),
+}
+
+def print_predef_functions():
+    print("Available predefined functions are:")
+    for key in list(preDefFunctions.keys()):
+        print(key)
+    print("For more information visit preCICE documentation.")
+    return
 
 def main():
     args = parse_args()
     logging.basicConfig(level=getattr(logging, args.logging))
+
+    if args.listfunctions:
+        print_predef_functions()
+        return
 
     assert os.path.isfile(args.in_meshname), "Input mesh file not found!"
 
@@ -207,6 +230,7 @@ def main():
     writer.SetFileName(out_meshname)
     writer.Write()
     logging.info("Written output to \"{}\".".format(out_meshname))
+    return
 
 
 if __name__ == "__main__":
