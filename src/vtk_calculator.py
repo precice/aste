@@ -64,7 +64,7 @@ def parse_args():
                         help="Calculate the difference to present data.")
     parser.add_argument("--stats", "-s", action='store_true',
                         help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
-    group.add_argument("--listfunctions",action="store_true",help="Prints list of predefined functions.")
+    group.add_argument("--functions",action="store_true",help="Prints list of predefined functions.")
     args = parser.parse_args()
     return args
 
@@ -109,7 +109,7 @@ def main():
     args = parse_args()
     logging.basicConfig(level=getattr(logging, args.logging))
 
-    if args.listfunctions:
+    if args.functions:
         print_predef_functions()
         return
 
