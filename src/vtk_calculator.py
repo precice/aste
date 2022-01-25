@@ -163,11 +163,7 @@ def main():
     if args.diff:
         diff_vtk = n2v(difference)
         diff_vtk.SetName(args.data)
-        num_comp = diff_vtk.GetNumberOfComponents()
-        if num_comp > 1:
-            vtk_dataset.GetPointData().SetVectors(diff_vtk)
-        else:
-            vtk_dataset.GetPointData().SetScalars(diff_vtk)
+        vtk_dataset.GetPointData().AddArray(diff_vtk)
         writer.SetInputData(vtk_dataset)
     else:
         writer.SetInputData(calc.GetOutput())
