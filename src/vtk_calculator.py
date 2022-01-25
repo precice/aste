@@ -20,7 +20,7 @@ Scalar calculation and writing to given file
 
 vtk_calculator.py -m inputmesh.vtk -f "exp(cos(x)+sin(y))" --data "e^(cos(x)+sin(y))" -o outputmesh.vtk
 
-Vector field and appends to input mesh
+Vector field calculation and appends to input mesh
 
 vtk_calculator.py -m "inputmesh.vtk" -f "x*iHat+cos(y)*jHat-sin(z)*kHat" -d "MyVectorField"
 
@@ -28,14 +28,15 @@ There is also a diff mode which provides statistic between input data and functi
 (Note that it only works for scalar data)
 
 For example to calculate difference between given function "x+y"
-and data "mydata" and override the result to "mydata" and to save statistics into a file
+and existing data "sin(x)" and override the result to "sin(x)" and to save statistics into a file
 following command is used.
 
-vtk_calculator.py -m inputmesh.vtu -f "x+y" -d "mydata" --diff --stats
+vtk_calculator.py -m inputmesh.vtu -f "x+y" -d "sin(x)" --diff --stats
 
-If don't want to override "mydata" instead save into another variable "difference" following command is used.
+If you don't want to override "sin(x)" and prefer to save the newly generated
+data into another variable "difference" following command can be used.
 
-vtk_calculator.py -m inputmesh.vtu -f "x+y" -d "difference" --diffdata "mydata" --diff --stats
+vtk_calculator.py -m inputmesh.vtu -f "x+y" -d "difference" --diffdata "sin(x)" --diff --stats
 """
 
 
@@ -49,6 +50,7 @@ def parse_args():
             Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.
             Default is Egg-Holder function in 3D.
             Alternatively, you can use predefined function """)
+    group.add_argument("--functions",action="store_true",help="Prints list of predefined functions.")
     parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
     parser.add_argument("--data", "-d", dest="data", default="MyData", help="""The name of output data.
@@ -64,7 +66,6 @@ def parse_args():
                         help="Calculate the difference to present data.")
     parser.add_argument("--stats", "-s", action='store_true',
                         help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
-    group.add_argument("--functions",action="store_true",help="Prints list of predefined functions.")
     args = parser.parse_args()
     return args
 
@@ -102,7 +103,8 @@ def print_predef_functions():
     print("Available predefined functions are:")
     for key in list(preDefFunctions.keys()):
         print(key)
-    print("For more information visit preCICE documentation.")
+    print("Please visit the preCICE documentation for more information.")
+    print("https://precice.org/tooling-aste.html")
     return
 
 def main():
