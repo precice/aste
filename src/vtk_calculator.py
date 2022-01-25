@@ -131,7 +131,7 @@ def main():
     if args.function in preDefFunctions:
         inputfunc = preDefFunctions[args.function]
     else:
-        inputfunc = args.func
+        inputfunc = args.function
 
     extension = os.path.splitext(args.in_meshname)[1]
     if (extension == ".vtu"):
