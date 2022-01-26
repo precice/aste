@@ -133,14 +133,14 @@ def createRunScript(outdir, path, case):
     ameshLocation = os.path.relpath(os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path)
 
     # Generate runner script
-    acmd = "preciceMap -v -p A --data \"{}\" --mesh {} || kill 0 &".format(case["function"], ameshLocation)
+    acmd = "/usr/bin/time -f %M -a -o memory-A.log preciceMap -v -p A --data \"{}\" --mesh {} || kill 0 &".format(case["function"], ameshLocation)
     if aranks > 1: acmd = "mpirun -n {} $ASTE_A_MPIARGS {}".format(aranks, acmd)
 
     bmesh = case["B"]["mesh"]["name"]
     branks = case["B"]["ranks"]
     bmeshLocation = os.path.relpath(os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path)
 
-    bcmd = "preciceMap -v -p B --data \"{}\" --mesh {} --output mapped || kill 0 &".format(case["function"], bmeshLocation)
+    bcmd = "/usr/bin/time -f %M -a -o memory-B.log preciceMap -v -p B --data \"{}\" --mesh {} --output mapped || kill 0 &".format(case["function"], bmeshLocation)
     if branks > 1: bcmd = "mpirun -n {} $ASTE_B_MPIARGS {}".format(branks, bcmd)
 
     content = [
