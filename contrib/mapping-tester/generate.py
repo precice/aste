@@ -139,8 +139,8 @@ def createRunScript(outdir, path, case):
     bmesh = case["B"]["mesh"]["name"]
     branks = case["B"]["ranks"]
     bmeshLocation = os.path.relpath(os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path)
-
-    bcmd = "/usr/bin/time -f %M -a -o memory-B.log preciceMap -v -p B --data \"{}\" --mesh {} --output mapped || kill 0 &".format(case["function"], bmeshLocation)
+    mapped_data_name = case["function"] + "(mapped)"
+    bcmd = "/usr/bin/time -f %M -a -o memory-B.log preciceMap -v -p B --data \"{}\" --mesh {} --output mapped || kill 0 &".format(mapped_data_name, bmeshLocation)
     if branks > 1: bcmd = "mpirun -n {} $ASTE_B_MPIARGS {}".format(branks, bcmd)
 
     content = [
@@ -200,7 +200,7 @@ def createRunScript(outdir, path, case):
         [recoveryFileLocation, tmpPrefix] = os.path.split(os.path.normpath(bmeshLocation))
         tmprecoveryFile = recoveryFileLocation + "/recovery.json"
         joincmd = "join_mesh.py --mesh mapped -r {} -o result.vtk".format(tmprecoveryFile)
-        diffcmd = "vtk_calculator.py --data error --diffdata \"{0}\" -o error.vtk --diff --stats --mesh result.vtk --function \"{0}\" | tee diff.log".format(case["function"])
+        diffcmd = "vtk_calculator.py --data error --diffdata \"{1}\" --diff --stats --mesh result.vtk --function \"{0}\" | tee diff.log".format(case["function"], mapped_data_name)
         post_content += [joincmd,diffcmd]
     open(os.path.join(path, "post.sh"),"w").writelines([ line + "\n" for line in post_content ])
 
