@@ -86,7 +86,7 @@ class Mesh:
 def partition(mesh: Mesh, numparts: int, algorithm):
     """
     Partitions a mesh using METIS or kmeans. This does not call METIS directly,
-    but instead uses a small C++ Wrapper libmetisAPI.so/dylib for convenience.
+    but instead uses a small C++ Wrapper around shared libary libmetisAPI for convenience.
     This shared library must be provided if this function should be called.
     """
     if algorithm == "meshfree":
