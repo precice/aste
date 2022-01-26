@@ -67,7 +67,7 @@ def main(argv):
 
     for name, file in set(itertools.chain(setup["general"]["meshes"]["A"].items(), setup["general"]["meshes"]["B"].items())):
         if not os.path.isfile(os.path.expandvars(file)):
-            raise Exception('\033[91m Unable to open file called \"{}\".\033[0m'.format(file))
+            raise Exception(f'\033[91m Unable to open file called "{file}".\033[0m')
         prepareMainMesh(meshdir, name, file, function, args.force)
         for p in partitions:
             preparePartMesh(meshdir, name, p, args.force)
