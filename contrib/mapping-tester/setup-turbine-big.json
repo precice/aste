@@ -1,6 +1,6 @@
 {
   "general": {
-    "function": "0.78 + math.cos(10*(x+y+z))",
+    "function": "0.78 + cos(10*(x+y+z))",
     "ranks": {
       "A": [
         48

@@ -27,7 +27,7 @@ def main(argv):
         grouped.get_group(key).plot(
             ax=ax,
             x="count",
-            y=["relative-l2", "weighted-l2", "median"],
+            y=["relative-l2", "median"],
             loglog=True,
             title=str(key)
         )
