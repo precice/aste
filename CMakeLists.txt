@@ -88,7 +88,7 @@ install(TARGETS preciceMap DESTINATION ${CMAKE_INSTALL_BINDIR})
 if(METIS_FOUND)
 install(TARGETS metisAPI DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
-install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py ${CMAKE_CURRENT_SOURCE_DIR}/src/join_mesh.py ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk_calculator.py DESTINATION ${CMAKE_INSTALL_LIBEXECDIR})
+install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py ${CMAKE_CURRENT_SOURCE_DIR}/src/join_mesh.py ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk_calculator.py DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 enable_testing()
 
