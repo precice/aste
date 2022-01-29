@@ -48,9 +48,8 @@ def parse_args():
     parser.add_argument("--function", "-f", dest="function", default="eggholder3d",
                         help="""The function to evalutate on the mesh.
             Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.
-            Default is Egg-Holder function in 3D.
-            Alternatively, you can use predefined function """)
-    group.add_argument("--functions",action="store_true",help="Prints list of predefined functions.")
+            Alternatively, you can use predefined function
+            Default is Eggholder function in 3D (eggholder3d).""")
     parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
     parser.add_argument("--data", "-d", dest="data", default="MyData", help="""The name of output data.
