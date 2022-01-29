@@ -75,10 +75,8 @@ def main():
         logging.info("No output mesh name is given {} will be used.".format(args.in_meshname))
         out_meshname = args.in_meshname
 
-    if args.diff and args.diffdata is None:
-        logging.info("No input dataname is given outdata '{}' will be used as input dataname.".format(args.data))
-        diffdata = args.data
-    else:
+    if args.diff:
+        assert args.diffdata, "--diffdata is required for --diff mode. Please check your input."
         diffdata = args.diffdata
 
     extension = os.path.splitext(args.in_meshname)[1]
