@@ -71,40 +71,50 @@ def parse_args():
 
 
 twoDFunctions = {
-    "franke2d": """0.75*exp(-((9*{first}-2)^2+(9*{second}-2)^2)/4)
-    +0.75*exp(-(9*{first}+1)^2/49-(9*{second}+1)/10)
-    +0.5*exp(-((9*{first}-7)^2+(9*{second}-3)^2)/4)
-    -0.2*exp(-(9*{first}-4)^2-(9*{second}-7)^2)""",
-    "eggholder2d": """-{first}*sin(sqrt(abs({first}-{second}-47)))
-    -({second}+47)*sin(sqrt(abs(0.5*{first}+{second}+47)))""",
+    "franke2d": "0.75*exp(-((9*{first}-2)^2+(9*{second}-2)^2)/4)"
+    "+0.75*exp(-(9*{first}+1)^2/49-(9*{second}+1)/10)"
+    "+0.5*exp(-((9*{first}-7)^2+(9*{second}-3)^2)/4)"
+    "-0.2*exp(-(9*{first}-4)^2-(9*{second}-7)^2)",
+    "eggholder2d": "-{first}*sin(sqrt(abs({first}-{second}-47)))"
+    "-({second}+47)*sin(sqrt(abs(0.5*{first}+{second}+47)))",
     "rosenbrock2d": "(100*({second}-{first}^2)^2+({first}-1)^2)"
 }
 
-preDefFunctions = {
-    "franke3d": """0.75*exp(-((9*x-2)^2+(9*y-2)^2+(9*z-2)^2)/4)
-    +0.75*exp(-(9*x+1)^2/49-(9*y+1)/10-(9*z+1)/10)
-    +0.5*exp(-((9*x-7)^2+(9*y-3)^2+(9*y-5)^2)/4)
-    -0.2*exp(-(9*x-4)^2-(9*y-7)^2-(9*z-5)^2)""",
-    "eggholder3d": """-x*sin(sqrt(abs(x-y-47)))-(y+47)*sin(sqrt(abs(0.5*x+y+47)))
-    -y*sin(sqrt(abs(y-z-47)))-(z+47)*sin(sqrt(abs(0.5*y+z+47)))""",
-    "rosenbrock3d": "(100*(y-x^2)^2+(x-1)^2)+(100*(z-y^2)^2+(y-1)^2)",
-    "franke2d(xy)": twoDFunctions["franke2d"].format(first="x", second="y"),
-    "franke2d(xz)": twoDFunctions["franke2d"].format(first="x", second="z"),
-    "franke2d(yz)": twoDFunctions["franke2d"].format(first="y", second="z"),
-    "eggholder2d(xy)": twoDFunctions["eggholder2d"].format(first="x", second="y"),
-    "eggholder2d(xz)": twoDFunctions["eggholder2d"].format(first="x", second="y"),
-    "eggholder2d(yz)": twoDFunctions["eggholder2d"].format(first="x", second="y"),
-    "rosenbrock2d(xy)": twoDFunctions["rosenbrock2d"].format(first="x", second="y"),
-    "rosenbrock2d(xz)": twoDFunctions["rosenbrock2d"].format(first="x", second="z"),
-    "rosenbrock2d(yz)": twoDFunctions["rosenbrock2d"].format(first="y", second="z"),
+preDef2DFunctions = {
+    f"{name}({arg})": twoDFunctions[name].format(first=arg[0], second=arg[1])
+    for name in ["franke2d", "eggholder2d", "rosenbrock2d"]
+    for arg in ["xy", "xz", "yz"]
 }
+
+preDefFunctions = {
+    "franke3d": "0.75*exp(-((9*x-2)^2+(9*y-2)^2+(9*z-2)^2)/4)"
+    "+0.75*exp(-(9*x+1)^2/49-(9*y+1)/10-(9*z+1)/10)"
+    "+0.5*exp(-((9*x-7)^2+(9*y-3)^2+(9*y-5)^2)/4)"
+    "-0.2*exp(-(9*x-4)^2-(9*y-7)^2-(9*z-5)^2)",
+    "eggholder3d": "-x*sin(sqrt(abs(x-y-47)))-(y+47)*sin(sqrt(abs(0.5*x+y+47)))"
+                   "-y*sin(sqrt(abs(y-z-47)))-(z+47)*sin(sqrt(abs(0.5*y+z+47)))",
+    "rosenbrock3d": "(100*(y-x^2)^2+(x-1)^2)+(100*(z-y^2)^2+(y-1)^2)"
+}
+
+preDefFunctions.update(preDef2DFunctions)
+
+
+functionDefinitions = {
+    "Franke": "Franke's function has two Gaussian peaks of different heights, and a smaller dip.",
+    "Eggholder": "A function has many local maxima. It is difficult to optimize.",
+    "Rosenbrock": "A function that is unimodal, and the global minimum lies"
+    " in a narrow, parabolic valley"}
+
 
 def print_predef_functions():
     print("Available predefined functions are:")
-    for key in list(preDefFunctions.keys()):
-        print(key)
-    print("Please visit the preCICE documentation for more information.")
-    print("https://precice.org/tooling-aste.html")
+    longest = max(map(len, preDefFunctions.keys()))
+    for name, func in list(preDefFunctions.items()):
+        print(f"{name:{longest}} := {func}")
+    print("Definitions of functions are:")
+    longest = max(map(len, functionDefinitions.keys()))
+    for name, definition in list(functionDefinitions.items()):
+        print(f"{name:{longest}} := {definition}")
     return
 
 def main():
