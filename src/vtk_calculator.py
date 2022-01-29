@@ -18,22 +18,22 @@ Example usage
 
 Scalar calculation and writing to given file
 
-./vtk_calculator.py inputmesh.vtk exp(cos(x)+sin(y)) -t e^(cos(x)+sin(y)) -o outputmesh.vtk
+./vtk_calculator.py -m "inputmesh.vtk" -f "exp(cos(x)+sin(y))" -d "e^(cos(x)+sin(y))" -o "outputmesh.vtk"
 
 Vector field and appends to input mesh
 
-./vtk_calculator.py inputmesh.vtk x*iHat+cos(y)*jHat-sin(z)*kHat -t MyVectorField
+./vtk_calculator.py "inputmesh.vtk" -f "x*iHat+cos(y)*jHat-sin(z)*kHat" -d "MyVectorField"
 
 There is also a diff mode which provides statistic between input data and function calculated
 (Note that it only works for scalar data)
 
-./vtk_calculator.py -m inputmesh.vtu -f x+y -d mydata --diff --stats
+./vtk_calculator.py -m "inputmesh.vtu" -f "x+y" -d "mydata" --diffdata "mydata" --diff --stats
 
 Calculates difference between given function and mydata data save over rides into variable data and saves statistics
 
-./vtk_calculator.py -m inputmesh.vtu -f x+y -d diffence -diffd mydata --diff
+./vtk_calculator.py -m "inputmesh.vtu" -f "x+y" -d "difference" -diffd "mydata" --diff
 
-Calculates difference between given function and mydata data save into diffence data
+Calculates difference between given function and mydata data save into difference data
 
 """
 
