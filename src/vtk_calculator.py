@@ -50,6 +50,7 @@ def parse_args():
             Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.
             Alternatively, you can use predefined function
             Default is Eggholder function in 3D (eggholder3d).""")
+    group.add_argument("--listfunctions", action="store_true", help="Prints list of predefined functions.")
     parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
     parser.add_argument("--data", "-d", dest="data", default="MyData", help="""The name of output data.
@@ -110,7 +111,7 @@ def main():
     args = parse_args()
     logging.basicConfig(level=getattr(logging, args.logging))
 
-    if args.functions:
+    if args.listfunctions:
         print_predef_functions()
         return
 
