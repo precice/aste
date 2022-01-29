@@ -47,16 +47,16 @@ def parse_args():
             Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.""")
     parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
-    parser.add_argument("--data", "-d", dest="data", default="MyData", help="""The name of output data.
-            Default is MyData""")
+    parser.add_argument("--data", "-d", dest="data", help="The name of output data.")
     parser.add_argument("--diffdata", "-diffd", dest="diffdata", help="""The name of difference data.
-            Used in diff mode. If not given, output data is used.""")
+            Required in diff mode.""")
     parser.add_argument("--log", "-l", dest="logging", default="INFO",
                         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="""Set the log level.
             Default is INFO""")
     parser.add_argument("--directory", "-dir", dest="directory", default=None,
                         help="Directory for output files (optional)")
-    parser.add_argument("--diff", action='store_true', help="Calculate the difference to present data.")
+    parser.add_argument("--diff", action='store_true', help="Calculate the difference between --diffdata and given"
+                        "function.")
     parser.add_argument("--stats", "-s", action='store_true',
                         help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
     args = parser.parse_args()
