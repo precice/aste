@@ -68,6 +68,7 @@ def main():
     logging.basicConfig(level=getattr(logging, args.logging))
 
     assert os.path.isfile(args.in_meshname), "Input mesh file not found!"
+    assert args.data, "Dataname (--data) is missing!"
 
     out_meshname = args.out_meshname
     if args.out_meshname is None:
