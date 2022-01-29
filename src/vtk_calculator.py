@@ -85,6 +85,7 @@ def main():
     elif (extension == ".vtk"):
         reader = vtk.vtkUnstructuredGridReader()
     else:
+        logging.warning("Unkown input file extension please check your input file.")
         sys.exit()
     reader.SetFileName(args.in_meshname)
     reader.Update()
