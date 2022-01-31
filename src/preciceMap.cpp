@@ -176,92 +176,136 @@ int main(int argc, char *argv[])
   const auto writeDatanames  = aste::getWriteDatanames(rootElement, participant);
   const auto readDatanames   = aste::getReadDatanames(rootElement, participant);
   const auto configMeshname  = aste::getMeshName(rootElement, participant);
-  const int  dim             = interface.getDimensions();
 
+  const int dim    = interface.getDimensions();
   const int meshID = interface.getMeshID(configMeshname);
-  // const int dataID = interface.getDataID("Data", meshID);
 
-  VLOG(1)
-      << "Loading mesh from " << meshes.front().filename();
+  aste::Mesh mesh;
+  for (const auto vectordata : vectorDatanames) {
 
-  auto mesh = meshes.front().load(readDatanames);
+    if (std::find(writeDatanames.begin(), writeDatanames.end(), vectordata) != writeDatanames.end()) {
+      const int dataID = interface.getDataID(vectordata, meshID);
+      mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, dim, vectordata, dataID));
+    } else if (std::find(readDatanames.begin(), readDatanames.end(), vectordata) != readDatanames.end()) {
+      const int dataID = interface.getDataID(vectordata, meshID);
+      mesh.meshdata.push_back(aste::MeshData(aste::datatype::READ, dim, vectordata, dataID));
+    } else {
+      throw std::runtime_error(std::string("Please check config files. Dataname ").append(vectordata).append(" cannot found in write or read type for participant ").append(participant));
+    }
+  }
+
+  for (const auto scalardata : scalarDatanames) {
+    if (std::find(writeDatanames.begin(), writeDatanames.end(), scalardata) != writeDatanames.end()) {
+      const int dataID = interface.getDataID(scalardata, meshID);
+      mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, 1, scalardata, dataID));
+    } else if (std::find(readDatanames.begin(), readDatanames.end(), scalardata) != readDatanames.end()) {
+      const int dataID = interface.getDataID(scalardata, meshID);
+      mesh.meshdata.push_back(aste::MeshData(aste::datatype::READ, 1, scalardata, dataID));
+    } else {
+      throw std::runtime_error(std::string("Please check config files. Dataname ").append(scalardata).append(" cannot found in write or read type for participant ").append(participant));
+    }
+  }
+  VLOG(1) << "Loading mesh from " << meshes.front().filename();
+
+  meshes.front().loadMesh(mesh);
+  meshes.front().loadData(mesh);
   VLOG(1) << "The mesh contains: " << mesh.summary();
 
   std::vector<int> vertexIDs = setupMesh(interface, mesh, meshID);
   VLOG(1) << "Mesh setup completed on Rank " << context.rank;
 
   interface.initialize();
-  /*
-    if (interface.isActionRequired(precice::constants::actionWriteInitialData())) {
-      VLOG(1) << "Write initial data for participant " << participant;
-      if (isVector) {
-        assert(mesh.data.size() == vertexIDs.size() * dim);
-        interface.writeBlockVectorData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.data.data());
-      } else {
-        assert(mesh.data.size() == vertexIDs.size());
-        interface.writeBlockScalarData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.data.data());
-      }
-      VLOG(1) << "Data written: " << mesh.previewData();
 
-      interface.markActionFulfilled(precice::constants::actionWriteInitialData());
+  if (interface.isActionRequired(precice::constants::actionWriteInitialData())) {
+    VLOG(1) << "Write initial data for participant " << participant;
+    for (const auto meshdata : mesh.meshdata) {
+      if (meshdata.type == aste::datatype::WRITE) {
+        switch (meshdata.numcomp) {
+        case 1:
+          assert(meshdata.dataVector.size() == vertexIDs.size());
+          interface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+          break;
+        default:
+          assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
+          interface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+          break;
+        }
+      }
     }
-    interface.initializeData();
+    VLOG(1) << "Data written: " << mesh.previewData();
 
-    size_t round = 0;
-    while (interface.isCouplingOngoing() and round < meshes.size()) {
+    interface.markActionFulfilled(precice::constants::actionWriteInitialData());
+  }
+  interface.initializeData();
 
-      if (participant == "A") {
-        VLOG(1) << "Read mesh for t=" << round << " from " << meshes[round];
-        auto roundmesh = meshes[round].load(dim, dataname);
-        VLOG(1) << "This roundmesh contains: " << roundmesh.summary();
-        if (isVector) {
-          assert(roundmesh.data.size() == vertexIDs.size() * dim);
-          interface.writeBlockVectorData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.data.data());
-        } else {
-          assert(roundmesh.data.size() == vertexIDs.size());
-          interface.writeBlockScalarData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.data.data());
+  size_t round = 0;
+  while (interface.isCouplingOngoing() and round < meshes.size()) {
+
+    VLOG(1) << "Read mesh for t=" << round << " from " << meshes[round];
+    meshes[round].resetData(mesh);
+    meshes[round].loadData(mesh);
+    VLOG(1) << "This roundmesh contains: " << mesh.summary();
+
+    for (const auto meshdata : mesh.meshdata) {
+      if (meshdata.type == aste::datatype::WRITE) {
+        switch (meshdata.numcomp) {
+        case 1:
+          assert(meshdata.dataVector.size() == vertexIDs.size());
+          interface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+          break;
+        default:
+          assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
+          interface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+          break;
         }
-        VLOG(1) << "Data written: " << mesh.previewData();
+        VLOG(1) << "Data written: " << mesh.previewData(meshdata);
       }
-      interface.advance(1);
-
-      if (participant == "B") {
-        if (isVector) {
-          interface.readBlockVectorData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.data.data());
-        } else {
-          interface.readBlockScalarData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.data.data());
-        }
-        VLOG(1) << "Data read: " << mesh.previewData();
-      }
-      round++;
     }
 
-    interface.finalize();
+    interface.advance(1);
 
-    // Write out results in same format as data was read
-    if (participant == "B") {
-      auto meshName = aste::BaseName{options["output"].as<std::string>()}.with(context);
-      auto filename = fs::path(meshName.filename());
-      if (context.rank == 0 && fs::exists(filename)) {
-        if (context.isParallel()) {
-          // Remove the directory <meshName>/<rank>.txt
-          auto dir = filename.parent_path();
-          if (!dir.empty()) {
-            fs::remove_all(dir);
-            fs::create_directory(dir);
-          }
-        } else {
-          // Remove the mesh file <meshName>.txt
-          fs::remove(filename);
+    for (auto &meshdata : mesh.meshdata) {
+      if (meshdata.type == aste::datatype::READ) {
+        switch (meshdata.numcomp) {
+        case 1:
+          meshdata.dataVector.resize(vertexIDs.size());
+          interface.readBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+          break;
+        default:
+          meshdata.dataVector.resize(vertexIDs.size() * dim);
+          interface.readBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+          break;
         }
+        VLOG(1) << "Data read: " << mesh.previewData(meshdata);
       }
-      MPI_Barrier(MPI_COMM_WORLD);
+    }
 
-      VLOG(1) << "Writing results to " << filename;
-      meshName.save(mesh, dataname);
+    round++;
+  }
 
-}
-*/
+  interface.finalize();
+
+  // Write out results in same format as data was read
+
+  auto meshName = aste::BaseName{options["output"].as<std::string>()}.with(context);
+  auto filename = fs::path(meshName.filename());
+  if (context.rank == 0 && fs::exists(filename)) {
+    if (context.isParallel()) {
+      auto dir = filename.parent_path();
+      if (!dir.empty()) {
+        fs::remove_all(dir);
+        fs::create_directory(dir);
+      }
+    } else {
+      fs::remove(filename);
+    }
+  }
+
+  MPI_Barrier(MPI_COMM_WORLD);
+
+  VLOG(1) << "Writing results to " << filename;
+  meshName.save(mesh);
+
   MPI_Finalize();
   return EXIT_SUCCESS;
 }
