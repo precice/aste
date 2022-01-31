@@ -43,7 +43,7 @@ public:
 
   std::string filename() const;
 
-  Mesh load(const int &dim, const std::string &dataname) const;
+  Mesh load(const std::vector<std::string> &datanames) const;
 
   void save(const Mesh &mesh, const std::string &dataname) const;
 
@@ -81,12 +81,13 @@ struct Mesh {
   using Edge     = std::array<VID, 2>;
   using Triangle = std::array<VID, 3>;
   using Quad     = std::array<VID, 4>;
-  std::vector<Vertex>   positions;
-  std::vector<Edge>     edges;
-  std::vector<Triangle> triangles;
-  std::vector<Quad>     quadrilaterals;
-  std::vector<double>   data;
-  std::string           fname;
+  std::vector<Vertex>              positions;
+  std::vector<Edge>                edges;
+  std::vector<Triangle>            triangles;
+  std::vector<Quad>                quadrilaterals;
+  std::vector<std::vector<double>> vectorData;
+  std::vector<std::vector<double>> scalarData;
+  std::string                      fname;
 
   std::string previewData(std::size_t max = 10) const;
   std::string summary() const;
