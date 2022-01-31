@@ -36,20 +36,14 @@ std::string MeshName::filename() const
   return _mname + _ext;
 }
 
-namespace aste {
-
-}
-namespace {
 Mesh::VID vtkToPos(vtkIdType id)
 {
   assert(id >= 0);
   return static_cast<Mesh::VID>(id);
 }
-} // namespace
 
-namespace {
-// Reads the main file containing the vertices and data
-void readMainFile(Mesh &mesh, const std::string &filename, const std::vector<std::string> &datanames)
+// Read vertices and mesh connectivity
+void readMesh(Mesh &mesh, const std::string &filename)
 {
   if (!fs::is_regular_file(filename)) {
     throw std::invalid_argument{"The mesh file does not exist: " + filename};
@@ -81,66 +75,21 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::vector<std
     Points->GetPoint(point, vertexPosArr.data());
     mesh.positions.push_back(vertexPosArr);
   }
-  // Get Point Data
-  vtkPointData *PD = grid->GetPointData();
-  // Check it has data array
-  for (const auto dataname : datanames) {
-    if (PD->HasArray(dataname.c_str()) == 1) {
-      // Get Data and Add to Mesh
-      vtkDataArray *ArrayData = PD->GetArray(dataname.c_str());
-      int           NumComp   = ArrayData->GetNumberOfComponents();
-
-      std::vector<double> dataArray;
-      dataArray.reserve(NumComp * NumPoints);
-
-      switch (NumComp) {
-      case 1: // Scalar Data
-        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
-          const double scalar = ArrayData->GetTuple1(tupleIdx);
-          dataArray.push_back(scalar);
-        }
-        mesh.scalarData.push_back(dataArray);
-        break;
-      case 2: // Vector Data with 2 component
-        double *vector2ref;
-        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
-          vector2ref = ArrayData->GetTuple2(tupleIdx);
-          dataArray.push_back(vector2ref[0]);
-          dataArray.push_back(vector2ref[1]);
-        }
-        mesh.vectorData.push_back(dataArray);
-        break;
-      case 3: // Vector Data with 3 component
-        double *vector3ref;
-        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
-          vector3ref = ArrayData->GetTuple3(tupleIdx);
-          dataArray.push_back(vector3ref[0]);
-          dataArray.push_back(vector3ref[1]);
-          dataArray.push_back(vector3ref[2]);
-        }
-        mesh.vectorData.push_back(dataArray);
-        break;
-      default: // Unknown number of component
-        throw std::runtime_error(std::string("Please check your VTK file there is/are ").append(std::string(std::to_string(NumComp))).append(" component for data ").append(dataname));
-        break;
-      }
-    }
-  }
 
   for (int i = 0; i < grid->GetNumberOfCells(); i++) {
     int cellType = grid->GetCell(i)->GetCellType();
 
     // Here we use static cast since VTK library returns a long long unsigned int however preCICE uses int for PointId's
     if (cellType == VTK_TRIANGLE) {
-      vtkCell                 *cell = grid->GetCell(i);
+      vtkCell *                cell = grid->GetCell(i);
       std::array<Mesh::VID, 3> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2))};
       mesh.triangles.push_back(elem);
     } else if (cellType == VTK_LINE) {
-      vtkCell                 *cell = grid->GetCell(i);
+      vtkCell *                cell = grid->GetCell(i);
       std::array<Mesh::VID, 2> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1))};
       mesh.edges.push_back(elem);
     } else if (cellType == VTK_QUAD) {
-      vtkCell                 *cell = grid->GetCell(i);
+      vtkCell *                cell = grid->GetCell(i);
       std::array<Mesh::VID, 4> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2)), vtkToPos(cell->GetPointId(3))};
       mesh.quadrilaterals.push_back(elem);
     } else {
@@ -148,14 +97,95 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::vector<std
           std::string{"Invalid cell type in VTK file. Valid cell types are, VTK_LINE, VTK_TRIANGLE, and VTK_QUAD."}};
     }
   }
-}
-} // namespace
+};
 
-Mesh MeshName::load(const std::vector<std::string> &datanames) const
+// Read required data from mesh file
+void readData(Mesh &mesh, const std::string &filename)
 {
-  Mesh mesh;
-  readMainFile(mesh, filename(), datanames);
-  return mesh;
+  if (!fs::is_regular_file(filename)) {
+    throw std::invalid_argument{"The mesh file does not exist: " + filename};
+  }
+
+  mesh.fname                               = filename; // Store data loaded from which mesh
+  auto                                 ext = fs::path(filename).extension();
+  vtkSmartPointer<vtkUnstructuredGrid> grid;
+
+  if (ext == ".vtk") {
+    vtkSmartPointer<vtkUnstructuredGridReader> reader = vtkSmartPointer<vtkUnstructuredGridReader>::New();
+    reader->SetFileName(filename.c_str());
+    reader->Update();
+    grid = reader->GetOutput();
+  } else if (ext == ".vtu") {
+    vtkSmartPointer<vtkXMLUnstructuredGridReader> reader = vtkSmartPointer<vtkXMLUnstructuredGridReader>::New();
+    reader->SetFileName(filename.c_str());
+    reader->Update();
+    grid = reader->GetOutput();
+  } else {
+    throw std::runtime_error("Unknown File Extension for file " + filename + "Extension should be .vtk or .vtu");
+  }
+
+  vtkIdType NumPoints = grid->GetNumberOfPoints();
+  // Get Point Data
+  vtkPointData *PD = grid->GetPointData();
+  // Check it has data array
+  for (auto &data : mesh.meshdata) {
+    auto dataname = data.name;
+    auto datatype = data.type;
+    if ((PD->HasArray(dataname.c_str()) == 1) && (datatype == aste::datatype::WRITE)) {
+      // Get Data and Add to Mesh
+      vtkDataArray *ArrayData = PD->GetArray(dataname.c_str());
+      int           NumComp   = ArrayData->GetNumberOfComponents();
+
+      assert(NumComp == data.numcomp);
+      data.dataVector.reserve(NumComp * NumPoints);
+
+      switch (NumComp) {
+      case 1: // Scalar Data
+        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
+          const double scalar = ArrayData->GetTuple1(tupleIdx);
+          data.dataVector.push_back(scalar);
+        }
+        break;
+      case 2: // Vector Data with 2 component
+        double *vector2ref;
+        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
+          vector2ref = ArrayData->GetTuple2(tupleIdx);
+          data.dataVector.push_back(vector2ref[0]);
+          data.dataVector.push_back(vector2ref[1]);
+        }
+        break;
+      case 3: // Vector Data with 3 component
+        double *vector3ref;
+        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
+          vector3ref = ArrayData->GetTuple3(tupleIdx);
+          data.dataVector.push_back(vector3ref[0]);
+          data.dataVector.push_back(vector3ref[1]);
+          data.dataVector.push_back(vector3ref[2]);
+        }
+        break;
+      default: // Unknown number of component
+        throw std::runtime_error(std::string("Please check your VTK file there is/are ").append(std::string(std::to_string(NumComp))).append(" component for data ").append(dataname));
+        break;
+      }
+    }
+  }
+};
+
+void MeshName::loadMesh(Mesh &mesh)
+{
+  readMesh(mesh, filename());
+}
+
+void MeshName::loadData(Mesh &mesh)
+{
+  readData(mesh, filename());
+}
+
+void MeshName::resetData(Mesh &mesh)
+{
+  for (auto &data : mesh.meshdata) {
+    data.dataVector.clear();
+  }
 }
 
 void MeshName::createDirectories() const
@@ -166,10 +196,10 @@ void MeshName::createDirectories() const
   }
 }
 
-void MeshName::save(const Mesh &mesh, const std::string &dataname) const
+void MeshName::save(const Mesh &mesh) const
 {
-  vtkSmartPointer<vtkDoubleArray>      data = vtkDoubleArray::New();
-  auto                                 ext  = fs::path(mesh.fname).extension();
+
+  auto                                 ext = fs::path(mesh.fname).extension();
   vtkSmartPointer<vtkUnstructuredGrid> grid;
   if (ext == ".vtk") {
     vtkSmartPointer<vtkUnstructuredGridReader> reader = vtkSmartPointer<vtkUnstructuredGridReader>::New();
@@ -185,23 +215,24 @@ void MeshName::save(const Mesh &mesh, const std::string &dataname) const
     throw std::runtime_error("Unknown File Extension for file " + mesh.fname + "Extension should be .vtk or .vtu");
   }
 
-  data->SetName(dataname.c_str());
-  data->SetNumberOfComponents(numComp);
+  for (const auto meshdata : mesh.meshdata) {
+    vtkSmartPointer<vtkDoubleArray>
+        vtkdata = vtkDoubleArray::New();
+    vtkdata->SetName(meshdata.name.c_str());
+    vtkdata->SetNumberOfComponents(meshdata.numcomp);
 
-  // Insert Point Data
-  {
     std::vector<double> pointData;
     pointData.reserve(3);
-    for (size_t i = 0; i < mesh.positions.size(); i++) {
-      for (int j = 0; j < numComp; j++) {
-        pointData.push_back(mesh.data[i * numComp + j]);
+    for (size_t i = 0; i < grid->GetNumberOfPoints(); i++) {
+      for (int j = 0; j < meshdata.numcomp; j++) {
+        pointData.push_back(meshdata.dataVector[i * meshdata.numcomp + j]);
       }
-      data->InsertNextTuple(pointData.data());
+      vtkdata->InsertNextTuple(pointData.data());
       pointData.clear();
     }
-  }
 
-  grid->GetPointData()->AddArray(data);
+    grid->GetPointData()->AddArray(vtkdata);
+  }
 
   // Write file
   if (_context.isParallel()) {
@@ -307,26 +338,43 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
 
 std::string Mesh::previewData(std::size_t max) const
 {
-  /*
-  if (data.empty() || max == 0)
+
+  if (meshdata.empty() || max == 0)
     return "<nothing>";
 
   std::stringstream oss;
-  oss << data.front();
-  for (size_t i = 1; i < std::min(max, data.size()); ++i)
-    oss << ", " << data[i];
-  oss << " ...";
+  for (const auto data : meshdata) {
+    oss << data.name;
+    oss << data.dataVector.front();
+    for (size_t i = 1; i < std::min(max, data.dataVector.size()); ++i)
+      oss << ", " << data.dataVector[i];
+    oss << " ...";
+  }
   return oss.str();
-  */
+}
+
+std::string Mesh::previewData(const MeshData &data, std::size_t max) const
+{
+
+  if (data.dataVector.empty() || max == 0)
+    return "<nothing>";
+
+  std::stringstream oss;
+  oss << data.name;
+  oss << data.dataVector.front();
+  for (size_t i = 1; i < std::min(max, data.dataVector.size()); ++i)
+    oss << ", " << data.dataVector[i];
+  oss << " ...";
+
+  return oss.str();
 }
 
 std::string Mesh::summary() const
 {
-  /*
+
   std::stringstream oss;
-  oss << positions.size() << " Vertices, " << data.size() << " Data Points, " << edges.size() << " Edges, " << triangles.size() << " Triangles " << quadrilaterals.size() << " Quadrilaterals ";
+  oss << positions.size() << " Vertices, " << meshdata.size() << " Data arrays, " << edges.size() << " Edges, " << triangles.size() << " Triangles " << quadrilaterals.size() << " Quadrilaterals ";
   return oss.str();
-  */
 }
 
 /// Creates a unique and element-wise ordered set of undirected edges.
