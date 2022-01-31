@@ -287,24 +287,25 @@ int main(int argc, char *argv[])
 
   // Write out results in same format as data was read
 
-  auto meshName = aste::BaseName{options["output"].as<std::string>()}.with(context);
-  auto filename = fs::path(meshName.filename());
-  if (context.rank == 0 && fs::exists(filename)) {
-    if (context.isParallel()) {
-      auto dir = filename.parent_path();
-      if (!dir.empty()) {
-        fs::remove_all(dir);
-        fs::create_directory(dir);
+  std::string outputFilename{options["output"].as<std::string>()};
+  if (!outputFilename.empty()) {
+    auto meshName = aste::BaseName{outputFilename}.with(context);
+    auto filename = fs::path(meshName.filename());
+    if (context.rank == 0 && fs::exists(filename)) {
+      if (context.isParallel()) {
+        auto dir = filename.parent_path();
+        if (!dir.empty()) {
+          fs::remove_all(dir);
+          fs::create_directory(dir);
+        }
+      } else {
+        fs::remove(filename);
       }
-    } else {
-      fs::remove(filename);
     }
+    MPI_Barrier(MPI_COMM_WORLD);
+    VLOG(1) << "Writing results to " << filename;
+    meshName.save(mesh);
   }
-
-  MPI_Barrier(MPI_COMM_WORLD);
-
-  VLOG(1) << "Writing results to " << filename;
-  meshName.save(mesh);
 
   MPI_Finalize();
   return EXIT_SUCCESS;
