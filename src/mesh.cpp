@@ -49,7 +49,7 @@ Mesh::VID vtkToPos(vtkIdType id)
 
 namespace {
 // Reads the main file containing the vertices and data
-void readMainFile(Mesh &mesh, const std::string &filename, const std::string &dataname, const int &dim)
+void readMainFile(Mesh &mesh, const std::string &filename, const std::vector<std::string> &datanames)
 {
   if (!fs::is_regular_file(filename)) {
     throw std::invalid_argument{"The mesh file does not exist: " + filename};
@@ -84,50 +84,47 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
   // Get Point Data
   vtkPointData *PD = grid->GetPointData();
   // Check it has data array
-  if (PD->HasArray(dataname.c_str()) == 1) {
-    // Get Data and Add to Mesh
-    vtkDataArray *ArrayData = PD->GetArray(dataname.c_str());
-    int           NumComp   = ArrayData->GetNumberOfComponents();
+  for (const auto dataname : datanames) {
+    if (PD->HasArray(dataname.c_str()) == 1) {
+      // Get Data and Add to Mesh
+      vtkDataArray *ArrayData = PD->GetArray(dataname.c_str());
+      int           NumComp   = ArrayData->GetNumberOfComponents();
 
-    if (NumComp != dim) {
-      throw std::runtime_error("Dimensions of data provided and simulation does not match!.");
-    }
-    // Reserve enough space for data
-    mesh.data.clear();
-    mesh.data.reserve(NumPoints * dim);
+      std::vector<double> dataArray;
+      dataArray.reserve(NumComp * NumPoints);
 
-    switch (NumComp) {
-    case 1: // Scalar Data
-      for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
-        const double scalar = ArrayData->GetTuple1(tupleIdx);
-        mesh.data.push_back(scalar);
+      switch (NumComp) {
+      case 1: // Scalar Data
+        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
+          const double scalar = ArrayData->GetTuple1(tupleIdx);
+          dataArray.push_back(scalar);
+        }
+        mesh.scalarData.push_back(dataArray);
+        break;
+      case 2: // Vector Data with 2 component
+        double *vector2ref;
+        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
+          vector2ref = ArrayData->GetTuple2(tupleIdx);
+          dataArray.push_back(vector2ref[0]);
+          dataArray.push_back(vector2ref[1]);
+        }
+        mesh.vectorData.push_back(dataArray);
+        break;
+      case 3: // Vector Data with 3 component
+        double *vector3ref;
+        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
+          vector3ref = ArrayData->GetTuple3(tupleIdx);
+          dataArray.push_back(vector3ref[0]);
+          dataArray.push_back(vector3ref[1]);
+          dataArray.push_back(vector3ref[2]);
+        }
+        mesh.vectorData.push_back(dataArray);
+        break;
+      default: // Unknown number of component
+        throw std::runtime_error(std::string("Please check your VTK file there is/are ").append(std::string(std::to_string(NumComp))).append(" component for data ").append(dataname));
+        break;
       }
-      break;
-    case 2: // Vector Data with 2 component
-      double *vector2ref;
-      for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
-        vector2ref = ArrayData->GetTuple2(tupleIdx);
-        mesh.data.push_back(vector2ref[0]);
-        mesh.data.push_back(vector2ref[1]);
-      }
-      break;
-    case 3: // Vector Data with 3 component
-      double *vector3ref;
-      for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
-        vector3ref = ArrayData->GetTuple3(tupleIdx);
-        mesh.data.push_back(vector3ref[0]);
-        mesh.data.push_back(vector3ref[1]);
-        mesh.data.push_back(vector3ref[2]);
-      }
-      break;
-    default: // Unknown number of component
-      std::cerr << "Please check your VTK file there is/are " << NumComp << " component for data " << dataname << std::endl;
-      throw std::runtime_error(std::string{"Dimensions of data provided = "}.append(std::to_string(NumComp)).append("and simulation = ").append(std::to_string(dim)).append("does not match for data =").append(dataname));
-      break;
     }
-  } else { // There is no data in mesh file fill with zeros.
-    std::cout << "There is no data found for " << dataname << ". Dummy data will be used!.\n";
-    mesh.data.resize(NumPoints * dim, 0.0);
   }
 
   for (int i = 0; i < grid->GetNumberOfCells(); i++) {
@@ -154,10 +151,10 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
 }
 } // namespace
 
-Mesh MeshName::load(const int &dim, const std::string &dataname) const
+Mesh MeshName::load(const std::vector<std::string> &datanames) const
 {
   Mesh mesh;
-  readMainFile(mesh, filename(), dataname, dim);
+  readMainFile(mesh, filename(), datanames);
   return mesh;
 }
 
@@ -171,9 +168,8 @@ void MeshName::createDirectories() const
 
 void MeshName::save(const Mesh &mesh, const std::string &dataname) const
 {
-  const int                            numComp = mesh.data.size() / mesh.positions.size();
-  vtkSmartPointer<vtkDoubleArray>      data    = vtkDoubleArray::New();
-  auto                                 ext     = fs::path(mesh.fname).extension();
+  vtkSmartPointer<vtkDoubleArray>      data = vtkDoubleArray::New();
+  auto                                 ext  = fs::path(mesh.fname).extension();
   vtkSmartPointer<vtkUnstructuredGrid> grid;
   if (ext == ".vtk") {
     vtkSmartPointer<vtkUnstructuredGridReader> reader = vtkSmartPointer<vtkUnstructuredGridReader>::New();
@@ -311,6 +307,7 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
 
 std::string Mesh::previewData(std::size_t max) const
 {
+  /*
   if (data.empty() || max == 0)
     return "<nothing>";
 
@@ -320,13 +317,16 @@ std::string Mesh::previewData(std::size_t max) const
     oss << ", " << data[i];
   oss << " ...";
   return oss.str();
+  */
 }
 
 std::string Mesh::summary() const
 {
+  /*
   std::stringstream oss;
   oss << positions.size() << " Vertices, " << data.size() << " Data Points, " << edges.size() << " Edges, " << triangles.size() << " Triangles " << quadrilaterals.size() << " Quadrilaterals ";
   return oss.str();
+  */
 }
 
 /// Creates a unique and element-wise ordered set of undirected edges.
