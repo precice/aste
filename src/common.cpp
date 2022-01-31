@@ -14,15 +14,15 @@ OptionMap getOptions(int argc, char *argv[])
   desc.add_options()("help,h", "Print this help message")(
       "precice-config,c",
       po::value<std::string>()->default_value("precice-config.xml"),
-      "preCICE configuration file") ("participant,p",
-                                     po::value<std::string>()->required(),
-                                     "Participant Name") ("mesh", po::value<string>()->required(),
-                                                          "Mesh prefix (i.e. mesh name without the format extension such as '.vtk' or '.vtu'). "
-                                                          "Example: solution.vtk has the prefix 'solution'. "
-                                                          "preciceMap will look for timeseries as well as distributed meshes (e.g. from preCICE exports) "
-                                                          "automatically and load them if required.") ("output,o", po::value<string>()->default_value("output"),
-                                                                                                       "Output file name.") ("verbose,v", po::bool_switch(),
-                                                                                                                             "Enable verbose output"); // not explicitely used, handled by easylogging
+      "preCICE configuration file")("participant,p",
+                                    po::value<std::string>()->required(),
+                                    "Participant Name")("mesh", po::value<string>()->required(),
+                                                        "Mesh prefix (i.e. mesh name without the format extension such as '.vtk' or '.vtu'). "
+                                                        "Example: solution.vtk has the prefix 'solution'. "
+                                                        "preciceMap will look for timeseries as well as distributed meshes (e.g. from preCICE exports) "
+                                                        "automatically and load them if required.")("output,o", po::value<string>()->default_value(""),
+                                                                                                    "Output file name.")("verbose,v", po::bool_switch(),
+                                                                                                                         "Enable verbose output"); // not explicitely used, handled by easylogging
 
   po::variables_map vm;
 
