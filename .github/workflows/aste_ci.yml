@@ -11,7 +11,8 @@ jobs:
 
     runs-on: ubuntu-latest
     timeout-minutes: 30
-
+    env:
+      CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
     steps:
     - uses: actions/checkout@v2
     - name: install preCICE
@@ -22,21 +23,33 @@ jobs:
     - name: install VTK
       run: |
         sudo apt-get -y install libvtk7-dev
+    - name: prepare directories
+      run: |
+        mkdir build_gcc build_clang
     - name: build aste gcc
+      working-directory: build_gcc
+      env:
+        CC: gcc
+        CXX: g++
       run: | 
-        mkdir build_gcc && cd build_gcc && cmake -DCMAKE_CXX_FLAGS="-Werror -Wall -Wextra -Wno-unused-parameter" .. && cmake --build .
+        cmake ..
+        cmake --build .
     - name: run test gcc
+      working-directory: build_gcc
       run: |
         ctest
     - name: install clang
       run: |
         sudo apt-get -y install clang
-    - name: switch directory
-      run: |
-        cd .. && mkdir build_clang && cd build_clang
     - name: build aste clang
+      working-directory: build_clang
+      env:
+        CC: clang
+        CXX: clang++
       run: |
-        CC=clang CXX=clang++ cmake -DCMAKE_CXX_FLAGS="-Werror -Wall -Wextra -Wno-unused-parameter" .. && cmake --build .
+        cmake ..
+        cmake --build .
     - name: run test clang
+      working-directory: build_clang
       run: |
         ctest
