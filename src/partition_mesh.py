@@ -8,6 +8,7 @@ import numpy as np
 import shutil
 from ctypes import *
 import json
+import platform
 
 
 def main():
@@ -85,7 +86,7 @@ class Mesh:
 def partition(mesh: Mesh, numparts: int, algorithm):
     """
     Partitions a mesh using METIS or kmeans. This does not call METIS directly,
-    but instead uses a small C++ Wrapper libmetisAPI.so for convenience.
+    but instead uses a small C++ Wrapper around shared libary libmetisAPI for convenience.
     This shared library must be provided if this function should be called.
     """
     if algorithm == "meshfree":
@@ -179,7 +180,22 @@ def partition_metis(mesh: Mesh, numparts: int):
         cell = mesh.cells[i]
         cellData += list(cell)
         cellPtr.append(cellPtr[-1] + len(cell))
-    libmetis = cdll.LoadLibrary(os.path.abspath("libmetisAPI.so"))
+    binpath = os.path.dirname(__file__)
+    libpath = os.path.normpath(os.path.join(binpath, "../lib"))
+    os_type = platform.system()
+    if os_type == "Linux":
+        ext = ".so"
+    elif os_type == "Darwin":  # MacOS
+        ext = ".dylib"
+    else:
+        raise Exception("Unknown OS type")
+    if os.path.isfile(os.path.join(binpath, "libmetisAPI"+ext)):
+        libmetispath = os.path.join(binpath, "libmetisAPI"+ext)
+    elif os.path.isfile(os.path.join(libpath, "libmetisAPI"+ext)):
+        libmetispath = os.path.join(libpath, "libmetisAPI"+ext)
+    else:
+        raise Exception("libmetisAPI"+ext+" cannot found!")
+    libmetis = cdll.LoadLibrary(libmetispath)
     idx_t = c_int if libmetis.typewidth() == 32 else c_longlong
     cell_count = idx_t(len(mesh.cells))
     point_count = idx_t(len(mesh.points))
