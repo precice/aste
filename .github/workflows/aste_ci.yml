@@ -24,7 +24,7 @@ jobs:
         sudo apt-get -y install libvtk7-dev
     - name: build aste gcc
       run: | 
-        mkdir build && cd build && cmake -DCMAKE_CXX_FLAGS="-Werror -Wall -Wextra" . && make all
+        mkdir build_gcc && cd build_gcc && cmake -DCMAKE_CXX_FLAGS="-Werror -Wall -Wextra" .. && cmake --build .
     - name: run test gcc
       run: |
         ctest
@@ -36,7 +36,7 @@ jobs:
         cd .. && mkdir build_clang && cd build_clang
     - name: build aste clang
       run: |
-        CC=clang CXX=clang++ cmake -DCMAKE_CXX_FLAGS="-Werror -Wall -Wextra" . && make all
+        CC=clang CXX=clang++ cmake -DCMAKE_CXX_FLAGS="-Werror -Wall -Wextra" .. && cmake --build .
     - name: run test clang
       run: |
         ctest
