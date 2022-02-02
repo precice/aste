@@ -50,7 +50,7 @@ def parse_args():
             Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.
             Alternatively, you can use predefined function
             Default is Eggholder function in 3D (eggholder3d).""")
-    group.add_argument("--listfunctions", action="store_true", help="Prints list of predefined functions.")
+    group.add_argument("--list-functions", dest="listfunctions",action="store_true", help="Prints list of predefined functions.")
     parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
     parser.add_argument("--data", "-d", dest="data", default="MyData", help="""The name of output data.
@@ -103,7 +103,7 @@ functionDefinitions = {
     "Franke": "Franke's function has two Gaussian peaks of different heights, and a smaller dip.",
     "Eggholder": "A function has many local maxima. It is difficult to optimize.",
     "Rosenbrock": "A function that is unimodal, and the global minimum lies"
-    " in a narrow, parabolic valley"}
+    " in a narrow, parabolic valley."}
 
 
 def print_predef_functions():
