@@ -68,11 +68,11 @@ def read_meshes(prefix: str, partitions=None, recoveryPath=None):
         raise Exception("No partitions found")
 
     if os.path.exists(recoveryPath):
-        logging.info("No recovery data found. Meshes will be joined partition-wise")
-        return join_mesh_partitionwise(prefix, partitions)
-    else:
         logging.info("Recovery data found. Full recovery will be executed")
         return join_mesh_recovery(prefix, partitions, recoveryPath)
+    else:
+        logging.info("No recovery data found. Meshes will be joined partition-wise")
+        return join_mesh_partitionwise(prefix, partitions)
 
 
 def join_mesh_partitionwise(prefix: str, partitions: int):
