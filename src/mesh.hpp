@@ -43,9 +43,9 @@ public:
 
   std::string filename() const;
 
-  Mesh load(const int &dim, const std::string &dataname) const;
+  Mesh load(const int &dim, const std::string &dataname,bool withGradient = false) const;
 
-  void save(const Mesh &mesh, const std::string &dataname) const;
+  void save(const Mesh &mesh, const std::string &dataname, bool withGradient = false) const;
 
 private:
   void createDirectories() const;
@@ -87,6 +87,12 @@ struct Mesh {
   std::vector<Quad>     quadrilaterals;
   std::vector<double>   data;
   std::string           fname;
+
+  // gradient data
+  std::vector<double> gradientdx;
+  std::vector<double> gradientdy;
+  std::vector<double> gradientdz;
+  bool hasGradient;
 
   std::string previewData(std::size_t max = 10) const;
   std::string summary() const;

@@ -161,6 +161,9 @@ int main(int argc, char *argv[])
   const std::string dataname    = options["data"].as<std::string>();
   const bool        isVector    = options["vector"].as<bool>();
 
+  // gradient data
+  const bool withGradient = options["gradient"].as<bool>();
+
   auto meshes = aste::BaseName(meshname).findAll(context);
   if (meshes.empty()) {
     throw std::invalid_argument("ERROR: Could not find meshes for name: " + meshname);
@@ -177,7 +180,7 @@ int main(int argc, char *argv[])
 
   VLOG(1) << "Loading mesh from " << meshes.front().filename();
   // reads in mesh, 0 data for participant B
-  auto mesh = meshes.front().load(dim, dataname);
+  auto mesh = meshes.front().load(dim, dataname, withGradient);
   VLOG(1) << "The mesh contains: " << mesh.summary();
 
   std::vector<int> vertexIDs = setupMesh(interface, mesh, meshID);
@@ -190,9 +193,21 @@ int main(int argc, char *argv[])
     if (isVector) {
       assert(mesh.data.size() == vertexIDs.size() * dim);
       interface.writeBlockVectorData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.data.data());
+
+      //TODO: WRITE GRADIENT DATA IF NECESSARY
+      if(withGradient) {
+        interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.gradientdx.data(), mesh.gradientdy.data(), mesh.gradientdz.data());
+      }
+
     } else {
       assert(mesh.data.size() == vertexIDs.size());
       interface.writeBlockScalarData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.data.data());
+
+      //TODO: WRITE GRADIENT DATA IF NECESSARY
+      if(withGradient) {
+        interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.gradientdx.data(), mesh.gradientdy.data(), mesh.gradientdz.data());
+      }
+
     }
     VLOG(1) << "Data written: " << mesh.previewData();
 
@@ -205,14 +220,26 @@ int main(int argc, char *argv[])
 
     if (participant == "A") {
       VLOG(1) << "Read mesh for t=" << round << " from " << meshes[round];
-      auto roundmesh = meshes[round].load(dim, dataname);
+      auto roundmesh = meshes[round].load(dim, dataname, withGradient);
       VLOG(1) << "This roundmesh contains: " << roundmesh.summary();
       if (isVector) {
         assert(roundmesh.data.size() == vertexIDs.size() * dim);
         interface.writeBlockVectorData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.data.data());
+
+        //TODO: WRITE GRADIENT DATA IF NECESSARY
+        if(withGradient) {
+          interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.gradientdx.data(), roundmesh.gradientdy.data(), roundmesh.gradientdz.data());
+        }
+
       } else {
         assert(roundmesh.data.size() == vertexIDs.size());
         interface.writeBlockScalarData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.data.data());
+
+        //TODO: WRITE GRADIENT DATA IF NECESSARY
+        if(withGradient) {
+          interface.writeBlockScalarGradientData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.gradientdx.data(), roundmesh.gradientdy.data(), roundmesh.gradientdz.data());
+        }
+
       }
       VLOG(1) << "Data written: " << mesh.previewData();
     }
@@ -251,7 +278,7 @@ int main(int argc, char *argv[])
     MPI_Barrier(MPI_COMM_WORLD);
 
     VLOG(1) << "Writing results to " << filename;
-    meshName.save(mesh, dataname);
+    meshName.save(mesh, dataname, withGradient);
   }
 
   MPI_Finalize();

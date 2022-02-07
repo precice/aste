@@ -1,0 +1,57 @@
+{
+  "general": {
+    "function": "0.78 + cos(10*(x+y+z))",
+    "ranks": {
+      "A": [
+        48
+      ],
+      "B": [
+        96
+      ]
+    },
+    "network": "ib0",
+    "syncmode": true,
+    "meshes": {
+      "A": {
+        "0.03": "$ASTE_MESHES/0.03.vtk",
+        "0.02": "$ASTE_MESHES/0.02.vtk"
+      },
+      "B": {
+        "0.009": "$ASTE_MESHES/0.009.vtk"
+      }
+    }
+  },
+  "groups": [
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "np": {
+            "kind": "nearest-projection"
+          },
+          "nn": {
+            "kind": "nearest-neighbor"
+          },
+          "tps": {
+            "kind": "rbf-thin-plate-splines",
+            "options": "use-qr-decomposition=\"1\""
+          },
+          "nng": {
+            "kind": "nearest-neighbor-gradient"
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.03",
+          "0.02"
+        ],
+        "B": [
+          "0.009"
+        ]
+      }
+    }
+  ]
+}

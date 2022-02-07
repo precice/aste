@@ -30,7 +30,9 @@ OptionMap getOptions(int argc, char *argv[])
       "vector", po::bool_switch(),
       "Distinguish between vector valued data and scalar data")(
       "verbose,v", po::bool_switch(),
-      "Enable verbose output"); // not explicitely used, handled by easylogging
+      "Enable verbose output")(
+      "gradient", po::bool_switch(), "Input data has gradient data"
+      ); // not explicitely used, handled by easylogging
 
   po::variables_map vm;
 

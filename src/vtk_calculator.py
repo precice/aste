@@ -8,6 +8,7 @@ import sys
 import numpy as np
 from vtk.util.numpy_support import vtk_to_numpy as v2n
 from vtk.util.numpy_support import numpy_to_vtk as n2v
+from sympy import *
 
 """Evaluates a function on a given mesh, using the VTK Calculator."""
 
@@ -66,6 +67,8 @@ def parse_args():
                         help="Calculate the difference to present data.")
     parser.add_argument("--stats", "-s", action='store_true',
                         help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
+    parser.add_argument("--gradient", "-g", action='store_true',
+                        help="Adds array with the gradient data")
     args = parser.parse_args()
     return args
 
@@ -117,8 +120,7 @@ def print_predef_functions():
         print(f"{name:{longest}} := {definition}")
     return
 
-def main():
-    args = parse_args()
+def main(args):
     logging.basicConfig(level=getattr(logging, args.logging))
 
     if args.listfunctions:
@@ -242,5 +244,51 @@ def main():
     return
 
 
+def sympy_to_vtk(string):
+    s = string
+    s = s.replace("**", "^")
+    return s
+
+
+def vtk_to_sympy(string):
+    s = string
+    s = s.replace("^", "**")
+    return s
+
+
+def add_gradient(args):
+
+    function = args.function
+    func = parse_expr(vtk_to_sympy(function))
+
+    args.gradient = False
+    args.in_meshname = args.out_meshname
+    args.out_meshname = None
+
+    x = Symbol('x')
+    grad_dx = func.diff(x)
+    args.data = 'gradientdx'
+    args.function = sympy_to_vtk(str(grad_dx))
+    print(args.function)
+    main(args)
+
+    y = Symbol('y')
+    grad_dy = func.diff(y)
+    args.data = 'gradientdy'
+    args.function = sympy_to_vtk(str(grad_dy))
+    main(args)
+
+    z = Symbol('z')
+    grad_dz = func.diff(z)
+    args.data = 'gradientdz'
+    args.function = sympy_to_vtk(str(grad_dz))
+    main(args)
+
+
 if __name__ == "__main__":
-    main()
+
+    args = parse_args()
+    main(args)
+
+    if args.gradient:
+        add_gradient(args)
