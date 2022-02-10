@@ -51,7 +51,7 @@ def main():
     if args.recovery:
         recovery_file = args.recovery
     else:
-        recovery_file = args.in_meshname + "recovery.json"
+        recovery_file = args.in_meshname + "_recovery.json"
     out_meshname = args.out_meshname if args.out_meshname else args.in_meshname + "_joined.vtk"
     joined_mesh = read_meshes(args.in_meshname, args.numparts, recovery_file)
     write_mesh(joined_mesh, out_meshname, args.directory)
