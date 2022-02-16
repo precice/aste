@@ -62,15 +62,6 @@ if(METIS_FOUND)
   target_link_libraries(preciceMap metisAPI)
 endif()
 
-add_executable(testing src/tests/testing.cpp src/tests/read_test.cpp src/tests/write_test.cpp src/mesh.cpp)
-target_include_directories(testing PRIVATE src)
-target_link_libraries(testing
-  Boost::filesystem
-  Boost::boost
-  Boost::unit_test_framework
-  ${VTK_LIBRARIES}
-)
-
 
 if (VTK_VERSION VERSION_LESS "8.90.0")
   # old system
@@ -86,8 +77,3 @@ endif()
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/join_mesh.py           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk_calculator.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
-enable_testing()
-
-add_test(NAME read_write_test  COMMAND testing WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/tests")
-

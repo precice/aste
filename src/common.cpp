@@ -11,10 +11,7 @@ OptionMap getOptions(int argc, char *argv[])
   namespace po = boost::program_options;
 
   po::options_description desc("ASTE: Artificial solver emulation tool");
-  desc.add_options()("help,h", "Print this help message")(
-      "precice-config,pc",
-      po::value<std::string>()->default_value("precice-config.xml"),
-      "preCICE configuration file")("aste-config,ac", po::value<std::string>()->required())("participant,p", po::value<std::string>()->required(), "Participant Name")("verbose,v", po::bool_switch(), "Enable verbose output"); // not explicitely used, handled by easylogging
+  desc.add_options()("help,h", "Print this help message")("aste-config,c", po::value<std::string>()->required(), "ASTE Configration file")("verbose,v", po::bool_switch(), "Enable verbose output"); // not explicitely used, handled by easylogging
 
   po::variables_map vm;
 

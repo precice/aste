@@ -10,6 +10,8 @@
 #include <exception>
 #include <functional>
 
+#include <iostream>
+
 #include <chrono>
 #include "common.hpp"
 #include "configreader.hpp"
@@ -161,129 +163,138 @@ int main(int argc, char *argv[])
 
   aste::asteConfig asteConfiguration;
   asteConfiguration.load(asteConfigName);
-  //  const std::string meshname    = options["mesh"].as<std::string>();
-  //  const std::string participant = options["participant"].as<std::string>();
-  for (auto &participant : asteConfiguration.getParticipants()) {
-    participant.preciceInferface = precice::SolverInterface(participant.participantName, options["precice-config"].as<std::string>(), context.rank, context.size);
-    for (auto &asteInterface : participant.asteInterfaces) {
-      const std::string meshname = asteInterface.meshFilePrefix;
-      asteInterface.meshes       = aste::BaseName(meshname).findAll(context);
-      if (asteInterface.meshes.empty()) {
-        throw std::invalid_argument("ERROR: Could not find meshes for name: " + meshname);
-      }
-      asteInterface.meshID = participant.preciceInferface.getMeshID(asteInterface.meshName);
+  const std::string participantName = asteConfiguration.participantName;
+
+  precice::SolverInterface preciceInterface(participantName, asteConfiguration.preciceConfigFilename, context.rank, context.size);
+
+  const int          dim   = preciceInterface.getDimensions();
+  const std::string &coric = precice::constants::actionReadIterationCheckpoint();
+  const std::string &cowic = precice::constants::actionWriteIterationCheckpoint();
+
+  int              minMeshSize{0};
+  std::vector<int> vertexIDs;
+  double           dt;
+
+  for (auto &asteInterface : asteConfiguration.asteInterfaces) {
+    const std::string meshname = asteInterface.meshFilePrefix;
+    asteInterface.meshes       = aste::BaseName(meshname).findAll(context);
+    if (asteInterface.meshes.empty()) {
+      throw std::invalid_argument("ERROR: Could not find meshes for name: " + meshname);
     }
+    asteInterface.meshID = preciceInterface.getMeshID(asteInterface.meshName);
+
+    for (const auto dataname : asteInterface.writeVectorNames) {
+      const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
+      std::cout << "Data is scalar " << dataname << " " << preciceInterface.isScalar(dataID) << "\n";
+      asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, dim, dataname, dataID));
+    }
+
+    for (const auto dataname : asteInterface.readVectorNames) {
+      const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
+      std::cout << "Data is scalar " << dataname << " " << preciceInterface.isScalar(dataID) << "\n";
+      asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::READ, dim, dataname, dataID));
+    }
+
+    for (const auto dataname : asteInterface.writeScalarNames) {
+      const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
+      std::cout << "Data is scalar " << dataname << " " << preciceInterface.isScalar(dataID) << "\n";
+      asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, 1, dataname, dataID));
+    }
+    for (const auto dataname : asteInterface.writeScalarNames) {
+      const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
+      std::cout << "Data is scalar " << dataname << " " << preciceInterface.isScalar(dataID) << "\n";
+      asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::READ, 1, dataname, dataID));
+    }
+
+    VLOG(1) << "Loading mesh from " << asteInterface.meshes.front().filename();
+
+    asteInterface.meshes.front().loadMesh(asteInterface.mesh);
+    asteInterface.meshes.front().loadData(asteInterface.mesh);
+    VLOG(1) << "The mesh contains: " << asteInterface.mesh.summary();
+
+    vertexIDs = setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshID);
+    VLOG(1) << "Mesh setup completed on Rank " << context.rank;
+    minMeshSize = std::max(minMeshSize, static_cast<int>(asteInterface.meshes.size()));
+  }
+  dt = preciceInterface.initialize();
+
+  if (preciceInterface.isActionRequired(precice::constants::actionWriteInitialData())) {
+    VLOG(1) << "Write initial data for participant " << participantName;
+    for (auto &asteInterface : asteConfiguration.asteInterfaces) {
+      for (const auto &meshdata : asteInterface.mesh.meshdata) {
+        if (meshdata.type == aste::datatype::WRITE) {
+          switch (meshdata.numcomp) {
+          case 1:
+            assert(meshdata.dataVector.size() == vertexIDs.size());
+            preciceInterface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          default:
+            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
+            preciceInterface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          }
+        }
+      }
+      VLOG(1) << "Data written: " << asteInterface.mesh.previewData();
+    }
+    preciceInterface.markActionFulfilled(precice::constants::actionWriteInitialData());
   }
 
-  const int dim = asteConfiguration.getParticipants().front().preciceInferface.getDimensions();
-  /*
-    aste::Mesh mesh;
-    for (const auto vectordata : vectorDatanames) {
+  preciceInterface.initializeData();
+  size_t round = 0;
 
-      if (std::find(writeDatanames.begin(), writeDatanames.end(), vectordata) != writeDatanames.end()) {
-        const int dataID = interface.getDataID(vectordata, meshID);
-        mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, dim, vectordata, dataID));
-      } else if (std::find(readDatanames.begin(), readDatanames.end(), vectordata) != readDatanames.end()) {
-        const int dataID = interface.getDataID(vectordata, meshID);
-        mesh.meshdata.push_back(aste::MeshData(aste::datatype::READ, dim, vectordata, dataID));
-      } else {
-        throw std::runtime_error(std::string("Please check config files. Dataname ").append(vectordata).append(" cannot found in write or read type for participant ").append(participant));
-      }
+  while (preciceInterface.isCouplingOngoing() and round < minMeshSize) {
+    if (preciceInterface.isActionRequired(cowic)) {
+      preciceInterface.markActionFulfilled(cowic);
     }
+    for (auto &asteInterface : asteConfiguration.asteInterfaces) {
+      VLOG(1) << "Read mesh for t=" << round << " from " << asteInterface.meshes[round];
+      asteInterface.meshes[round].resetData(asteInterface.mesh);
+      asteInterface.meshes[round].loadData(asteInterface.mesh);
+      VLOG(1) << "This roundmesh contains: " << asteInterface.mesh.summary();
 
-    for (const auto scalardata : scalarDatanames) {
-      if (std::find(writeDatanames.begin(), writeDatanames.end(), scalardata) != writeDatanames.end()) {
-        const int dataID = interface.getDataID(scalardata, meshID);
-        mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, 1, scalardata, dataID));
-      } else if (std::find(readDatanames.begin(), readDatanames.end(), scalardata) != readDatanames.end()) {
-        const int dataID = interface.getDataID(scalardata, meshID);
-        mesh.meshdata.push_back(aste::MeshData(aste::datatype::READ, 1, scalardata, dataID));
-      } else {
-        throw std::runtime_error(std::string("Please check config files. Dataname ").append(scalardata).append(" cannot found in write or read type for participant ").append(participant));
-      }
-    }
-    VLOG(1) << "Loading mesh from " << meshes.front().filename();
-
-    meshes.front().loadMesh(mesh);
-    meshes.front().loadData(mesh);
-    VLOG(1) << "The mesh contains: " << mesh.summary();
-
-    std::vector<int> vertexIDs = setupMesh(interface, mesh, meshID);
-    VLOG(1) << "Mesh setup completed on Rank " << context.rank;
-
-    interface.initialize();
-
-    if (interface.isActionRequired(precice::constants::actionWriteInitialData())) {
-      VLOG(1) << "Write initial data for participant " << participant;
-      for (const auto meshdata : mesh.meshdata) {
+      for (const auto meshdata : asteInterface.mesh.meshdata) {
         if (meshdata.type == aste::datatype::WRITE) {
           switch (meshdata.numcomp) {
           case 1:
             assert(meshdata.dataVector.size() == vertexIDs.size());
-            interface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           default:
             assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            interface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           }
+          VLOG(1) << "Data written: " << asteInterface.mesh.previewData(meshdata);
         }
       }
-      VLOG(1) << "Data written: " << mesh.previewData();
-
-      interface.markActionFulfilled(precice::constants::actionWriteInitialData());
     }
-    interface.initializeData();
-
-    size_t round = 0;
-    while (interface.isCouplingOngoing() and round < meshes.size()) {
-
-      VLOG(1) << "Read mesh for t=" << round << " from " << meshes[round];
-      meshes[round].resetData(mesh);
-      meshes[round].loadData(mesh);
-      VLOG(1) << "This roundmesh contains: " << mesh.summary();
-
-      for (const auto meshdata : mesh.meshdata) {
-        if (meshdata.type == aste::datatype::WRITE) {
-          switch (meshdata.numcomp) {
-          case 1:
-            assert(meshdata.dataVector.size() == vertexIDs.size());
-            interface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          default:
-            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            interface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          }
-          VLOG(1) << "Data written: " << mesh.previewData(meshdata);
-        }
-      }
-
-      interface.advance(1);
-
-      for (auto &meshdata : mesh.meshdata) {
+    dt = preciceInterface.advance(dt);
+    if (preciceInterface.isActionRequired(coric)) {
+      preciceInterface.markActionFulfilled(coric);
+    }
+    for (auto &asteInterface : asteConfiguration.asteInterfaces) {
+      for (auto &meshdata : asteInterface.mesh.meshdata) {
         if (meshdata.type == aste::datatype::READ) {
           switch (meshdata.numcomp) {
           case 1:
             meshdata.dataVector.resize(vertexIDs.size());
-            interface.readBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.readBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           default:
             meshdata.dataVector.resize(vertexIDs.size() * dim);
-            interface.readBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.readBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           }
-          VLOG(1) << "Data read: " << mesh.previewData(meshdata);
+          VLOG(1) << "Data read: " << asteInterface.mesh.previewData(meshdata);
         }
       }
-
-      round++;
     }
+    round++;
+  }
 
-    interface.finalize();
-
-    // Write out results in same format as data was read
-
+  // Write out results in same format as data was read
+  /*
     std::string outputFilename{options["output"].as<std::string>()};
     if (!outputFilename.empty()) {
       auto meshName = aste::BaseName{outputFilename}.with(context);
@@ -303,7 +314,7 @@ int main(int argc, char *argv[])
       VLOG(1) << "Writing results to " << filename;
       meshName.save(mesh);
     }
-  */
+    */
   MPI_Finalize();
   return EXIT_SUCCESS;
 }
