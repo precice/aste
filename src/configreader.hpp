@@ -6,37 +6,24 @@
 
 namespace aste {
 
-enum dataType { VECTOR,
-                SCALAR };
-
 struct asteInterface {
   std::string              meshName;
   std::string              meshFilePrefix;
   std::vector<std::string> writeVectorNames;
   std::vector<std::string> readVectorNames;
   std::vector<std::string> writeScalarNames;
-  std::vector<std::string> readSCalarNames;
+  std::vector<std::string> readScalarNames;
   std::vector<MeshName>    meshes;
   int                      meshID;
-};
-
-struct asteParticipant {
-  std::string                participantName;
-  std::vector<asteInterface> asteInterfaces;
-  precice::SolverInterface   preciceInferface;
+  Mesh                     mesh;
 };
 
 class asteConfig {
 public:
-  void                         load(std::string asteConfigFile);
-  asteParticipant              getParticipant(int id);
-  std::vector<asteParticipant> getParticipants();
-  void                         setDim(int dimension);
-  int                          getDim();
-
-private:
-  std::vector<asteParticipant> _participants;
-  int                          _dimension;
+  void                       load(const std::string &asteConfigFile);
+  std::string                preciceConfigFilename;
+  std::vector<asteInterface> asteInterfaces;
+  std::string                participantName;
 };
 
 } // namespace aste
