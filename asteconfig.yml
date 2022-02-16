@@ -1,0 +1,14 @@
+participants:
+  Solid:
+    interfaces:
+      - mesh: Solid-Mesh
+        meshfile: ../Solid_VTK/Solid-Mesh-Solid
+        read-data-scalar: [Force] # This can be skipped if user not interested mapped data
+        write-data-vector: [Displacement]
+  Fluid:
+    interfaces:
+      - mesh: Fluid-Mesh
+        meshfile: ../Fluid_VTK/Fluid-Mesh-Fluid
+        read-data-vector: [Displacement] # This can be skipped if user not interested mapped data
+        write-data-vector: [Force]
+precice-config-file: ../precice-config.xml
