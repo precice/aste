@@ -65,7 +65,7 @@ def parse_args():
             Default is INFO""")
     parser.add_argument("--directory", "-dir", dest="directory", default=None,
                         help="Directory for output files (optional)")
-    parser.add_argument("--diff", action='store_true', help="Calculate the difference between \"--diffdata\" and given"
+    parser.add_argument("--diff", action='store_true', help="Calculate the difference between \"--diffdata\" and the specified"
                         "function \"--function\"")
     parser.add_argument("--stats", "-s", action='store_true',
                         help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
