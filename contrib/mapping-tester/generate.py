@@ -198,7 +198,7 @@ def createRunScript(outdir, path, case):
         post_content += [copycmd, diffcmd]
     else:
         [recoveryFileLocation, tmpPrefix] = os.path.split(os.path.normpath(bmeshLocation))
-        tmprecoveryFile = recoveryFileLocation + "/recovery.json"
+        tmprecoveryFile = recoveryFileLocation + "/{}_recovery.json".format(bmesh)
         joincmd = "join_mesh.py --mesh mapped -r {} -o result.vtk".format(tmprecoveryFile)
         diffcmd = "vtk_calculator.py --data error --diffdata \"{1}\" --diff --stats --mesh result.vtk --function \"{0}\" | tee diff.log".format(case["function"], mapped_data_name)
         post_content += [joincmd,diffcmd]
