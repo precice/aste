@@ -2,7 +2,6 @@ cmake_minimum_required (VERSION 3.1)
 
 project(ASTE)
 
-
 list (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake-modules")
 
 set (CMAKE_CXX_STANDARD 14)
@@ -37,9 +36,9 @@ endif()
 
 find_package(MPI REQUIRED)
 
-add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/easylogging++.cc src/mesh.cpp)
-target_include_directories(preciceMap PRIVATE src)
-target_link_libraries(preciceMap
+add_executable(aste-run src/aste-run.cpp src/common.cpp src/easylogging++.cc src/mesh.cpp)
+target_include_directories(aste-run PRIVATE src)
+target_link_libraries(aste-run
   precice::precice
   Threads::Threads
   Boost::boost
@@ -51,11 +50,11 @@ target_link_libraries(preciceMap
 )
 
 if(ASTE_SET_MESH_BLOCK)
-  target_compile_definitions(preciceMap PRIVATE ASTE_SET_MESH_BLOCK)
+  target_compile_definitions(aste-run PRIVATE ASTE_SET_MESH_BLOCK)
 endif()
 
 if(METIS_FOUND)
-  target_link_libraries(preciceMap metisAPI)
+  target_link_libraries(aste-run metisAPI)
 endif()
 
 add_executable(testing src/tests/testing.cpp src/tests/read_test.cpp src/tests/write_test.cpp src/mesh.cpp)
@@ -74,21 +73,18 @@ if (VTK_VERSION VERSION_LESS "8.90.0")
 else ()
   # vtk_module_autoinit is needed
   vtk_module_autoinit(
-    TARGETS preciceMap testing
+    TARGETS aste-run testing
     MODULES ${VTK_LIBRARIES}
     )
 endif()
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/join_mesh.py           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk_calculator.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 include(GNUInstallDirs)
-install(TARGETS preciceMap DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS aste-run DESTINATION ${CMAKE_INSTALL_BINDIR})
 if(METIS_FOUND)
 install(TARGETS metisAPI DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
-install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py ${CMAKE_CURRENT_SOURCE_DIR}/src/join_mesh.py ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk_calculator.py DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tools/ DESTINATION ${CMAKE_INSTALL_BINDIR} FILES_MATCHING PATTERN "*.py")
 
 enable_testing()
 
