@@ -244,3 +244,7 @@ class Calculator:
         writer.SetFileName(out_meshname)
         writer.Write()
         self.logger.info(f"Written output to \"{out_meshname}\".")
+
+
+if __name__ == "__main__":
+    Calculator()

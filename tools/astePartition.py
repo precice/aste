@@ -465,3 +465,6 @@ class MeshPartitioner:
         writer.SetFileTypeToBinary()
         writer.Write()
         return
+
+if __name__ == "__main__":
+    MeshPartitioner()

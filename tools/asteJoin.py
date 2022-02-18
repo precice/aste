@@ -277,3 +277,6 @@ class MeshJoiner:
         writer.SetFileName(filename)
         writer.SetInputData(meshfile)
         writer.Write()
+
+if __name__ == "__main__":
+    MeshJoiner()
