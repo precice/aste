@@ -65,8 +65,8 @@ def parse_args():
             Default is INFO""")
     parser.add_argument("--directory", "-dir", dest="directory", default=None,
                         help="Directory for output files (optional)")
-    parser.add_argument("--diff", action='store_true', help="Calculate the difference between --diffdata and given"
-                        "function.")
+    parser.add_argument("--diff", action='store_true', help="Calculate the difference between \"--diffdata\" and given"
+                        "function in \"--function\"")
     parser.add_argument("--stats", "-s", action='store_true',
                         help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
     args = parser.parse_args()
@@ -128,8 +128,8 @@ def main():
         print_predef_functions()
         return
 
-    assert os.path.isfile(args.in_meshname), "Input mesh file not found!"
-    assert args.data, "Dataname (--data) is missing!"
+    assert os.path.isfile(args.in_meshname), "Input mesh file not found. Please check your input mesh \"--mesh\"."
+    assert args.data, "Dataname \"--data\" is missing. Please give an dataname for given input."
 
     out_meshname = args.out_meshname
     if args.out_meshname is None:
@@ -137,7 +137,8 @@ def main():
         out_meshname = args.in_meshname
 
     if args.diff:
-        assert args.diffdata, "--diffdata is required for --diff mode. Please check your input."
+        assert args.diffdata, """The \"--diffdata\" argument is required when running in difference mode (using the \"--diff\" argument).
+        Please add a valid \"--diffdata\" argument or type \"--help\" for more information."""
         diffdata = args.diffdata
 
     if args.function in preDefFunctions:
@@ -151,7 +152,7 @@ def main():
     elif (extension == ".vtk"):
         reader = vtk.vtkUnstructuredGridReader()
     else:
-        logging.warning("Unkown input file extension please check your input file.")
+        logging.warning("Unkown input file extension please check your input file or hype \"--help\" for more information.")
         sys.exit()
     reader.SetFileName(args.in_meshname)
     reader.Update()
