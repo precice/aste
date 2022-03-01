@@ -185,24 +185,20 @@ int main(int argc, char *argv[])
 
     for (const auto dataname : asteInterface.writeVectorNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
-      std::cout << "Data is scalar " << dataname << " " << preciceInterface.isScalar(dataID) << "\n";
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, dim, dataname, dataID));
     }
 
     for (const auto dataname : asteInterface.readVectorNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
-      std::cout << "Data is scalar " << dataname << " " << preciceInterface.isScalar(dataID) << "\n";
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::READ, dim, dataname, dataID));
     }
 
     for (const auto dataname : asteInterface.writeScalarNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
-      std::cout << "Data is scalar " << dataname << " " << preciceInterface.isScalar(dataID) << "\n";
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, 1, dataname, dataID));
     }
     for (const auto dataname : asteInterface.writeScalarNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
-      std::cout << "Data is scalar " << dataname << " " << preciceInterface.isScalar(dataID) << "\n";
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::READ, 1, dataname, dataID));
     }
 
