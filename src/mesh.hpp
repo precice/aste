@@ -76,7 +76,7 @@ namespace aste {
 
 } // namespace aste
 struct Mesh {
-  using Vertex   = std::array<double, 3>;
+  using Vertex   = std::vector<double>;
   using VID      = std::vector<Vertex>::size_type;
   using Edge     = std::array<VID, 2>;
   using Triangle = std::array<VID, 3>;

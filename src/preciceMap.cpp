@@ -64,11 +64,12 @@ std::vector<int> setupVertexIDs(precice::SolverInterface &interface,
                                 const aste::Mesh &mesh, int meshID)
 {
 #ifdef ASTE_SET_MESH_BLOCK
+  const auto          dim       = interface.getDimensions();
   const auto          nvertices = mesh.positions.size();
-  std::vector<double> posData(3 * nvertices);
+  std::vector<double> posData(dim * nvertices);
   for (unsigned long i = 0; i < nvertices; ++i) {
     const auto &pos = mesh.positions[i];
-    std::copy(pos.begin(), pos.end(), &posData[i * 3]);
+    std::copy(pos.begin(), pos.end(), &posData[i * dim]);
   }
 
   std::vector<int> vertexIDs(nvertices);

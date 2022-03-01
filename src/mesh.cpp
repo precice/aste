@@ -76,10 +76,20 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
   // Get Points
   vtkPoints *Points    = grid->GetPoints();
   vtkIdType  NumPoints = grid->GetNumberOfPoints();
-  for (vtkIdType point = 0; point < NumPoints; point++) {
-    std::array<double, 3> vertexPosArr;
-    Points->GetPoint(point, vertexPosArr.data());
-    mesh.positions.push_back(vertexPosArr);
+  if (dim == 3) { // Parse all x,y,z
+    for (vtkIdType point = 0; point < NumPoints; point++) {
+      std::vector<double> vertexPosArr(3);
+      Points->GetPoint(point, vertexPosArr.data());
+      mesh.positions.push_back(vertexPosArr);
+    }
+  } else if (dim == 2) { // Parse only x,y
+    for (vtkIdType point = 0; point < NumPoints; point++) {
+      std::vector<double> vertexPosArr(3);
+      Points->GetPoint(point, vertexPosArr.data());
+      mesh.positions.push_back({vertexPosArr[0], vertexPosArr[1]});
+    }
+  } else {
+    throw std::runtime_error("Provided dimension (" + std::to_string(dim) + ") is not supported");
   }
   // Get Point Data
   vtkPointData *PD = grid->GetPointData();
