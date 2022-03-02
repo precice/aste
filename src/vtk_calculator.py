@@ -9,10 +9,14 @@ import numpy as np
 from vtk.util.numpy_support import vtk_to_numpy as v2n
 from vtk.util.numpy_support import numpy_to_vtk as n2v
 
-"""Evaluates a function on a given mesh, using the VTK Calculator."""
-
 
 class Calculator:
+    """Calculator class provided 3 main functionality:
+    - Evaluates a given function (scalar or vector) on a given mesh
+    - Evaluates difference between a given function \"f\" and given data \"data\" (data-f)
+    - Calculate statistics for the difference mentioned above
+    - Use \"--help\" argument to see usage
+    """
 
     def __init__(self) -> None:
         self.args = None

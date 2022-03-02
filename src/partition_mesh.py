@@ -46,11 +46,14 @@ class Mesh:
 
 
 class MeshPartitioner:
+    """MeshPartitioner class partition a given VTK unstuctured grid mesh to n partitions.
+    - Use \"--help\" argument to see usage.
+    """
 
     def __init__(self) -> None:
         self.logger = None
         self.args = None
-        
+
         self.parse_arguments()
         self.create_logger()
         assert os.path.isfile(self.args.in_meshname), ("Input file cannot be found \"" +
@@ -216,12 +219,12 @@ class MeshPartitioner:
             ext = ".dylib"
         else:
             raise Exception("Unknown OS type")
-        if os.path.isfile(os.path.join(binpath, "libmetisAPI"+ext)):
-            libmetispath = os.path.join(binpath, "libmetisAPI"+ext)
-        elif os.path.isfile(os.path.join(libpath, "libmetisAPI"+ext)):
-            libmetispath = os.path.join(libpath, "libmetisAPI"+ext)
+        if os.path.isfile(os.path.join(binpath, "libmetisAPI" + ext)):
+            libmetispath = os.path.join(binpath, "libmetisAPI" + ext)
+        elif os.path.isfile(os.path.join(libpath, "libmetisAPI" + ext)):
+            libmetispath = os.path.join(libpath, "libmetisAPI" + ext)
         else:
-            raise Exception("libmetisAPI"+ext+" cannot found!")
+            raise Exception("libmetisAPI" + ext + " cannot found!")
         libmetis = cdll.LoadLibrary(libmetispath)
         idx_t = c_int if libmetis.typewidth() == 32 else c_longlong
         cell_count = idx_t(len(mesh.cells))
@@ -354,7 +357,14 @@ class MeshPartitioner:
         assert (len(cell_types) in [0, len(cells)])
         return Mesh(points, cells, cell_types, vtkmesh)
 
-    def write_mesh(self, filename: str, points: List, data_index: List, cells=None, cell_types=None, orig_mesh=None) -> None:
+    def write_mesh(
+            self,
+            filename: str,
+            points: List,
+            data_index: List,
+            cells=None,
+            cell_types=None,
+            orig_mesh=None) -> None:
         if (cell_types is not None):
             assert (len(cell_types) in [0, len(cells)])
         assert (len(points) == len(data_index))
@@ -432,18 +442,28 @@ class MeshPartitioner:
         """
         # Strip off the mesh-prefix for the directory creation
         mesh_prefix = os.path.basename(os.path.normpath(meshname))
-        recoveryName = os.path.basename(os.path.normpath(mesh_prefix+'_recovery.json'))
+        recoveryName = os.path.basename(os.path.normpath(mesh_prefix + '_recovery.json'))
         if directory:
             # Get the absolute directory where we want to store the mesh
             directory = os.path.abspath(directory)
-            recoveryName = os.path.join(directory, mesh_prefix+'_recovery.json')
+            recoveryName = os.path.join(directory, mesh_prefix + '_recovery.json')
             os.makedirs(directory, exist_ok=True)
 
         for i in range(len(meshes)):
             mesh = meshes[i]
             if directory:
-                self.write_mesh(os.path.join(directory, mesh_prefix) + "_" + str(i) + ".vtu", mesh.points, mesh.data_index,
-                                mesh.cells, mesh.cell_types, orig_mesh)
+                self.write_mesh(
+                    os.path.join(
+                        directory,
+                        mesh_prefix) +
+                    "_" +
+                    str(i) +
+                    ".vtu",
+                    mesh.points,
+                    mesh.data_index,
+                    mesh.cells,
+                    mesh.cell_types,
+                    orig_mesh)
             else:
                 self.write_mesh(mesh_prefix + "_" + str(i) + ".vtu", mesh.points, mesh.data_index, mesh.cells,
                                 mesh.cell_types, orig_mesh)
@@ -462,6 +482,7 @@ class MeshPartitioner:
         writer.SetFileTypeToBinary()
         writer.Write()
         return
+
 
 if __name__ == "__main__":
     MeshPartitioner()
