@@ -200,22 +200,28 @@ void MeshName::save(const Mesh &mesh, const std::string &dataname) const
   }
 
   data->SetName(dataname.c_str());
+  const int component = numComp == 1 ? 1 : 3;
   data->SetNumberOfComponents(numComp);
-
   // Insert Point Data
-  {
-    std::vector<double> pointData;
-    pointData.reserve(3);
-    for (size_t i = 0; i < mesh.positions.size(); i++) {
-      for (int j = 0; j < numComp; j++) {
-        pointData.push_back(mesh.data[i * numComp + j]);
+  if (component == 3) {
+    {
+      std::array<double, 3> pointData;
+      pointData.fill(0.0);
+      for (size_t i = 0; i < mesh.positions.size(); i++) {
+        for (int j = 0; j < numComp; j++) {
+          pointData.push_back(mesh.data[i * numComp + j]);
+        }
+        data->InsertNextTuple(pointData.data());
+        pointData.fill(0.0);
       }
-      data->InsertNextTuple(pointData.data());
-      pointData.clear();
     }
+    grid->GetPointData()->SetVector(data);
+  } else {
+    for (size_t i = 0; i < mesh.positions.size(); i++) {
+      data->InsertNextTuple(mesh.data[i]);
+    }
+    grid->GetPointData()->SetScalar(data);
   }
-
-  grid->GetPointData()->AddArray(data);
 
   // Write file
   if (_context.isParallel()) {
