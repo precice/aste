@@ -182,10 +182,11 @@ def main():
         logging.info("Evaluated \"{}\"-\"({})\" on the mesh \"{}\".".format(diffdata, inputfunc, args.in_meshname))
 
         # Calculate Statistics
+        abs_diff = np.absolute(difference)
         num_points = vtk_dataset.GetNumberOfPoints()
-        cnt, min, max = num_points, np.nanmin(difference), np.nanmax(difference)
-        p99, p95, p90, median = np.percentile(difference, [99, 95, 90, 50])
-        relative = np.sqrt(np.nansum(np.square(difference)) / difference.size)
+        cnt, min, max = num_points, np.nanmin(abs_diff), np.nanmax(abs_diff)
+        p99, p95, p90, median = np.percentile(abs_diff, [99, 95, 90, 50])
+        relative = np.sqrt(np.nansum(np.square(abs_diff)) / abs_diff.size)
         logging.info("Vertex count {}".format(cnt))
         logging.info("Relative l2 error {}".format(relative))
         logging.info("Maximum error per vertex {}".format(max))
