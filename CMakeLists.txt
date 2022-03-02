@@ -70,7 +70,7 @@ if (VTK_VERSION VERSION_LESS "8.90.0")
 else ()
   # vtk_module_autoinit is needed
   vtk_module_autoinit(
-    TARGETS preciceMap testing
+    TARGETS preciceMap 
     MODULES ${VTK_LIBRARIES}
     )
 endif()
