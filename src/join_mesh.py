@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-"""
-Joins meshes partitioned by the ASTE mesh partitioner.
-
-There are two possible ways of joining the meshes:
-- Partition-wise (does not recover the original mesh order lacks of discarded cells)
-- Recovery merge (maintain original mesh order and adds discarded cells)
-"""
-
 import argparse
 import logging
 import os
@@ -16,6 +8,12 @@ import os.path
 
 
 class MeshJoiner:
+    """MeshJoiner class joins meshes partitioned by MeshPartitioner class.
+    There are two possible ways of joining the meshes:
+    - Partition-wise (does not recover the original mesh order lacks of discarded cells)
+    - Recovery merge (maintain original mesh order and adds discarded cells)
+    - Use \"--help\" argument to see usage.
+    """
 
     def __init__(self) -> None:
         self.logger = None
@@ -273,6 +271,7 @@ class MeshJoiner:
         writer.SetFileName(filename)
         writer.SetInputData(meshfile)
         writer.Write()
+
 
 if __name__ == "__main__":
     MeshJoiner()
