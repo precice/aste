@@ -218,7 +218,7 @@ void MeshName::save(const Mesh &mesh, const std::string &dataname) const
     grid->GetPointData()->SetVectors(data);
   } else {
     for (size_t i = 0; i < mesh.positions.size(); i++) {
-      data->InsertNextTuple(mesh.data[i]);
+      data->InsertNextTuple(&mesh.data[i]);
     }
     grid->GetPointData()->SetScalars(data);
   }
