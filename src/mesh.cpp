@@ -209,18 +209,18 @@ void MeshName::save(const Mesh &mesh, const std::string &dataname) const
       pointData.fill(0.0);
       for (size_t i = 0; i < mesh.positions.size(); i++) {
         for (int j = 0; j < numComp; j++) {
-          pointData.push_back(mesh.data[i * numComp + j]);
+          pointData[j] = mesh.data[i * numComp + j];
         }
         data->InsertNextTuple(pointData.data());
         pointData.fill(0.0);
       }
     }
-    grid->GetPointData()->SetVector(data);
+    grid->GetPointData()->SetVectors(data);
   } else {
     for (size_t i = 0; i < mesh.positions.size(); i++) {
       data->InsertNextTuple(mesh.data[i]);
     }
-    grid->GetPointData()->SetScalar(data);
+    grid->GetPointData()->SetScalars(data);
   }
 
   // Write file
