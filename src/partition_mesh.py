@@ -189,12 +189,12 @@ def partition_metis(mesh: Mesh, numparts: int):
         ext = ".dylib"
     else:
         raise Exception("Unknown OS type")
-    if os.path.isfile(os.path.join(binpath, "libmetisAPI"+ext)):
-        libmetispath = os.path.join(binpath, "libmetisAPI"+ext)
-    elif os.path.isfile(os.path.join(libpath, "libmetisAPI"+ext)):
-        libmetispath = os.path.join(libpath, "libmetisAPI"+ext)
+    if os.path.isfile(os.path.join(binpath, "libmetisAPI" + ext)):
+        libmetispath = os.path.join(binpath, "libmetisAPI" + ext)
+    elif os.path.isfile(os.path.join(libpath, "libmetisAPI" + ext)):
+        libmetispath = os.path.join(libpath, "libmetisAPI" + ext)
     else:
-        raise Exception("libmetisAPI"+ext+" cannot found!")
+        raise Exception("libmetisAPI" + ext + " cannot found!")
     libmetis = cdll.LoadLibrary(libmetispath)
     idx_t = c_int if libmetis.typewidth() == 32 else c_longlong
     cell_count = idx_t(len(mesh.cells))
@@ -411,11 +411,11 @@ def write_meshes(meshes, recoveryInfo, meshname: str, orig_mesh, directory=None)
     """
     # Strip off the mesh-prefix for the directory creation
     mesh_prefix = os.path.basename(os.path.normpath(meshname))
-    recoveryName = os.path.basename(os.path.normpath(mesh_prefix+'_recovery.json'))
+    recoveryName = os.path.basename(os.path.normpath(mesh_prefix + '_recovery.json'))
     if directory:
         # Get the absolute directory where we want to store the mesh
         directory = os.path.abspath(directory)
-        recoveryName = os.path.join(directory, mesh_prefix+'_recovery.json')
+        recoveryName = os.path.join(directory, mesh_prefix + '_recovery.json')
         os.makedirs(directory, exist_ok=True)
 
     for i in range(len(meshes)):

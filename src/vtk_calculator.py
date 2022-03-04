@@ -48,13 +48,17 @@ def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--mesh", "-m", dest="in_meshname",
-                        help="The mesh (VTK Unstructured Grid) used as input")
+                       help="The mesh (VTK Unstructured Grid) used as input")
     parser.add_argument("--function", "-f", dest="function", default="eggholder3d",
                         help="""The function to evalutate on the mesh.
             Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.
             Alternatively, you can use predefined function
             Default is Eggholder function in 3D (eggholder3d).""")
-    group.add_argument("--list-functions", dest="listfunctions",action="store_true", help="Prints list of predefined functions.")
+    group.add_argument(
+        "--list-functions",
+        dest="listfunctions",
+        action="store_true",
+        help="Prints list of predefined functions.")
     parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
     parser.add_argument("--data", "-d", dest="data", help="The name of output data.")
@@ -65,8 +69,11 @@ def parse_args():
             Default is INFO""")
     parser.add_argument("--directory", "-dir", dest="directory", default=None,
                         help="Directory for output files (optional)")
-    parser.add_argument("--diff", action='store_true', help="Calculate the difference between \"--diffdata\" and the specified"
-                        "function \"--function\"")
+    parser.add_argument(
+        "--diff",
+        action='store_true',
+        help="Calculate the difference between \"--diffdata\" and the specified"
+        "function \"--function\"")
     parser.add_argument("--stats", "-s", action='store_true',
                         help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
     args = parser.parse_args()
@@ -119,6 +126,7 @@ def print_predef_functions():
     for name, definition in list(functionDefinitions.items()):
         print(f"{name:{longest}} := {definition}")
     return
+
 
 def main():
     args = parse_args()
