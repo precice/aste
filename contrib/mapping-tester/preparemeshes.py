@@ -1,11 +1,11 @@
 #! /usr/bin/env python3
 
+import argparse
+import itertools
 import json
 import os
 import shutil
-import argparse
 import subprocess
-import itertools
 
 
 def parseArguments(args):
@@ -18,6 +18,7 @@ def parseArguments(args):
         default="setup.json",
         help='The test setup file to use.')
     parser.add_argument('-f', '--force', action="store_true", help='Remove existing meshes.')
+
     return parser.parse_args(args)
 
 
@@ -32,6 +33,7 @@ def prepareMainMesh(meshdir, name, file, function, force=False):
             shutil.rmtree(mainDir)
         else:
             print("  Mesh already exists.")
+
             return
 
     os.makedirs(mainDir, exist_ok=True)
@@ -54,6 +56,7 @@ def preparePartMesh(meshdir, name, p, force=False):
             shutil.rmtree(partDir)
         else:
             print("  Partitioned mesh already exists.")
+
             return
 
     os.makedirs(partDir, exist_ok=True)
@@ -66,6 +69,7 @@ def main(argv):
     args = parseArguments(argv[1:])
     setup = json.load(args.setup)
     outdir = os.path.normpath(args.outdir)
+
     if (os.path.isdir(outdir)):
         print('Warning: outdir "{}" already exisits.'.format(outdir))
     meshdir = os.path.join(outdir, "meshes")
@@ -75,9 +79,11 @@ def main(argv):
 
     for name, file in set(itertools.chain(setup["general"]["meshes"]
                           ["A"].items(), setup["general"]["meshes"]["B"].items())):
+
         if not os.path.isfile(os.path.expandvars(file)):
             raise Exception(f'\033[91m Unable to open file called "{file}".\033[0m')
         prepareMainMesh(meshdir, name, file, function, args.force)
+
         for p in partitions:
             preparePartMesh(meshdir, name, p, args.force)
 
