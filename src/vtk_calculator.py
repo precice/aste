@@ -48,13 +48,17 @@ def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--mesh", "-m", dest="in_meshname",
-                        help="The mesh (VTK Unstructured Grid) used as input")
+                       help="The mesh (VTK Unstructured Grid) used as input")
     parser.add_argument("--function", "-f", dest="function", default="eggholder3d",
                         help="""The function to evalutate on the mesh.
             Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.
             Alternatively, you can use predefined function
             Default is Eggholder function in 3D (eggholder3d).""")
-    group.add_argument("--list-functions", dest="listfunctions",action="store_true", help="Prints list of predefined functions.")
+    group.add_argument(
+        "--list-functions",
+        dest="listfunctions",
+        action="store_true",
+        help="Prints list of predefined functions.")
     parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
     parser.add_argument("--data", "-d", dest="data", help="The name of output data.")
@@ -65,8 +69,11 @@ def parse_args():
             Default is INFO""")
     parser.add_argument("--directory", "-dir", dest="directory", default=None,
                         help="Directory for output files (optional)")
-    parser.add_argument("--diff", action='store_true', help="Calculate the difference between \"--diffdata\" and the specified"
-                        "function \"--function\"")
+    parser.add_argument(
+        "--diff",
+        action='store_true',
+        help="Calculate the difference between \"--diffdata\" and the specified"
+        "function \"--function\"")
     parser.add_argument("--stats", "-s", action='store_true',
                         help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
     args = parser.parse_args()
@@ -119,6 +126,7 @@ def print_predef_functions():
     for name, definition in list(functionDefinitions.items()):
         print(f"{name:{longest}} := {definition}")
     return
+
 
 def main():
     args = parse_args()
@@ -184,13 +192,16 @@ def main():
         # Calculate Statistics
         abs_diff = np.absolute(difference)
         num_points = vtk_dataset.GetNumberOfPoints()
-        cnt, min, max = num_points, np.nanmin(abs_diff), np.nanmax(abs_diff)
+        cnt, abs_min, signed_min, abs_max, signed_max = num_points, np.nanmin(
+            abs_diff), np.nanmin(difference), np.nanmax(abs_diff), np.nanmax(difference)
         p99, p95, p90, median = np.percentile(abs_diff, [99, 95, 90, 50])
         relative = np.sqrt(np.nansum(np.square(abs_diff)) / abs_diff.size)
         logging.info("Vertex count {}".format(cnt))
         logging.info("Relative l2 error {}".format(relative))
-        logging.info("Maximum error per vertex {}".format(max))
-        logging.info("Minimum error per vertex {}".format(min))
+        logging.info("Maximum absolute error per vertex {}".format(abs_max))
+        logging.info("Maximum signed error per vertex {}".format(signed_max))
+        logging.info("Minimum absolute error per vertex {}".format(abs_min))
+        logging.info("Minimum signed error per vertex {}".format(signed_min))
         logging.info("Median error per vertex {}".format(median))
         logging.info("99th percentile of error per vertex {}".format(p99))
         logging.info("95th percentile of error per vertex {}".format(p95))
@@ -201,8 +212,10 @@ def main():
             logging.info("Saving stats data to \"{}\"".format(stat_file))
             json.dump({
                 "count": cnt,
-                "min": min,
-                "max": max,
+                "abs_min": abs_min,
+                "abs_max": abs_max,
+                "signed_min:": signed_min,
+                "signed_max": signed_max,
                 "median": median,
                 "relative-l2": relative,
                 "99th percentile": p99,
