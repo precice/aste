@@ -5,9 +5,11 @@ import pandas
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def parseArguments(args):
     parser = argparse.ArgumentParser(description="Creates convergence plots from gathered stats")
-    parser.add_argument('-f', '--file', type=argparse.FileType('r'), default="stats.csv", help='The CSV file containing the gathered stats.')
+    parser.add_argument('-f', '--file', type=argparse.FileType('r'), default="stats.csv",
+                        help='The CSV file containing the gathered stats.')
     return parser.parse_args(args)
 
 
@@ -18,10 +20,10 @@ def main(argv):
     df.sort_values("count", inplace=True)
     grouped = df.groupby(["mapping", "constraint"])
 
-    ncols=2
-    nrows = int(np.ceil(grouped.ngroups/ncols))
+    ncols = 2
+    nrows = int(np.ceil(grouped.ngroups / ncols))
 
-    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(12,4), sharey=True)
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(12, 4), sharey=True)
 
     for (key, ax) in zip(grouped.groups.keys(), axes.flatten()):
         grouped.get_group(key).plot(

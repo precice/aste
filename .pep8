@@ -2,5 +2,5 @@
 max_line_length = 120
 ignore = E402
 in-place = true
-aggressive = 4
+aggressive = 2
 recursive = true
