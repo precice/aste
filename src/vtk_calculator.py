@@ -202,10 +202,10 @@ def main():
         logging.info("Maximum signed error per vertex {}".format(signed_max))
         logging.info("Minimum absolute error per vertex {}".format(abs_min))
         logging.info("Minimum signed error per vertex {}".format(signed_min))
-        logging.info("Median error per vertex {}".format(median))
-        logging.info("99th percentile of error per vertex {}".format(p99))
-        logging.info("95th percentile of error per vertex {}".format(p95))
-        logging.info("90th percentile of error per vertex {}".format(p90))
+        logging.info("Median absolute error per vertex {}".format(median))
+        logging.info("99th percentile of absolute error per vertex {}".format(p99))
+        logging.info("95th percentile of absolute error per vertex {}".format(p95))
+        logging.info("90th percentile of absolute error per vertex {}".format(p90))
 
         if args.stats:
             stat_file = os.path.splitext(out_meshname)[0] + ".stats.json"
@@ -216,11 +216,11 @@ def main():
                 "abs_max": abs_max,
                 "signed_min:": signed_min,
                 "signed_max": signed_max,
-                "median": median,
+                "median(abs)": median,
                 "relative-l2": relative,
-                "99th percentile": p99,
-                "95th percentile": p95,
-                "90th percentile": p90
+                "99th percentile(abs)": p99,
+                "95th percentile(abs)": p95,
+                "90th percentile(abs)": p90
             }, open(stat_file, "w"))
 
     else:
