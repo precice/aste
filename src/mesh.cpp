@@ -301,6 +301,12 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
           break;
         meshNames.emplace_back(MeshName{stepMeshName, ext, context});
       }
+      for (int t = 1; true; ++t) {
+        std::string stepMeshName = _bname + ".it" + std::to_string(t);
+        if (!fs::is_regular_file(stepMeshName + ext))
+          break;
+        meshNames.emplace_back(MeshName{stepMeshName, ext, context});
+      }
       {
         auto finalMeshName = std::string{_bname + ".final"};
         if (fs::is_regular_file(finalMeshName + ext))
@@ -330,6 +336,12 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
     }
     for (int t = 1; true; ++t) {
       std::string rankMeshName{_bname + ".dt" + std::to_string(t) + "_" + std::to_string(context.rank)};
+      if (!fs::is_regular_file(rankMeshName + ext))
+        break;
+      meshNames.emplace_back(rankMeshName, ext, context);
+    }
+    for (int t = 1; true; ++t) {
+      std::string rankMeshName{_bname + ".it" + std::to_string(t) + "_" + std::to_string(context.rank)};
       if (!fs::is_regular_file(rankMeshName + ext))
         break;
       meshNames.emplace_back(rankMeshName, ext, context);
