@@ -43,7 +43,7 @@ Mesh::VID vtkToPos(vtkIdType id)
 }
 
 // Read vertices and mesh connectivity
-void readMesh(Mesh &mesh, const std::string &filename)
+void readMesh(Mesh &mesh, const std::string &filename, const int dim)
 {
   if (!fs::is_regular_file(filename)) {
     throw std::invalid_argument{"The mesh file does not exist: " + filename};
@@ -73,7 +73,9 @@ void readMesh(Mesh &mesh, const std::string &filename)
   for (vtkIdType point = 0; point < NumPoints; point++) {
     std::array<double, 3> vertexPosArr;
     Points->GetPoint(point, vertexPosArr.data());
-    mesh.positions.push_back(vertexPosArr);
+    std::vector<double> vertexLoc(dim);
+    std::copy(vertexPosArr.begin(), vertexPosArr.begin() + dim, vertexLoc.begin());
+    mesh.positions.push_back(vertexLoc);
   }
 
   for (int i = 0; i < grid->GetNumberOfCells(); i++) {
@@ -139,17 +141,19 @@ void readData(Mesh &mesh, const std::string &filename)
       vtkDataArray *ArrayData = PD->GetArray(dataname.c_str());
       int           NumComp   = ArrayData->GetNumberOfComponents();
 
-      assert(NumComp == data.numcomp);
+      assert(NumComp >= data.numcomp); // 3D case it should match 2D case it match or less
       data.dataVector.reserve(NumComp * NumPoints);
 
       switch (NumComp) {
       case 1: // Scalar Data
+        assert(data.numcomp == 1);
         for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
           const double scalar = ArrayData->GetTuple1(tupleIdx);
           data.dataVector.push_back(scalar);
         }
         break;
       case 2: // Vector Data with 2 component
+        assert(data.numcomp == 2);
         double *vector2ref;
         for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
           vector2ref = ArrayData->GetTuple2(tupleIdx);
@@ -163,7 +167,9 @@ void readData(Mesh &mesh, const std::string &filename)
           vector3ref = ArrayData->GetTuple3(tupleIdx);
           data.dataVector.push_back(vector3ref[0]);
           data.dataVector.push_back(vector3ref[1]);
+          if (data.numcomp == 3) {
           data.dataVector.push_back(vector3ref[2]);
+        }
         }
         break;
       default: // Unknown number of component
@@ -174,9 +180,9 @@ void readData(Mesh &mesh, const std::string &filename)
   }
 };
 
-void MeshName::loadMesh(Mesh &mesh)
+void MeshName::loadMesh(Mesh &mesh, const int dim)
 {
-  readMesh(mesh, filename());
+  readMesh(mesh, filename(), dim);
 }
 
 void MeshName::loadData(Mesh &mesh)

@@ -67,11 +67,13 @@ std::vector<int> setupVertexIDs(precice::SolverInterface &interface,
                                 const aste::Mesh &mesh, int meshID)
 {
 #ifdef ASTE_SET_MESH_BLOCK
+  const auto          dimension = interface.getDimensions();
   const auto          nvertices = mesh.positions.size();
-  std::vector<double> posData(3 * nvertices);
+  std::vector<double> posData(dimension * nvertices);
   for (unsigned long i = 0; i < nvertices; ++i) {
     const auto &pos = mesh.positions[i];
-    std::copy(pos.begin(), pos.end(), &posData[i * 3]);
+    assert(pos.size() == dimension);
+    std::copy(pos.begin(), pos.end(), &posData[i * dimension]);
   }
 
   std::vector<int> vertexIDs(nvertices);
@@ -204,7 +206,7 @@ int main(int argc, char *argv[])
 
     VLOG(1) << "Loading mesh from " << asteInterface.meshes.front().filename();
 
-    asteInterface.meshes.front().loadMesh(asteInterface.mesh);
+    asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim);
     asteInterface.meshes.front().loadData(asteInterface.mesh);
     VLOG(1) << "The mesh contains: " << asteInterface.mesh.summary();
 

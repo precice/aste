@@ -44,7 +44,7 @@ public:
 
   std::string filename() const;
 
-  void loadMesh(Mesh &mesh);
+  void loadMesh(Mesh &mesh, const int dim);
   void loadData(Mesh &mesh);
   void resetData(Mesh &mesh);
   void save(const Mesh &mesh) const;
@@ -88,7 +88,7 @@ private:
 };
 
 struct Mesh {
-  using Vertex   = std::array<double, 3>;
+  using Vertex   = std::vector<double>;
   using VID      = std::vector<Vertex>::size_type;
   using Edge     = std::array<VID, 2>;
   using Triangle = std::array<VID, 3>;
