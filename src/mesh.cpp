@@ -83,15 +83,15 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim)
 
     // Here we use static cast since VTK library returns a long long unsigned int however preCICE uses int for PointId's
     if (cellType == VTK_TRIANGLE) {
-      vtkCell                 *cell = grid->GetCell(i);
+      vtkCell *                cell = grid->GetCell(i);
       std::array<Mesh::VID, 3> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2))};
       mesh.triangles.push_back(elem);
     } else if (cellType == VTK_LINE) {
-      vtkCell                 *cell = grid->GetCell(i);
+      vtkCell *                cell = grid->GetCell(i);
       std::array<Mesh::VID, 2> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1))};
       mesh.edges.push_back(elem);
     } else if (cellType == VTK_QUAD) {
-      vtkCell                 *cell = grid->GetCell(i);
+      vtkCell *                cell = grid->GetCell(i);
       std::array<Mesh::VID, 4> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2)), vtkToPos(cell->GetPointId(3))};
       mesh.quadrilaterals.push_back(elem);
     } else {
@@ -168,8 +168,8 @@ void readData(Mesh &mesh, const std::string &filename)
           data.dataVector.push_back(vector3ref[0]);
           data.dataVector.push_back(vector3ref[1]);
           if (data.numcomp == 3) {
-          data.dataVector.push_back(vector3ref[2]);
-        }
+            data.dataVector.push_back(vector3ref[2]);
+          }
         }
         break;
       default: // Unknown number of component
@@ -290,11 +290,13 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
 
       // Check multiple timesteps
       std::vector<MeshName> meshNames;
+      /*
       {
         auto initMeshName = std::string{_bname + ".init"};
         if (fs::is_regular_file(initMeshName + ext))
           meshNames.emplace_back(MeshName{initMeshName, ext, context});
       }
+      */
       for (int t = 1; true; ++t) {
         std::string stepMeshName = _bname + ".dt" + std::to_string(t);
         if (!fs::is_regular_file(stepMeshName + ext))
@@ -307,12 +309,13 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
           break;
         meshNames.emplace_back(MeshName{stepMeshName, ext, context});
       }
+      /*
       {
         auto finalMeshName = std::string{_bname + ".final"};
         if (fs::is_regular_file(finalMeshName + ext))
           meshNames.emplace_back(MeshName{finalMeshName, ext, context});
       }
-
+*/
       if (!meshNames.empty()) {
         std::cerr << "Names: " << meshNames.size() << '\n';
         return meshNames;
@@ -329,11 +332,13 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
 
     // Check multiple timesteps
     std::vector<MeshName> meshNames;
+    /*
     {
       auto initMeshName = std::string{_bname + ".init" + "_" + std::to_string(context.rank)};
       if (fs::is_regular_file(initMeshName + ext))
         meshNames.emplace_back(MeshName{initMeshName, ext, context});
     }
+    */
     for (int t = 1; true; ++t) {
       std::string rankMeshName{_bname + ".dt" + std::to_string(t) + "_" + std::to_string(context.rank)};
       if (!fs::is_regular_file(rankMeshName + ext))
@@ -346,11 +351,13 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
         break;
       meshNames.emplace_back(rankMeshName, ext, context);
     }
+    /*
     {
       auto finalMeshName = std::string{_bname + ".final" + "_" + std::to_string(context.rank)};
       if (fs::is_regular_file(finalMeshName + ext))
         meshNames.emplace_back(MeshName{finalMeshName, ext, context});
     }
+    */
     std::cerr << "Names: " << meshNames.size() << '\n';
     return meshNames;
   }
