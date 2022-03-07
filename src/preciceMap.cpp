@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
   const std::string &coric = precice::constants::actionReadIterationCheckpoint();
   const std::string &cowic = precice::constants::actionWriteIterationCheckpoint();
 
-  int              minMeshSize{0};
+  size_t           minMeshSize{0};
   std::vector<int> vertexIDs;
   double           dt;
 
@@ -212,7 +212,7 @@ int main(int argc, char *argv[])
 
     vertexIDs = setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshID);
     VLOG(1) << "Mesh setup completed on Rank " << context.rank;
-    minMeshSize = std::max(minMeshSize, static_cast<int>(asteInterface.meshes.size()));
+    minMeshSize = std::max(minMeshSize, asteInterface.meshes.size());
   }
   dt = preciceInterface.initialize();
 
