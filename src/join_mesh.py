@@ -3,6 +3,7 @@ import argparse
 import logging
 import os
 import json
+from partition_mesh import MeshPartitioner
 import vtk
 import os.path
 
@@ -16,13 +17,12 @@ class MeshJoiner:
     """
 
     def __init__(self) -> None:
-        self.logger = None
-        self.args = None
-        self.parse_args()
+        args = self.parse_args()
         self.create_logger()
-        self.join()
+        self.join(args)
 
-    def parse_args(self):
+    @staticmethod
+    def parse_args():
         parser = argparse.ArgumentParser(description="Read a partitioned mesh and join it into a .vtk or .vtu file.")
         parser.add_argument("--mesh", "-m", required=True, dest="in_meshname",
                             help="""The partitioned mesh prefix used as input (only VTU format is accepted)
@@ -39,46 +39,55 @@ class MeshJoiner:
         parser.add_argument("--log", "-l", dest="logging", default="INFO",
                             choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
                             help="Set the log level. Default is INFO")
-        self.args, _ = parser.parse_known_args()
+        args, _ = parser.parse_known_args()
+        return args
 
-    def create_logger(self):
-        logging.basicConfig(level=getattr(logging, self.args.logging))
-        self.logger = logging
+    @staticmethod
+    def create_logger(args):
+        logging.basicConfig(level=getattr(logging, args.logging))
 
-    def join(self):
-        if self.args.recovery:
-            recovery_file = self.args.recovery
+    @staticmethod
+    def get_logger():
+        return logging
+
+    @staticmethod
+    def join(args):
+        if args.recovery:
+            recovery_file = args.recovery
         else:
-            recovery_file = self.args.in_meshname + "_recovery.json"
-        out_meshname = self.args.out_meshname if self.args.out_meshname else self.args.in_meshname + "_joined.vtk"
-        joined_mesh = self.read_meshes(self.args.in_meshname, self.args.numparts, recovery_file)
-        self.write_mesh(joined_mesh, out_meshname, self.args.directory)
+            recovery_file = args.in_meshname + "_recovery.json"
+        out_meshname = args.out_meshname if args.out_meshname else args.in_meshname + "_joined.vtk"
+        joined_mesh = MeshJoiner.read_meshes(args.in_meshname, args.numparts, recovery_file)
+        MeshJoiner.write_mesh(joined_mesh, out_meshname, args.directory)
 
-    def read_meshes(self, prefix: str, partitions=None, recoveryPath=None):
+    @staticmethod
+    def read_meshes(prefix: str, partitions=None, recoveryPath=None):
         """
         Reads meshes with given prefix.
         """
+        logger = MeshPartitioner.get_logger()
         if not partitions:
-            partitions = self.count_partitions(prefix)
-            self.logger.debug("Detected " + str(partitions) + " partitions with prefix " + prefix)
+            partitions = MeshJoiner.count_partitions(prefix)
+            logger.debug("Detected " + str(partitions) + " partitions with prefix " + prefix)
         if partitions == 0:
             raise Exception("No partitions found")
 
         if os.path.exists(recoveryPath):
-            self.logger.info("Recovery data found. Full recovery will be executed")
-            return self.join_mesh_recovery(prefix, partitions, recoveryPath)
+            logger.info("Recovery data found. Full recovery will be executed")
+            return MeshJoiner.join_mesh_recovery(prefix, partitions, recoveryPath)
         else:
-            self.logger.info("No recovery data found. Meshes will be joined partition-wise")
-            return self.join_mesh_partitionwise(prefix, partitions)
+            logger.info("No recovery data found. Meshes will be joined partition-wise")
+            return MeshJoiner.join_mesh_partitionwise(prefix, partitions)
 
-    def join_mesh_partitionwise(self, prefix: str, partitions: int):
+    @staticmethod
+    def join_mesh_partitionwise(prefix: str, partitions: int):
         """
         Partition-wise load and append.
         Does not recover missing cells.
         Cells and points may be scrambled wrt original mesh.
         """
-
-        self.logger.info("Starting partition-wise mesh merge")
+        logger = MeshJoiner.get_logger()
+        logger.info("Starting partition-wise mesh merge")
         joined_mesh = vtk.vtkUnstructuredGrid()
         joined_points = vtk.vtkPoints()
         joined_data_arrays = None
@@ -93,7 +102,7 @@ class MeshJoiner:
             reader.Update()
             part_mesh = reader.GetOutput()
 
-            self.logger.debug("File {} contains {} points".format(fname, part_mesh.GetNumberOfPoints()))
+            logger.debug("File {} contains {} points".format(fname, part_mesh.GetNumberOfPoints()))
             for i in range(part_mesh.GetNumberOfPoints()):
                 joined_points.InsertNextPoint(part_mesh.GetPoint(i))
 
@@ -109,7 +118,7 @@ class MeshJoiner:
 
             for j in range(num_arrays):
                 array_name = part_point_data.GetArrayName(j)
-                self.logger.debug("Merging from file {} dataname {}".format(fname, array_name))
+                logger.debug("Merging from file {} dataname {}".format(fname, array_name))
                 array_data = part_point_data.GetArray(array_name)
                 join_arr = joined_data_arrays[j]
                 join_arr.SetNumberOfComponents(array_data.GetNumberOfComponents())
@@ -136,20 +145,22 @@ class MeshJoiner:
 
         return joined_mesh
 
-    def join_mesh_recovery(self, prefix: str, partitions: int, recoveryPath: str):
+    @staticmethod
+    def join_mesh_recovery(prefix: str, partitions: int, recoveryPath: str):
         """
         Partition merge with full recovery
 
         This recovers the original mesh.
         """
-        self.logger.info("Starting full mesh recovery")
+        logger = MeshJoiner.get_logger()
+        logger.info("Starting full mesh recovery")
         recovery = json.load(open(recoveryPath, "r"))
         cells = recovery["cells"]
         size = recovery["size"]
         cell_types = recovery["cell_types"]
 
-        self.logger.debug("Original Mesh contains {} points".format(size))
-        self.logger.debug("{} Cells discarded during partitioning".format(len(cells)))
+        logger.debug("Original Mesh contains {} points".format(size))
+        logger.debug("{} Cells discarded during partitioning".format(len(cells)))
 
         # Initialize Joined Mesh
         joined_mesh = vtk.vtkUnstructuredGrid()
@@ -183,19 +194,19 @@ class MeshJoiner:
             array_data = part_point_data.GetArray("GlobalIDs")
             # Check if GlobalIDs exist if not do partition-wise merge
             if array_data is None:
-                self.logger.warning("GlobalIDs were not found, a recovery merge is not possible.")
-                return self.join_mesh_partitionwise(prefix, partitions)
+                logger.warning("GlobalIDs were not found, a recovery merge is not possible.")
+                return MeshJoiner.join_mesh_partitionwise(prefix, partitions)
 
             for k in range(array_data.GetNumberOfTuples()):
                 global_ids.append(array_data.GetTuple(k))
-            self.logger.debug("File {} contains {} points".format(fname, part_mesh.GetNumberOfPoints()))
+            logger.debug("File {} contains {} points".format(fname, part_mesh.GetNumberOfPoints()))
             for i in range(part_mesh.GetNumberOfPoints()):
                 joined_points.SetPoint(int(global_ids[i][0]), part_mesh.GetPoint(i))
 
             # Append Point Data to Original Locations
             for j in range(num_arrays):
                 array_name = part_point_data.GetArrayName(j)
-                self.logger.debug("Merging from file {} dataname {}".format(fname, array_name))
+                logger.debug("Merging from file {} dataname {}".format(fname, array_name))
                 array_data = part_point_data.GetArray(array_name)
                 join_arr = joined_data_arrays[j]
                 join_arr.SetNumberOfComponents(array_data.GetNumberOfComponents())
@@ -235,7 +246,8 @@ class MeshJoiner:
 
         return joined_mesh
 
-    def count_partitions(self, prefix: str) -> int:
+    @staticmethod
+    def count_partitions(prefix: str) -> int:
         """Count how many partitions available with given prefix
 
         Args:
@@ -252,7 +264,8 @@ class MeshJoiner:
             detected += 1
         return detected
 
-    def write_mesh(self, meshfile, filename, directory=None):
+    @staticmethod
+    def write_mesh(meshfile, filename, directory=None):
 
         filename = os.path.basename(os.path.normpath(filename))
         if directory:
