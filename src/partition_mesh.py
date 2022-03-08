@@ -51,48 +51,48 @@ class MeshPartitioner:
     """
 
     def __init__(self) -> None:
-        self.logger = None
-        self.args = None
+        args = self.parse_arguments()
+        self.create_logger(args)
+        assert os.path.isfile(args.in_meshname), ("Input file cannot be found \"" +
+                                                  args.in_meshname + "\", please check your input.")
+        self.run(args)
 
-        self.parse_arguments()
-        self.create_logger()
-        assert os.path.isfile(self.args.in_meshname), ("Input file cannot be found \"" +
-                                                       self.args.in_meshname + "\", please check your input.")
-        self.run()
-
-    def run(self) -> None:
-        mesh_name = self.args.in_meshname
-        algorithm = self.args.algorithm
+    @staticmethod
+    def run(args) -> None:
+        logger = MeshPartitioner.get_logger()
+        mesh_name = args.in_meshname
+        algorithm = args.algorithm
         if not algorithm:
-            self.logger.info("No algorithm given. Defaulting to \"meshfree\"")
+            logger.info("No algorithm given. Defaulting to \"meshfree\"")
             algorithm = "meshfree"
-        mesh = self.read_mesh(mesh_name)
-        if self.args.numparts > 1:
-            part = self.partition(mesh, self.args.numparts, algorithm)
+        mesh = MeshPartitioner.read_mesh(mesh_name)
+        if args.numparts > 1:
+            part = MeshPartitioner.partition(mesh, args.numparts, algorithm)
         else:
-            if self.args.directory:
+            if args.directory:
                 # Get the absolute directory where we want to store the mesh
-                directory = os.path.abspath(self.args.directory)
+                directory = os.path.abspath(args.directory)
                 os.makedirs(directory, exist_ok=True)
-                out_meshname = os.path.join(directory, self.args.out_meshname)
+                out_meshname = os.path.join(directory, args.out_meshname)
             else:
-                out_meshname = self.args.out_meshname
+                out_meshname = args.out_meshname
             extension = os.path.splitext(mesh_name)[1]
             if extension == ".vtk":
                 shutil.copy(mesh_name, out_meshname + ".vtk")
                 return
             elif extension == ".vtu":
-                self.vtu2vtk(mesh_name, out_meshname)
+                MeshPartitioner.vtu2vtk(mesh_name, out_meshname)
                 return
             else:
                 raise Exception(f"Unkown input file extension {extension} please check your input file.")
 
-        self.logger.info("Processing mesh " + mesh_name)
-        meshes, recoveryInfo = self.apply_partition(mesh, part, self.args.numparts)
-        self.logger.info("Writing output to " + self.args.out_meshname)
-        self.write_meshes(meshes, recoveryInfo, self.args.out_meshname, mesh.vtk_dataset, self.args.directory)
+        logger.info("Processing mesh " + mesh_name)
+        meshes, recoveryInfo = MeshPartitioner.apply_partition(mesh, part, args.numparts)
+        logger.info("Writing output to " + args.out_meshname)
+        MeshPartitioner.write_meshes(meshes, recoveryInfo, args.out_meshname, mesh.vtk_dataset, args.directory)
 
-    def parse_arguments(self):
+    @staticmethod
+    def parse_arguments():
         parser = argparse.ArgumentParser(description="Read meshes, partition them and write them out in VTU format.")
         parser.add_argument("--mesh", "-m", required=True, dest="in_meshname", help="The mesh used as input")
         parser.add_argument("--output", "-o", dest="out_meshname", default="partitioned_mesh",
@@ -110,37 +110,45 @@ class MeshPartitioner:
         parser.add_argument("--log", "-l", dest="logging", default="INFO",
                             choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
                             help="Set the log level. Default is INFO")
-        self.args, _ = parser.parse_known_args()
+        args, _ = parser.parse_known_args()
+        return args
 
-    def create_logger(self):
-        logging.basicConfig(level=getattr(logging, self.args.logging))
-        self.logger = logging
+    @staticmethod
+    def create_logger(args):
+        logging.basicConfig(level=getattr(logging, args.logging))
 
-    def partition(self, mesh: Mesh, numparts: int, algorithm):
+    @staticmethod
+    def get_logger():
+        return logging
+
+    @staticmethod
+    def partition(mesh: Mesh, numparts: int, algorithm):
         """
         Partitions a mesh using METIS or kmeans. This does not call METIS directly,
         but instead uses a small C++ Wrapper around shared libary libmetisAPI for convenience.
         This shared library must be provided if this function should be called.
         """
         if algorithm == "meshfree":
-            return self.partition_kmeans(mesh, numparts)
+            return MeshPartitioner.partition_kmeans(mesh, numparts)
         elif algorithm == "topology":
-            return self.partition_metis(mesh, numparts)
+            return MeshPartitioner.partition_metis(mesh, numparts)
         elif algorithm == "uniform":
-            labels = self.partition_uniform(mesh, numparts)
+            labels = MeshPartitioner.partition_uniform(mesh, numparts)
             if labels is None:
-                return self.partition(mesh, numparts, "meshfree")
+                return MeshPartitioner.partition(mesh, numparts, "meshfree")
             return labels
 
-    def partition_kmeans(self, mesh: Mesh, numparts: int):
+    @staticmethod
+    def partition_kmeans(mesh: Mesh, numparts: int):
         """ Partitions a mesh using k-means. This is a meshfree algorithm and requires scipy"""
         from scipy.cluster.vq import kmeans2
         points = np.copy(mesh.points)
-        points = self.reduce_dimension(points)
+        points = MeshPartitioner.reduce_dimension(points)
         _, label = kmeans2(points, numparts)
         return label
 
-    def reduce_dimension_simple(self, mesh: Mesh):
+    @staticmethod
+    def reduce_dimension_simple(mesh: Mesh):
         """
         A simple, efficient algorithm for a dimension reduction for a mesh
         with one or more "dead dimensions"
@@ -157,11 +165,13 @@ class MeshPartitioner:
         mask = np.setdiff1d(full, dead_dims)
         return mesh[:, mask]
 
-    def reduce_dimension(self, mesh: Mesh):
+    @staticmethod
+    def reduce_dimension(mesh: Mesh):
         """
         This function gets a list of points in 3d and if all of them are within one plane it
         returns a list of 2d points in the plane, else the unmodified list is returned.
         """
+        logger = MeshPartitioner.get_logger()
         pA, pB = mesh[:2]
         pC = mesh[-1]
         pA = np.array(pA)
@@ -178,7 +188,7 @@ class MeshPartitioner:
             n /= np.linalg.norm(n)  # Normalize
             zUnit = np.array((0, 0, 1))
             phi = math.acos(np.dot(n, zUnit))
-            self.logger.info("Rotating mesh with phi = " + str(360 * phi / (2 * math.pi)) + " degrees.")
+            logger.info("Rotating mesh with phi = " + str(360 * phi / (2 * math.pi)) + " degrees.")
             axis = np.cross(n, zUnit)
             axis /= np.linalg.norm(axis)
             a = math.cos(phi / 2)
@@ -195,17 +205,18 @@ class MeshPartitioner:
                 mesh[i] = x
             return mesh[:, :-1]
 
-    def partition_metis(self, mesh: Mesh, numparts: int):
+    @staticmethod
+    def partition_metis(mesh: Mesh, numparts: int):
         """
         Partitions a mesh using METIS. This does not call METIS directly,
         but instead uses a small C++ Wrapper libmetisAPI.so for convenience.
         This shared library must be provided if this function should be called.
         """
+        logger = MeshPartitioner.get_logger()
         cellPtr = [0]
         cellData = []
         if len(mesh.cells) == 0:
-            self.logger.warning(
-                "No topology information provided. Partitioning with metis will likely provide bad partition")
+            logger.warning("No topology information provided. Partitioning with metis will likely provide bad partition")
         for i in range(len(mesh.cells)):
             cell = mesh.cells[i]
             cellData += list(cell)
@@ -236,22 +247,25 @@ class MeshPartitioner:
         libmetis.partitionMetis(cell_count, point_count, cell_ptr, cell_data, num_parts, partition)
         return np.ctypeslib.as_array(partition)
 
-    def partition_uniform(self, mesh: Mesh, numparts: int):
+    @staticmethod
+    def partition_uniform(mesh: Mesh, numparts: int):
         """
         Partitions a mesh assuming it is uniform. It must be two-dimensional
         but is allowed to be layed out anyhow in three dimensions.
         """
+        logger = MeshPartitioner.get_logger()
         mesh = mesh.points[:]
-        mesh = self.reduce_dimension(np.array(mesh))
+        mesh = MeshPartitioner.reduce_dimension(np.array(mesh))
         if len(mesh[0]) == 3:
-            self.logger.warning("Mesh is not uniform. Falling back to meshfree method")
+            logger.warning("Mesh is not uniform. Falling back to meshfree method")
             return None
         min_point = np.amin(mesh, 0)
         max_point = np.amax(mesh, 0)
         big_dim = 0 if max_point[0] - min_point[0] >= max_point[1] - min_point[1] else 1
         small_dim = 1 - big_dim
 
-        def prime_factors(self, n):
+        @staticmethod
+        def prime_factors(n):
             """ Straight from SO"""
             i = 2
             factors = []
@@ -265,7 +279,8 @@ class MeshPartitioner:
                 factors.append(n)
             return factors
 
-        def greedy_choose(self, factors):
+        @staticmethod
+        def greedy_choose(factors):
             """ Greedily choose "best" divisors"""
             small = big = 1
             for factor in reversed(factors):
@@ -279,7 +294,7 @@ class MeshPartitioner:
         small_interval = (max_point[small_dim] - min_point[small_dim]) / small
         big_interval = (max_point[big_dim] - min_point[big_dim]) / big
         labels = []
-        self.logger.info("Uniform partioning of mesh size {} into {} x {} partitions.".format(
+        logger.info("Uniform partioning of mesh size {} into {} x {} partitions.".format(
             len(mesh), small, big))
         for point in mesh:
             small_offset = point[small_dim] - min_point[small_dim]
@@ -292,7 +307,8 @@ class MeshPartitioner:
             labels.append(partition_num)
         return labels
 
-    def apply_partition(self, orig_mesh: Mesh, part, numparts: int):
+    @staticmethod
+    def apply_partition(orig_mesh: Mesh, part, numparts: int):
         """
         Partitions a mesh into many meshes when given a partition and a mesh.
         """
@@ -327,7 +343,8 @@ class MeshPartitioner:
 
         return meshes, recoveryInfo
 
-    def read_mesh(self, filename: str) -> Mesh:
+    @staticmethod
+    def read_mesh(filename: str) -> Mesh:
         import vtk
         extension = os.path.splitext(filename)[1]
         if (extension == ".vtu"):
@@ -357,18 +374,13 @@ class MeshPartitioner:
         assert (len(cell_types) in [0, len(cells)])
         return Mesh(points, cells, cell_types, vtkmesh)
 
-    def write_mesh(
-            self,
-            filename: str,
-            points: List,
-            data_index: List,
-            cells=None,
-            cell_types=None,
-            orig_mesh=None) -> None:
+    @staticmethod
+    def write_mesh(filename: str, points: List, data_index: List, cells=None, cell_types=None, orig_mesh=None) -> None:
         if (cell_types is not None):
             assert (len(cell_types) in [0, len(cells)])
         assert (len(points) == len(data_index))
         import vtk
+        logger = MeshPartitioner.get_logger()
 
         vtkGrid = vtk.vtkUnstructuredGrid()
         vtkpoints = vtk.vtkPoints()
@@ -420,7 +432,7 @@ class MeshPartitioner:
                         data = oldArr.GetTuple3(j)
                         newArr.InsertNextTuple3(data[0], data[1], data[2])
                 else:
-                    self.logger.warning("Skipped data {} check dimension of data".format(array_name))
+                    logger.warning("Skipped data {} check dimension of data".format(array_name))
                 vtkGrid.GetPointData().AddArray(newArr)
 
         extension = os.path.splitext(filename)[1]
@@ -436,7 +448,8 @@ class MeshPartitioner:
         writer.Write()
         return
 
-    def write_meshes(self, meshes, recoveryInfo, meshname: str, orig_mesh, directory=None) -> None:
+    @staticmethod
+    def write_meshes(meshes, recoveryInfo, meshname: str, orig_mesh, directory=None) -> None:
         """
         Writes meshes to given directory.
         """
@@ -452,25 +465,16 @@ class MeshPartitioner:
         for i in range(len(meshes)):
             mesh = meshes[i]
             if directory:
-                self.write_mesh(
-                    os.path.join(
-                        directory,
-                        mesh_prefix) +
-                    "_" +
-                    str(i) +
-                    ".vtu",
-                    mesh.points,
-                    mesh.data_index,
-                    mesh.cells,
-                    mesh.cell_types,
-                    orig_mesh)
+                MeshPartitioner.write_mesh(os.path.join(directory, mesh_prefix) + "_" + str(i) + ".vtu", mesh.points,
+                                           mesh.data_index, mesh.cells, mesh.cell_types, orig_mesh)
             else:
-                self.write_mesh(mesh_prefix + "_" + str(i) + ".vtu", mesh.points, mesh.data_index, mesh.cells,
-                                mesh.cell_types, orig_mesh)
+                MeshPartitioner.write_mesh(mesh_prefix + "_" + str(i) + ".vtu", mesh.points,
+                                           mesh.data_index, mesh.cells, mesh.cell_types, orig_mesh)
         json.dump(recoveryInfo, open(recoveryName, "w"))
         return
 
-    def vtu2vtk(self, inmesh, outmesh):
+    @staticmethod
+    def vtu2vtk(inmesh, outmesh):
         import vtk
         reader = vtk.vtkXMLUnstructuredGridReader()
         reader.SetFileName(inmesh)
