@@ -18,7 +18,7 @@ class MeshJoiner:
 
     def __init__(self) -> None:
         args = self.parse_args()
-        self.create_logger()
+        self.create_logger(args)
         self.join(args)
 
     @staticmethod
