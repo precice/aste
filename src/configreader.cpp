@@ -1,21 +1,24 @@
 #include "configreader.hpp"
+#include <fstream>
 #include <iostream>
 
 namespace aste {
 void asteConfig::load(const std::string &asteConfigFile)
 {
-  YAML::Node config = YAML::LoadFile(asteConfigFile);
 
-  preciceConfigFilename = config["precice-config"].as<std::string>();
+  std::ifstream ifs(asteConfigFile);
+  json          config = json::parse(ifs);
 
-  participantName = config["participant"].as<std::string>();
+  preciceConfigFilename = config["precice-config"];
+
+  participantName = config["participant"];
 
   const int numInterfaces = config["meshes"].size();
 
   for (auto i = 0; i < numInterfaces; i++) {
     asteInterface interface;
-    interface.meshName       = config["meshes"][i]["mesh"].as<std::string>();
-    interface.meshFilePrefix = config["meshes"][i]["meshfileprefix"].as<std::string>();
+    interface.meshName       = config["meshes"][i]["mesh"];
+    interface.meshFilePrefix = config["meshes"][i]["meshfileprefix"];
 
     const auto readScalarSize  = config["meshes"][i]["read-data"]["scalar"].size();
     const auto readVectorSize  = config["meshes"][i]["read-data"]["vector"].size();
@@ -23,19 +26,19 @@ void asteConfig::load(const std::string &asteConfigFile)
     const auto writeVectorSize = config["meshes"][i]["write-data"]["vector"].size();
 
     for (auto k = 0; k < readScalarSize; k++) {
-      const auto scalarName = config["meshes"][i]["read-data"]["scalar"][k].as<std::string>();
+      const auto scalarName = config["meshes"][i]["read-data"]["scalar"][k];
       interface.readScalarNames.push_back(scalarName);
     }
     for (auto k = 0; k < readVectorSize; k++) {
-      const auto vectorName = config["meshes"][i]["read-data"]["vector"][k].as<std::string>();
+      const auto vectorName = config["meshes"][i]["read-data"]["vector"][k];
       interface.readVectorNames.push_back(vectorName);
     }
     for (auto k = 0; k < writeScalarSize; k++) {
-      const auto scalarName = config["meshes"][i]["write-data"]["scalar"][k].as<std::string>();
+      const auto scalarName = config["meshes"][i]["write-data"]["scalar"][k];
       interface.writeScalarNames.push_back(scalarName);
     }
     for (auto k = 0; k < writeVectorSize; k++) {
-      const auto vectorName = config["meshes"][i]["write-data"]["vector"][k].as<std::string>();
+      const auto vectorName = config["meshes"][i]["write-data"]["vector"][k];
       interface.writeVectorNames.push_back(vectorName);
     }
     asteInterfaces.push_back(interface);

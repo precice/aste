@@ -37,9 +37,6 @@ endif()
 
 find_package(MPI REQUIRED)
 
-find_package(yaml-cpp REQUIRED)
-include_directories(${YAML_INCLUDE_DIRS})
-
 add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/easylogging++.cc src/mesh.cpp src/configreader.cpp)
 target_include_directories(preciceMap PRIVATE src)
 target_link_libraries(preciceMap
@@ -51,7 +48,6 @@ target_link_libraries(preciceMap
   Boost::system
   MPI::MPI_CXX
   ${VTK_LIBRARIES}
-  ${YAML_CPP_LIBRARIES}
 )
 
 if(ASTE_SET_MESH_BLOCK)
