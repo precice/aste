@@ -1,8 +1,10 @@
+#include <json.hpp>
 #include <string>
 #include <vector>
 #include "mesh.hpp"
 #include "precice/SolverInterface.hpp"
-#include "yaml-cpp/yaml.h"
+
+using json = nlohmann::json;
 
 namespace aste {
 
