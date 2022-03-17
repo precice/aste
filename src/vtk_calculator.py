@@ -215,7 +215,7 @@ class Calculator:
         logging.info("95th percentile of absolute error per vertex {}".format(p95))
         logging.info("90th percentile of absolute error per vertex {}".format(p90))
 
-        if args.stats:
+        if stats:
             stat_file = os.path.splitext(out_meshname)[0] + ".stats.json"
             logging.info("Saving stats data to \"{}\"".format(stat_file))
             json.dump({
