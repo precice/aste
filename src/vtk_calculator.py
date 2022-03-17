@@ -217,7 +217,7 @@ class Calculator:
 
         if stats:
             stat_file = os.path.splitext(out_meshname)[0] + ".stats.json"
-            logging.info("Saving stats data to \"{}\"".format(stat_file))
+            logger.info("Saving stats data to \"{}\"".format(stat_file))
             json.dump({
                 "count": cnt,
                 "abs_min": abs_min,
