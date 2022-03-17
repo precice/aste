@@ -124,7 +124,7 @@ class Calculator:
     def evaluate(args, preDefFunctions):
         logger = Calculator.get_logger()
         if args.listfunctions:
-            Calculator.print_predef_functions()
+            Calculator.print_predef_functions(preDefFunctions)
             return
         assert os.path.isfile(
             args.in_meshname), "Input mesh file not found. Please check your input mesh \"--mesh\"."
@@ -160,14 +160,14 @@ class Calculator:
     @staticmethod
     def calculate_function(calc, inputfunc, args, out_meshname):
         logger = Calculator.get_logger()
-        vtk_dataset = Calculator.read_mesh()
+        vtk_dataset = Calculator.read_mesh(args.in_meshname)
         calc.SetInputData(vtk_dataset)
         calc.SetFunction(inputfunc)
         logger.info("Evaluated \"{}\" on the input mesh \"{}\".".format(inputfunc, args.in_meshname))
         calc.SetResultArrayName(args.data)
         calc.Update()
         logger.info(f"Evaluated function saved to \"{args.data}\" variable on output mesh \"{out_meshname}\"")
-        Calculator.write_mesh(calc.GetOutput(), out_meshname, args)
+        Calculator.write_mesh(calc.GetOutput(), out_meshname, args.directory)
 
     @staticmethod
     def calculate_difference(calc, inputfunc, args, out_meshname):
