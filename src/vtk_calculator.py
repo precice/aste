@@ -19,25 +19,22 @@ class Calculator:
     """
 
     def __init__(self) -> None:
-        self.args = None
-        self.calc = None
-        self.functionDefinitions = None
-        self.inputfunc = None
-        self.logger = None
-        self.out_meshname = None
-        self.preDefFunctions = None
+        args = Calculator.parse_args()
+        Calculator.create_logger(args.logging)
+        preDefFunctions = Calculator.create_predeffunctions()
+        Calculator.evaluate(args, preDefFunctions)
 
-        self.parse_args()
-        self.create_logger()
-        self.create_predeffunctions()
-        self.create_vtk_calculator()
-        self.evaluate()
+    @staticmethod
+    def create_logger(level):
+        logging.basicConfig(level=getattr(logging, level))
+        return
 
-    def create_logger(self):
-        logging.basicConfig(level=getattr(logging, self.args.logging))
-        self.logger = logging
+    @staticmethod
+    def get_logger():
+        return logging
 
-    def parse_args(self):
+    @staticmethod
+    def parse_args():
         parser = argparse.ArgumentParser(description=__doc__)
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument("--mesh", "-m", dest="in_meshname",
@@ -66,9 +63,11 @@ class Calculator:
             "function \"--function\"")
         parser.add_argument("--stats", "-s", action='store_true',
                             help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
-        self.args, _ = parser.parse_known_args()
+        args, _ = parser.parse_known_args()
+        return args
 
-    def create_predeffunctions(self):
+    @staticmethod
+    def create_predeffunctions():
         twoDFunctions = {
             "franke2d": "0.75*exp(-((9*{first}-2)^2+(9*{second}-2)^2)/4)"
             "+0.75*exp(-(9*{first}+1)^2/49-(9*{second}+1)/10)"
@@ -80,12 +79,12 @@ class Calculator:
         }
 
         preDef2DFunctions = {
-            f"{name}({arg})": self.twoDFunctions[name].format(first=arg[0], second=arg[1])
+            f"{name}({arg})": twoDFunctions[name].format(first=arg[0], second=arg[1])
             for name in ["franke2d", "eggholder2d", "rosenbrock2d"]
             for arg in ["xy", "xz", "yz"]
         }
 
-        self.preDefFunctions = {
+        preDefFunctions = {
             "franke3d": "0.75*exp(-((9*x-2)^2+(9*y-2)^2+(9*z-2)^2)/4)"
             "+0.75*exp(-(9*x+1)^2/49-(9*y+1)/10-(9*z+1)/10)"
             "+0.5*exp(-((9*x-7)^2+(9*y-3)^2+(9*y-5)^2)/4)"
@@ -95,112 +94,126 @@ class Calculator:
             "rosenbrock3d": "(100*(y-x^2)^2+(x-1)^2)+(100*(z-y^2)^2+(y-1)^2)"
         }
 
-        self.preDefFunctions.update(preDef2DFunctions)
+        preDefFunctions.update(preDef2DFunctions)
 
-        self.functionDefinitions = {
+        return preDefFunctions
+
+    @staticmethod
+    def get_function_defitinitions():
+        functionDefinitions = {
             "Franke": "Franke's function has two Gaussian peaks of different heights, and a smaller dip.",
             "Eggholder": "A function has many local maxima. It is difficult to optimize.",
             "Rosenbrock": "A function that is unimodal, and the global minimum lies"
             " in a narrow, parabolic valley."}
+        return functionDefinitions
 
-    def print_predef_functions(self):
+    @staticmethod
+    def print_predef_functions(preDefFunctions):
         print("Available predefined functions are:")
-        longest = max(map(len, self.preDefFunctions.keys()))
-        for name, func in list(self.preDefFunctions.items()):
+        longest = max(map(len, preDefFunctions.keys()))
+        for name, func in list(preDefFunctions.items()):
             print(f"{name:{longest}} := {func}")
+        functionDefinitions = Calculator.get_function_defitinitions()
         print("Definitions of functions are:")
-        longest = max(map(len, self.functionDefinitions.keys()))
-        for name, definition in list(self.functionDefinitions.items()):
+        longest = max(map(len, functionDefinitions.keys()))
+        for name, definition in list(functionDefinitions.items()):
             print(f"{name:{longest}} := {definition}")
         return
 
-    def evaluate(self):
-        if self.args.listfunctions:
-            self.print_predef_functions()
+    @staticmethod
+    def evaluate(args, preDefFunctions):
+        logger = Calculator.get_logger()
+        if args.listfunctions:
+            Calculator.print_predef_functions()
             return
         assert os.path.isfile(
-            self.args.in_meshname), "Input mesh file not found. Please check your input mesh \"--mesh\"."
-        assert self.args.data, "Dataname \"--data\" is missing. Please give an dataname for given input."
+            args.in_meshname), "Input mesh file not found. Please check your input mesh \"--mesh\"."
+        assert args.data, "Dataname \"--data\" is missing. Please give an dataname for given input."
 
-        self.out_meshname = self.args.out_meshname
-        if self.args.out_meshname is None:
-            self.logger.info("No output mesh name is given {} will be used.".format(self.args.in_meshname))
-            self.out_meshname = self.args.in_meshname
+        out_meshname = args.out_meshname
+        if args.out_meshname is None:
+            logger.info("No output mesh name is given {} will be used.".format(args.in_meshname))
+            out_meshname = args.in_meshname
 
-        if self.args.function in self.preDefFunctions:
-            self.inputfunc = self.preDefFunctions[self.args.function]
+        if args.function in preDefFunctions:
+            inputfunc = preDefFunctions[args.function]
         else:
-            self.inputfunc = self.args.function
+            inputfunc = args.function
 
-        if self.args.diff:
-            assert self.args.diffdata, """The \"--diffdata\" argument is required when running in difference mode (using the \"--diff\" argument).
+        calc = Calculator.create_vtk_calculator()
+        if args.diff:
+            assert args.diffdata, """The \"--diffdata\" argument is required when running in difference mode (using the \"--diff\" argument).
             Please add a valid \"--diffdata\" argument or type \"--help\" for more information."""
 
-            self.calculate_difference()
+            Calculator.calculate_difference(calc, inputfunc, args, out_meshname)
         else:
-            self.calculate_function()
+            Calculator.calculate_function(calc, inputfunc, args, out_meshname)
 
-    def create_vtk_calculator(self):
-        self.calc = vtk.vtkArrayCalculator()
-        self.calc.AddCoordinateScalarVariable("x", 0)
-        self.calc.AddCoordinateScalarVariable("y", 1)
-        self.calc.AddCoordinateScalarVariable("z", 2)
+    @staticmethod
+    def create_vtk_calculator():
+        calc = vtk.vtkArrayCalculator()
+        calc.AddCoordinateScalarVariable("x", 0)
+        calc.AddCoordinateScalarVariable("y", 1)
+        calc.AddCoordinateScalarVariable("z", 2)
+        return calc
 
-    def set_vtk_calculator_input(self, vtk_dataset):
-        self.calc.SetInputData(vtk_dataset)
+    @staticmethod
+    def calculate_function(calc, inputfunc, args, out_meshname):
+        logger = Calculator.get_logger()
+        vtk_dataset = Calculator.read_mesh()
+        calc.SetInputData(vtk_dataset)
+        calc.SetFunction(inputfunc)
+        logger.info("Evaluated \"{}\" on the input mesh \"{}\".".format(inputfunc, args.in_meshname))
+        calc.SetResultArrayName(args.data)
+        calc.Update()
+        logger.info(f"Evaluated function saved to \"{args.data}\" variable on output mesh \"{out_meshname}\"")
+        Calculator.write_mesh(calc.GetOutput(), out_meshname, args)
 
-    def calculate_function(self):
-        vtk_dataset = self.read_mesh()
-        self.set_vtk_calculator_input(vtk_dataset)
-        self.calc.SetFunction(self.inputfunc)
-        self.logger.info("Evaluated \"{}\" on the input mesh \"{}\".".format(self.inputfunc, self.args.in_meshname))
-        self.calc.SetResultArrayName(self.args.data)
-        self.calc.Update()
-        self.logger.info(
-            f"Evaluated function saved to \"{self.args.data}\" variable on output mesh \"{self.out_meshname}\"")
-        self.write_mesh(self.calc.GetOutput())
-
-    def calculate_difference(self):
-        vtk_dataset = self.read_mesh()
-        self.set_vtk_calculator_input(vtk_dataset)
-        diffdata = self.args.diffdata
+    @staticmethod
+    def calculate_difference(calc, inputfunc, args, out_meshname):
+        logger = Calculator.get_logger()
+        vtk_dataset = Calculator.read_mesh(args.in_meshname)
+        calc.SetInputData(vtk_dataset)
+        diffdata = args.diffdata
         if not vtk_dataset.GetPointData().HasArray(diffdata):
-            raise Exception(f"Given mesh \"{self.args.in_meshname}\" has no data with given name \"{diffdata}\"")
+            raise Exception(f"Given mesh \"{args.in_meshname}\" has no data with given name \"{diffdata}\"")
         else:
             data = v2n(vtk_dataset.GetPointData().GetAbstractArray(diffdata))
             # Calculate given function on the mesh
-        self.calc.SetFunction(self.inputfunc)
-        self.calc.SetResultArrayName("function")
-        self.calc.Update()
-        func = v2n(self.calc.GetOutput().GetPointData().GetAbstractArray("function"))
+        calc.SetFunction(inputfunc)
+        calc.SetResultArrayName("function")
+        calc.Update()
+        func = v2n(calc.GetOutput().GetPointData().GetAbstractArray("function"))
         difference = data - func
-        self.logger.info(f"Evaluated \"{diffdata}\"-\"({self.inputfunc})\" on the mesh \"{self.args.in_meshname}\".")
+        logger.info(f"Evaluated \"{diffdata}\"-\"({inputfunc})\" on the mesh \"{args.in_meshname}\".")
 
-        self.calculate_stats(vtk_dataset, difference)
+        Calculator.calculate_stats(vtk_dataset, difference, out_meshname, args.stats)
 
         diff_vtk = n2v(difference)
-        diff_vtk.SetName(self.args.data)
+        diff_vtk.SetName(args.data)
         vtk_dataset.GetPointData().AddArray(diff_vtk)
-        self.write_mesh(vtk_dataset)
+        Calculator.write_mesh(vtk_dataset, out_meshname, args.directory)
 
-    def calculate_stats(self, vtk_dataset, difference):
+    @staticmethod
+    def calculate_stats(vtk_dataset, difference, out_meshname, stats=None):
+        logger = Calculator.get_logger()
         # Calculate Statistics
         num_points = vtk_dataset.GetNumberOfPoints()
         cnt, min, max = num_points, np.nanmin(difference), np.nanmax(difference)
         p99, p95, p90, median = np.percentile(difference, [99, 95, 90, 50])
         relative = np.sqrt(np.nansum(np.square(difference)) / difference.size)
-        self.logger.info("Vertex count {}".format(cnt))
-        self.logger.info("Relative l2 error {}".format(relative))
-        self.logger.info("Maximum error per vertex {}".format(max))
-        self.logger.info("Minimum error per vertex {}".format(min))
-        self.logger.info("Median error per vertex {}".format(median))
-        self.logger.info("99th percentile of error per vertex {}".format(p99))
-        self.logger.info("95th percentile of error per vertex {}".format(p95))
-        self.logger.info("90th percentile of error per vertex {}".format(p90))
+        logger.info("Vertex count {}".format(cnt))
+        logger.info("Relative l2 error {}".format(relative))
+        logger.info("Maximum error per vertex {}".format(max))
+        logger.info("Minimum error per vertex {}".format(min))
+        logger.info("Median error per vertex {}".format(median))
+        logger.info("99th percentile of error per vertex {}".format(p99))
+        logger.info("95th percentile of error per vertex {}".format(p95))
+        logger.info("90th percentile of error per vertex {}".format(p90))
 
-        if self.args.stats:
-            stat_file = os.path.splitext(self.out_meshname)[0] + ".stats.json"
-            self.logger.info("Saving stats data to \"{}\"".format(stat_file))
+        if stats:
+            stat_file = os.path.splitext(out_meshname)[0] + ".stats.json"
+            logger.info("Saving stats data to \"{}\"".format(stat_file))
             json.dump({
                 "count": cnt,
                 "min": min,
@@ -212,9 +225,11 @@ class Calculator:
                 "90th percentile": p90
             }, open(stat_file, "w"))
 
-    def read_mesh(self):
-        self.logger.info(f"Reading input mesh \"{self.args.in_meshname}\"")
-        extension = os.path.splitext(self.args.in_meshname)[1]
+    @staticmethod
+    def read_mesh(in_meshname):
+        logger = Calculator.get_logger()
+        logger.info(f"Reading input mesh \"{in_meshname}\"")
+        extension = os.path.splitext(in_meshname)[1]
         if (extension == ".vtu"):
             reader = vtk.vtkXMLUnstructuredGridReader()
         elif (extension == ".vtk"):
@@ -225,34 +240,35 @@ class Calculator:
         else:
             raise Exception(
                 "Unkown input file extension please check your input file or hype \"--help\" for more information.")
-        reader.SetFileName(self.args.in_meshname)
+        reader.SetFileName(in_meshname)
         reader.Update()
         vtk_dataset = reader.GetOutput()
-        self.logger.info("Mesh contains {} points.".format(vtk_dataset.GetNumberOfPoints()))
+        logger.info("Mesh contains {} points.".format(vtk_dataset.GetNumberOfPoints()))
         return vtk_dataset
 
-    def write_mesh(self, vtk_dataset):
+    @staticmethod
+    def write_mesh(vtk_dataset, out_meshname, directory=None):
+        logger = Calculator.get_logger()
         # Create writer
-        if os.path.splitext(self.out_meshname)[1] == ".vtk":
+        if os.path.splitext(out_meshname)[1] == ".vtk":
             writer = vtk.vtkUnstructuredGridWriter()
             writer.SetFileTypeToBinary()
-        elif os.path.splitext(self.out_meshname)[1] == ".vtu":
+        elif os.path.splitext(out_meshname)[1] == ".vtu":
             writer = vtk.vtkXMLUnstructuredGridWriter()
         else:
             raise Exception("Output mesh extension should be '.vtk' and '.vtu'")
 
         writer.SetInputData(vtk_dataset)
-
-        out_meshname = os.path.basename(os.path.normpath(self.out_meshname))
+        out_meshname = os.path.basename(os.path.normpath(out_meshname))
         # If directory needed create it
-        if self.args.directory:
-            directory = os.path.abspath(self.args.directory)
+        if directory:
+            directory = os.path.abspath(directory)
             os.makedirs(directory, exist_ok=True)
             out_meshname = os.path.join(directory, out_meshname)
 
         writer.SetFileName(out_meshname)
         writer.Write()
-        self.logger.info(f"Written output to \"{out_meshname}\".")
+        logger.info(f"Written output to \"{out_meshname}\".")
 
 
 if __name__ == "__main__":
