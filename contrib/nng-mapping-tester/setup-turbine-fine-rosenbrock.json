@@ -1,0 +1,61 @@
+{
+  "general": {
+    "function": "rosenbrock3d",
+    "ranks": {
+      "A": [
+        4
+      ],
+      "B": [
+        4
+      ]
+    },
+    "network": "eno1",
+    "syncmode": false,
+    "meshes": {
+      "A": {
+        "0.004": "$ASTE_MESHES/0.004.vtk",
+        "0.003": "$ASTE_MESHES/0.003.vtk",
+        "0.002": "$ASTE_MESHES/0.002.vtk",
+        "0.001": "$ASTE_MESHES/0.001.vtk",
+        "0.0007": "$ASTE_MESHES/0.0007.vtk",
+        "0.0005": "$ASTE_MESHES/0.0005.vtk"
+      },
+      "B": {
+        "0.0014": "$ASTE_MESHES/0.0014.vtk"
+      }
+    }
+  },
+  "groups": [
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "np": {
+            "kind": "nearest-projection"
+          },
+          "nn": {
+            "kind": "nearest-neighbor"
+          },
+	  "nng": {
+	    "kind": "nearest-neighbor-gradient"
+	  }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.004",
+          "0.003",
+          "0.002",
+          "0.001",
+          "0.0007",
+          "0.0005"
+        ],
+        "B": [
+          "0.0014"
+        ]
+      }
+    }
+  ]
+}

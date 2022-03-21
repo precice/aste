@@ -1,0 +1,101 @@
+nn:
+  name: Nearest Neighbor
+  line: solid
+  marker: d
+  color: '#0173b2'
+np:
+  name: Nearest Projection
+  line: dashed
+  marker: d
+  color: '#0173b2'
+tps:
+  name: G-TPS
+  line: dotted
+  marker: d
+  color: black
+
+compact-tps-c2-n3-on:
+  name: C-TPS, r=3h, integr.
+  line: dashed
+  marker: d
+  color: '#de8f05'
+compact-tps-c2-n3-separate:
+  name: C-TPS, r=3h
+  line: solid
+  marker: d
+  color: '#de8f05'
+
+gaussian-n3-on:
+  name: Gaussian, r=3h, integr.
+  line: dashed
+  marker: s
+  color: '#de8f05'
+gaussian-n3-separate:
+  name: Gaussian, r=3h
+  line: solid
+  marker: s
+  color: '#de8f05'
+
+
+
+compact-tps-c2-n5-on:
+  name: C-TPS, r=5h, integr.
+  line: dashed
+  marker: d
+  color: '#029e73'
+compact-tps-c2-n5-separate:
+  name: C-TPS, r=5h
+  line: solid
+  marker: d
+  color: '#029e73'
+
+gaussian-n5-on:
+  name: Gaussian, r=5h, integr.
+  line: dashed
+  marker: s
+  color: '#029e73'
+gaussian-n5-separate:
+  name: Gaussian, r=5h
+  line: solid
+  marker: s
+  color: '#029e73'
+
+compact-tps-c2-n7-separate:
+  name: C-TPS, r=7h
+  line: solid
+  marker: d
+  color: '#d55e00'
+compact-tps-c2-n7-on:
+  name: C-TPS, r=7h, integr.
+  line: dashed
+  marker: d
+  color: '#d55e00'
+
+gaussian-n7-separate:
+  name: Gaussian, r=7h
+  line: solid
+  marker: s
+  color: '#d55e00'
+gaussian-n7-on:
+  name: Gaussian, r=7h, integr.
+  line: dashed
+  marker: s
+  color: '#d55e00'
+
+compact-tps-c2-n10-separate:
+  name: C-TPS, r=10h
+  line: solid
+  marker: d
+  color: '#cc78bc'
+
+compact-tps-c2-n15-separate:
+  name: C-TPS, r=15h
+  line: solid
+  marker: d
+  color: '#ca9161'
+
+compact-tps-c2-n20-separate:
+  name: C-TPS, r=20h
+  line: solid
+  marker: d
+  color: '#fbafe4'

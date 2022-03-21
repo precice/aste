@@ -164,6 +164,7 @@ int main(int argc, char *argv[])
   // gradient data
   const bool withGradient = options["gradient"].as<bool>();
 
+
   auto meshes = aste::BaseName(meshname).findAll(context);
   if (meshes.empty()) {
     throw std::invalid_argument("ERROR: Could not find meshes for name: " + meshname);
@@ -185,6 +186,9 @@ int main(int argc, char *argv[])
 
   std::vector<int> vertexIDs = setupMesh(interface, mesh, meshID);
   VLOG(1) << "Mesh setup completed on Rank " << context.rank;
+
+  // gradient data
+  //const bool withGradient = mesh.data.hasGradient();
 
   interface.initialize();
 

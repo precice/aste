@@ -1,0 +1,880 @@
+{
+    "general": {
+        "function": "cos(0.1*(x+y+z))",
+        "ranks": {
+            "A": [1, 2],
+            "B": [1, 2]
+        },
+        "meshes": {
+            "A": {
+                "1": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/1.vtk",
+                "0.75": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.75.vtk",
+                "0.5": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.5.vtk",
+                "0.25": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.25.vtk",
+                "0.1": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.1.vtk",
+                "0.075": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.075.vtk",
+                "0.05": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.05.vtk",
+                "0.025": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.025.vtk",
+                "0.01": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.01.vtk",
+                "0.0075": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.0075.vtk",
+                "0.005": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.005.vtk",
+                "0.0025": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.0025.vtk",
+                "0.001": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.001.vtk",
+                "0.00075": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.00075.vtk",
+                "0.0005": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.0005.vtk"
+            },
+            "B": {
+                "0.5": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.5.vtk",
+                "0.025": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.025.vtk",
+                "0.001": "/work_fast/ga36qid/precice/meshes/turbine/UnitSize/0.001.vtk"
+            }
+        }
+    },
+    "groups": [
+        {
+            "mapping": {
+                "constraints": [
+                    "consistent"
+                ],
+                "cases": {
+                    "np": {
+                        "kind": "nearest-projection"
+                    },
+                    "nn": {
+                        "kind": "nearest-neighbor"
+                    }
+                }
+            },
+            "meshes": {
+                "A": [
+                    "1",
+                    "0.75",
+                    "0.5",
+                    "0.25",
+                    "0.1",
+                    "0.075",
+                    "0.05",
+                    "0.025",
+                    "0.01",
+                    "0.0075",
+                    "0.005",
+                    "0.0025",
+                    "0.001",
+                    "0.00075",
+                    "0.0005"
+                ],
+                "B": [
+                    "0.5",
+                    "0.025",
+                    "0.001"
+                ]
+            }
+        },
+        
+  {
+    "mapping": {
+      "constraints": [
+        "consistent"
+      ],
+      "cases": {
+        "gaussian-n3-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1.5174271293851465\" polynomial=\"on\""
+        },
+        "gaussian-n5-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"0.9104562776310878\" polynomial=\"on\""
+        },
+        "gaussian-n10-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"0.4552281388155439\" polynomial=\"on\""
+        },
+        "gaussian-n15-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"0.30348542587702926\" polynomial=\"on\""
+        },
+        "gaussian-n3-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1.5174271293851465\" polynomial=\"separate\""
+        },
+        "gaussian-n5-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"0.9104562776310878\" polynomial=\"separate\""
+        },
+        "gaussian-n10-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"0.4552281388155439\" polynomial=\"separate\""
+        },
+        "gaussian-n15-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"0.30348542587702926\" polynomial=\"separate\""
+        }
+      }
+    },
+    "meshes": {
+      "A": [
+        "1"
+      ],
+      "B": [
+        "0.5",
+        "0.025",
+        "0.001"
+      ]
+    }
+  },
+  {
+    "mapping": {
+      "constraints": [
+        "consistent"
+      ],
+      "cases": {
+        "gaussian-n3-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"2.0232361725135286\" polynomial=\"on\""
+        },
+        "gaussian-n5-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1.213941703508117\" polynomial=\"on\""
+        },
+        "gaussian-n10-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"0.6069708517540585\" polynomial=\"on\""
+        },
+        "gaussian-n15-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"0.4046472345027057\" polynomial=\"on\""
+        },
+        "gaussian-n3-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"2.0232361725135286\" polynomial=\"separate\""
+        },
+        "gaussian-n5-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1.213941703508117\" polynomial=\"separate\""
+        },
+        "gaussian-n10-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"0.6069708517540585\" polynomial=\"separate\""
+        },
+        "gaussian-n15-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"0.4046472345027057\" polynomial=\"separate\""
+        }
+      }
+    },
+    "meshes": {
+      "A": [
+        "0.75"
+      ],
+      "B": [
+        "0.5",
+        "0.025",
+        "0.001"
+      ]
+    }
+  },
+  {
+    "mapping": {
+      "constraints": [
+        "consistent"
+      ],
+      "cases": {
+        "gaussian-n3-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"3.034854258770293\" polynomial=\"on\""
+        },
+        "gaussian-n5-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1.8209125552621757\" polynomial=\"on\""
+        },
+        "gaussian-n10-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"0.9104562776310878\" polynomial=\"on\""
+        },
+        "gaussian-n15-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"0.6069708517540585\" polynomial=\"on\""
+        },
+        "gaussian-n3-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"3.034854258770293\" polynomial=\"separate\""
+        },
+        "gaussian-n5-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1.8209125552621757\" polynomial=\"separate\""
+        },
+        "gaussian-n10-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"0.9104562776310878\" polynomial=\"separate\""
+        },
+        "gaussian-n15-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"0.6069708517540585\" polynomial=\"separate\""
+        }
+      }
+    },
+    "meshes": {
+      "A": [
+        "0.5"
+      ],
+      "B": [
+        "0.5",
+        "0.025",
+        "0.001"
+      ]
+    }
+  },
+  {
+    "mapping": {
+      "constraints": [
+        "consistent"
+      ],
+      "cases": {
+        "gaussian-n3-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"6.069708517540586\" polynomial=\"on\""
+        },
+        "gaussian-n5-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"3.6418251105243513\" polynomial=\"on\""
+        },
+        "gaussian-n10-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1.8209125552621757\" polynomial=\"on\""
+        },
+        "gaussian-n15-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1.213941703508117\" polynomial=\"on\""
+        },
+        "gaussian-n3-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"6.069708517540586\" polynomial=\"separate\""
+        },
+        "gaussian-n5-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"3.6418251105243513\" polynomial=\"separate\""
+        },
+        "gaussian-n10-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1.8209125552621757\" polynomial=\"separate\""
+        },
+        "gaussian-n15-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1.213941703508117\" polynomial=\"separate\""
+        }
+      }
+    },
+    "meshes": {
+      "A": [
+        "0.25"
+      ],
+      "B": [
+        "0.5",
+        "0.025",
+        "0.001"
+      ]
+    }
+  },
+  {
+    "mapping": {
+      "constraints": [
+        "consistent"
+      ],
+      "cases": {
+        "gaussian-n3-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"15.174271293851461\" polynomial=\"on\""
+        },
+        "gaussian-n5-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"9.104562776310878\" polynomial=\"on\""
+        },
+        "gaussian-n10-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"4.552281388155439\" polynomial=\"on\""
+        },
+        "gaussian-n15-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"3.034854258770293\" polynomial=\"on\""
+        },
+        "gaussian-n3-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"15.174271293851461\" polynomial=\"separate\""
+        },
+        "gaussian-n5-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"9.104562776310878\" polynomial=\"separate\""
+        },
+        "gaussian-n10-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"4.552281388155439\" polynomial=\"separate\""
+        },
+        "gaussian-n15-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"3.034854258770293\" polynomial=\"separate\""
+        }
+      }
+    },
+    "meshes": {
+      "A": [
+        "0.1"
+      ],
+      "B": [
+        "0.5",
+        "0.025",
+        "0.001"
+      ]
+    }
+  },
+  {
+    "mapping": {
+      "constraints": [
+        "consistent"
+      ],
+      "cases": {
+        "gaussian-n3-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"20.232361725135288\" polynomial=\"on\""
+        },
+        "gaussian-n5-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"12.139417035081172\" polynomial=\"on\""
+        },
+        "gaussian-n10-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"6.069708517540586\" polynomial=\"on\""
+        },
+        "gaussian-n15-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"4.046472345027057\" polynomial=\"on\""
+        },
+        "gaussian-n3-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"20.232361725135288\" polynomial=\"separate\""
+        },
+        "gaussian-n5-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"12.139417035081172\" polynomial=\"separate\""
+        },
+        "gaussian-n10-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"6.069708517540586\" polynomial=\"separate\""
+        },
+        "gaussian-n15-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"4.046472345027057\" polynomial=\"separate\""
+        }
+      }
+    },
+    "meshes": {
+      "A": [
+        "0.075"
+      ],
+      "B": [
+        "0.5",
+        "0.025",
+        "0.001"
+      ]
+    }
+  },
+  {
+    "mapping": {
+      "constraints": [
+        "consistent"
+      ],
+      "cases": {
+        "gaussian-n3-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"30.348542587702923\" polynomial=\"on\""
+        },
+        "gaussian-n5-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"18.209125552621757\" polynomial=\"on\""
+        },
+        "gaussian-n10-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"9.104562776310878\" polynomial=\"on\""
+        },
+        "gaussian-n15-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"6.069708517540586\" polynomial=\"on\""
+        },
+        "gaussian-n3-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"30.348542587702923\" polynomial=\"separate\""
+        },
+        "gaussian-n5-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"18.209125552621757\" polynomial=\"separate\""
+        },
+        "gaussian-n10-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"9.104562776310878\" polynomial=\"separate\""
+        },
+        "gaussian-n15-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"6.069708517540586\" polynomial=\"separate\""
+        }
+      }
+    },
+    "meshes": {
+      "A": [
+        "0.05"
+      ],
+      "B": [
+        "0.5",
+        "0.025",
+        "0.001"
+      ]
+    }
+  },
+  {
+    "mapping": {
+      "constraints": [
+        "consistent"
+      ],
+      "cases": {
+        "gaussian-n3-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"60.697085175405846\" polynomial=\"on\""
+        },
+        "gaussian-n5-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"36.41825110524351\" polynomial=\"on\""
+        },
+        "gaussian-n10-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"18.209125552621757\" polynomial=\"on\""
+        },
+        "gaussian-n15-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"12.139417035081172\" polynomial=\"on\""
+        },
+        "gaussian-n3-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"60.697085175405846\" polynomial=\"separate\""
+        },
+        "gaussian-n5-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"36.41825110524351\" polynomial=\"separate\""
+        },
+        "gaussian-n10-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"18.209125552621757\" polynomial=\"separate\""
+        },
+        "gaussian-n15-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"12.139417035081172\" polynomial=\"separate\""
+        }
+      }
+    },
+    "meshes": {
+      "A": [
+        "0.025"
+      ],
+      "B": [
+        "0.5",
+        "0.025",
+        "0.001"
+      ]
+    }
+  },
+  {
+    "mapping": {
+      "constraints": [
+        "consistent"
+      ],
+      "cases": {
+        "gaussian-n3-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"151.74271293851464\" polynomial=\"on\""
+        },
+        "gaussian-n5-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"91.04562776310878\" polynomial=\"on\""
+        },
+        "gaussian-n10-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"45.52281388155439\" polynomial=\"on\""
+        },
+        "gaussian-n15-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"30.34854258770293\" polynomial=\"on\""
+        },
+        "gaussian-n3-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"151.74271293851464\" polynomial=\"separate\""
+        },
+        "gaussian-n5-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"91.04562776310878\" polynomial=\"separate\""
+        },
+        "gaussian-n10-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"45.52281388155439\" polynomial=\"separate\""
+        },
+        "gaussian-n15-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"30.34854258770293\" polynomial=\"separate\""
+        }
+      }
+    },
+    "meshes": {
+      "A": [
+        "0.01"
+      ],
+      "B": [
+        "0.5",
+        "0.025",
+        "0.001"
+      ]
+    }
+  },
+  {
+    "mapping": {
+      "constraints": [
+        "consistent"
+      ],
+      "cases": {
+        "gaussian-n3-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"202.32361725135286\" polynomial=\"on\""
+        },
+        "gaussian-n5-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"121.39417035081172\" polynomial=\"on\""
+        },
+        "gaussian-n10-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"60.69708517540586\" polynomial=\"on\""
+        },
+        "gaussian-n15-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"40.464723450270576\" polynomial=\"on\""
+        },
+        "gaussian-n3-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"202.32361725135286\" polynomial=\"separate\""
+        },
+        "gaussian-n5-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"121.39417035081172\" polynomial=\"separate\""
+        },
+        "gaussian-n10-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"60.69708517540586\" polynomial=\"separate\""
+        },
+        "gaussian-n15-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"40.464723450270576\" polynomial=\"separate\""
+        }
+      }
+    },
+    "meshes": {
+      "A": [
+        "0.0075"
+      ],
+      "B": [
+        "0.5",
+        "0.025",
+        "0.001"
+      ]
+    }
+  },
+  {
+    "mapping": {
+      "constraints": [
+        "consistent"
+      ],
+      "cases": {
+        "gaussian-n3-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"303.4854258770293\" polynomial=\"on\""
+        },
+        "gaussian-n5-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"182.09125552621757\" polynomial=\"on\""
+        },
+        "gaussian-n10-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"91.04562776310878\" polynomial=\"on\""
+        },
+        "gaussian-n15-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"60.69708517540586\" polynomial=\"on\""
+        },
+        "gaussian-n3-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"303.4854258770293\" polynomial=\"separate\""
+        },
+        "gaussian-n5-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"182.09125552621757\" polynomial=\"separate\""
+        },
+        "gaussian-n10-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"91.04562776310878\" polynomial=\"separate\""
+        },
+        "gaussian-n15-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"60.69708517540586\" polynomial=\"separate\""
+        }
+      }
+    },
+    "meshes": {
+      "A": [
+        "0.005"
+      ],
+      "B": [
+        "0.5",
+        "0.025",
+        "0.001"
+      ]
+    }
+  },
+  {
+    "mapping": {
+      "constraints": [
+        "consistent"
+      ],
+      "cases": {
+        "gaussian-n3-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"606.9708517540586\" polynomial=\"on\""
+        },
+        "gaussian-n5-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"364.18251105243513\" polynomial=\"on\""
+        },
+        "gaussian-n10-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"182.09125552621757\" polynomial=\"on\""
+        },
+        "gaussian-n15-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"121.39417035081172\" polynomial=\"on\""
+        },
+        "gaussian-n3-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"606.9708517540586\" polynomial=\"separate\""
+        },
+        "gaussian-n5-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"364.18251105243513\" polynomial=\"separate\""
+        },
+        "gaussian-n10-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"182.09125552621757\" polynomial=\"separate\""
+        },
+        "gaussian-n15-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"121.39417035081172\" polynomial=\"separate\""
+        }
+      }
+    },
+    "meshes": {
+      "A": [
+        "0.0025"
+      ],
+      "B": [
+        "0.5",
+        "0.025",
+        "0.001"
+      ]
+    }
+  },
+  {
+    "mapping": {
+      "constraints": [
+        "consistent"
+      ],
+      "cases": {
+        "gaussian-n3-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1517.4271293851464\" polynomial=\"on\""
+        },
+        "gaussian-n5-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"910.4562776310878\" polynomial=\"on\""
+        },
+        "gaussian-n10-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"455.2281388155439\" polynomial=\"on\""
+        },
+        "gaussian-n15-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"303.4854258770293\" polynomial=\"on\""
+        },
+        "gaussian-n3-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1517.4271293851464\" polynomial=\"separate\""
+        },
+        "gaussian-n5-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"910.4562776310878\" polynomial=\"separate\""
+        },
+        "gaussian-n10-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"455.2281388155439\" polynomial=\"separate\""
+        },
+        "gaussian-n15-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"303.4854258770293\" polynomial=\"separate\""
+        }
+      }
+    },
+    "meshes": {
+      "A": [
+        "0.001"
+      ],
+      "B": [
+        "0.5",
+        "0.025",
+        "0.001"
+      ]
+    }
+  },
+  {
+    "mapping": {
+      "constraints": [
+        "consistent"
+      ],
+      "cases": {
+        "gaussian-n3-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"2023.2361725135283\" polynomial=\"on\""
+        },
+        "gaussian-n5-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1213.9417035081171\" polynomial=\"on\""
+        },
+        "gaussian-n10-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"606.9708517540586\" polynomial=\"on\""
+        },
+        "gaussian-n15-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"404.6472345027057\" polynomial=\"on\""
+        },
+        "gaussian-n3-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"2023.2361725135283\" polynomial=\"separate\""
+        },
+        "gaussian-n5-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1213.9417035081171\" polynomial=\"separate\""
+        },
+        "gaussian-n10-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"606.9708517540586\" polynomial=\"separate\""
+        },
+        "gaussian-n15-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"404.6472345027057\" polynomial=\"separate\""
+        }
+      }
+    },
+    "meshes": {
+      "A": [
+        "0.00075"
+      ],
+      "B": [
+        "0.5",
+        "0.025",
+        "0.001"
+      ]
+    }
+  },
+  {
+    "mapping": {
+      "constraints": [
+        "consistent"
+      ],
+      "cases": {
+        "gaussian-n3-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"3034.8542587702927\" polynomial=\"on\""
+        },
+        "gaussian-n5-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1820.9125552621756\" polynomial=\"on\""
+        },
+        "gaussian-n10-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"910.4562776310878\" polynomial=\"on\""
+        },
+        "gaussian-n15-on": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"606.9708517540586\" polynomial=\"on\""
+        },
+        "gaussian-n3-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"3034.8542587702927\" polynomial=\"separate\""
+        },
+        "gaussian-n5-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"1820.9125552621756\" polynomial=\"separate\""
+        },
+        "gaussian-n10-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"910.4562776310878\" polynomial=\"separate\""
+        },
+        "gaussian-n15-separate": {
+          "kind": "rbf-gaussian",
+          "options": "shape-parameter=\"606.9708517540586\" polynomial=\"separate\""
+        }
+      }
+    },
+    "meshes": {
+      "A": [
+        "0.0005"
+      ],
+      "B": [
+        "0.5",
+        "0.025",
+        "0.001"
+      ]
+    }
+  },
+{
+            "mapping": {
+                "constraints": [
+                    "consistent"
+                ],
+                "cases": {
+                    "tps-poly-separate": {
+                        "kind": "rbf-thin-plate-splines",
+                        "options": "polynomial=\"separate\""
+                    },
+                    "tps-poly-on": {
+                        "kind": "rbf-thin-plate-splines",
+                        "options": "polynomial=\"on\""
+                    }
+                }
+            },
+            "meshes": {
+                "A": [
+                    "1",
+                    "0.75",
+                    "0.5",
+                    "0.25",
+                    "0.1",
+                    "0.075",
+                    "0.05",
+                    "0.025",
+                    "0.01",
+                    "0.0075",
+                    "0.005",
+                    "0.0025",
+                    "0.001",
+                    "0.00075",
+                    "0.0005"
+                ],
+                "B": [
+                    "0.5",
+                    "0.025"
+                ]
+            }
+        }
+  ]
+}

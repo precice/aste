@@ -261,15 +261,18 @@ def add_gradient(args):
     function = args.function
     func = parse_expr(vtk_to_sympy(function))
 
+    out = args.out_meshname
+    if args.directory:
+        out = args.directory + "/" + args.out_meshname
+
     args.gradient = False
-    args.in_meshname = args.out_meshname
+    args.in_meshname = out
     args.out_meshname = None
 
     x = Symbol('x')
     grad_dx = func.diff(x)
     args.data = 'gradientdx'
     args.function = sympy_to_vtk(str(grad_dx))
-    print(args.function)
     main(args)
 
     y = Symbol('y')
