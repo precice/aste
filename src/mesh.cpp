@@ -171,11 +171,12 @@ void MeshName::createDirectories() const
 
 void MeshName::save(const Mesh &mesh, const std::string &dataname) const
 {
-  if (mesh.positions.size() == 0)
-    return; // If mesh empty skip
-  const int                            numComp = mesh.data.size() / mesh.positions.size();
-  vtkSmartPointer<vtkDoubleArray>      data    = vtkDoubleArray::New();
-  auto                                 ext     = fs::path(mesh.fname).extension();
+  int numComp = 0;
+  if (mesh.positions.size() != 0) {
+    numComp = mesh.data.size() / mesh.positions.size();
+  }
+  vtkSmartPointer<vtkDoubleArray>      data = vtkDoubleArray::New();
+  auto                                 ext  = fs::path(mesh.fname).extension();
   vtkSmartPointer<vtkUnstructuredGrid> grid;
   if (ext == ".vtk") {
     vtkSmartPointer<vtkUnstructuredGridReader> reader = vtkSmartPointer<vtkUnstructuredGridReader>::New();
