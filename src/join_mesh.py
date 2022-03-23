@@ -22,6 +22,7 @@ import logging
 import os
 import json
 import vtk
+import os.path
 
 
 def parse_args():
@@ -47,8 +48,12 @@ def parse_args():
 def main():
     args = parse_args()
     logging.basicConfig(level=getattr(logging, args.logging))
+    if args.recovery:
+        recovery_file = args.recovery
+    else:
+        recovery_file = args.in_meshname + "_recovery.json"
     out_meshname = args.out_meshname if args.out_meshname else args.in_meshname + "_joined.vtk"
-    joined_mesh = read_meshes(args.in_meshname, args.numparts, args.recovery)
+    joined_mesh = read_meshes(args.in_meshname, args.numparts, recovery_file)
     write_mesh(joined_mesh, out_meshname, args.directory)
 
 
@@ -62,12 +67,12 @@ def read_meshes(prefix: str, partitions=None, recoveryPath=None):
     if partitions == 0:
         raise Exception("No partitions found")
 
-    if recoveryPath is None:
-        logging.info("No recovery data found. Meshes will be joined partition-wise")
-        return join_mesh_partitionwise(prefix, partitions)
-    else:
+    if os.path.exists(recoveryPath):
         logging.info("Recovery data found. Full recovery will be executed")
         return join_mesh_recovery(prefix, partitions, recoveryPath)
+    else:
+        logging.info("No recovery data found. Meshes will be joined partition-wise")
+        return join_mesh_partitionwise(prefix, partitions)
 
 
 def join_mesh_partitionwise(prefix: str, partitions: int):

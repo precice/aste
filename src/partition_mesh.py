@@ -409,14 +409,13 @@ def write_meshes(meshes, recoveryInfo, meshname: str, orig_mesh, directory=None)
     """
     Writes meshes to given directory.
     """
-
-    recoveryName = os.path.basename(os.path.normpath('recovery.json'))
     # Strip off the mesh-prefix for the directory creation
     mesh_prefix = os.path.basename(os.path.normpath(meshname))
+    recoveryName = os.path.basename(os.path.normpath(mesh_prefix+'_recovery.json'))
     if directory:
         # Get the absolute directory where we want to store the mesh
         directory = os.path.abspath(directory)
-        recoveryName = os.path.join(directory, 'recovery.json')
+        recoveryName = os.path.join(directory, mesh_prefix+'_recovery.json')
         os.makedirs(directory, exist_ok=True)
 
     for i in range(len(meshes)):

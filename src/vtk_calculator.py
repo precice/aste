@@ -19,20 +19,25 @@ Example usage
 
 Scalar calculation and writing to given file
 
+
 vtk_calculator.py -m inputmesh.vtk -f "exp(cos(x)+sin(y))" --data "e^(cos(x)+sin(y))" -o outputmesh.vtk
 
+
 Vector field calculation and appends to input mesh
+
 
 vtk_calculator.py -m "inputmesh.vtk" -f "x*iHat+cos(y)*jHat-sin(z)*kHat" -d "MyVectorField"
 
 There is also a diff mode which provides statistic between input data and function calculated
 (Note that it only works for scalar data)
 
+
 For example to calculate difference between given function "x+y"
 and existing data "sin(x)" and override the result to "sin(x)" and to save statistics into a file
 following command is used.
 
 vtk_calculator.py -m inputmesh.vtu -f "x+y" -d "sin(x)" --diff --stats
+
 
 If you don't want to override "sin(x)" and prefer to save the newly generated
 data into another variable "difference" following command can be used.
@@ -45,26 +50,32 @@ def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--mesh", "-m", dest="in_meshname",
-                        help="The mesh (VTK Unstructured Grid) used as input")
+                       help="The mesh (VTK Unstructured Grid) used as input")
     parser.add_argument("--function", "-f", dest="function", default="eggholder3d",
                         help="""The function to evalutate on the mesh.
             Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.
             Alternatively, you can use predefined function
             Default is Eggholder function in 3D (eggholder3d).""")
-    group.add_argument("--list-functions", dest="listfunctions",action="store_true", help="Prints list of predefined functions.")
+    group.add_argument(
+        "--list-functions",
+        dest="listfunctions",
+        action="store_true",
+        help="Prints list of predefined functions.")
     parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
             Default is the same as for the input mesh""")
-    parser.add_argument("--data", "-d", dest="data", default="MyData", help="""The name of output data.
-            Default is \"MyData\".""")
+    parser.add_argument("--data", "-d", dest="data", help="The name of output data.")
     parser.add_argument("--diffdata", "-diffd", dest="diffdata", help="""The name of difference data.
-            Used in diff mode. If not given, output data is used.""")
+            Required in diff mode.""")
     parser.add_argument("--log", "-l", dest="logging", default="INFO",
                         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="""Set the log level.
             Default is INFO""")
     parser.add_argument("--directory", "-dir", dest="directory", default=None,
                         help="Directory for output files (optional)")
-    parser.add_argument("--diff", action='store_true',
-                        help="Calculate the difference to present data.")
+    parser.add_argument(
+        "--diff",
+        action='store_true',
+        help="Calculate the difference between \"--diffdata\" and the specified"
+        "function \"--function\"")
     parser.add_argument("--stats", "-s", action='store_true',
                         help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
     parser.add_argument("--gradient", "-g", action='store_true',
@@ -127,17 +138,17 @@ def main(args):
         print_predef_functions()
         return
 
-    assert os.path.isfile(args.in_meshname), "Input mesh file not found!"
+    assert os.path.isfile(args.in_meshname), "Input mesh file not found. Please check your input mesh \"--mesh\"."
+    assert args.data, "Dataname \"--data\" is missing. Please give an dataname for given input."
 
     out_meshname = args.out_meshname
     if args.out_meshname is None:
         logging.info("No output mesh name is given {} will be used.".format(args.in_meshname))
         out_meshname = args.in_meshname
 
-    if args.diff and args.diffdata is None:
-        logging.info("No input dataname is given outdata '{}' will be used as input dataname.".format(args.data))
-        diffdata = args.data
-    else:
+    if args.diff:
+        assert args.diffdata, """The \"--diffdata\" argument is required when running in difference mode (using the \"--diff\" argument).
+        Please add a valid \"--diffdata\" argument or type \"--help\" for more information."""
         diffdata = args.diffdata
 
     if args.function in preDefFunctions:
@@ -151,8 +162,8 @@ def main(args):
     elif (extension == ".vtk"):
         reader = vtk.vtkUnstructuredGridReader()
     else:
-        print("Unkown input file extension please check your input file.")
-        os.exit()
+        logging.warning("Unkown input file extension please check your input file or hype \"--help\" for more information.")
+        sys.exit()
     reader.SetFileName(args.in_meshname)
     reader.Update()
     vtk_dataset = reader.GetOutput()
@@ -181,31 +192,37 @@ def main(args):
         logging.info("Evaluated \"{}\"-\"({})\" on the mesh \"{}\".".format(diffdata, inputfunc, args.in_meshname))
 
         # Calculate Statistics
+        abs_diff = np.absolute(difference)
         num_points = vtk_dataset.GetNumberOfPoints()
-        cnt, min, max = num_points, np.nanmin(difference), np.nanmax(difference)
-        p99, p95, p90, median = np.percentile(difference, [99, 95, 90, 50])
-        relative = np.sqrt(np.nansum(np.square(difference)) / difference.size)
+        cnt, abs_min, signed_min, abs_max, signed_max = num_points, np.nanmin(
+            abs_diff), np.nanmin(difference), np.nanmax(abs_diff), np.nanmax(difference)
+        p99, p95, p90, median = np.percentile(abs_diff, [99, 95, 90, 50])
+        relative = np.sqrt(np.nansum(np.square(abs_diff)) / abs_diff.size)
         logging.info("Vertex count {}".format(cnt))
         logging.info("Relative l2 error {}".format(relative))
-        logging.info("Maximum error per vertex {}".format(max))
-        logging.info("Minimum error per vertex {}".format(min))
-        logging.info("Median error per vertex {}".format(median))
-        logging.info("99th percentile of error per vertex {}".format(p99))
-        logging.info("95th percentile of error per vertex {}".format(p95))
-        logging.info("90th percentile of error per vertex {}".format(p90))
+        logging.info("Maximum absolute error per vertex {}".format(abs_max))
+        logging.info("Maximum signed error per vertex {}".format(signed_max))
+        logging.info("Minimum absolute error per vertex {}".format(abs_min))
+        logging.info("Minimum signed error per vertex {}".format(signed_min))
+        logging.info("Median absolute error per vertex {}".format(median))
+        logging.info("99th percentile of absolute error per vertex {}".format(p99))
+        logging.info("95th percentile of absolute error per vertex {}".format(p95))
+        logging.info("90th percentile of absolute error per vertex {}".format(p90))
 
         if args.stats:
             stat_file = os.path.splitext(out_meshname)[0] + ".stats.json"
             logging.info("Saving stats data to \"{}\"".format(stat_file))
             json.dump({
                 "count": cnt,
-                "min": min,
-                "max": max,
-                "median": median,
+                "abs_min": abs_min,
+                "abs_max": abs_max,
+                "signed_min:": signed_min,
+                "signed_max": signed_max,
+                "median(abs)": median,
                 "relative-l2": relative,
-                "99th percentile": p99,
-                "95th percentile": p95,
-                "90th percentile": p90
+                "99th percentile(abs)": p99,
+                "95th percentile(abs)": p95,
+                "90th percentile(abs)": p90
             }, open(stat_file, "w"))
 
     else:
