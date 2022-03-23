@@ -214,6 +214,77 @@ def plotMapDataTime(dfo, outname):
     plt.grid()
     plt.savefig(str(outname) + "-mapped.pdf")
 
+def plotReceiveDataTime(dfo, outname):
+    yname="receiveDataTime"
+    df = dfo[dfo["mapping"].isin([
+        "nn",
+        "np",
+        "nng"
+    ])]
+
+    fig, ax = plt.subplots(sharex=True, sharey=True)
+    series = df.groupby("mapping")
+    for grouped, style in zip(series, styles):
+        name, group = grouped
+        if (group[yname].max() == 0):
+            print(f"Dropping {yname}-series {name} as all 0")
+            continue
+        color, marker = style
+        group.plot(
+            ax=ax,
+            loglog=True,
+            x="mesh B",
+            y=yname,
+            label=name,
+            marker=marker,
+            color=color
+        )
+
+    ax.set_ylim(10, 10**7)
+    ax.set_xlabel("mesh width h")
+    ax.set_ylabel("receive data time [ms]")
+
+    #plotConv(ax, df, yname)
+
+    plt.gca().invert_xaxis()
+    plt.grid()
+    plt.savefig(str(outname) + "-receiveDataTime.pdf")
+
+def plotReceiveGradientDataTime(dfo, outname):
+    yname="receiveGradientDataTime"
+    df = dfo[dfo["mapping"].isin([
+        "nn",
+        "np",
+        "nng"
+    ])]
+
+    fig, ax = plt.subplots(sharex=True, sharey=True)
+    series = df.groupby("mapping")
+    for grouped, style in zip(series, styles):
+        name, group = grouped
+        if (group[yname].max() == 0):
+            print(f"Dropping {yname}-series {name} as all 0")
+            continue
+        color, marker = style
+        group.plot(
+            ax=ax,
+            loglog=True,
+            x="mesh B",
+            y=yname,
+            label=name,
+            marker=marker,
+            color=color
+        )
+
+    ax.set_ylim(10, 10**7)
+    ax.set_xlabel("mesh width h")
+    ax.set_ylabel("receive gradient data time [ms]")
+
+    #plotConv(ax, df, yname)
+
+    plt.gca().invert_xaxis()
+    plt.grid()
+    plt.savefig(str(outname) + "-receiveGradientDataTime.pdf")
 
 def main(argv):
     args = parseArguments(argv[1:])
@@ -231,6 +302,8 @@ def main(argv):
     plotMemory(df, args.outname, yname="peakMemA")
     plotMapDataTime(df, args.outname)
     plotComputeMappingTime(df, args.outname)
+    plotReceiveDataTime(df, args.outname)
+    plotReceiveGradientDataTime(df, args.outname)
     return 0
 
 

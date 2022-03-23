@@ -57,6 +57,7 @@ def preparePartMesh(meshdir, name, p, force=False):
     os.makedirs(partDir, exist_ok=True)
     [pathName, tmpfilename] = os.path.split(os.path.normpath(partMesh))
     subprocess.run(["partition_mesh.py", "--mesh", mainMesh, "--algorithm", "meshfree", "-o", partMesh, "--directory", pathName, "-n", str(p)])
+    
 
 
 def main(argv):
