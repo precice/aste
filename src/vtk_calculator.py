@@ -19,11 +19,13 @@ class Calculator:
     - Use \"--help\" argument to see usage
     """
 
-    def __init__(self) -> None:
-        args = Calculator.parse_args()
+    def __init__(self, args) -> None:
+        #args = Calculator.parse_args()
         Calculator.create_logger(args.logging)
         preDefFunctions = Calculator.create_predeffunctions()
         Calculator.evaluate(args, preDefFunctions)
+        if args.gradient:
+            add_gradient(args)
 
     @staticmethod
     def create_logger(level):
@@ -64,6 +66,8 @@ class Calculator:
             "function \"--function\"")
         parser.add_argument("--stats", "-s", action='store_true',
                             help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
+        parser.add_argument("--gradient", "-g", action='store_true',
+                            help="Adds array with the gradient data")
         args, _ = parser.parse_known_args()
         return args
 
@@ -307,26 +311,23 @@ def add_gradient(args):
     grad_dx = func.diff(x)
     args.data = 'gradientdx'
     args.function = sympy_to_vtk(str(grad_dx))
-    main(args)
+    Calculator(args)
 
     y = Symbol('y')
     grad_dy = func.diff(y)
     args.data = 'gradientdy'
     args.function = sympy_to_vtk(str(grad_dy))
-    main(args)
+    Calculator(args)
 
     z = Symbol('z')
     grad_dz = func.diff(z)
     args.data = 'gradientdz'
     args.function = sympy_to_vtk(str(grad_dz))
-    main(args)
+    Calculator(args)
 
 
 if __name__ == "__main__":
-    Calculator()
+    args = Calculator.parse_args()
+    Calculator(args)
 
-    args = parse_args()
-    main(args)
 
-    if args.gradient:
-        add_gradient(args)
