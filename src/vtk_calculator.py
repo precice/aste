@@ -26,12 +26,18 @@ class Calculator:
 
     @staticmethod
     def create_logger(level):
-        logging.basicConfig(level=getattr(logging, level))
+        logger = logging.getLogger('---[ASTE-Calculator]')
+        logger.setLevel(getattr(logging, level))
+        ch = logging.StreamHandler()
+        ch.setLevel(getattr(logging, level))
+        formatter = logging.Formatter('%(name)s %(levelname)s : %(message)s')
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
         return
 
     @staticmethod
     def get_logger():
-        return logging
+        return logging.getLogger('---[ASTE-Calculator]')
 
     @staticmethod
     def parse_args():

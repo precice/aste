@@ -44,11 +44,18 @@ class MeshJoiner:
 
     @staticmethod
     def create_logger(args):
-        logging.basicConfig(level=getattr(logging, args.logging))
+        logger = logging.getLogger('---[ASTE-Join]')
+        logger.setLevel(getattr(logging, args.logging))
+        ch = logging.StreamHandler()
+        ch.setLevel(getattr(logging, args.logging))
+        formatter = logging.Formatter('%(name)s %(levelname)s : %(message)s')
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
+        return
 
     @staticmethod
     def get_logger():
-        return logging
+        return logging.getLogger('---[ASTE-Join]')
 
     @staticmethod
     def join(args):
