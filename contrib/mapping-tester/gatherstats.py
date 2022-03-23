@@ -28,6 +28,8 @@ def statsFromTimings(dir):
             mapDataName = [ x for x in timings.keys() if x.startswith("advance/map") and x.endswith("mapData.FromMeshAToMeshB")][0]
             stats["computeMappingTime"] = timings[computeMappingName]["Max"]
             stats["mapDataTime"] = timings[mapDataName]["Max"]
+            stats["receiveDataTime"] = timings["advance/m2n.receiveData"]["Max"]
+            stats["receiveGradientDataTime"] = timings["advance/m2n.receiveGradientData"]["Max"]
         except:
             pass
     return stats

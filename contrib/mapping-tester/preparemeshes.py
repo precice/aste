@@ -12,10 +12,11 @@ def parseArguments(args):
     parser.add_argument('-o', '--outdir', default="cases", help='Directory to generate the test suite in.')
     parser.add_argument('-s', '--setup', type=argparse.FileType('r'), default="setup.json", help='The test setup file to use.')
     parser.add_argument('-f', '--force', action="store_true", help='Remove existing meshes.')
+    parser.add_argument('-g', '--gradient', action="store_true", help="Evaluates additionally gradient data on meshes.")
     return parser.parse_args(args)
 
 
-def prepareMainMesh(meshdir, name, file, function, force=False):
+def prepareMainMesh(meshdir, name, file, function, force=False, gradient=False):
     mainDir = os.path.join(meshdir, name, "1")
     mainMesh = os.path.join(mainDir, name+".vtu")
     print("Preparing Mesh {} in {}".format(name, mainDir))
@@ -31,7 +32,11 @@ def prepareMainMesh(meshdir, name, file, function, force=False):
     os.makedirs(mainDir, exist_ok=True)
     data_name = "{}".format(function)
     [pathName, tmpfilename] = os.path.split(os.path.normpath(mainMesh))
-    subprocess.run(["vtk_calculator.py", "--mesh", os.path.expandvars(file), "--function", function, "--data", data_name, "--directory", pathName, "-o", tmpfilename])
+
+    if gradient:
+        subprocess.run(["vtk_calculator.py", "--mesh", os.path.expandvars(file), "--function", function, "--data", data_name, "--directory", pathName, "-o", tmpfilename, "--gradient"])
+    else:
+        subprocess.run(["vtk_calculator.py", "--mesh", os.path.expandvars(file), "--function", function, "--data", data_name, "--directory", pathName, "-o", tmpfilename])
 
 
 def preparePartMesh(meshdir, name, p, force=False):
@@ -54,6 +59,7 @@ def preparePartMesh(meshdir, name, p, force=False):
     subprocess.run(["partition_mesh.py", "--mesh", mainMesh, "--algorithm", "meshfree", "-o", partMesh, "--directory", pathName, "-n", str(p)])
 
 
+
 def main(argv):
     args = parseArguments(argv[1:])
     setup = json.load(args.setup)
@@ -68,7 +74,7 @@ def main(argv):
     for name, file in set(itertools.chain(setup["general"]["meshes"]["A"].items(), setup["general"]["meshes"]["B"].items())):
         if not os.path.isfile(os.path.expandvars(file)):
             raise Exception(f'\033[91m Unable to open file called "{file}".\033[0m')
-        prepareMainMesh(meshdir, name, file, function, args.force)
+        prepareMainMesh(meshdir, name, file, function, args.force, args.gradient)
         for p in partitions:
             preparePartMesh(meshdir, name, p, args.force)
 

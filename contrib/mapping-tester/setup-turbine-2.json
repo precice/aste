@@ -1,20 +1,22 @@
 {
   "general": {
-    "function": "0.78 + cos(10*(x+y+z))",
+    "function": "x^3",
     "ranks": {
       "A": [
-        48
+        4
       ],
       "B": [
-        96
+        4
       ]
     },
-    "network": "ib0",
-    "syncmode": true,
+    "network": "ens192",
+    "syncmode": false,
     "meshes": {
       "A": {
         "0.03": "$ASTE_MESHES/0.03.vtk",
-        "0.02": "$ASTE_MESHES/0.02.vtk"
+        "0.02": "$ASTE_MESHES/0.02.vtk",
+        "0.01": "$ASTE_MESHES/0.01.vtk",
+        "0.008": "$ASTE_MESHES/0.008.vtk"
       },
       "B": {
         "0.009": "$ASTE_MESHES/0.009.vtk"
@@ -34,10 +36,6 @@
           "nn": {
             "kind": "nearest-neighbor"
           },
-          "tps": {
-            "kind": "rbf-thin-plate-splines",
-            "options": "use-qr-decomposition=\"1\""
-          },
           "nng": {
             "kind": "nearest-neighbor-gradient"
           }
@@ -46,7 +44,9 @@
       "meshes": {
         "A": [
           "0.03",
-          "0.02"
+          "0.02",
+	  "0.01",
+	  "0.008"
         ],
         "B": [
           "0.009"
