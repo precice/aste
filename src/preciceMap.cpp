@@ -1,22 +1,8 @@
-#include <boost/container/flat_map.hpp>
-#include <boost/container/flat_set.hpp>
-#include <boost/filesystem.hpp>
 #include <mpi.h>
 #include <string>
-#include "precice/SolverInterface.hpp"
-//#include "utils/EventUtils.hpp"
-#include <algorithm>
-#include <cassert>
-#include <exception>
-#include <functional>
-
-#include <iostream>
-
-#include <chrono>
-#include "common.hpp"
-#include "configreader.hpp"
 #include "easylogging++.h"
-#include "mesh.hpp"
+#include "modes.hpp"
+#include "utilities.hpp"
 
 INITIALIZE_EASYLOGGINGPP
 
