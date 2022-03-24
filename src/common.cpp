@@ -47,10 +47,10 @@ OptionMap getOptions(int argc, char *argv[])
         vm["participant"].as<string>() != "B")
       throw runtime_error("Invalid participant, must be either 'A' or 'B'");
 
-    if ((vm.count("participant") && vm.count("data") && vm.count("mesh") && vm.count("output") && vm.count("vector")) || vm.count("aste-config"))
+    if ((vm.count("participant") || vm.count("data") || vm.count("mesh") || vm.count("output") || vm.count("vector")) && vm.count("aste-config"))
       throw runtime_error("Replay mode can only be combined with logging options");
 
-    if (not vm.count("aste-config"))
+    if ((vm.count("aste-config") == 0) && not(vm.count("participant") && vm.count("data") && vm.count("mesh")))
       throw runtime_error("One of the following arguments is missing \"--participant\" \"--data\" \"--mesh\"");
 
   } catch (const std::exception &e) {
