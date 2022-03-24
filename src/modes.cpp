@@ -57,7 +57,6 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
 
 void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap &options)
 {
-  std::cout << "aq\n";
   const std::string meshname        = options["mesh"].as<std::string>();
   const std::string participantName = options["participant"].as<std::string>();
   const std::string dataname        = options["data"].as<std::string>();
