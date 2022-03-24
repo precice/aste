@@ -20,7 +20,10 @@ public:
   MeshException(const std::string &what_arg)
       : std::runtime_error(what_arg){};
 };
-
+/**
+ * @brief Information about current run MPI size and rank of the process
+ *
+ */
 struct ExecutionContext {
   ExecutionContext() = default;
   ExecutionContext(int rank, int size)
@@ -59,8 +62,20 @@ private:
   friend BaseName;
 };
 
+/**
+ * @brief Whether data is read or write type
+ *
+ */
 enum datatype { READ,
                 WRITE };
+/**
+ * @brief Information about data in mesh.
+ * Contains whether data is write or read type
+ * Number of components of data
+ * Name of data
+ * Data context (dataVector)
+ * Data ID in preCICE
+ */
 struct MeshData {
   MeshData(datatype type, int numcomp, std::string name, int dataID)
       : type(type), numcomp(numcomp), name(std::move(name)), dataID(dataID) {}
@@ -87,6 +102,10 @@ private:
   std::string _bname;
 };
 
+/**
+ * @brief Datastructure for storing meshes in ASTE
+ *
+ */
 struct Mesh {
   using Vertex   = std::vector<double>;
   using VID      = std::vector<Vertex>::size_type;
