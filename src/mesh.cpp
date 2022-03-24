@@ -388,7 +388,7 @@ std::string Mesh::previewData(const MeshData &data, std::size_t max) const
     return "<nothing>";
 
   std::stringstream oss;
-  oss << data.name;
+  oss << data.name << "  ";
   oss << data.dataVector.front();
   for (size_t i = 1; i < std::min(max, data.dataVector.size()); ++i)
     oss << ", " << data.dataVector[i];
