@@ -59,6 +59,14 @@ if(METIS_FOUND)
   target_link_libraries(preciceMap metisAPI)
 endif()
 
+add_executable(testing src/tests/testing.cpp src/tests/read_test.cpp src/tests/write_test.cpp src/mesh.cpp)
+target_include_directories(testing PRIVATE src)
+target_link_libraries(testing
+  Boost::filesystem
+  Boost::boost
+  Boost::unit_test_framework
+  ${VTK_LIBRARIES}
+)
 
 if (VTK_VERSION VERSION_LESS "8.90.0")
   # old system
@@ -66,7 +74,7 @@ if (VTK_VERSION VERSION_LESS "8.90.0")
 else ()
   # vtk_module_autoinit is needed
   vtk_module_autoinit(
-    TARGETS preciceMap 
+    TARGETS preciceMap testing
     MODULES ${VTK_LIBRARIES}
     )
 endif()
