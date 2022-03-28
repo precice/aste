@@ -13,17 +13,13 @@ namespace fs = boost::filesystem;
 class BaseName;
 struct Mesh;
 class MeshName;
-struct MeshData;
 
 class MeshException : public std::runtime_error {
 public:
   MeshException(const std::string &what_arg)
       : std::runtime_error(what_arg){};
 };
-/**
- * @brief Information about current run MPI size and rank of the process
- *
- */
+
 struct ExecutionContext {
   ExecutionContext() = default;
   ExecutionContext(int rank, int size)
@@ -47,10 +43,9 @@ public:
 
   std::string filename() const;
 
-  void loadMesh(Mesh &mesh, const int dim);
-  void loadData(Mesh &mesh);
-  void resetData(Mesh &mesh);
-  void save(const Mesh &mesh) const;
+  Mesh load(const int &dim, const std::string &dataname) const;
+
+  void save(const Mesh &mesh, const std::string &dataname) const;
 
 private:
   void createDirectories() const;
@@ -60,31 +55,6 @@ private:
   const ExecutionContext _context;
 
   friend BaseName;
-};
-
-/**
- * @brief Whether data is read or write type
- *
- */
-enum datatype { READ,
-                WRITE };
-/**
- * @brief Information about data in mesh.
- * Contains whether data is write or read type
- * Number of components of data
- * Name of data
- * Data context (dataVector)
- * Data ID in preCICE
- */
-struct MeshData {
-  MeshData(datatype type, int numcomp, std::string name, int dataID)
-      : type(type), numcomp(numcomp), name(std::move(name)), dataID(dataID) {}
-
-  datatype            type;
-  int                 numcomp;
-  std::string         name; // name of data
-  std::vector<double> dataVector;
-  int                 dataID; // preCICE dataID
 };
 
 std::ostream &operator<<(std::ostream &out, const MeshName &mname);
@@ -102,12 +72,11 @@ private:
   std::string _bname;
 };
 
-/**
- * @brief Datastructure for storing meshes in ASTE
- *
- */
+namespace aste {
+
+} // namespace aste
 struct Mesh {
-  using Vertex   = std::vector<double>;
+  using Vertex   = std::array<double, 3>;
   using VID      = std::vector<Vertex>::size_type;
   using Edge     = std::array<VID, 2>;
   using Triangle = std::array<VID, 3>;
@@ -116,11 +85,10 @@ struct Mesh {
   std::vector<Edge>     edges;
   std::vector<Triangle> triangles;
   std::vector<Quad>     quadrilaterals;
+  std::vector<double>   data;
   std::string           fname;
-  std::vector<MeshData> meshdata;
 
   std::string previewData(std::size_t max = 10) const;
-  std::string previewData(const MeshData &data, std::size_t max = 10) const;
   std::string summary() const;
 };
 
