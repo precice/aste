@@ -31,14 +31,13 @@ message (STATUS "VTK_VERSION: ${VTK_VERSION}")
 find_package(METIS)
 if (METIS_FOUND)
     add_library(metisAPI SHARED src/metisAPI.cpp)
-    include_directories(${METIS_INCLUDE_DIRS})
     target_link_libraries(metisAPI ${METIS_LIBRARIES})
     target_include_directories(metisAPI PRIVATE ${METIS_INCLUDE_DIR})
 endif()
 
 find_package(MPI REQUIRED)
 
-add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/easylogging++.cc src/mesh.cpp src/configreader.cpp src/modes.cpp src/utilities.cpp)
+add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/easylogging++.cc src/mesh.cpp)
 target_include_directories(preciceMap PRIVATE src)
 target_link_libraries(preciceMap
   precice::precice
@@ -67,6 +66,7 @@ target_link_libraries(testing
   Boost::unit_test_framework
   ${VTK_LIBRARIES}
 )
+
 
 if (VTK_VERSION VERSION_LESS "8.90.0")
   # old system
