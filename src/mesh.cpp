@@ -96,6 +96,9 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
     mesh.data.clear();
     mesh.data.reserve(NumPoints * dim);
 
+    mesh.gradientData.clear();
+    mesh.gradientData.reserve(NumPoints * 3 * dim);
+
     switch (NumComp) {
     case 1: // Scalar Data
 
@@ -200,6 +203,16 @@ void readMainFile(Mesh &mesh, const std::string &filename, const std::string &da
         throw std::runtime_error(std::string{"Dimensions of data provided = "}.append(std::to_string(NumComp)).append("and simulation = ").append(std::to_string(dim)).append("does not match for data =").append(dataname));
         break;
       }
+        for (size_t i = 0; i < mesh.gradientdx.size(); i++) {
+            mesh.gradientData.push_back(mesh.gradientdx[i]);
+        }
+        for(size_t i= 0; i < mesh.gradientdy.size(); i++){
+          mesh.gradientData.push_back(mesh.gradientdy[i]);
+        }
+        for(size_t i=0; i< mesh.gradientdz.size(); i++) {
+          mesh.gradientData.push_back(mesh.gradientdz[i]);
+        }
+
 
     }
 
@@ -332,10 +345,9 @@ void MeshName::save(const Mesh &mesh, const std::string &dataname, bool withGrad
       grid->GetPointData()->AddArray(graddx);
       grid->GetPointData()->AddArray(graddy);
       grid->GetPointData()->AddArray(graddz);
+
     }
   }
-
-
 
   // Write file
   if (_context.isParallel()) {
@@ -359,6 +371,7 @@ std::ostream &operator<<(std::ostream &out, const MeshName &mname)
 {
   return out << mname.filename();
 }
+
 
 // --- BaseName
 

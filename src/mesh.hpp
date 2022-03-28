@@ -92,6 +92,7 @@ struct Mesh {
   std::vector<double> gradientdx;
   std::vector<double> gradientdy;
   std::vector<double> gradientdz;
+  std::vector<double> gradientData;
   bool hasGradient;
 
   std::string previewData(std::size_t max = 10) const;

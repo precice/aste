@@ -200,7 +200,8 @@ int main(int argc, char *argv[])
 
       //TODO: WRITE GRADIENT DATA IF NECESSARY
       if(withGradient) {
-        interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.gradientdx.data(), mesh.gradientdy.data(), mesh.gradientdz.data());
+        //interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.gradientdx.data(), mesh.gradientdy.data(), mesh.gradientdz.data());
+        interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.gradientData.data(), true);
       }
 
     } else {
@@ -209,7 +210,8 @@ int main(int argc, char *argv[])
 
       //TODO: WRITE GRADIENT DATA IF NECESSARY
       if(withGradient) {
-        interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.gradientdx.data(), mesh.gradientdy.data(), mesh.gradientdz.data());
+        //interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.gradientdx.data(), mesh.gradientdy.data(), mesh.gradientdz.data());
+        interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.gradientData.data(), true);
       }
 
     }
@@ -232,7 +234,8 @@ int main(int argc, char *argv[])
 
         //TODO: WRITE GRADIENT DATA IF NECESSARY
         if(withGradient) {
-          interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.gradientdx.data(), roundmesh.gradientdy.data(), roundmesh.gradientdz.data());
+          //interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.gradientdx.data(), roundmesh.gradientdy.data(), roundmesh.gradientdz.data());
+          interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.gradientData.data(), true);
         }
 
       } else {
@@ -241,7 +244,8 @@ int main(int argc, char *argv[])
 
         //TODO: WRITE GRADIENT DATA IF NECESSARY
         if(withGradient) {
-          interface.writeBlockScalarGradientData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.gradientdx.data(), roundmesh.gradientdy.data(), roundmesh.gradientdz.data());
+          //interface.writeBlockScalarGradientData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.gradientdx.data(), roundmesh.gradientdy.data(), roundmesh.gradientdz.data());
+          interface.writeBlockScalarGradientData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.gradientData.data(),true );
         }
 
       }
