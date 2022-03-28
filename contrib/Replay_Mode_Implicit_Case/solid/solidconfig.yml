@@ -1,0 +1,9 @@
+participant: "Solid"
+meshes:
+  - mesh: "Solid-Mesh"
+    meshfileprefix: "./solid-meshes/Solid-Mesh-Solid"
+    read-data:
+      vector: [Force]
+    write-data:
+      vector: [Displacement]
+precice-config: "../precice-config.xml"
