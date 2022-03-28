@@ -1,0 +1,9 @@
+participant: "Fluid"
+meshes:
+  - mesh: "Fluid-Mesh"
+    meshfileprefix: "fluid-meshes/Fluid-Mesh-Fluid"
+    read-data:
+      vector: [Displacement]
+    write-data:
+      vector: [Force]
+precice-config: "../precice-config.xml"
