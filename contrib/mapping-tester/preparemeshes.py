@@ -78,7 +78,7 @@ def main(argv):
     partitions = set([int(rank) for pranks in setup["general"]["ranks"].values() for rank in pranks])
 
     for name, file in set(itertools.chain(setup["general"]["meshes"]["A"].items(),
-    setup["general"]["meshes"]["B"].items())):
+                                          setup["general"]["meshes"]["B"].items())):
 
         if not os.path.isfile(os.path.expandvars(file)):
             raise Exception(f'\033[91m Unable to open file called "{file}".\033[0m')
