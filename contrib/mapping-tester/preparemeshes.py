@@ -40,7 +40,7 @@ def prepareMainMesh(meshdir, name, file, function, force=False):
     data_name = "{}".format(function)
     [pathName, tmpfilename] = os.path.split(os.path.normpath(mainMesh))
     subprocess.run(["vtk_calculator.py", "--mesh", os.path.expandvars(file), "--function",
-                   function, "--data", data_name, "--directory", pathName, "-o", tmpfilename])
+                    function, "--data", data_name, "--directory", pathName, "-o", tmpfilename])
 
 
 def preparePartMesh(meshdir, name, p, force=False):
@@ -62,7 +62,7 @@ def preparePartMesh(meshdir, name, p, force=False):
     os.makedirs(partDir, exist_ok=True)
     [pathName, tmpfilename] = os.path.split(os.path.normpath(partMesh))
     subprocess.run(["partition_mesh.py", "--mesh", mainMesh, "--algorithm",
-                   "meshfree", "-o", partMesh, "--directory", pathName, "-n", str(p)])
+                    "meshfree", "-o", partMesh, "--directory", pathName, "-n", str(p)])
 
 
 def main(argv):
@@ -77,8 +77,8 @@ def main(argv):
 
     partitions = set([int(rank) for pranks in setup["general"]["ranks"].values() for rank in pranks])
 
-    for name, file in set(itertools.chain(setup["general"]["meshes"]
-                          ["A"].items(), setup["general"]["meshes"]["B"].items())):
+    for name, file in set(itertools.chain(setup["general"]["meshes"]["A"].items(),
+    setup["general"]["meshes"]["B"].items())):
 
         if not os.path.isfile(os.path.expandvars(file)):
             raise Exception(f'\033[91m Unable to open file called "{file}".\033[0m')
