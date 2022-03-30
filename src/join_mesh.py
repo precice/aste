@@ -44,7 +44,7 @@ class MeshJoiner:
 
     @staticmethod
     def create_logger(args):
-        logger = logging.getLogger('---[ASTE-Join]')
+        logger = logging.getLogger('---[ASTE-Joiner]')
         logger.setLevel(getattr(logging, args.logging))
         ch = logging.StreamHandler()
         ch.setLevel(getattr(logging, args.logging))
@@ -55,7 +55,7 @@ class MeshJoiner:
 
     @staticmethod
     def get_logger():
-        return logging.getLogger('---[ASTE-Join]')
+        return logging.getLogger('---[ASTE-Joiner]')
 
     @staticmethod
     def join(args):
@@ -75,7 +75,7 @@ class MeshJoiner:
         logger = MeshPartitioner.get_logger()
         if not partitions:
             partitions = MeshJoiner.count_partitions(prefix)
-            logger.debug("Detected " + str(partitions) + " partitions with prefix " + prefix)
+            logger.info("Detected " + str(partitions) + " partitions with prefix " + prefix)
         if partitions == 0:
             raise Exception("No partitions found")
 
@@ -201,7 +201,7 @@ class MeshJoiner:
             array_data = part_point_data.GetArray("GlobalIDs")
             # Check if GlobalIDs exist if not do partition-wise merge
             if array_data is None:
-                logger.warning("GlobalIDs were not found, a recovery merge is not possible.")
+                logger.info("GlobalIDs were not found, a recovery merge is not possible.")
                 return MeshJoiner.join_mesh_partitionwise(prefix, partitions)
 
             for k in range(array_data.GetNumberOfTuples()):
