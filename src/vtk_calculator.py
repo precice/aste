@@ -210,6 +210,9 @@ class Calculator:
             abs_diff), np.nanmin(difference), np.nanmax(abs_diff), np.nanmax(difference)
         p99, p95, p90, median = np.percentile(abs_diff, [99, 95, 90, 50])
         relative = np.sqrt(np.nansum(np.square(abs_diff)) / abs_diff.size)
+        decorator = 15 * "*"
+        spaces = 5 * " "
+        logger.info(f"\n\n{decorator}{spaces}Statistics{spaces}{decorator}\n\n")
         logger.info("Vertex count {}".format(cnt))
         logger.info("Relative l2 error {}".format(relative))
         logger.info("Maximum absolute error per vertex {}".format(abs_max))
@@ -220,6 +223,7 @@ class Calculator:
         logger.info("99th percentile of absolute error per vertex {}".format(p99))
         logger.info("95th percentile of absolute error per vertex {}".format(p95))
         logger.info("90th percentile of absolute error per vertex {}".format(p90))
+        logger.info(f"\n\n{decorator}{spaces}End Statistic{spaces}{decorator}\n\n")
 
         if stats:
             stat_file = os.path.splitext(out_meshname)[0] + ".stats.json"
