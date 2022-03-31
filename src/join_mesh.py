@@ -44,11 +44,18 @@ class MeshJoiner:
 
     @staticmethod
     def create_logger(args):
-        logging.basicConfig(level=getattr(logging, args.logging))
+        logger = logging.getLogger('---[ASTE-Joiner]')
+        logger.setLevel(getattr(logging, args.logging))
+        ch = logging.StreamHandler()
+        ch.setLevel(getattr(logging, args.logging))
+        formatter = logging.Formatter('%(name)s %(levelname)s : %(message)s')
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
+        return
 
     @staticmethod
     def get_logger():
-        return logging
+        return logging.getLogger('---[ASTE-Joiner]')
 
     @staticmethod
     def join(args):
@@ -58,6 +65,10 @@ class MeshJoiner:
             recovery_file = args.in_meshname + "_recovery.json"
         out_meshname = args.out_meshname if args.out_meshname else args.in_meshname + "_joined.vtk"
         joined_mesh = MeshJoiner.read_meshes(args.in_meshname, args.numparts, recovery_file)
+        logger = MeshJoiner.get_logger()
+        num_points = joined_mesh.GetNumberOfPoints()
+        num_cells = joined_mesh.GetNumberOfCells()
+        logger.info(f"Final mesh contains {num_points} points, {num_cells} cells")
         MeshJoiner.write_mesh(joined_mesh, out_meshname, args.directory)
 
     @staticmethod
@@ -68,7 +79,7 @@ class MeshJoiner:
         logger = MeshPartitioner.get_logger()
         if not partitions:
             partitions = MeshJoiner.count_partitions(prefix)
-            logger.debug("Detected " + str(partitions) + " partitions with prefix " + prefix)
+            logger.info("Detected " + str(partitions) + " partitions with prefix " + prefix)
         if partitions == 0:
             raise Exception("No partitions found")
 
@@ -97,6 +108,7 @@ class MeshJoiner:
 
         for i in range(partitions):
             fname = prefix + "_" + str(i) + ".vtu"
+            logger.info(f"Merging mesh from {fname}")
             reader = vtk.vtkXMLUnstructuredGridReader()
             reader.SetFileName(fname)
             reader.Update()
@@ -159,8 +171,8 @@ class MeshJoiner:
         size = recovery["size"]
         cell_types = recovery["cell_types"]
 
-        logger.debug("Original Mesh contains {} points".format(size))
-        logger.debug("{} Cells discarded during partitioning".format(len(cells)))
+        logger.info("Original mesh contains {} points".format(size))
+        logger.info("{} Cells discarded during partitioning".format(len(cells)))
 
         # Initialize Joined Mesh
         joined_mesh = vtk.vtkUnstructuredGrid()
@@ -174,6 +186,7 @@ class MeshJoiner:
             global_ids = []
 
             fname = prefix + "_" + str(i) + ".vtu"
+            logger.info(f"Merging mesh from {fname}")
             reader = vtk.vtkXMLUnstructuredGridReader()
             reader.SetFileName(fname)
             reader.Update()
@@ -194,7 +207,7 @@ class MeshJoiner:
             array_data = part_point_data.GetArray("GlobalIDs")
             # Check if GlobalIDs exist if not do partition-wise merge
             if array_data is None:
-                logger.warning("GlobalIDs were not found, a recovery merge is not possible.")
+                logger.info("GlobalIDs were not found, a recovery merge is not possible.")
                 return MeshJoiner.join_mesh_partitionwise(prefix, partitions)
 
             for k in range(array_data.GetNumberOfTuples()):
