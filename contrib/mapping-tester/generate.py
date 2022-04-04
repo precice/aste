@@ -91,38 +91,38 @@ def caseToSortable(case):
 
 def createMasterRunScripts(casemap, dir):
     common = ["#!/bin/bash",
-               "",
-               'cd "$( dirname "${BASH_SOURCE[0]}" )"',
-               "RUNNER=/bin/bash",
-               ""]
+              "",
+              'cd "$( dirname "${BASH_SOURCE[0]}" )"',
+              "RUNNER=/bin/bash",
+              ""]
 
     # Generate master runner script
     content = common + [
-                   "${RUNNER} " + os.path.join(case, "runall.sh")
-                   for case in casemap.keys()
-               ]
+        "${RUNNER} " + os.path.join(case, "runall.sh")
+        for case in casemap.keys()
+    ]
     open(os.path.join(dir, "runall.sh"),"w").writelines([ line + "\n" for line in content ])
 
     # Generate master postprocessing script
     post = common + [
-                   "${RUNNER} " + os.path.join(case, "postprocessall.sh")
-                   for case in casemap.keys()
-               ]
+        "${RUNNER} " + os.path.join(case, "postprocessall.sh")
+        for case in casemap.keys()
+    ]
     open(os.path.join(dir, "postprocessall.sh"),"w").writelines([ line + "\n" for line in post ])
 
     for case, instances in casemap.items():
         # Generate master runner script
         content = common + [
-                       "${RUNNER} " + os.path.join(*instance, "run-wrapper.sh")
-                       for instance in instances
-                   ]
+            "${RUNNER} " + os.path.join(*instance, "run-wrapper.sh")
+            for instance in instances
+        ]
         open(os.path.join(dir, case, "runall.sh"),"w").writelines([ line + "\n" for line in content ])
 
         # Generate master postprocessing script
         post = common + [
-                       "${RUNNER} " + os.path.join(*instance, "post.sh")
-                       for instance in instances
-                   ]
+            "${RUNNER} " + os.path.join(*instance, "post.sh")
+            for instance in instances
+        ]
         open(os.path.join(dir, case, "postprocessall.sh"),"w").writelines([ line + "\n" for line in post ])
 
 
@@ -130,10 +130,15 @@ def createMasterRunScripts(casemap, dir):
 def createRunScript(outdir, path, case):
     amesh = case["A"]["mesh"]["name"]
     aranks = case["A"]["ranks"]
+    amapping = case["mapping"]["name"]
     ameshLocation = os.path.relpath(os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path)
 
     # Generate runner script
-    acmd = "/usr/bin/time -f %M -a -o memory-A.log preciceMap -v -p A --data \"{}\" --mesh {} || kill 0 &".format(case["function"], ameshLocation)
+    if amapping == "nng":
+        acmd = "/usr/bin/time -f %M -a -o memory-A.log preciceMap -v -p A --data \"{}\" --mesh {} --gradient || kill 0 &".format(case["function"], ameshLocation)
+    else:
+        acmd = "/usr/bin/time -f %M -a -o memory-A.log preciceMap -v -p A --data \"{}\" --mesh {} || kill 0 &".format(case["function"], ameshLocation)
+
     if aranks > 1: acmd = "mpirun -n {} $ASTE_A_MPIARGS {}".format(aranks, acmd)
 
     bmesh = case["B"]["mesh"]["name"]
@@ -198,7 +203,7 @@ def createRunScript(outdir, path, case):
         post_content += [copycmd, diffcmd]
     else:
         [recoveryFileLocation, tmpPrefix] = os.path.split(os.path.normpath(bmeshLocation))
-        tmprecoveryFile = recoveryFileLocation + "/{}_recovery.json".format(bmesh)
+        tmprecoveryFile = recoveryFileLocation + "/recovery.json"
         joincmd = "join_mesh.py --mesh mapped -r {} -o result.vtk".format(tmprecoveryFile)
         diffcmd = "vtk_calculator.py --data error --diffdata \"{1}\" --diff --stats --mesh result.vtk --function \"{0}\" | tee diff.log".format(case["function"], mapped_data_name)
         post_content += [joincmd,diffcmd]

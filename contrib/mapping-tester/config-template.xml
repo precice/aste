@@ -10,7 +10,7 @@
   <solver-interface dimensions="3">
     
     <!-- Data fields that are exchanged between the solvers -->
-    <data:scalar name="Data" />
+    <data:scalar name="Data" gradient="on"/>
 
     <!-- A common mesh that uses these data fields -->
     <mesh name="MeshA">

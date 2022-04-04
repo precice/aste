@@ -29,7 +29,10 @@ def statsFromTimings(dir):
             stats["computeMappingTime"] = timings[computeMappingName]["Max"]
             stats["mapDataTime"] = timings[mapDataName]["Max"]
             stats["receiveDataTime"] = timings["advance/m2n.receiveData"]["Max"]
-            stats["receiveGradientDataTime"] = timings["advance/m2n.receiveGradientData"]["Max"]
+            gradientData = timings["advance/m2n.receiveGradientData"]["Max"]
+            if gradientData != 0 : 
+                stats["receiveDataTime"] +=  timings["advance/m2n.receiveGradientData"]["Max"]
+                print("Gradient data received")
         except:
             pass
     return stats

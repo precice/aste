@@ -1,22 +1,24 @@
 {
   "general": {
-    "function": "x^3",
+    "function": "(100*(y-x^2)^2+(x-1)^2)+(100*(z-y^2)^2+(y-1)^2)",
     "ranks": {
       "A": [
-        4
+        32
       ],
       "B": [
-        4
+        32
       ]
     },
-    "network": "ens192",
-    "syncmode": false,
+    "network": "eno1",
+    "syncmode": true,
     "meshes": {
       "A": {
         "0.03": "$ASTE_MESHES/0.03.vtk",
         "0.02": "$ASTE_MESHES/0.02.vtk",
         "0.01": "$ASTE_MESHES/0.01.vtk",
-        "0.008": "$ASTE_MESHES/0.008.vtk"
+        "0.008": "$ASTE_MESHES/0.008.vtk",
+        "0.006": "$ASTE_MESHES/0.006.vtk",
+        "0.004": "$ASTE_MESHES/0.004.vtk"
       },
       "B": {
         "0.009": "$ASTE_MESHES/0.009.vtk"
@@ -30,23 +32,25 @@
           "consistent"
         ],
         "cases": {
-          "np": {
-            "kind": "nearest-projection"
-          },
           "nn": {
             "kind": "nearest-neighbor"
           },
-          "nng": {
-            "kind": "nearest-neighbor-gradient"
-          }
+	  "np": {
+ 	    "kind": "nearest-projection"
+	  },
+	  "nng": {
+	    "kind": "nearest-neighbor-gradient"
+	  }
         }
       },
       "meshes": {
         "A": [
           "0.03",
           "0.02",
-	  "0.01",
-	  "0.008"
+          "0.01",
+          "0.008",
+          "0.006",
+          "0.004"
         ],
         "B": [
           "0.009"

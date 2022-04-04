@@ -1,0 +1,180 @@
+{
+  "general": {
+    "function": "0.78 + cos(10*(x+y+z))",
+    "ranks": {
+      "A": [
+        16
+      ],
+      "B": [
+        16
+      ]
+    },
+    "network": "eno1",
+    "syncmode": true,
+    "meshes": {
+      "A": {
+        "0.004": "$ASTE_MESHES/0.004.vtk",
+        "0.003": "$ASTE_MESHES/0.003.vtk",
+        "0.002": "$ASTE_MESHES/0.002.vtk",
+        "0.001": "$ASTE_MESHES/0.001.vtk",
+        "0.0007": "$ASTE_MESHES/0.0007.vtk",
+        "0.0005": "$ASTE_MESHES/0.0005.vtk"
+      },
+      "B": {
+        "0.0014": "$ASTE_MESHES/0.0014.vtk"
+      }
+    }
+  },
+  "groups": [
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "compact-tps-c2-n3-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.012\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          },
+          "compact-tps-c2-n10-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.04\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.004"
+        ],
+        "B": [
+          "0.0014"
+        ]
+      }
+    },
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "compact-tps-c2-n3-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.009000000000000001\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          },
+          "compact-tps-c2-n10-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.03\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.003"
+        ],
+        "B": [
+          "0.0014"
+        ]
+      }
+    },
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "compact-tps-c2-n3-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.006\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          },
+          "compact-tps-c2-n10-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.02\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.002"
+        ],
+        "B": [
+          "0.0014"
+        ]
+      }
+    },
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "compact-tps-c2-n3-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.003\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          },
+          "compact-tps-c2-n10-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.01\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.001"
+        ],
+        "B": [
+          "0.0014"
+        ]
+      }
+    },
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "compact-tps-c2-n3-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.0021\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          },
+          "compact-tps-c2-n10-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.007\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.0007"
+        ],
+        "B": [
+          "0.0014"
+        ]
+      }
+    },
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "compact-tps-c2-n3-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.0015\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          },
+          "compact-tps-c2-n10-separate": {
+            "kind": "rbf-compact-tps-c2",
+            "options": "support-radius=\"0.005\" polynomial=\"separate\" solver-rtol=\"1e-06\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.0005"
+        ],
+        "B": [
+          "0.0014"
+        ]
+      }
+    }
+  ]
+}
