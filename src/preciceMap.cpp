@@ -198,10 +198,7 @@ int main(int argc, char *argv[])
       assert(mesh.data.size() == vertexIDs.size() * dim);
       interface.writeBlockVectorData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.data.data());
 
-      //TODO: WRITE GRADIENT DATA IF NECESSARY
       if(withGradient) {
-        //interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.gradientdx.data(), mesh.gradientdy.data(), mesh.gradientdz.data());
-        //TODO: Maybe remove true
         interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.gradientData.data(), true);
       }
 
@@ -209,10 +206,7 @@ int main(int argc, char *argv[])
       assert(mesh.data.size() == vertexIDs.size());
       interface.writeBlockScalarData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.data.data());
 
-      //TODO: WRITE GRADIENT DATA IF NECESSARY
       if(withGradient) {
-        //interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.gradientdx.data(), mesh.gradientdy.data(), mesh.gradientdz.data());
-        //TODO: Maybe remove true
         interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), mesh.gradientData.data(), true);
       }
 
@@ -234,10 +228,7 @@ int main(int argc, char *argv[])
         assert(roundmesh.data.size() == vertexIDs.size() * dim);
         interface.writeBlockVectorData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.data.data());
 
-        //TODO: WRITE GRADIENT DATA IF NECESSARY
         if(withGradient) {
-          //interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.gradientdx.data(), roundmesh.gradientdy.data(), roundmesh.gradientdz.data());
-          //TODO: Maybe remove true
           interface.writeBlockVectorGradientData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.gradientData.data(), true);
         }
 
@@ -245,10 +236,7 @@ int main(int argc, char *argv[])
         assert(roundmesh.data.size() == vertexIDs.size());
         interface.writeBlockScalarData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.data.data());
 
-        //TODO: WRITE GRADIENT DATA IF NECESSARY
         if(withGradient) {
-          //interface.writeBlockScalarGradientData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.gradientdx.data(), roundmesh.gradientdy.data(), roundmesh.gradientdz.data());
-          //TODO: Maybe remove true
           interface.writeBlockScalarGradientData(dataID, vertexIDs.size(), vertexIDs.data(), roundmesh.gradientData.data(),true );
         }
 
