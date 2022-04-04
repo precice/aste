@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 import argparse
+import json
 import logging
 import os
-import json
-from partition_mesh import MeshPartitioner
-import vtk
 import os.path
+
+import vtk
 
 
 class MeshJoiner:
@@ -76,7 +76,7 @@ class MeshJoiner:
         """
         Reads meshes with given prefix.
         """
-        logger = MeshPartitioner.get_logger()
+        logger = MeshJoiner.get_logger()
         if not partitions:
             partitions = MeshJoiner.count_partitions(prefix)
             logger.info("Detected " + str(partitions) + " partitions with prefix " + prefix)
