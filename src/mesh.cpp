@@ -288,34 +288,19 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
 
       // Check multiple timesteps
       std::vector<MeshName> meshNames;
-      /*
       {
         auto initMeshName = std::string{_bname + ".init"};
         if (fs::is_regular_file(initMeshName + ext))
           meshNames.emplace_back(MeshName{initMeshName, ext, context});
       }
-      */
       for (int t = 1; true; ++t) {
         std::string stepMeshName = _bname + ".dt" + std::to_string(t);
         if (!fs::is_regular_file(stepMeshName + ext))
           break;
         meshNames.emplace_back(MeshName{stepMeshName, ext, context});
       }
-      for (int t = 1; true; ++t) {
-        std::string stepMeshName = _bname + ".it" + std::to_string(t);
-        if (!fs::is_regular_file(stepMeshName + ext))
-          break;
-        meshNames.emplace_back(MeshName{stepMeshName, ext, context});
-      }
-      /*
-      {
-        auto finalMeshName = std::string{_bname + ".final"};
-        if (fs::is_regular_file(finalMeshName + ext))
-          meshNames.emplace_back(MeshName{finalMeshName, ext, context});
-      }
-*/
       if (!meshNames.empty()) {
-        std::cerr << "Names: " << meshNames.size() << '\n';
+        std::cerr << "Total number of detected meshes: " << meshNames.size() << '\n';
         return meshNames;
       }
     }
@@ -327,36 +312,20 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
     if (fs::is_regular_file(rankMeshName + ext)) {
       return {MeshName{rankMeshName, ext, context}};
     }
-
     // Check multiple timesteps
     std::vector<MeshName> meshNames;
-    /*
     {
       auto initMeshName = std::string{_bname + ".init" + "_" + std::to_string(context.rank)};
       if (fs::is_regular_file(initMeshName + ext))
         meshNames.emplace_back(MeshName{initMeshName, ext, context});
     }
-    */
     for (int t = 1; true; ++t) {
       std::string rankMeshName{_bname + ".dt" + std::to_string(t) + "_" + std::to_string(context.rank)};
       if (!fs::is_regular_file(rankMeshName + ext))
         break;
       meshNames.emplace_back(rankMeshName, ext, context);
     }
-    for (int t = 1; true; ++t) {
-      std::string rankMeshName{_bname + ".it" + std::to_string(t) + "_" + std::to_string(context.rank)};
-      if (!fs::is_regular_file(rankMeshName + ext))
-        break;
-      meshNames.emplace_back(rankMeshName, ext, context);
-    }
-    /*
-    {
-      auto finalMeshName = std::string{_bname + ".final" + "_" + std::to_string(context.rank)};
-      if (fs::is_regular_file(finalMeshName + ext))
-        meshNames.emplace_back(MeshName{finalMeshName, ext, context});
-    }
-    */
-    std::cerr << "Names: " << meshNames.size() << '\n';
+    std::cerr << "Total number of detected meshes: " << meshNames.size() << '\n';
     return meshNames;
   }
   throw std::runtime_error("Unable to handle basename " + _bname + " no meshes found");
