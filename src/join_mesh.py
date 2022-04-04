@@ -76,7 +76,7 @@ class MeshJoiner:
         """
         Reads meshes with given prefix.
         """
-        logger = MeshPartitioner.get_logger()
+        logger = MeshJoiner.get_logger()
         if not partitions:
             partitions = MeshJoiner.count_partitions(prefix)
             logger.info("Detected " + str(partitions) + " partitions with prefix " + prefix)
