@@ -91,38 +91,38 @@ def caseToSortable(case):
 
 def createMasterRunScripts(casemap, dir):
     common = ["#!/bin/bash",
-              "",
-              'cd "$( dirname "${BASH_SOURCE[0]}" )"',
-              "RUNNER=/bin/bash",
-              ""]
+               "",
+               'cd "$( dirname "${BASH_SOURCE[0]}" )"',
+               "RUNNER=/bin/bash",
+               ""]
 
     # Generate master runner script
     content = common + [
-        "${RUNNER} " + os.path.join(case, "runall.sh")
-        for case in casemap.keys()
-    ]
+                   "${RUNNER} " + os.path.join(case, "runall.sh")
+                   for case in casemap.keys()
+               ]
     open(os.path.join(dir, "runall.sh"),"w").writelines([ line + "\n" for line in content ])
 
     # Generate master postprocessing script
     post = common + [
-        "${RUNNER} " + os.path.join(case, "postprocessall.sh")
-        for case in casemap.keys()
-    ]
+                   "${RUNNER} " + os.path.join(case, "postprocessall.sh")
+                   for case in casemap.keys()
+               ]
     open(os.path.join(dir, "postprocessall.sh"),"w").writelines([ line + "\n" for line in post ])
 
     for case, instances in casemap.items():
         # Generate master runner script
         content = common + [
-            "${RUNNER} " + os.path.join(*instance, "run-wrapper.sh")
-            for instance in instances
-        ]
+                       "${RUNNER} " + os.path.join(*instance, "run-wrapper.sh")
+                       for instance in instances
+                   ]
         open(os.path.join(dir, case, "runall.sh"),"w").writelines([ line + "\n" for line in content ])
 
         # Generate master postprocessing script
         post = common + [
-            "${RUNNER} " + os.path.join(*instance, "post.sh")
-            for instance in instances
-        ]
+                       "${RUNNER} " + os.path.join(*instance, "post.sh")
+                       for instance in instances
+                   ]
         open(os.path.join(dir, case, "postprocessall.sh"),"w").writelines([ line + "\n" for line in post ])
 
 
@@ -131,7 +131,7 @@ def createRunScript(outdir, path, case):
     amesh = case["A"]["mesh"]["name"]
     aranks = case["A"]["ranks"]
     amapping = case["mapping"]["name"]
-    ameshLocation = os.path.relpath(os.path.join(outdir, "../nng-mapping-tester/meshes", amesh, str(aranks), amesh), path)
+    ameshLocation = os.path.relpath(os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path)
 
     # Generate runner script
     if amapping == "nng":
@@ -143,7 +143,7 @@ def createRunScript(outdir, path, case):
 
     bmesh = case["B"]["mesh"]["name"]
     branks = case["B"]["ranks"]
-    bmeshLocation = os.path.relpath(os.path.join(outdir, "../nng-mapping-tester/meshes", bmesh, str(branks), bmesh), path)
+    bmeshLocation = os.path.relpath(os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path)
     mapped_data_name = case["function"] + "(mapped)"
     bcmd = "/usr/bin/time -f %M -a -o memory-B.log preciceMap -v -p B --data \"{}\" --mesh {} --output mapped || kill 0 &".format(mapped_data_name, bmeshLocation)
     if branks > 1: bcmd = "mpirun -n {} $ASTE_B_MPIARGS {}".format(branks, bcmd)

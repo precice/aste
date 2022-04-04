@@ -2,16 +2,19 @@
 
 <precice-configuration {% if syncmode %} sync-mode="1" {% endif %} >
 
-<log enabled="true">
-<sink type="stream" output="stdout" filter="%Severity% > debug" format='%TimeStamp(format="%H:%M:%S.%f")%|%Participant%|%Rank%|%Module%|l%Line%|%Function%|%Severity%%Message%' enabled="true" />
-<sink type="file" output="debug.log" filter="" format='%TimeStamp(format="%H:%M:%S.%f")%|%Participant%|%Rank%|%Module%|l%Line%|%Function%|%Severity%%Message%' enabled="true"/>
-</log>
-
-<solver-interface dimensions="3">
-
-<!-- Data fields that are exchanged between the solvers -->
-<data:scalar name="Data"/>
-
+  <log enabled="true">
+    <sink type="stream" output="stdout" filter="%Severity% > debug" format='%TimeStamp(format="%H:%M:%S.%f")%|%Participant%|%Rank%|%Module%|l%Line%|%Function%|%Severity%%Message%' enabled="true" />
+    <sink type="file" output="debug.log" filter="" format='%TimeStamp(format="%H:%M:%S.%f")%|%Participant%|%Rank%|%Module%|l%Line%|%Function%|%Severity%%Message%' enabled="true"/>
+  </log>
+  
+  <solver-interface dimensions="3">
+    
+    <!-- Data fields that are exchanged between the solvers -->
+	  {% if mapping.kind  == "nearest-neighbor-gradient" %}
+	  <data:scalar name="Data" gradient="on"/>
+	  {% else %}
+	  <data:scalar name="Data" />
+	  {% endif %}
 
     <!-- A common mesh that uses these data fields -->
     <mesh name="MeshA">

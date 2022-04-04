@@ -1,0 +1,53 @@
+{
+  "general": {
+    "function": "0.78 + cos(10*(x+y+z))",
+    "ranks": {
+      "A": [
+        8
+      ],
+      "B": [
+        8
+      ]
+    },
+    "network": "eno1",
+    "syncmode": false,
+    "meshes": {
+      "A": {
+        "0.01": "$ASTE_MESHES/0.01.vtk",
+        "0.008": "$ASTE_MESHES/0.008.vtk"
+      },
+      "B": {
+        "0.009": "$ASTE_MESHES/0.009.vtk"
+      }
+    }
+  },
+  "groups": [
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "np": {
+            "kind": "nearest-projection"
+          },
+          "nn": {
+            "kind": "nearest-neighbor"
+          },
+          "nng": {
+            "kind": "nearest-neighbor-gradient"
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+	  "0.01",
+	  "0.008"
+        ],
+        "B": [
+          "0.009"
+        ]
+      }
+    }
+  ]
+}

@@ -57,7 +57,7 @@ def preparePartMesh(meshdir, name, p, force=False):
     os.makedirs(partDir, exist_ok=True)
     [pathName, tmpfilename] = os.path.split(os.path.normpath(partMesh))
     subprocess.run(["partition_mesh.py", "--mesh", mainMesh, "--algorithm", "meshfree", "-o", partMesh, "--directory", pathName, "-n", str(p)])
-
+    
 
 
 def main(argv):
@@ -66,7 +66,7 @@ def main(argv):
     outdir = os.path.normpath(args.outdir)
     if (os.path.isdir(outdir)):
         print('Warning: outdir "{}" already exisits.'.format(outdir))
-    meshdir = os.path.join(outdir, "../nng-mapping-tester/meshes")
+    meshdir = os.path.join(outdir, "meshes")
     function =  setup["general"]["function"]
 
     partitions = set([int(rank) for pranks in setup["general"]["ranks"].values() for rank in pranks])

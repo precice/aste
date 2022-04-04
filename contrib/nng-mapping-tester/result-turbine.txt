@@ -1,0 +1,1656 @@
+==========
+= compact-tps-c2-n3-separate (consistent) 0.004 - 0.0014
+==========
+20:12:59.728456|B|0|impl::SolverInterfaceImpl|l169|configure|This is preCICE version 2.3.0
+20:12:59.728562|B|0|impl::SolverInterfaceImpl|l170|configure|Revision info: v2.3.0-21-gdd7c2abe-dirty
+20:12:59.728456|A|0|impl::SolverInterfaceImpl|l169|configure|This is preCICE version 2.3.0
+20:12:59.728608|B|0|impl::SolverInterfaceImpl|l171|configure|Build type: Release (without debug log)
+20:12:59.728662|B|0|impl::SolverInterfaceImpl|l189|configure|Configuring preCICE with configuration "precice-config.xml"
+20:12:59.728677|A|0|impl::SolverInterfaceImpl|l170|configure|Revision info: v2.3.0-21-gdd7c2abe-dirty
+20:12:59.728701|B|0|impl::SolverInterfaceImpl|l190|configure|I am participant "B"
+20:12:59.728784|A|0|impl::SolverInterfaceImpl|l171|configure|Build type: Release (without debug log)
+20:12:59.728811|B|0|com::Communication|l28|connectMasterSlaves|Connecting Master to 3 Slaves
+20:12:59.728861|A|0|impl::SolverInterfaceImpl|l189|configure|Configuring preCICE with configuration "precice-config.xml"
+20:12:59.728837|B|1|com::Communication|l34|connectMasterSlaves|Connecting Slave #0 to Master
+20:12:59.728837|B|2|com::Communication|l34|connectMasterSlaves|Connecting Slave #1 to Master
+20:12:59.728836|B|3|com::Communication|l34|connectMasterSlaves|Connecting Slave #2 to Master
+20:12:59.728947|A|0|impl::SolverInterfaceImpl|l190|configure|I am participant "A"
+20:12:59.729063|A|0|com::Communication|l28|connectMasterSlaves|Connecting Master to 3 Slaves
+20:12:59.729090|A|2|com::Communication|l34|connectMasterSlaves|Connecting Slave #1 to Master
+20:12:59.729093|A|3|com::Communication|l34|connectMasterSlaves|Connecting Slave #2 to Master
+20:12:59.729094|A|1|com::Communication|l34|connectMasterSlaves|Connecting Slave #0 to Master
+2022-03-31 20:12:59,729 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_2.vtu
+2022-03-31 20:12:59,729 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_3.vtu
+2022-03-31 20:12:59,729 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_1.vtu
+2022-03-31 20:12:59,729 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_0.vtu
+2022-03-31 20:12:59,729 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.004/4/0.004_2.vtu
+2022-03-31 20:12:59,729 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.004/4/0.004_1.vtu
+2022-03-31 20:12:59,729 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.004/4/0.004_0.vtu
+2022-03-31 20:12:59,729 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.004/4/0.004_3.vtu
+2022-03-31 20:12:59,781 VERBOSE-1 [default] The mesh contains: 4260 Vertices, 4260 Data Points, 195 Edges, 8455 Triangles 0 Quadrilaterals 
+2022-03-31 20:12:59,781 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:12:59,781 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:12:59,781 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:12:59,782 VERBOSE-1 [default] The mesh contains: 5676 Vertices, 5676 Data Points, 130 Edges, 11187 Triangles 0 Quadrilaterals 
+2022-03-31 20:12:59,782 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:12:59,782 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:12:59,782 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:12:59,782 VERBOSE-1 [default] The mesh contains: 4922 Vertices, 4922 Data Points, 239 Edges, 9745 Triangles 0 Quadrilaterals 
+2022-03-31 20:12:59,782 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:12:59,783 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:12:59,783 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:12:59,783 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:12:59,784 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:12:59,784 VERBOSE-1 [default] The mesh contains: 6425 Vertices, 6425 Data Points, 206 Edges, 12658 Triangles 0 Quadrilaterals 
+2022-03-31 20:12:59,784 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:12:59,784 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:12:59,785 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:12:59,785 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:12:59,785 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:12:59,785 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:12:59,786 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:12:59,786 VERBOSE-1 [default] Mesh Setup Took 4ms (0ms for vertices, 4ms for connectivity)
+2022-03-31 20:12:59,786 VERBOSE-1 [default] Mesh setup completed on Rank 3
+2022-03-31 20:12:59,786 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:12:59,788 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:12:59,788 VERBOSE-1 [default] Mesh Setup Took 6ms (0ms for vertices, 5ms for connectivity)
+2022-03-31 20:12:59,788 VERBOSE-1 [default] Mesh setup completed on Rank 2
+2022-03-31 20:12:59,788 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:12:59,789 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:12:59,789 VERBOSE-1 [default] Mesh Setup Took 6ms (0ms for vertices, 6ms for connectivity)
+2022-03-31 20:12:59,789 VERBOSE-1 [default] Mesh setup completed on Rank 1
+2022-03-31 20:12:59,789 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:12:59,793 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:12:59,793 VERBOSE-1 [default] Mesh Setup Took 9ms (0ms for vertices, 8ms for connectivity)
+2022-03-31 20:12:59,793 VERBOSE-1 [default] Mesh setup completed on Rank 0
+20:12:59.793799|A|2|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:12:59.793800|A|1|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:12:59.793798|A|0|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:12:59.793801|A|3|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+2022-03-31 20:12:59,838 VERBOSE-1 [default] The mesh contains: 37200 Vertices, 37200 Data Points, 659 Edges, 74136 Triangles 0 Quadrilaterals 
+2022-03-31 20:12:59,838 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:12:59,839 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:12:59,839 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+2022-03-31 20:12:59,843 VERBOSE-1 [default] The mesh contains: 37040 Vertices, 37040 Data Points, 578 Edges, 73894 Triangles 0 Quadrilaterals 
+2022-03-31 20:12:59,843 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:12:59,845 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:12:59,845 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+2022-03-31 20:12:59,863 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:12:59,869 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:12:59,870 VERBOSE-1 [default] The mesh contains: 50856 Vertices, 50856 Data Points, 577 Edges, 101184 Triangles 0 Quadrilaterals 
+2022-03-31 20:12:59,870 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:12:59,870 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:12:59,873 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:12:59,873 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:12:59,875 VERBOSE-1 [default] The mesh contains: 47707 Vertices, 47707 Data Points, 379 Edges, 94957 Triangles 0 Quadrilaterals 
+2022-03-31 20:12:59,875 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:12:59,875 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:12:59,877 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:12:59,877 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:12:59,895 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:12:59,895 VERBOSE-1 [default] Mesh Setup Took 56ms (1ms for vertices, 55ms for connectivity)
+2022-03-31 20:12:59,895 VERBOSE-1 [default] Mesh setup completed on Rank 3
+2022-03-31 20:12:59,902 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:12:59,902 VERBOSE-1 [default] Mesh Setup Took 58ms (2ms for vertices, 56ms for connectivity)
+2022-03-31 20:12:59,902 VERBOSE-1 [default] Mesh setup completed on Rank 0
+2022-03-31 20:12:59,907 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:12:59,910 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:12:59,915 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:12:59,917 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:12:59,950 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:12:59,950 VERBOSE-1 [default] Mesh Setup Took 80ms (2ms for vertices, 77ms for connectivity)
+2022-03-31 20:12:59,950 VERBOSE-1 [default] Mesh setup completed on Rank 2
+2022-03-31 20:12:59,952 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:12:59,952 VERBOSE-1 [default] Mesh Setup Took 77ms (2ms for vertices, 74ms for connectivity)
+2022-03-31 20:12:59,952 VERBOSE-1 [default] Mesh setup completed on Rank 1
+20:12:59.952196|B|3|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:12:59.952195|B|2|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:12:59.952195|B|0|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:12:59.952196|B|1|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:12:59.972895|A|0|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:12:59.972897|A|1|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:12:59.972897|A|2|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:12:59.972899|A|3|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:12:59.972982|A|1|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:12:59.973006|A|1|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:12:59.973002|A|3|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:12:59.973033|A|3|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:12:59.973013|A|2|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:12:59.973045|A|2|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:12:59.973086|A|0|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:12:59.973111|A|0|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:12:59.973436|A|3|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:12:59.973436|A|2|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:12:59.973435|A|1|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:12:59.973779|B|0|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:12:59.973781|B|3|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:12:59.973781|B|2|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:12:59.973781|B|1|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:12:59.974145|A|0|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:12:59.974819|A|1|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:12:59.974819|A|3|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:12:59.974819|A|2|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:12:59.974818|A|0|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:12:59.975595|A|2|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:12:59.975594|A|1|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:12:59.975596|A|3|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:12:59.975688|A|0|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:12:59.985308|B|1|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:12:59.985305|B|2|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:12:59.985305|B|0|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:12:59.985305|B|3|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:12:59.985392|B|2|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:12:59.985395|B|0|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:12:59.985383|B|3|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:12:59.985422|B|1|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:12:59.986274|B|3|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:12:59.986275|B|0|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:12:59.986274|B|2|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:12:59.986273|B|1|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:12:59.987193|B|0|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:12:59.987193|B|1|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:12:59.987193|B|2|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:12:59.987193|B|3|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:12:59.993224|B|1|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:12:59.993241|B|3|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:12:59.993245|B|0|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:12:59.993278|B|2|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:12:59.994241|B|1|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:12:59.994594|B|0|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:12:59.994730|B|3|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:12:59.995088|B|2|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:12:59.995281|B|1|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:12:59.995301|B|0|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:12:59.995313|B|3|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:12:59.995338|B|2|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:00.039203|A|1|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:00.039203|A|0|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:00.039204|A|3|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:00.039203|A|2|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:00.039790|A|3|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:00.039794|A|1|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:00.039787|A|2|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:00.039786|A|0|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:00.039900|A|2|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:00.039900|A|1|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:00.039900|A|3|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:00.039899|A|0|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+2022-03-31 20:13:00,039 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.004/4/0.004_1.vtu
+2022-03-31 20:13:00,039 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.004/4/0.004_0.vtu
+2022-03-31 20:13:00,039 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.004/4/0.004_2.vtu
+2022-03-31 20:13:00,039 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.004/4/0.004_3.vtu
+20:13:00.040701|B|3|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:00.040700|B|1|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:00.040701|B|2|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:00.040700|B|0|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:00.040761|B|2|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:00.040763|B|1|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:00.040760|B|3|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+2022-03-31 20:13:00,049 VERBOSE-1 [default] This roundmesh contains: 4260 Vertices, 4260 Data Points, 195 Edges, 8455 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:00,049 VERBOSE-1 [default] Data written: 0.326745, 0.277649, 0.265374, 0.547907, 0.305518, 0.260854, 0.291878, 0.31884, 0.346234, 0.374035 ...
+20:13:00.050579|B|0|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:00.050706|B|3|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:00.050705|B|2|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:00.050707|B|1|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:00.050705|B|0|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+2022-03-31 20:13:00,053 VERBOSE-1 [default] This roundmesh contains: 4922 Vertices, 4922 Data Points, 239 Edges, 9745 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:00,053 VERBOSE-1 [default] Data written: 1.67552, 0.97918, 0.97918, 0.975949, 0.129255, 1.65637, 1.63408, 1.60853, 1.57966, 1.54749 ...
+2022-03-31 20:13:00,053 VERBOSE-1 [default] This roundmesh contains: 6425 Vertices, 6425 Data Points, 206 Edges, 12658 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:00,053 VERBOSE-1 [default] Data written: -0.218489, -0.218715, -0.218915, 0.846651, -0.178568, -0.218605, -0.219863, -0.219999, -0.219998, -0.219816 ...
+2022-03-31 20:13:00,054 VERBOSE-1 [default] This roundmesh contains: 5676 Vertices, 5676 Data Points, 130 Edges, 11187 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:00,054 VERBOSE-1 [default] Data written: 1.69924, 1.71149, 1.72276, 1.73305, 1.74234, 1.75063, 1.7579, 1.76415, 1.76937, 1.77355 ...
+20:13:00.054934|A|0|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:00.054933|A|1|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:00.054933|A|3|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:00.054932|A|2|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:00.054974|A|3|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:00.054976|A|0|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:00.054971|A|1|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:00.054972|A|2|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:00.055016|A|1|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:00.055016|A|3|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:00.055015|A|0|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:00.055017|A|2|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:00.057385|B|2|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:00.057384|B|0|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:00.057384|B|1|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:00.057385|B|3|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:00.057418|B|3|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:00.057415|B|0|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:00.057414|B|1|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:00.057418|B|2|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:00.127478|B|2|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:00.129426|B|1|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:00.129419|B|0|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:00.129446|B|3|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:00.390684|B|0|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:00.390684|B|1|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:00.390684|B|2|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:00.390684|B|3|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:03.098833|B|1|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 18 of 10000 iterations due to sufficient relative convergence. Last residual norm: 3.30044e-05, limits: relative 0.000145887 (rtol 1e-06), absolute 1e-50, divergence 1.45887e+32(dtol 1e+30)
+20:13:03.098833|B|3|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 18 of 10000 iterations due to sufficient relative convergence. Last residual norm: 3.30044e-05, limits: relative 0.000145887 (rtol 1e-06), absolute 1e-50, divergence 1.45887e+32(dtol 1e+30)
+20:13:03.098833|B|2|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 18 of 10000 iterations due to sufficient relative convergence. Last residual norm: 3.30044e-05, limits: relative 0.000145887 (rtol 1e-06), absolute 1e-50, divergence 1.45887e+32(dtol 1e+30)
+20:13:03.098833|B|0|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 18 of 10000 iterations due to sufficient relative convergence. Last residual norm: 3.30044e-05, limits: relative 0.000145887 (rtol 1e-06), absolute 1e-50, divergence 1.45887e+32(dtol 1e+30)
+20:13:03.117478|B|3|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:03.117478|B|2|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:03.117478|B|1|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:03.117478|B|0|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:03.203356|B|1|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:03.203356|B|3|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:03.203356|B|2|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:03.203356|B|0|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+2022-03-31 20:13:03,203 VERBOSE-1 [default] Data read: -0.218489, -0.218715, -0.218915, 0.846651, -0.178568, -0.218605, -0.219206, -0.219549, -0.219917, -0.219939 ...
+2022-03-31 20:13:03,203 VERBOSE-1 [default] Data read: 1.62527, 1.63159, 1.63777, 1.64233, 1.64717, 1.65378, 1.65958, 1.66513, 1.67044, 1.67465 ...
+2022-03-31 20:13:03,203 VERBOSE-1 [default] Data read: 1.67552, 0.97918, 0.97918, 0.975949, 0.129255, 1.66833, 1.66185, 1.65505, 1.64662, 1.63912 ...
+2022-03-31 20:13:03,203 VERBOSE-1 [default] Data read: 0.326745, 0.277649, 0.265374, 0.547907, 0.317744, 0.305518, 0.290867, 0.267347, 0.260854, 0.260491 ...
+20:13:03.204087|B|3|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:03.204086|B|2|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:03.204087|B|1|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:03.204087|B|0|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+2022-03-31 20:13:04,216 VERBOSE-1 [default] Writing results to "mapped_1.vtu"
+2022-03-31 20:13:04,216 VERBOSE-1 [default] Writing results to "mapped_3.vtu"
+2022-03-31 20:13:04,216 VERBOSE-1 [default] Writing results to "mapped_2.vtu"
+2022-03-31 20:13:04,216 VERBOSE-1 [default] Writing results to "mapped_0.vtu"
+==========
+= compact-tps-c2-n3-separate (consistent) 0.003 - 0.0014
+==========
+20:13:05.539847|B|0|impl::SolverInterfaceImpl|l169|configure|This is preCICE version 2.3.0
+20:13:05.539984|B|0|impl::SolverInterfaceImpl|l170|configure|Revision info: v2.3.0-21-gdd7c2abe-dirty
+20:13:05.540009|B|0|impl::SolverInterfaceImpl|l171|configure|Build type: Release (without debug log)
+20:13:05.540026|B|0|impl::SolverInterfaceImpl|l189|configure|Configuring preCICE with configuration "precice-config.xml"
+20:13:05.540042|B|0|impl::SolverInterfaceImpl|l190|configure|I am participant "B"
+20:13:05.540124|B|0|com::Communication|l28|connectMasterSlaves|Connecting Master to 3 Slaves
+20:13:05.540156|B|1|com::Communication|l34|connectMasterSlaves|Connecting Slave #0 to Master
+20:13:05.540152|B|2|com::Communication|l34|connectMasterSlaves|Connecting Slave #1 to Master
+20:13:05.540155|B|3|com::Communication|l34|connectMasterSlaves|Connecting Slave #2 to Master
+2022-03-31 20:13:05,540 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_2.vtu
+2022-03-31 20:13:05,540 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_3.vtu
+2022-03-31 20:13:05,540 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_0.vtu
+2022-03-31 20:13:05,540 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_1.vtu
+20:13:05.550750|A|0|impl::SolverInterfaceImpl|l169|configure|This is preCICE version 2.3.0
+20:13:05.550855|A|0|impl::SolverInterfaceImpl|l170|configure|Revision info: v2.3.0-21-gdd7c2abe-dirty
+20:13:05.550876|A|0|impl::SolverInterfaceImpl|l171|configure|Build type: Release (without debug log)
+20:13:05.550891|A|0|impl::SolverInterfaceImpl|l189|configure|Configuring preCICE with configuration "precice-config.xml"
+20:13:05.550905|A|0|impl::SolverInterfaceImpl|l190|configure|I am participant "A"
+20:13:05.550970|A|0|com::Communication|l28|connectMasterSlaves|Connecting Master to 3 Slaves
+20:13:05.551004|A|1|com::Communication|l34|connectMasterSlaves|Connecting Slave #0 to Master
+20:13:05.551008|A|2|com::Communication|l34|connectMasterSlaves|Connecting Slave #1 to Master
+20:13:05.551032|A|3|com::Communication|l34|connectMasterSlaves|Connecting Slave #2 to Master
+2022-03-31 20:13:05,551 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.003/4/0.003_0.vtu
+2022-03-31 20:13:05,551 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.003/4/0.003_1.vtu
+2022-03-31 20:13:05,551 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.003/4/0.003_2.vtu
+2022-03-31 20:13:05,551 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.003/4/0.003_3.vtu
+2022-03-31 20:13:05,572 VERBOSE-1 [default] The mesh contains: 10046 Vertices, 10046 Data Points, 174 Edges, 19884 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:05,572 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:05,572 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:05,572 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+2022-03-31 20:13:05,578 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:05,580 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:05,586 VERBOSE-1 [default] The mesh contains: 9080 Vertices, 9080 Data Points, 323 Edges, 18020 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:05,586 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:05,586 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:05,586 VERBOSE-1 [default] Mesh Setup Took 14ms (0ms for vertices, 14ms for connectivity)
+2022-03-31 20:13:05,586 VERBOSE-1 [default] Mesh setup completed on Rank 3
+2022-03-31 20:13:05,587 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:05,587 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:05,588 VERBOSE-1 [default] The mesh contains: 11549 Vertices, 11549 Data Points, 277 Edges, 22845 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:05,588 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:05,589 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:05,589 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+2022-03-31 20:13:05,592 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:05,593 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:05,595 VERBOSE-1 [default] The mesh contains: 7437 Vertices, 7437 Data Points, 257 Edges, 14783 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:05,595 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:05,596 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:05,596 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:05,596 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:05,598 VERBOSE-1 [default] The mesh contains: 37040 Vertices, 37040 Data Points, 578 Edges, 73894 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:05,598 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:05,598 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:05,599 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:05,599 VERBOSE-1 [default] Mesh Setup Took 12ms (0ms for vertices, 12ms for connectivity)
+2022-03-31 20:13:05,599 VERBOSE-1 [default] Mesh setup completed on Rank 1
+2022-03-31 20:13:05,600 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:05,600 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:05,600 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:05,602 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+2022-03-31 20:13:05,605 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:05,605 VERBOSE-1 [default] Mesh Setup Took 16ms (0ms for vertices, 15ms for connectivity)
+2022-03-31 20:13:05,605 VERBOSE-1 [default] Mesh setup completed on Rank 0
+2022-03-31 20:13:05,607 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:05,607 VERBOSE-1 [default] Mesh Setup Took 11ms (0ms for vertices, 10ms for connectivity)
+2022-03-31 20:13:05,607 VERBOSE-1 [default] Mesh setup completed on Rank 2
+20:13:05.607250|A|3|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:05.607250|A|2|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:05.607248|A|0|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:05.607252|A|1|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+2022-03-31 20:13:05,613 VERBOSE-1 [default] The mesh contains: 37200 Vertices, 37200 Data Points, 659 Edges, 74136 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:05,613 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:05,615 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:05,615 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:05,619 VERBOSE-1 [default] The mesh contains: 47707 Vertices, 47707 Data Points, 379 Edges, 94957 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:05,619 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:05,622 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:05,622 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:05,624 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:05,630 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:05,633 VERBOSE-1 [default] The mesh contains: 50856 Vertices, 50856 Data Points, 577 Edges, 101184 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:05,633 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:05,636 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:05,636 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:05,639 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:05,644 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:05,655 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:05,656 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:05,656 VERBOSE-1 [default] Mesh Setup Took 58ms (2ms for vertices, 56ms for connectivity)
+2022-03-31 20:13:05,656 VERBOSE-1 [default] Mesh setup completed on Rank 0
+2022-03-31 20:13:05,662 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:05,670 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:05,670 VERBOSE-1 [default] Mesh Setup Took 56ms (2ms for vertices, 54ms for connectivity)
+2022-03-31 20:13:05,670 VERBOSE-1 [default] Mesh setup completed on Rank 3
+2022-03-31 20:13:05,670 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:05,678 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:05,696 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:05,696 VERBOSE-1 [default] Mesh Setup Took 77ms (2ms for vertices, 74ms for connectivity)
+2022-03-31 20:13:05,697 VERBOSE-1 [default] Mesh setup completed on Rank 1
+2022-03-31 20:13:05,713 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:05,713 VERBOSE-1 [default] Mesh Setup Took 79ms (2ms for vertices, 77ms for connectivity)
+2022-03-31 20:13:05,713 VERBOSE-1 [default] Mesh setup completed on Rank 2
+20:13:05.713601|B|3|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:05.713600|B|0|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:05.713601|B|1|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:05.713601|B|2|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:05.757465|A|2|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:05.757462|A|0|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:05.757463|A|3|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:05.757463|A|1|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:05.757564|A|1|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:05.757585|A|1|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:05.757596|A|2|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:05.757618|A|2|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:05.757647|A|3|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:05.757650|A|0|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:05.757675|A|3|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:05.757674|A|0|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:05.758060|A|1|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:05.758062|A|3|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:05.758061|A|2|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:05.758385|B|3|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:05.758384|B|0|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:05.758385|B|2|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:05.758385|B|1|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:05.759230|B|3|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:05.759227|B|1|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:05.759230|B|2|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:05.759227|B|0|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:05.759258|B|2|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:05.759258|B|3|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:05.759254|B|1|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:05.759275|B|0|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:05.759392|A|0|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:05.760625|A|3|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:05.760626|A|2|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:05.760624|A|1|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:05.760623|A|0|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:05.761944|A|1|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:05.761944|A|3|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:05.761942|A|2|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:05.762202|A|0|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:05.762959|B|3|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:05.762960|B|1|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:05.762957|B|2|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:05.762962|B|0|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:05.763941|B|2|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:05.763941|B|3|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:05.763940|B|1|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:05.763940|B|0|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:05.775959|B|0|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:05.775997|B|3|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:05.776076|B|1|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:05.776095|B|2|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:05.778430|B|0|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:05.778616|B|3|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:05.779118|B|1|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:05.779310|B|2|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:05.779667|B|0|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:05.779687|B|3|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:05.779722|B|1|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:05.779729|B|2|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:05.896631|A|2|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:05.896631|A|1|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:05.896632|A|3|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:05.896630|A|0|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:05.896701|A|3|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:05.896701|A|1|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:05.896702|A|0|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:05.896770|A|2|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:05.896842|A|3|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:05.896843|A|2|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:05.896842|A|1|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:05.896843|A|0|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+2022-03-31 20:13:05,896 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.003/4/0.003_1.vtu
+2022-03-31 20:13:05,896 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.003/4/0.003_3.vtu
+2022-03-31 20:13:05,896 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.003/4/0.003_0.vtu
+2022-03-31 20:13:05,896 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.003/4/0.003_2.vtu
+20:13:05.897441|B|1|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:05.897440|B|0|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:05.897440|B|3|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:05.897441|B|2|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:05.897498|B|2|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:05.897505|B|3|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:05.897505|B|1|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:05.907610|B|0|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:05.907686|B|2|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:05.907685|B|3|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:05.907685|B|1|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:05.907684|B|0|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+2022-03-31 20:13:05,913 VERBOSE-1 [default] This roundmesh contains: 7437 Vertices, 7437 Data Points, 257 Edges, 14783 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:05,914 VERBOSE-1 [default] Data written: 0.326745, 0.277649, 0.265374, 0.547907, 0.305518, 0.260854, 0.284258, 0.303378, 0.322727, 0.342295 ...
+2022-03-31 20:13:05,914 VERBOSE-1 [default] This roundmesh contains: 10046 Vertices, 10046 Data Points, 174 Edges, 19884 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:05,914 VERBOSE-1 [default] Data written: 1.71385, 1.72224, 1.73007, 1.73735, 1.74407, 1.75022, 1.7558, 1.76081, 1.76524, 1.7691 ...
+2022-03-31 20:13:05,915 VERBOSE-1 [default] This roundmesh contains: 9080 Vertices, 9080 Data Points, 323 Edges, 18020 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:05,915 VERBOSE-1 [default] Data written: 1.67552, 0.97918, 0.97918, 0.975949, 0.129255, 1.66144, 1.64562, 1.628, 1.60853, 1.58719 ...
+2022-03-31 20:13:05,920 VERBOSE-1 [default] This roundmesh contains: 11549 Vertices, 11549 Data Points, 277 Edges, 22845 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:05,920 VERBOSE-1 [default] Data written: -0.218489, -0.218715, -0.218915, 0.846651, -0.178568, -0.218605, -0.219719, -0.219968, -0.22, -0.22 ...
+20:13:05.921300|A|1|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:05.921300|A|2|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:05.921300|A|3|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:05.921301|A|0|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:05.921346|A|3|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:05.921340|A|2|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:05.921345|A|0|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:05.921407|A|1|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:05.921469|A|2|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:05.921470|A|0|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:05.921472|A|3|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:05.921471|A|1|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:05.925372|B|1|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:05.925366|B|2|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:05.925367|B|3|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:05.925367|B|0|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:05.925401|B|0|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:05.925401|B|3|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:05.925399|B|2|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:05.925467|B|1|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:05.940218|B|2|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:05.944713|B|1|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:05.945455|B|3|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:05.945453|B|0|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:06.367693|B|3|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:06.367692|B|2|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:06.367696|B|1|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:06.367692|B|0|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:08.964836|B|3|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 16 of 10000 iterations due to sufficient relative convergence. Last residual norm: 4.01082e-05, limits: relative 0.000195223 (rtol 1e-06), absolute 1e-50, divergence 1.95223e+32(dtol 1e+30)
+20:13:08.964835|B|2|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 16 of 10000 iterations due to sufficient relative convergence. Last residual norm: 4.01082e-05, limits: relative 0.000195223 (rtol 1e-06), absolute 1e-50, divergence 1.95223e+32(dtol 1e+30)
+20:13:08.964835|B|0|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 16 of 10000 iterations due to sufficient relative convergence. Last residual norm: 4.01082e-05, limits: relative 0.000195223 (rtol 1e-06), absolute 1e-50, divergence 1.95223e+32(dtol 1e+30)
+20:13:08.964836|B|1|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 16 of 10000 iterations due to sufficient relative convergence. Last residual norm: 4.01082e-05, limits: relative 0.000195223 (rtol 1e-06), absolute 1e-50, divergence 1.95223e+32(dtol 1e+30)
+20:13:08.982983|B|0|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:08.982981|B|2|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:08.982984|B|3|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:08.982982|B|1|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:09.100951|B|3|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:09.100951|B|0|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:09.100950|B|2|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:09.100950|B|1|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+2022-03-31 20:13:09,101 VERBOSE-1 [default] Data read: -0.218489, -0.218715, -0.218915, 0.846651, -0.178568, -0.218605, -0.219311, -0.219719, -0.219867, -0.219968 ...
+2022-03-31 20:13:09,101 VERBOSE-1 [default] Data read: 0.326745, 0.277649, 0.265374, 0.547907, 0.316412, 0.305518, 0.290764, 0.267293, 0.260854, 0.261254 ...
+2022-03-31 20:13:09,101 VERBOSE-1 [default] Data read: 1.62558, 1.63105, 1.63751, 1.64232, 1.64813, 1.654, 1.65949, 1.66475, 1.66979, 1.67525 ...
+2022-03-31 20:13:09,101 VERBOSE-1 [default] Data read: 1.67552, 0.97918, 0.97918, 0.975949, 0.129255, 1.66835, 1.66231, 1.65444, 1.64745, 1.63914 ...
+20:13:09.101689|B|1|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:09.101688|B|2|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:09.101689|B|3|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:09.101689|B|0|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+2022-03-31 20:13:10,252 VERBOSE-1 [default] Writing results to "mapped_3.vtu"
+2022-03-31 20:13:10,252 VERBOSE-1 [default] Writing results to "mapped_2.vtu"
+2022-03-31 20:13:10,252 VERBOSE-1 [default] Writing results to "mapped_1.vtu"
+2022-03-31 20:13:10,252 VERBOSE-1 [default] Writing results to "mapped_0.vtu"
+==========
+= compact-tps-c2-n3-separate (consistent) 0.002 - 0.0014
+==========
+20:13:11.392343|A|0|impl::SolverInterfaceImpl|l169|configure|This is preCICE version 2.3.0
+20:13:11.392343|B|0|impl::SolverInterfaceImpl|l169|configure|This is preCICE version 2.3.0
+20:13:11.392461|A|0|impl::SolverInterfaceImpl|l170|configure|Revision info: v2.3.0-21-gdd7c2abe-dirty
+20:13:11.392455|B|0|impl::SolverInterfaceImpl|l170|configure|Revision info: v2.3.0-21-gdd7c2abe-dirty
+20:13:11.392491|A|0|impl::SolverInterfaceImpl|l171|configure|Build type: Release (without debug log)
+20:13:11.392517|A|0|impl::SolverInterfaceImpl|l189|configure|Configuring preCICE with configuration "precice-config.xml"
+20:13:11.392539|A|0|impl::SolverInterfaceImpl|l190|configure|I am participant "A"
+20:13:11.392539|B|0|impl::SolverInterfaceImpl|l171|configure|Build type: Release (without debug log)
+20:13:11.392596|B|0|impl::SolverInterfaceImpl|l189|configure|Configuring preCICE with configuration "precice-config.xml"
+20:13:11.392611|A|0|com::Communication|l28|connectMasterSlaves|Connecting Master to 3 Slaves
+20:13:11.392654|B|0|impl::SolverInterfaceImpl|l190|configure|I am participant "B"
+20:13:11.392636|A|3|com::Communication|l34|connectMasterSlaves|Connecting Slave #2 to Master
+20:13:11.392637|A|2|com::Communication|l34|connectMasterSlaves|Connecting Slave #1 to Master
+20:13:11.392659|A|1|com::Communication|l34|connectMasterSlaves|Connecting Slave #0 to Master
+20:13:11.392772|B|0|com::Communication|l28|connectMasterSlaves|Connecting Master to 3 Slaves
+20:13:11.392795|B|1|com::Communication|l34|connectMasterSlaves|Connecting Slave #0 to Master
+20:13:11.392796|B|2|com::Communication|l34|connectMasterSlaves|Connecting Slave #1 to Master
+20:13:11.392803|B|3|com::Communication|l34|connectMasterSlaves|Connecting Slave #2 to Master
+2022-03-31 20:13:11,393 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.002/4/0.002_1.vtu
+2022-03-31 20:13:11,393 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.002/4/0.002_2.vtu
+2022-03-31 20:13:11,393 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.002/4/0.002_3.vtu
+2022-03-31 20:13:11,393 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.002/4/0.002_0.vtu
+2022-03-31 20:13:11,393 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_3.vtu
+2022-03-31 20:13:11,393 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_0.vtu
+2022-03-31 20:13:11,393 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_2.vtu
+2022-03-31 20:13:11,393 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_1.vtu
+2022-03-31 20:13:11,435 VERBOSE-1 [default] The mesh contains: 19692 Vertices, 19692 Data Points, 480 Edges, 39188 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:11,435 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:11,437 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:11,437 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+2022-03-31 20:13:11,449 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:11,450 VERBOSE-1 [default] The mesh contains: 16910 Vertices, 16910 Data Points, 387 Edges, 33684 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:11,450 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:11,451 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:11,451 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:11,452 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:11,453 VERBOSE-1 [default] The mesh contains: 25755 Vertices, 25755 Data Points, 410 Edges, 51137 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:11,453 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:11,455 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:11,455 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:11,462 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:11,463 VERBOSE-1 [default] The mesh contains: 37040 Vertices, 37040 Data Points, 578 Edges, 73894 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:11,463 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+2022-03-31 20:13:11,464 VERBOSE-1 [default] The mesh contains: 22525 Vertices, 22525 Data Points, 262 Edges, 44737 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:11,464 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:11,464 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:11,465 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:11,465 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:11,465 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:11,465 VERBOSE-1 [default] Mesh Setup Took 29ms (1ms for vertices, 28ms for connectivity)
+2022-03-31 20:13:11,465 VERBOSE-1 [default] Mesh setup completed on Rank 0
+2022-03-31 20:13:11,465 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:11,465 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:11,466 VERBOSE-1 [default] The mesh contains: 37200 Vertices, 37200 Data Points, 659 Edges, 74136 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:11,466 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:11,468 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:11,468 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:11,471 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:11,473 VERBOSE-1 [default] The mesh contains: 47707 Vertices, 47707 Data Points, 379 Edges, 94957 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:11,473 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:11,475 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:11,475 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:11,475 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:11,476 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:11,476 VERBOSE-1 [default] Mesh Setup Took 26ms (1ms for vertices, 25ms for connectivity)
+2022-03-31 20:13:11,476 VERBOSE-1 [default] Mesh setup completed on Rank 2
+2022-03-31 20:13:11,480 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:11,484 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:11,490 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:11,492 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:11,493 VERBOSE-1 [default] The mesh contains: 50856 Vertices, 50856 Data Points, 577 Edges, 101184 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:11,493 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:11,493 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:11,493 VERBOSE-1 [default] Mesh Setup Took 39ms (1ms for vertices, 38ms for connectivity)
+2022-03-31 20:13:11,493 VERBOSE-1 [default] Mesh setup completed on Rank 3
+2022-03-31 20:13:11,495 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:11,496 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:11,496 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:11,498 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:11,500 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:11,500 VERBOSE-1 [default] Mesh Setup Took 36ms (1ms for vertices, 34ms for connectivity)
+2022-03-31 20:13:11,500 VERBOSE-1 [default] Mesh setup completed on Rank 1
+20:13:11.500943|A|1|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:11.500944|A|0|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:11.500944|A|2|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:11.500944|A|3|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+2022-03-31 20:13:11,508 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:11,515 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:11,517 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:11,517 VERBOSE-1 [default] Mesh Setup Took 51ms (2ms for vertices, 48ms for connectivity)
+2022-03-31 20:13:11,517 VERBOSE-1 [default] Mesh setup completed on Rank 3
+2022-03-31 20:13:11,522 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:11,522 VERBOSE-1 [default] Mesh Setup Took 59ms (2ms for vertices, 57ms for connectivity)
+2022-03-31 20:13:11,522 VERBOSE-1 [default] Mesh setup completed on Rank 0
+2022-03-31 20:13:11,530 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:11,537 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:11,550 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:11,550 VERBOSE-1 [default] Mesh Setup Took 77ms (2ms for vertices, 74ms for connectivity)
+2022-03-31 20:13:11,550 VERBOSE-1 [default] Mesh setup completed on Rank 1
+2022-03-31 20:13:11,573 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:11,573 VERBOSE-1 [default] Mesh Setup Took 79ms (3ms for vertices, 76ms for connectivity)
+2022-03-31 20:13:11,573 VERBOSE-1 [default] Mesh setup completed on Rank 2
+20:13:11.573361|B|3|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:11.573360|B|0|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:11.573362|B|1|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:11.573361|B|2|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:11.591840|A|0|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:11.591843|A|2|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:11.591843|A|3|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:11.591841|A|1|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:11.592175|A|2|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:11.592175|A|0|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:11.592179|A|1|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:11.592213|A|0|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:11.592215|A|2|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:11.592252|A|3|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:11.592275|A|3|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:11.592259|A|1|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:11.592790|B|1|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:11.592788|B|3|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:11.592788|B|0|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:11.592790|B|2|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:11.593666|B|0|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:11.593661|B|1|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:11.593663|B|3|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:11.593662|B|2|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:11.593687|B|2|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:11.593715|B|1|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:11.593761|A|2|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:11.593759|A|3|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:11.593761|A|1|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:11.593780|B|3|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:11.593796|B|0|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:11.595820|A|0|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:11.599011|A|3|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:11.599013|A|2|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:11.599012|A|1|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:11.599011|A|0|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:11.605316|B|1|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:11.605316|B|3|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:11.605316|B|2|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:11.605316|B|0|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:11.605380|A|1|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:11.605377|A|3|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:11.605381|A|2|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:11.605944|A|0|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:11.610224|B|2|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:11.610225|B|1|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:11.610223|B|3|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:11.610225|B|0|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:11.641136|B|3|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:11.641542|B|0|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:11.641840|B|1|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:11.641946|B|2|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:11.645054|B|3|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:11.647111|B|0|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:11.648542|B|1|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:11.649356|B|2|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:11.649952|B|3|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:11.650080|B|0|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:11.650182|B|1|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:11.650267|B|2|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:12.092670|A|2|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:12.092670|A|1|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:12.092671|A|3|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:12.092671|A|0|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:12.092737|A|3|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:12.092737|A|2|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:12.092738|A|1|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:12.092738|A|0|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:12.092790|A|3|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:12.092790|A|2|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:12.092790|A|0|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:12.092790|A|1|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+2022-03-31 20:13:12,092 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.002/4/0.002_0.vtu
+2022-03-31 20:13:12,092 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.002/4/0.002_2.vtu
+2022-03-31 20:13:12,092 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.002/4/0.002_3.vtu
+2022-03-31 20:13:12,092 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.002/4/0.002_1.vtu
+20:13:12.093710|B|0|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:12.093712|B|3|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:12.093711|B|1|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:12.093711|B|2|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:12.093767|B|3|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:12.093772|B|2|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:12.093774|B|1|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:12.103475|B|0|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:12.103549|B|2|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:12.103549|B|1|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:12.103549|B|3|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:12.103548|B|0|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+2022-03-31 20:13:12,125 VERBOSE-1 [default] This roundmesh contains: 16910 Vertices, 16910 Data Points, 387 Edges, 33684 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:12,125 VERBOSE-1 [default] Data written: 0.326745, 0.277649, 0.265374, 0.547907, 0.314215, 0.296052, 0.264349, 0.259842, 0.278568, 0.291878 ...
+2022-03-31 20:13:12,128 VERBOSE-1 [default] This roundmesh contains: 19692 Vertices, 19692 Data Points, 480 Edges, 39188 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:12,128 VERBOSE-1 [default] Data written: 1.67552, 0.97918, 0.97918, 0.975949, 0.129255, 1.66633, 1.65637, 1.64562, 1.63408, 1.62172 ...
+2022-03-31 20:13:12,131 VERBOSE-1 [default] This roundmesh contains: 22525 Vertices, 22525 Data Points, 262 Edges, 44737 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:12,131 VERBOSE-1 [default] Data written: 1.70548, 1.71149, 1.71725, 1.72276, 1.72803, 1.73305, 1.73782, 1.74234, 1.74661, 1.75063 ...
+2022-03-31 20:13:12,139 VERBOSE-1 [default] This roundmesh contains: 25755 Vertices, 25755 Data Points, 410 Edges, 51137 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:12,139 VERBOSE-1 [default] Data written: -0.218489, -0.218715, -0.218915, 0.846651, -0.178568, -0.218605, -0.219554, -0.219863, -0.219976, -0.219999 ...
+20:13:12.140562|A|0|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:12.140562|A|3|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:12.140562|A|1|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:12.140609|A|3|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:12.140613|A|0|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:12.140609|A|1|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:12.140668|A|2|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:12.140736|A|2|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:12.140802|A|3|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:12.140801|A|2|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:12.140801|A|0|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:12.140802|A|1|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:12.140831|B|2|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:12.140831|B|1|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:12.140831|B|0|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:12.140871|B|1|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:12.140871|B|2|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:12.140868|B|0|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:12.140863|B|3|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:12.140929|B|3|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:12.165096|B|3|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:12.174424|B|0|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:12.175658|B|2|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:12.175669|B|1|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:13.184233|B|3|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:13.184233|B|0|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:13.184233|B|2|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:13.184233|B|1|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:16.248720|B|0|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 29 of 10000 iterations due to sufficient relative convergence. Last residual norm: 6.38416e-05, limits: relative 0.000291345 (rtol 1e-06), absolute 1e-50, divergence 2.91345e+32(dtol 1e+30)
+20:13:16.248720|B|1|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 29 of 10000 iterations due to sufficient relative convergence. Last residual norm: 6.38416e-05, limits: relative 0.000291345 (rtol 1e-06), absolute 1e-50, divergence 2.91345e+32(dtol 1e+30)
+20:13:16.248720|B|2|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 29 of 10000 iterations due to sufficient relative convergence. Last residual norm: 6.38416e-05, limits: relative 0.000291345 (rtol 1e-06), absolute 1e-50, divergence 2.91345e+32(dtol 1e+30)
+20:13:16.248720|B|3|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 29 of 10000 iterations due to sufficient relative convergence. Last residual norm: 6.38416e-05, limits: relative 0.000291345 (rtol 1e-06), absolute 1e-50, divergence 2.91345e+32(dtol 1e+30)
+20:13:16.268124|B|1|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:16.268124|B|2|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:16.268123|B|0|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:16.268123|B|3|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:16.736518|B|2|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:16.736517|B|3|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:16.736517|B|0|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:16.736518|B|1|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+2022-03-31 20:13:16,736 VERBOSE-1 [default] Data read: 1.67552, 0.97918, 0.97918, 0.975949, 0.129255, 1.66902, 1.66174, 1.6551, 1.64756, 1.63909 ...
+2022-03-31 20:13:16,736 VERBOSE-1 [default] Data read: 0.326745, 0.277649, 0.265374, 0.547907, 0.31751, 0.305158, 0.291285, 0.266795, 0.261197, 0.260517 ...
+2022-03-31 20:13:16,736 VERBOSE-1 [default] Data read: -0.218489, -0.218715, -0.218915, 0.846651, -0.178568, -0.218605, -0.219367, -0.219702, -0.219911, -0.219937 ...
+2022-03-31 20:13:16,736 VERBOSE-1 [default] Data read: 1.62517, 1.63135, 1.63707, 1.64278, 1.64865, 1.65414, 1.65934, 1.66493, 1.67028, 1.67515 ...
+20:13:16.737266|B|2|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:16.737268|B|3|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:16.737265|B|0|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:16.737269|B|1|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+2022-03-31 20:13:18,084 VERBOSE-1 [default] Writing results to "mapped_2.vtu"
+2022-03-31 20:13:18,084 VERBOSE-1 [default] Writing results to "mapped_3.vtu"
+2022-03-31 20:13:18,084 VERBOSE-1 [default] Writing results to "mapped_1.vtu"
+2022-03-31 20:13:18,084 VERBOSE-1 [default] Writing results to "mapped_0.vtu"
+==========
+= compact-tps-c2-n3-separate (consistent) 0.001 - 0.0014
+==========
+20:13:19.412819|A|0|impl::SolverInterfaceImpl|l169|configure|This is preCICE version 2.3.0
+20:13:19.412819|B|0|impl::SolverInterfaceImpl|l169|configure|This is preCICE version 2.3.0
+20:13:19.412936|A|0|impl::SolverInterfaceImpl|l170|configure|Revision info: v2.3.0-21-gdd7c2abe-dirty
+20:13:19.412939|B|0|impl::SolverInterfaceImpl|l170|configure|Revision info: v2.3.0-21-gdd7c2abe-dirty
+20:13:19.412957|A|0|impl::SolverInterfaceImpl|l171|configure|Build type: Release (without debug log)
+20:13:19.412973|A|0|impl::SolverInterfaceImpl|l189|configure|Configuring preCICE with configuration "precice-config.xml"
+20:13:19.412963|B|0|impl::SolverInterfaceImpl|l171|configure|Build type: Release (without debug log)
+20:13:19.412987|A|0|impl::SolverInterfaceImpl|l190|configure|I am participant "A"
+20:13:19.413003|B|0|impl::SolverInterfaceImpl|l189|configure|Configuring preCICE with configuration "precice-config.xml"
+20:13:19.413025|B|0|impl::SolverInterfaceImpl|l190|configure|I am participant "B"
+20:13:19.413052|A|0|com::Communication|l28|connectMasterSlaves|Connecting Master to 3 Slaves
+20:13:19.413114|B|0|com::Communication|l28|connectMasterSlaves|Connecting Master to 3 Slaves
+20:13:19.413075|A|3|com::Communication|l34|connectMasterSlaves|Connecting Slave #2 to Master
+20:13:19.413076|A|1|com::Communication|l34|connectMasterSlaves|Connecting Slave #0 to Master
+20:13:19.413097|A|2|com::Communication|l34|connectMasterSlaves|Connecting Slave #1 to Master
+20:13:19.413136|B|3|com::Communication|l34|connectMasterSlaves|Connecting Slave #2 to Master
+20:13:19.413138|B|1|com::Communication|l34|connectMasterSlaves|Connecting Slave #0 to Master
+20:13:19.413177|B|2|com::Communication|l34|connectMasterSlaves|Connecting Slave #1 to Master
+2022-03-31 20:13:19,413 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.001/4/0.001_3.vtu
+2022-03-31 20:13:19,413 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.001/4/0.001_1.vtu
+2022-03-31 20:13:19,413 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.001/4/0.001_0.vtu
+2022-03-31 20:13:19,413 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.001/4/0.001_2.vtu
+2022-03-31 20:13:19,413 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_3.vtu
+2022-03-31 20:13:19,413 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_1.vtu
+2022-03-31 20:13:19,413 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_0.vtu
+2022-03-31 20:13:19,413 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_2.vtu
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+2022-03-31 20:13:19,463 VERBOSE-1 [default] The mesh contains: 37040 Vertices, 37040 Data Points, 578 Edges, 73894 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:19,463 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+2022-03-31 20:13:19,465 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:19,465 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:19,471 VERBOSE-1 [default] The mesh contains: 37200 Vertices, 37200 Data Points, 659 Edges, 74136 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:19,471 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:19,473 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:19,474 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:19,485 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:19,490 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:19,491 VERBOSE-1 [default] The mesh contains: 47707 Vertices, 47707 Data Points, 379 Edges, 94957 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:19,492 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:19,494 VERBOSE-1 [default] The mesh contains: 50856 Vertices, 50856 Data Points, 577 Edges, 101184 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:19,494 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:19,494 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:19,494 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:19,497 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:19,497 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:19,497 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:19,503 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:19,517 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:19,517 VERBOSE-1 [default] Mesh Setup Took 54ms (1ms for vertices, 52ms for connectivity)
+2022-03-31 20:13:19,517 VERBOSE-1 [default] Mesh setup completed on Rank 0
+2022-03-31 20:13:19,524 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:19,524 VERBOSE-1 [default] Mesh Setup Took 52ms (2ms for vertices, 50ms for connectivity)
+2022-03-31 20:13:19,524 VERBOSE-1 [default] Mesh setup completed on Rank 3
+2022-03-31 20:13:19,528 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:19,533 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:19,535 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:19,541 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:19,572 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:19,572 VERBOSE-1 [default] Mesh Setup Took 80ms (2ms for vertices, 78ms for connectivity)
+2022-03-31 20:13:19,572 VERBOSE-1 [default] Mesh setup completed on Rank 1
+2022-03-31 20:13:19,579 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:19,579 VERBOSE-1 [default] Mesh Setup Took 85ms (3ms for vertices, 82ms for connectivity)
+2022-03-31 20:13:19,579 VERBOSE-1 [default] Mesh setup completed on Rank 2
+20:13:19.579889|B|3|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:19.579888|B|0|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:19.579888|B|1|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:19.579888|B|2|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+2022-03-31 20:13:19,598 VERBOSE-1 [default] The mesh contains: 64597 Vertices, 64597 Data Points, 750 Edges, 128946 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:19,598 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:19,603 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:19,603 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:19,627 VERBOSE-1 [default] The mesh contains: 88477 Vertices, 88477 Data Points, 524 Edges, 176357 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:19,627 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:19,630 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:19,630 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:19,647 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:19,658 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:19,671 VERBOSE-1 [default] The mesh contains: 82077 Vertices, 82077 Data Points, 973 Edges, 163747 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:19,671 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:19,675 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:19,675 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:19,690 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:19,704 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:19,705 VERBOSE-1 [default] The mesh contains: 103841 Vertices, 103841 Data Points, 822 Edges, 206922 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:19,705 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:19,707 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:19,707 VERBOSE-1 [default] Mesh Setup Took 108ms (4ms for vertices, 104ms for connectivity)
+2022-03-31 20:13:19,707 VERBOSE-1 [default] Mesh setup completed on Rank 2
+2022-03-31 20:13:19,712 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:19,712 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:19,731 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:19,745 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:19,775 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:19,775 VERBOSE-1 [default] Mesh Setup Took 148ms (2ms for vertices, 145ms for connectivity)
+2022-03-31 20:13:19,775 VERBOSE-1 [default] Mesh setup completed on Rank 1
+2022-03-31 20:13:19,785 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:19,802 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:19,805 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:19,805 VERBOSE-1 [default] Mesh Setup Took 134ms (4ms for vertices, 129ms for connectivity)
+2022-03-31 20:13:19,805 VERBOSE-1 [default] Mesh setup completed on Rank 0
+2022-03-31 20:13:19,881 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:19,881 VERBOSE-1 [default] Mesh Setup Took 175ms (6ms for vertices, 169ms for connectivity)
+2022-03-31 20:13:19,881 VERBOSE-1 [default] Mesh setup completed on Rank 3
+20:13:19.881511|A|0|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:19.881512|A|1|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:19.881512|A|3|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:19.881514|A|2|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:19.884183|A|3|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:19.884183|A|1|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:19.884184|A|0|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:19.884182|A|2|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:19.885017|A|2|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:19.885042|A|2|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:19.885244|A|0|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:19.885267|A|0|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:19.885328|B|1|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:19.885327|B|3|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:19.885325|B|0|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:19.885328|B|2|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:19.886237|B|1|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:19.886244|B|3|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:19.886244|B|2|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:19.886237|B|0|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:19.886268|B|1|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:19.886270|B|0|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:19.886271|B|2|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:19.886271|B|3|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:19.885455|A|3|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:19.885486|A|3|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:19.885308|A|1|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:19.885341|A|1|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:19.887662|A|2|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:19.887662|A|3|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:19.887662|A|1|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:19.896812|A|0|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:19.908937|A|3|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:19.908937|A|1|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:19.908936|A|2|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:19.908936|A|0|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:19.923425|A|3|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:19.923425|A|1|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:19.923425|A|2|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:19.924949|A|0|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:19.938298|B|3|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:19.938296|B|0|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:19.938297|B|2|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:19.938297|B|1|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:19.939266|B|3|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:19.939266|B|0|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:19.939264|B|2|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:19.939264|B|1|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:20.093248|B|1|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:20.094077|B|3|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:20.094273|B|0|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:20.096185|B|2|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:20.113255|B|1|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:20.117531|B|0|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:20.120163|B|3|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:20.128917|B|2|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:20.131274|B|1|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:20.131624|B|0|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:20.131686|B|3|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:20.132246|B|2|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:29.910523|A|1|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:29.910521|A|2|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:29.910521|A|3|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:29.910521|A|0|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:29.910595|A|2|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:29.910595|A|0|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:29.910594|A|3|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:29.910594|A|1|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:29.910650|A|2|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:29.910649|A|1|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:29.910650|A|0|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:29.910650|A|3|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+2022-03-31 20:13:29,910 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.001/4/0.001_0.vtu
+2022-03-31 20:13:29,910 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.001/4/0.001_2.vtu
+2022-03-31 20:13:29,910 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.001/4/0.001_3.vtu
+2022-03-31 20:13:29,910 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.001/4/0.001_1.vtu
+20:13:29.911307|B|3|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:29.911303|B|0|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:29.911309|B|1|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:29.911308|B|2|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:29.911362|B|2|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:29.911374|B|1|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:29.911362|B|3|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:29.922861|B|0|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:29.922927|B|1|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:29.922927|B|3|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:29.922925|B|0|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:29.922928|B|2|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+2022-03-31 20:13:30,011 VERBOSE-1 [default] This roundmesh contains: 64597 Vertices, 64597 Data Points, 750 Edges, 128946 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:30,012 VERBOSE-1 [default] Data written: 0.326745, 0.277649, 0.265374, 0.547907, 0.320169, 0.310873, 0.299885, 0.288406, 0.268778, 0.262665 ...
+2022-03-31 20:13:30,051 VERBOSE-1 [default] This roundmesh contains: 103841 Vertices, 103841 Data Points, 822 Edges, 206922 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:30,051 VERBOSE-1 [default] Data written: -0.218489, -0.218715, -0.218915, 0.846651, -0.178568, -0.218605, -0.219301, -0.219577, -0.219764, -0.219883 ...
+2022-03-31 20:13:30,056 VERBOSE-1 [default] This roundmesh contains: 82077 Vertices, 82077 Data Points, 973 Edges, 163747 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:30,056 VERBOSE-1 [default] Data written: 1.67552, 0.97918, 0.97918, 0.975949, 0.129255, 1.67099, 1.66626, 1.66134, 1.65622, 1.6509 ...
+2022-03-31 20:13:30,069 VERBOSE-1 [default] This roundmesh contains: 88477 Vertices, 88477 Data Points, 524 Edges, 176357 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:30,069 VERBOSE-1 [default] Data written: 1.73595, 1.73829, 1.74057, 1.74279, 1.74495, 1.74704, 1.74907, 1.75104, 1.75294, 1.75478 ...
+20:13:30.071330|A|2|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:30.071388|A|2|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:30.071329|A|0|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:30.071388|A|0|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:30.071329|A|3|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:30.071387|A|3|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:30.071329|A|1|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:30.071387|A|1|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:30.071477|A|1|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:30.071477|A|3|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:30.071477|A|2|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:30.071477|A|0|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:30.072088|B|0|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:30.072088|B|3|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:30.072126|B|3|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:30.072086|B|1|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:30.072124|B|1|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:30.072090|B|2|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:30.072128|B|2|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:30.072124|B|0|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:30.150949|B|1|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:30.188103|B|3|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:30.188316|B|0|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:30.189060|B|2|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:34.159583|B|3|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:34.159586|B|0|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:34.159583|B|1|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:34.159583|B|2|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:39.150906|B|0|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 34 of 10000 iterations due to sufficient relative convergence. Last residual norm: 0.000154071, limits: relative 0.00058223 (rtol 1e-06), absolute 1e-50, divergence 5.8223e+32(dtol 1e+30)
+20:13:39.150906|B|2|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 34 of 10000 iterations due to sufficient relative convergence. Last residual norm: 0.000154071, limits: relative 0.00058223 (rtol 1e-06), absolute 1e-50, divergence 5.8223e+32(dtol 1e+30)
+20:13:39.150906|B|1|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 34 of 10000 iterations due to sufficient relative convergence. Last residual norm: 0.000154071, limits: relative 0.00058223 (rtol 1e-06), absolute 1e-50, divergence 5.8223e+32(dtol 1e+30)
+20:13:39.150907|B|3|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 34 of 10000 iterations due to sufficient relative convergence. Last residual norm: 0.000154071, limits: relative 0.00058223 (rtol 1e-06), absolute 1e-50, divergence 5.8223e+32(dtol 1e+30)
+20:13:39.170333|B|3|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:39.170333|B|2|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:39.170333|B|1|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:39.170333|B|0|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:13:41.199695|B|3|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:41.199696|B|2|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:41.199695|B|1|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:41.199695|B|0|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+2022-03-31 20:13:41,199 VERBOSE-1 [default] Data read: 1.67552, 0.97918, 0.97918, 0.975949, 0.129255, 1.66892, 1.66226, 1.65505, 1.64749, 1.63961 ...
+2022-03-31 20:13:41,199 VERBOSE-1 [default] Data read: 0.326745, 0.277649, 0.265374, 0.547907, 0.3179, 0.305108, 0.29098, 0.267216, 0.261001, 0.260293 ...
+2022-03-31 20:13:41,199 VERBOSE-1 [default] Data read: 1.62531, 1.63088, 1.63721, 1.64279, 1.64856, 1.65402, 1.65964, 1.66499, 1.67018, 1.67535 ...
+2022-03-31 20:13:41,199 VERBOSE-1 [default] Data read: -0.218489, -0.218715, -0.218915, 0.846651, -0.178568, -0.218605, -0.2194, -0.219704, -0.219895, -0.219985 ...
+20:13:41.200469|B|0|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:41.200470|B|3|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:41.200471|B|1|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:41.200470|B|2|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+2022-03-31 20:13:43,900 VERBOSE-1 [default] Writing results to "mapped_1.vtu"
+2022-03-31 20:13:43,900 VERBOSE-1 [default] Writing results to "mapped_0.vtu"
+2022-03-31 20:13:43,900 VERBOSE-1 [default] Writing results to "mapped_3.vtu"
+2022-03-31 20:13:43,900 VERBOSE-1 [default] Writing results to "mapped_2.vtu"
+==========
+= compact-tps-c2-n3-separate (consistent) 0.0007 - 0.0014
+==========
+20:13:45.205249|A|0|impl::SolverInterfaceImpl|l169|configure|This is preCICE version 2.3.0
+20:13:45.205391|A|0|impl::SolverInterfaceImpl|l170|configure|Revision info: v2.3.0-21-gdd7c2abe-dirty
+20:13:45.205422|A|0|impl::SolverInterfaceImpl|l171|configure|Build type: Release (without debug log)
+20:13:45.205446|A|0|impl::SolverInterfaceImpl|l189|configure|Configuring preCICE with configuration "precice-config.xml"
+20:13:45.205468|A|0|impl::SolverInterfaceImpl|l190|configure|I am participant "A"
+20:13:45.205545|A|0|com::Communication|l28|connectMasterSlaves|Connecting Master to 3 Slaves
+20:13:45.205581|A|2|com::Communication|l34|connectMasterSlaves|Connecting Slave #1 to Master
+20:13:45.205590|A|1|com::Communication|l34|connectMasterSlaves|Connecting Slave #0 to Master
+20:13:45.205600|A|3|com::Communication|l34|connectMasterSlaves|Connecting Slave #2 to Master
+20:13:45.205988|B|0|impl::SolverInterfaceImpl|l169|configure|This is preCICE version 2.3.0
+20:13:45.206070|B|0|impl::SolverInterfaceImpl|l170|configure|Revision info: v2.3.0-21-gdd7c2abe-dirty
+20:13:45.206089|B|0|impl::SolverInterfaceImpl|l171|configure|Build type: Release (without debug log)
+20:13:45.206104|B|0|impl::SolverInterfaceImpl|l189|configure|Configuring preCICE with configuration "precice-config.xml"
+20:13:45.206119|B|0|impl::SolverInterfaceImpl|l190|configure|I am participant "B"
+2022-03-31 20:13:45,206 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0007/4/0.0007_2.vtu
+2022-03-31 20:13:45,206 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0007/4/0.0007_0.vtu
+2022-03-31 20:13:45,206 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0007/4/0.0007_1.vtu
+20:13:45.206189|B|0|com::Communication|l28|connectMasterSlaves|Connecting Master to 3 Slaves
+20:13:45.206215|B|1|com::Communication|l34|connectMasterSlaves|Connecting Slave #0 to Master
+20:13:45.206215|B|2|com::Communication|l34|connectMasterSlaves|Connecting Slave #1 to Master
+20:13:45.206221|B|3|com::Communication|l34|connectMasterSlaves|Connecting Slave #2 to Master
+2022-03-31 20:13:45,206 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0007/4/0.0007_3.vtu
+2022-03-31 20:13:45,206 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_0.vtu
+2022-03-31 20:13:45,206 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_1.vtu
+2022-03-31 20:13:45,206 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_2.vtu
+2022-03-31 20:13:45,206 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_3.vtu
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+2022-03-31 20:13:45,256 VERBOSE-1 [default] The mesh contains: 37200 Vertices, 37200 Data Points, 659 Edges, 74136 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:45,256 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+2022-03-31 20:13:45,258 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:45,258 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+2022-03-31 20:13:45,271 VERBOSE-1 [default] The mesh contains: 37040 Vertices, 37040 Data Points, 578 Edges, 73894 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:45,271 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:45,273 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:45,273 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:45,283 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:45,283 VERBOSE-1 [default] The mesh contains: 47707 Vertices, 47707 Data Points, 379 Edges, 94957 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:45,283 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:45,284 VERBOSE-1 [default] The mesh contains: 50856 Vertices, 50856 Data Points, 577 Edges, 101184 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:45,284 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:45,286 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:45,286 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:45,286 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:45,286 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:45,288 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:45,297 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:45,302 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:45,316 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:45,316 VERBOSE-1 [default] Mesh Setup Took 59ms (2ms for vertices, 57ms for connectivity)
+2022-03-31 20:13:45,316 VERBOSE-1 [default] Mesh setup completed on Rank 3
+2022-03-31 20:13:45,319 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:45,319 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:45,326 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:45,327 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:45,328 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:45,328 VERBOSE-1 [default] Mesh Setup Took 57ms (2ms for vertices, 55ms for connectivity)
+2022-03-31 20:13:45,328 VERBOSE-1 [default] Mesh setup completed on Rank 0
+2022-03-31 20:13:45,361 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:45,361 VERBOSE-1 [default] Mesh Setup Took 77ms (1ms for vertices, 75ms for connectivity)
+2022-03-31 20:13:45,361 VERBOSE-1 [default] Mesh setup completed on Rank 2
+2022-03-31 20:13:45,361 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:45,362 VERBOSE-1 [default] Mesh Setup Took 78ms (2ms for vertices, 75ms for connectivity)
+2022-03-31 20:13:45,362 VERBOSE-1 [default] Mesh setup completed on Rank 1
+20:13:45.362150|B|2|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:45.362151|B|1|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:45.362147|B|0|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:45.362151|B|3|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+2022-03-31 20:13:45,508 VERBOSE-1 [default] The mesh contains: 161368 Vertices, 161368 Data Points, 1367 Edges, 322168 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:45,508 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:45,517 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:45,517 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:45,530 VERBOSE-1 [default] The mesh contains: 136556 Vertices, 136556 Data Points, 1095 Edges, 272750 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:45,530 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:45,537 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:45,537 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:45,556 VERBOSE-1 [default] The mesh contains: 183535 Vertices, 183535 Data Points, 752 Edges, 366189 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:45,556 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:45,562 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:45,562 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:45,634 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:45,637 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:45,639 VERBOSE-1 [default] The mesh contains: 209967 Vertices, 209967 Data Points, 1167 Edges, 418857 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:45,639 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:13:45,652 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:13:45,652 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:13:45,659 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:45,660 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:45,667 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:45,683 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:45,780 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:45,780 VERBOSE-1 [default] Mesh Setup Took 250ms (7ms for vertices, 242ms for connectivity)
+2022-03-31 20:13:45,780 VERBOSE-1 [default] Mesh setup completed on Rank 0
+2022-03-31 20:13:45,795 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:45,795 VERBOSE-1 [default] Mesh Setup Took 287ms (9ms for vertices, 277ms for connectivity)
+2022-03-31 20:13:45,795 VERBOSE-1 [default] Mesh setup completed on Rank 3
+2022-03-31 20:13:45,802 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:45,802 VERBOSE-1 [default] Mesh Setup Took 246ms (6ms for vertices, 239ms for connectivity)
+2022-03-31 20:13:45,802 VERBOSE-1 [default] Mesh setup completed on Rank 1
+2022-03-31 20:13:45,806 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:13:45,840 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:13:46,009 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:13:46,009 VERBOSE-1 [default] Mesh Setup Took 369ms (13ms for vertices, 356ms for connectivity)
+2022-03-31 20:13:46,009 VERBOSE-1 [default] Mesh setup completed on Rank 2
+20:13:46.009440|A|3|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:46.009440|A|1|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:46.009440|A|0|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:46.009440|A|2|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:13:46.012087|A|3|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:46.012087|A|1|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:46.012085|A|2|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:46.012087|A|0|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:46.013209|B|1|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:46.013204|B|0|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:46.013208|B|2|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:46.013209|B|3|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:13:46.013331|A|3|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:46.013371|A|3|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:46.014145|A|0|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:46.014210|A|0|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:46.014242|B|2|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:46.014242|B|1|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:46.014240|B|0|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:46.014238|B|3|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:46.014270|B|0|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:46.014272|B|2|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:46.014270|B|1|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:46.014293|B|3|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:13:46.014503|A|1|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:46.014536|A|1|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:46.014724|A|2|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:13:46.014764|A|2|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:13:46.018875|A|1|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:46.018875|A|3|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:46.018875|A|2|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:46.034374|A|0|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:13:46.060941|A|1|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:46.060938|A|0|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:46.060938|A|3|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:46.060938|A|2|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:13:46.098096|A|3|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:46.098097|A|1|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:46.098095|A|2|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:46.101542|A|0|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:46.123675|B|1|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:46.123675|B|0|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:46.123679|B|2|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:46.123675|B|3|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:13:46.124733|B|2|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:46.124733|B|1|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:46.124733|B|0|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:46.124733|B|3|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:13:46.454882|B|3|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:46.459475|B|0|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:46.462884|B|1|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:46.463599|B|2|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:13:46.493697|B|3|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:46.509129|B|0|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:46.525951|B|1|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:46.531091|B|2|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:13:46.535522|B|3|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:46.536626|B|0|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:46.537440|B|1|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:46.537733|B|2|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:13:47.234745|A|3|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:47.234738|A|0|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:47.234742|A|2|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:47.234738|A|1|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:47.234814|A|0|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:47.234813|A|2|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:47.234814|A|3|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:47.234814|A|1|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:47.234874|A|3|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:47.234874|A|0|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:47.234874|A|2|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:47.234874|A|1|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+2022-03-31 20:13:47,234 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.0007/4/0.0007_2.vtu
+2022-03-31 20:13:47,234 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.0007/4/0.0007_3.vtu
+2022-03-31 20:13:47,234 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.0007/4/0.0007_0.vtu
+2022-03-31 20:13:47,234 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.0007/4/0.0007_1.vtu
+20:13:47.235758|B|1|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:47.235757|B|2|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:47.235735|B|0|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:47.235759|B|3|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:13:47.235848|B|2|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:47.235858|B|3|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:47.235856|B|1|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:47.245482|B|0|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:13:47.245551|B|2|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:47.245551|B|1|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:47.245552|B|3|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:13:47.245549|B|0|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+2022-03-31 20:13:47,376 VERBOSE-1 [default] This roundmesh contains: 136556 Vertices, 136556 Data Points, 1095 Edges, 272750 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:47,377 VERBOSE-1 [default] Data written: 0.326745, 0.277649, 0.265374, 0.547907, 0.322365, 0.316464, 0.30938, 0.301514, 0.293306, 0.285208 ...
+2022-03-31 20:13:47,516 VERBOSE-1 [default] This roundmesh contains: 161368 Vertices, 161368 Data Points, 1367 Edges, 322168 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:47,517 VERBOSE-1 [default] Data written: 1.67552, 0.97918, 0.97918, 0.975949, 0.129255, 1.67236, 1.66911, 1.66576, 1.66232, 1.65878 ...
+2022-03-31 20:13:47,556 VERBOSE-1 [default] This roundmesh contains: 183535 Vertices, 183535 Data Points, 752 Edges, 366189 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:47,557 VERBOSE-1 [default] Data written: 1.70986, 1.71193, 1.71397, 1.71598, 1.71796, 1.71991, 1.72183, 1.72372, 1.72558, 1.7274 ...
+2022-03-31 20:13:47,596 VERBOSE-1 [default] This roundmesh contains: 209967 Vertices, 209967 Data Points, 1167 Edges, 418857 Triangles 0 Quadrilaterals 
+2022-03-31 20:13:47,596 VERBOSE-1 [default] Data written: -0.218489, -0.218715, -0.218915, 0.846651, -0.178568, -0.218605, -0.219199, -0.219425, -0.219602, -0.219735 ...
+20:13:47.600015|A|3|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:47.600015|A|1|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:47.600015|A|0|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:47.600017|A|2|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:47.600081|A|0|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:47.600246|A|0|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:47.600081|A|3|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:47.600246|A|3|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:47.600081|A|1|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:47.600245|A|1|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:47.600082|A|2|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:13:47.600245|A|2|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:13:47.601312|B|3|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:47.601312|B|2|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:47.601358|B|2|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:47.601312|B|1|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:47.601355|B|1|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:47.601311|B|0|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:13:47.601358|B|3|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:47.601421|B|0|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:13:47.797365|B|0|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:47.799429|B|1|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:47.811814|B|2|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:47.813076|B|3|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:13:56.329411|B|0|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:56.329411|B|2|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:56.329411|B|1|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:13:56.329411|B|3|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:14:02.820989|B|0|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 20 of 10000 iterations due to sufficient relative convergence. Last residual norm: 0.000222481, limits: relative 0.00083152 (rtol 1e-06), absolute 1e-50, divergence 8.3152e+32(dtol 1e+30)
+20:14:02.820989|B|2|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 20 of 10000 iterations due to sufficient relative convergence. Last residual norm: 0.000222481, limits: relative 0.00083152 (rtol 1e-06), absolute 1e-50, divergence 8.3152e+32(dtol 1e+30)
+20:14:02.820989|B|3|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 20 of 10000 iterations due to sufficient relative convergence. Last residual norm: 0.000222481, limits: relative 0.00083152 (rtol 1e-06), absolute 1e-50, divergence 8.3152e+32(dtol 1e+30)
+20:14:02.820989|B|1|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 20 of 10000 iterations due to sufficient relative convergence. Last residual norm: 0.000222481, limits: relative 0.00083152 (rtol 1e-06), absolute 1e-50, divergence 8.3152e+32(dtol 1e+30)
+20:14:02.843060|B|2|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:14:02.843060|B|0|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:14:02.843060|B|1|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:14:02.843060|B|3|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:14:05.583709|B|0|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:14:05.583709|B|2|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:14:05.583709|B|3|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:14:05.583709|B|1|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+2022-03-31 20:14:05,583 VERBOSE-1 [default] Data read: 0.326745, 0.277649, 0.265374, 0.547907, 0.317752, 0.305246, 0.291261, 0.266836, 0.260909, 0.260379 ...
+2022-03-31 20:14:05,583 VERBOSE-1 [default] Data read: 1.62529, 1.63128, 1.63717, 1.64295, 1.64862, 1.65418, 1.65962, 1.66496, 1.67018, 1.67528 ...
+2022-03-31 20:14:05,583 VERBOSE-1 [default] Data read: 1.67552, 0.97918, 0.97918, 0.975949, 0.129255, 1.66911, 1.66232, 1.65514, 1.64757, 1.63961 ...
+2022-03-31 20:14:05,583 VERBOSE-1 [default] Data read: -0.218489, -0.218715, -0.218915, 0.846651, -0.178568, -0.218605, -0.21941, -0.219709, -0.219873, -0.219945 ...
+20:14:05.584424|B|2|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:14:05.584422|B|1|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:14:05.584429|B|3|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:14:05.584423|B|0|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+2022-03-31 20:14:10,322 VERBOSE-1 [default] Writing results to "mapped_2.vtu"
+2022-03-31 20:14:10,322 VERBOSE-1 [default] Writing results to "mapped_1.vtu"
+2022-03-31 20:14:10,322 VERBOSE-1 [default] Writing results to "mapped_3.vtu"
+2022-03-31 20:14:10,322 VERBOSE-1 [default] Writing results to "mapped_0.vtu"
+==========
+= compact-tps-c2-n3-separate (consistent) 0.0005 - 0.0014
+==========
+20:14:11.619307|B|0|impl::SolverInterfaceImpl|l169|configure|This is preCICE version 2.3.0
+20:14:11.619435|B|0|impl::SolverInterfaceImpl|l170|configure|Revision info: v2.3.0-21-gdd7c2abe-dirty
+20:14:11.619464|B|0|impl::SolverInterfaceImpl|l171|configure|Build type: Release (without debug log)
+20:14:11.619486|B|0|impl::SolverInterfaceImpl|l189|configure|Configuring preCICE with configuration "precice-config.xml"
+20:14:11.619505|B|0|impl::SolverInterfaceImpl|l190|configure|I am participant "B"
+20:14:11.619601|B|0|com::Communication|l28|connectMasterSlaves|Connecting Master to 3 Slaves
+20:14:11.619649|B|1|com::Communication|l34|connectMasterSlaves|Connecting Slave #0 to Master
+20:14:11.619640|B|2|com::Communication|l34|connectMasterSlaves|Connecting Slave #1 to Master
+20:14:11.619647|B|3|com::Communication|l34|connectMasterSlaves|Connecting Slave #2 to Master
+2022-03-31 20:14:11,620 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_1.vtu
+2022-03-31 20:14:11,620 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_2.vtu
+2022-03-31 20:14:11,620 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_0.vtu
+2022-03-31 20:14:11,620 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0014/4/0.0014_3.vtu
+20:14:11.631927|A|0|impl::SolverInterfaceImpl|l169|configure|This is preCICE version 2.3.0
+20:14:11.632041|A|0|impl::SolverInterfaceImpl|l170|configure|Revision info: v2.3.0-21-gdd7c2abe-dirty
+20:14:11.632065|A|0|impl::SolverInterfaceImpl|l171|configure|Build type: Release (without debug log)
+20:14:11.632104|A|0|impl::SolverInterfaceImpl|l189|configure|Configuring preCICE with configuration "precice-config.xml"
+20:14:11.632136|A|0|impl::SolverInterfaceImpl|l190|configure|I am participant "A"
+20:14:11.632214|A|0|com::Communication|l28|connectMasterSlaves|Connecting Master to 3 Slaves
+20:14:11.632243|A|1|com::Communication|l34|connectMasterSlaves|Connecting Slave #0 to Master
+20:14:11.632238|A|2|com::Communication|l34|connectMasterSlaves|Connecting Slave #1 to Master
+20:14:11.632241|A|3|com::Communication|l34|connectMasterSlaves|Connecting Slave #2 to Master
+2022-03-31 20:14:11,632 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0005/4/0.0005_0.vtu
+2022-03-31 20:14:11,632 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0005/4/0.0005_1.vtu
+2022-03-31 20:14:11,632 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0005/4/0.0005_2.vtu
+2022-03-31 20:14:11,632 VERBOSE-1 [default] Loading mesh from ../../../../meshes/0.0005/4/0.0005_3.vtu
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+2022-03-31 20:14:11,677 VERBOSE-1 [default] The mesh contains: 37040 Vertices, 37040 Data Points, 578 Edges, 73894 Triangles 0 Quadrilaterals 
+2022-03-31 20:14:11,677 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:14:11,679 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:14:11,679 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+There is no data found for 0.78 + cos(10*(x+y+z))(mapped). Dummy data will be used!.
+2022-03-31 20:14:11,690 VERBOSE-1 [default] The mesh contains: 37200 Vertices, 37200 Data Points, 659 Edges, 74136 Triangles 0 Quadrilaterals 
+2022-03-31 20:14:11,690 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:14:11,691 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:14:11,691 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:14:11,696 VERBOSE-1 [default] The mesh contains: 50856 Vertices, 50856 Data Points, 577 Edges, 101184 Triangles 0 Quadrilaterals 
+2022-03-31 20:14:11,696 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:14:11,698 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:14:11,698 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:14:11,704 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:14:11,710 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:14:11,711 VERBOSE-1 [default] The mesh contains: 47707 Vertices, 47707 Data Points, 379 Edges, 94957 Triangles 0 Quadrilaterals 
+2022-03-31 20:14:11,711 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:14:11,713 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:14:11,714 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:14:11,714 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:14:11,717 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:14:11,725 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:14:11,730 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:14:11,735 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:14:11,735 VERBOSE-1 [default] Mesh Setup Took 58ms (2ms for vertices, 56ms for connectivity)
+2022-03-31 20:14:11,735 VERBOSE-1 [default] Mesh setup completed on Rank 0
+2022-03-31 20:14:11,739 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:14:11,739 VERBOSE-1 [default] Mesh Setup Took 49ms (1ms for vertices, 47ms for connectivity)
+2022-03-31 20:14:11,739 VERBOSE-1 [default] Mesh setup completed on Rank 3
+2022-03-31 20:14:11,745 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:14:11,750 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:14:11,763 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:14:11,763 VERBOSE-1 [default] Mesh Setup Took 67ms (1ms for vertices, 65ms for connectivity)
+2022-03-31 20:14:11,763 VERBOSE-1 [default] Mesh setup completed on Rank 2
+2022-03-31 20:14:11,779 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:14:11,779 VERBOSE-1 [default] Mesh Setup Took 68ms (2ms for vertices, 65ms for connectivity)
+2022-03-31 20:14:11,779 VERBOSE-1 [default] Mesh setup completed on Rank 1
+20:14:11.779688|B|2|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:14:11.779688|B|3|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:14:11.779684|B|0|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:14:11.779688|B|1|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+2022-03-31 20:14:12,175 VERBOSE-1 [default] The mesh contains: 223797 Vertices, 223797 Data Points, 1371 Edges, 447133 Triangles 0 Quadrilaterals 
+2022-03-31 20:14:12,175 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:14:12,190 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:14:12,190 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:14:12,359 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:14:12,396 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:14:12,397 VERBOSE-1 [default] The mesh contains: 323766 Vertices, 323766 Data Points, 1013 Edges, 646387 Triangles 0 Quadrilaterals 
+2022-03-31 20:14:12,397 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:14:12,416 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:14:12,416 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:14:12,477 VERBOSE-1 [default] The mesh contains: 388625 Vertices, 388625 Data Points, 2083 Edges, 776338 Triangles 0 Quadrilaterals 
+2022-03-31 20:14:12,477 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:14:12,502 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:14:12,502 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:14:12,553 VERBOSE-1 [default] The mesh contains: 418086 Vertices, 418086 Data Points, 1668 Edges, 834557 Triangles 0 Quadrilaterals 
+2022-03-31 20:14:12,553 VERBOSE-1 [default] Mesh Setup: 1) Vertices
+2022-03-31 20:14:12,579 VERBOSE-1 [default] Mesh Setup: 2) Edges
+2022-03-31 20:14:12,579 VERBOSE-1 [default] Mesh Setup: 2.1) Gather Unique Edges
+2022-03-31 20:14:12,593 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:14:12,593 VERBOSE-1 [default] Mesh Setup Took 417ms (14ms for vertices, 402ms for connectivity)
+2022-03-31 20:14:12,593 VERBOSE-1 [default] Mesh setup completed on Rank 3
+2022-03-31 20:14:12,662 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:14:12,710 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:14:12,792 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:14:12,856 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:14:12,896 VERBOSE-1 [default] Mesh Setup: 2.2) Register Edges
+2022-03-31 20:14:12,960 VERBOSE-1 [default] Mesh Setup: 3) Triangles
+2022-03-31 20:14:13,014 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:14:13,014 VERBOSE-1 [default] Mesh Setup Took 616ms (18ms for vertices, 598ms for connectivity)
+2022-03-31 20:14:13,014 VERBOSE-1 [default] Mesh setup completed on Rank 2
+2022-03-31 20:14:13,194 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:14:13,194 VERBOSE-1 [default] Mesh Setup Took 717ms (25ms for vertices, 691ms for connectivity)
+2022-03-31 20:14:13,194 VERBOSE-1 [default] Mesh setup completed on Rank 1
+2022-03-31 20:14:13,332 VERBOSE-1 [default] Mesh Setup: 4) Quadrilaterals
+2022-03-31 20:14:13,332 VERBOSE-1 [default] Mesh Setup Took 779ms (25ms for vertices, 753ms for connectivity)
+2022-03-31 20:14:13,332 VERBOSE-1 [default] Mesh setup completed on Rank 0
+20:14:13.332608|A|2|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:14:13.332609|A|1|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:14:13.332609|A|3|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:14:13.332606|A|0|impl::SolverInterfaceImpl|l262|initialize|Setting up master communication to coupling partner/s
+20:14:13.335255|A|3|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:14:13.335256|A|2|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:14:13.335256|A|1|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:14:13.335256|A|0|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:14:13.336445|B|2|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:14:13.336447|B|3|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:14:13.336445|B|1|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:14:13.336439|B|0|impl::SolverInterfaceImpl|l276|initialize|Masters are connected
+20:14:13.337765|B|1|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:14:13.337765|B|3|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:14:13.337758|B|2|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:14:13.337759|B|0|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:14:13.337792|B|0|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:14:13.337793|B|1|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:14:13.337794|B|3|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:14:13.337856|B|2|partition::ReceivedPartition|l69|communicate|Receive global mesh MeshA
+20:14:13.338483|A|3|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:14:13.338517|A|3|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:14:13.339716|A|2|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:14:13.339745|A|2|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:14:13.340628|A|1|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:14:13.340661|A|1|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:14:13.340900|A|0|impl::SolverInterfaceImpl|l280|initialize|Setting up preliminary slaves communication to coupling partner/s
+20:14:13.340930|A|0|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshA
+20:14:13.350614|A|2|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:14:13.350614|A|1|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:14:13.350614|A|3|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:14:13.399848|A|0|partition::ProvidedPartition|l88|communicate|Gather mesh MeshA
+20:14:13.439228|A|3|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:14:13.439228|A|2|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:14:13.439228|A|1|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:14:13.439228|A|0|partition::ProvidedPartition|l105|communicate|Send global mesh MeshA
+20:14:13.499336|A|2|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:14:13.499335|A|1|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:14:13.499335|A|3|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:14:13.507656|A|0|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:14:13.561201|B|0|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:14:13.561205|B|1|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:14:13.561205|B|2|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:14:13.561207|B|3|partition::ProvidedPartition|l121|prepare|Prepare partition for mesh MeshB
+20:14:13.562241|B|2|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:14:13.562241|B|1|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:14:13.562241|B|0|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:14:13.562240|B|3|partition::ReceivedPartition|l342|filterByBoundingBox|Broadcast mesh MeshA
+20:14:14.276062|B|1|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:14:14.278822|B|0|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:14:14.279293|B|3|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:14:14.287698|B|2|partition::ReceivedPartition|l158|compute|Filter mesh MeshA by mappings
+20:14:14.361148|B|1|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:14:14.381621|B|0|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:14:14.390657|B|3|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:14:14.423631|B|2|partition::ReceivedPartition|l199|compute|Feedback distribution for mesh MeshA
+20:14:14.434048|B|1|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:14:14.434763|B|0|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:14:14.435178|B|3|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:14:14.437363|B|2|impl::SolverInterfaceImpl|l288|initialize|Setting up slaves communication to coupling partner/s
+20:19:53.052296|A|1|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:19:53.052295|A|3|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:19:53.052288|A|0|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:19:53.052292|A|2|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:19:53.052372|A|2|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:19:53.052372|A|0|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:19:53.052372|A|3|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:19:53.052373|A|1|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:19:53.052432|A|2|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:19:53.052431|A|0|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:19:53.052431|A|3|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:19:53.052432|A|1|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+2022-03-31 20:19:53,052 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.0005/4/0.0005_1.vtu
+2022-03-31 20:19:53,052 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.0005/4/0.0005_3.vtu
+2022-03-31 20:19:53,052 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.0005/4/0.0005_0.vtu
+2022-03-31 20:19:53,052 VERBOSE-1 [default] Read mesh for t=0 from ../../../../meshes/0.0005/4/0.0005_2.vtu
+20:19:53.053326|B|0|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:19:53.053326|B|1|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:19:53.053328|B|3|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:19:53.053323|B|2|impl::SolverInterfaceImpl|l294|initialize|Slaves are connected
+20:19:53.053427|B|3|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:19:53.053421|B|1|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:19:53.053426|B|2|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:19:53.064264|B|0|impl::SolverInterfaceImpl|l324|initialize|iteration: 1, time-window: 1, time: 0 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: yes, time-window-complete: no, 
+20:19:53.064387|B|3|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:19:53.064384|B|0|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:19:53.064386|B|2|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+20:19:53.064387|B|1|cplscheme::BaseCouplingScheme|l183|initializeData|initializeData is skipped since no data has to be initialized.
+2022-03-31 20:19:53,447 VERBOSE-1 [default] This roundmesh contains: 223797 Vertices, 223797 Data Points, 1371 Edges, 447133 Triangles 0 Quadrilaterals 
+2022-03-31 20:19:53,448 VERBOSE-1 [default] Data written: 0.326745, 0.277649, 0.265374, 0.547907, 0.323852, 0.320169, 0.315803, 0.310873, 0.305518, 0.299885 ...
+2022-03-31 20:19:53,625 VERBOSE-1 [default] This roundmesh contains: 418086 Vertices, 418086 Data Points, 1668 Edges, 834557 Triangles 0 Quadrilaterals 
+2022-03-31 20:19:53,626 VERBOSE-1 [default] Data written: -0.218489, -0.218715, -0.218915, 0.846651, -0.178568, -0.218605, -0.219128, -0.219309, -0.219462, -0.219589 ...
+2022-03-31 20:19:53,627 VERBOSE-1 [default] This roundmesh contains: 323766 Vertices, 323766 Data Points, 1013 Edges, 646387 Triangles 0 Quadrilaterals 
+2022-03-31 20:19:53,628 VERBOSE-1 [default] Data written: 1.77942, 1.77928, 1.77912, 1.77894, 1.77874, 1.77853, 1.7783, 1.77806, 1.7778, 1.77752 ...
+2022-03-31 20:19:53,721 VERBOSE-1 [default] This roundmesh contains: 388625 Vertices, 388625 Data Points, 2083 Edges, 776338 Triangles 0 Quadrilaterals 
+2022-03-31 20:19:53,722 VERBOSE-1 [default] Data written: 1.67552, 0.97918, 0.97918, 0.975949, 0.129255, 1.67328, 1.67099, 1.66865, 1.66626, 1.66382 ...
+20:19:53.728317|A|2|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:19:53.728317|A|3|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:19:53.728317|A|0|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:19:53.728317|A|1|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:19:53.728387|A|0|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:19:53.728389|A|2|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:19:53.728387|A|3|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:19:53.728388|A|1|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:19:53.728677|A|3|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:19:53.728677|A|0|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:19:53.728679|A|2|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:19:53.728678|A|1|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:19:53.731107|B|2|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:19:53.731107|B|0|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:19:53.731107|B|3|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:19:53.731155|B|3|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:19:53.731107|B|1|cplscheme::BaseCouplingScheme|l250|advance|Time window completed
+20:19:53.731151|B|1|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:19:53.731152|B|2|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:19:53.731221|B|0|impl::SolverInterfaceImpl|l1794|computeMappings|Compute "read" mapping from mesh "MeshA" to mesh "MeshB".
+20:19:54.204387|B|1|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:19:54.205147|B|2|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:19:54.229952|B|3|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:19:54.230185|B|0|mapping::PetRadialBasisFctMapping|l1380|bgPreallocationMatrixC|Using tree-based preallocation for matrix C
+20:20:12.162169|B|2|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:20:12.162169|B|3|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:20:12.162169|B|1|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:20:12.162169|B|0|mapping::PetRadialBasisFctMapping|l1460|bgPreallocationMatrixA|Using tree-based preallocation for matrix A
+20:20:22.538655|B|2|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 19 of 10000 iterations due to sufficient relative convergence. Last residual norm: 0.000292262, limits: relative 0.00116373 (rtol 1e-06), absolute 1e-50, divergence 1.16373e+33(dtol 1e+30)
+20:20:22.538655|B|3|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 19 of 10000 iterations due to sufficient relative convergence. Last residual norm: 0.000292262, limits: relative 0.00116373 (rtol 1e-06), absolute 1e-50, divergence 1.16373e+33(dtol 1e+30)
+20:20:22.538655|B|0|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 19 of 10000 iterations due to sufficient relative convergence. Last residual norm: 0.000292262, limits: relative 0.00116373 (rtol 1e-06), absolute 1e-50, divergence 1.16373e+33(dtol 1e+30)
+20:20:22.538655|B|1|mapping::PetRadialBasisFctMapping|l595|computeMapping|Using rescaling. Solver converged after 19 of 10000 iterations due to sufficient relative convergence. Last residual norm: 0.000292262, limits: relative 0.00116373 (rtol 1e-06), absolute 1e-50, divergence 1.16373e+33(dtol 1e+30)
+20:20:22.563082|B|0|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:20:22.563082|B|3|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:20:22.563082|B|2|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:20:22.563082|B|1|mapping::PetRadialBasisFctMapping|l973|printMappingInfo|Mapping "Data" consistent from "MeshA" (ID 0) to "MeshB" (ID 1) for dimension 0 with polynomial set to separate
+20:20:27.799939|B|2|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:20:27.799939|B|0|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:20:27.799939|B|3|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+20:20:27.799939|B|1|impl::SolverInterfaceImpl|l446|advance|iteration: 1, time-window: 2, time: 1 of 1, time-window-size: 1, max-timestep-length: 1, ongoing: no, time-window-complete: yes, 
+2022-03-31 20:20:27,800 VERBOSE-1 [default] Data read: 1.62528, 1.6312, 1.63717, 1.64297, 1.64844, 1.65424, 1.65958, 1.66496, 1.67026, 1.67534 ...
+2022-03-31 20:20:27,800 VERBOSE-1 [default] Data read: -0.218489, -0.218715, -0.218915, 0.846651, -0.178568, -0.218605, -0.219406, -0.219732, -0.219881, -0.219966 ...
+2022-03-31 20:20:27,800 VERBOSE-1 [default] Data read: 1.67552, 0.97918, 0.97918, 0.975949, 0.129255, 1.6691, 1.66223, 1.65501, 1.6475, 1.63961 ...
+20:20:27.800698|B|3|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:20:27.800699|B|1|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+2022-03-31 20:20:27,800 VERBOSE-1 [default] Data read: 0.326745, 0.277649, 0.265374, 0.547907, 0.317941, 0.305518, 0.291126, 0.267073, 0.260854, 0.260403 ...
+20:20:27.800700|B|0|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+20:20:27.800698|B|2|impl::SolverInterfaceImpl|l1944|closeCommunicationChannels|Synchronize participants and close communication channels
+2022-03-31 20:20:35,505 VERBOSE-1 [default] Writing results to "mapped_0.vtu"
+2022-03-31 20:20:35,505 VERBOSE-1 [default] Writing results to "mapped_2.vtu"
+2022-03-31 20:20:35,505 VERBOSE-1 [default] Writing results to "mapped_3.vtu"
+2022-03-31 20:20:35,505 VERBOSE-1 [default] Writing results to "mapped_1.vtu"
+= compact-tps-c2-n3-separate (consistent) 0.004 - 0.0014
+INFO:root:No recovery data found. Meshes will be joined partition-wise
+INFO:root:Starting partition-wise mesh merge
+INFO:root:No output mesh name is given result.vtk will be used.
+INFO:root:Reading input mesh "result.vtk"
+INFO:root:Mesh contains 172803 points.
+INFO:root:Evaluated "0.78 + cos(10*(x+y+z))(mapped)"-"(0.78 + cos(10*(x+y+z)))" on the mesh "result.vtk".
+INFO:root:Vertex count 172803
+INFO:root:Relative l2 error 0.0006151023282511079
+INFO:root:Maximum absolute error per vertex 0.008592130441048673
+INFO:root:Maximum signed error per vertex 0.008592130441048673
+INFO:root:Minimum absolute error per vertex 1.5567436228991482e-11
+INFO:root:Minimum signed error per vertex -0.007892184463356267
+INFO:root:Median absolute error per vertex 0.00015640883487738622
+INFO:root:99th percentile of absolute error per vertex 0.0028110094555532407
+INFO:root:95th percentile of absolute error per vertex 0.0011525232390083406
+INFO:root:90th percentile of absolute error per vertex 0.0007045984366712503
+INFO:root:Saving stats data to "result.stats.json"
+INFO:root:Written output to "result.vtk".
+= compact-tps-c2-n3-separate (consistent) 0.003 - 0.0014
+INFO:root:No recovery data found. Meshes will be joined partition-wise
+INFO:root:Starting partition-wise mesh merge
+INFO:root:No output mesh name is given result.vtk will be used.
+INFO:root:Reading input mesh "result.vtk"
+INFO:root:Mesh contains 172803 points.
+INFO:root:Evaluated "0.78 + cos(10*(x+y+z))(mapped)"-"(0.78 + cos(10*(x+y+z)))" on the mesh "result.vtk".
+INFO:root:Vertex count 172803
+INFO:root:Relative l2 error 0.00038299931621044425
+INFO:root:Maximum absolute error per vertex 0.0068353064227022475
+INFO:root:Maximum signed error per vertex 0.0068353064227022475
+INFO:root:Minimum absolute error per vertex 2.2060214766028707e-11
+INFO:root:Minimum signed error per vertex -0.006451729160764308
+INFO:root:Median absolute error per vertex 0.00010526969890145566
+INFO:root:99th percentile of absolute error per vertex 0.001678083928567511
+INFO:root:95th percentile of absolute error per vertex 0.0006518122928342627
+INFO:root:90th percentile of absolute error per vertex 0.0004355247457450091
+INFO:root:Saving stats data to "result.stats.json"
+INFO:root:Written output to "result.vtk".
+= compact-tps-c2-n3-separate (consistent) 0.002 - 0.0014
+INFO:root:No recovery data found. Meshes will be joined partition-wise
+INFO:root:Starting partition-wise mesh merge
+INFO:root:No output mesh name is given result.vtk will be used.
+INFO:root:Reading input mesh "result.vtk"
+INFO:root:Mesh contains 172803 points.
+INFO:root:Evaluated "0.78 + cos(10*(x+y+z))(mapped)"-"(0.78 + cos(10*(x+y+z)))" on the mesh "result.vtk".
+INFO:root:Vertex count 172803
+INFO:root:Relative l2 error 0.00021570868458401518
+INFO:root:Maximum absolute error per vertex 0.005342243116494949
+INFO:root:Maximum signed error per vertex 0.005317309564745409
+INFO:root:Minimum absolute error per vertex 2.235100993175365e-12
+INFO:root:Minimum signed error per vertex -0.005342243116494949
+INFO:root:Median absolute error per vertex 6.55557551582503e-05
+INFO:root:99th percentile of absolute error per vertex 0.0008339874296163313
+INFO:root:95th percentile of absolute error per vertex 0.00037278003506158045
+INFO:root:90th percentile of absolute error per vertex 0.0002617219104703141
+INFO:root:Saving stats data to "result.stats.json"
+INFO:root:Written output to "result.vtk".
+= compact-tps-c2-n3-separate (consistent) 0.001 - 0.0014
+INFO:root:No recovery data found. Meshes will be joined partition-wise
+INFO:root:Starting partition-wise mesh merge
+INFO:root:No output mesh name is given result.vtk will be used.
+INFO:root:Reading input mesh "result.vtk"
+INFO:root:Mesh contains 172803 points.
+INFO:root:Evaluated "0.78 + cos(10*(x+y+z))(mapped)"-"(0.78 + cos(10*(x+y+z)))" on the mesh "result.vtk".
+INFO:root:Vertex count 172803
+INFO:root:Relative l2 error 8.474544602345415e-05
+INFO:root:Maximum absolute error per vertex 0.0019219865073364373
+INFO:root:Maximum signed error per vertex 0.0016941073944610474
+INFO:root:Minimum absolute error per vertex 5.040082240448385e-11
+INFO:root:Minimum signed error per vertex -0.0019219865073364373
+INFO:root:Median absolute error per vertex 3.060832932222368e-05
+INFO:root:99th percentile of absolute error per vertex 0.000297259480382147
+INFO:root:95th percentile of absolute error per vertex 0.0001595751760351205
+INFO:root:90th percentile of absolute error per vertex 0.00011631605442541391
+INFO:root:Saving stats data to "result.stats.json"
+INFO:root:Written output to "result.vtk".
+= compact-tps-c2-n3-separate (consistent) 0.0007 - 0.0014
+INFO:root:No recovery data found. Meshes will be joined partition-wise
+INFO:root:Starting partition-wise mesh merge
+INFO:root:No output mesh name is given result.vtk will be used.
+INFO:root:Reading input mesh "result.vtk"
+INFO:root:Mesh contains 172803 points.
+INFO:root:Evaluated "0.78 + cos(10*(x+y+z))(mapped)"-"(0.78 + cos(10*(x+y+z)))" on the mesh "result.vtk".
+INFO:root:Vertex count 172803
+INFO:root:Relative l2 error 5.5677903772038716e-05
+INFO:root:Maximum absolute error per vertex 0.0013210608362596576
+INFO:root:Maximum signed error per vertex 0.0010392788205327852
+INFO:root:Minimum absolute error per vertex 3.7680969455777813e-13
+INFO:root:Minimum signed error per vertex -0.0013210608362596576
+INFO:root:Median absolute error per vertex 2.0301862173277563e-05
+INFO:root:99th percentile of absolute error per vertex 0.00018736706395812333
+INFO:root:95th percentile of absolute error per vertex 0.00010590585385186196
+INFO:root:90th percentile of absolute error per vertex 7.815113334720125e-05
+INFO:root:Saving stats data to "result.stats.json"
+INFO:root:Written output to "result.vtk".
+= compact-tps-c2-n3-separate (consistent) 0.0005 - 0.0014
+INFO:root:No recovery data found. Meshes will be joined partition-wise
+INFO:root:Starting partition-wise mesh merge
+INFO:root:No output mesh name is given result.vtk will be used.
+INFO:root:Reading input mesh "result.vtk"
+INFO:root:Mesh contains 172803 points.
+INFO:root:Evaluated "0.78 + cos(10*(x+y+z))(mapped)"-"(0.78 + cos(10*(x+y+z)))" on the mesh "result.vtk".
+INFO:root:Vertex count 172803
+INFO:root:Relative l2 error 3.726164612931228e-05
+INFO:root:Maximum absolute error per vertex 0.0009433336553921201
+INFO:root:Maximum signed error per vertex 0.0006929354088995865
+INFO:root:Minimum absolute error per vertex 7.118083900081729e-12
+INFO:root:Minimum signed error per vertex -0.0009433336553921201
+INFO:root:Median absolute error per vertex 1.4652664358072442e-05
+INFO:root:99th percentile of absolute error per vertex 0.00012537150845826688
+INFO:root:95th percentile of absolute error per vertex 7.429948819965837e-05
+INFO:root:90th percentile of absolute error per vertex 5.5365284004360634e-05
+INFO:root:Saving stats data to "result.stats.json"
+INFO:root:Written output to "result.vtk".

@@ -1,0 +1,48 @@
+{
+  "general": {
+    "function": "x",
+    "ranks": {
+      "A": [
+        2
+      ],
+      "B": [
+        2
+      ]
+    },
+    "network": "ens192",
+    "syncmode": false,
+    "meshes": {
+      "A": {
+        "1": "$ASTE_MESHES/1.vtk"
+      },
+      "B": {
+        "0.125": "$ASTE_MESHES/0.125.vtk"
+      }
+    }
+  },
+  "groups": [
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "nn": {
+            "kind": "nearest-neighbor"
+          },
+          "nng": {
+            "kind": "nearest-neighbor-gradient"
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "1"
+        ],
+        "B": [
+          "0.125"
+        ]
+      }
+    }
+  ]
+}
