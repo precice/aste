@@ -5,9 +5,11 @@ import os
 import argparse
 from jinja2 import Template
 
+
 def generateConfig(template, setup):
     template = Template(template)
     return template.render(setup)
+
 
 def as_iter(something):
     try:
@@ -41,14 +43,14 @@ def generateCases(setup):
                                     "constraint": constraint,
                                     "options": mapping.get("options", "")
                                 },
-                                "A" : {
+                                "A": {
                                     "ranks": ranksA,
                                     "mesh": {
                                         "name": inname,
                                         "file": infile,
                                     }
                                 },
-                                "B" : {
+                                "B": {
                                     "ranks": ranksB,
                                     "mesh": {
                                         "name": outname,
@@ -68,11 +70,11 @@ def getCaseFolders(case):
             "{}-{}".format(
                 case["A"]["mesh"]["name"],
                 case["B"]["mesh"]["name"]
-            ),
-            "{}-{}".format(
+    ),
+        "{}-{}".format(
                 case["A"]["ranks"],
                 case["B"]["ranks"]
-            )]
+    )]
 
 
 def caseToSortable(case):
@@ -101,7 +103,7 @@ def createMasterRunScripts(casemap, dir):
         "${RUNNER} " + os.path.join(case, "runall.sh")
         for case in casemap.keys()
     ]
-    open(os.path.join(dir, "runall.sh"),"w").writelines([ line + "\n" for line in content ])
+    open(os.path.join(dir, "runall.sh"), "w").writelines([line + "\n" for line in content])
 
     # Generate master postprocessing script
     post = common + [
@@ -110,21 +112,23 @@ def createMasterRunScripts(casemap, dir):
     ]
     open(os.path.join(dir, "postprocessall.sh"),"w").writelines([ line + "\n" for line in post ])
 
+
     for case, instances in casemap.items():
         # Generate master runner script
         content = common + [
             "${RUNNER} " + os.path.join(*instance, "run-wrapper.sh")
             for instance in instances
         ]
-        open(os.path.join(dir, case, "runall.sh"),"w").writelines([ line + "\n" for line in content ])
+
+        open(os.path.join(dir, case, "runall.sh"), "w").writelines([line + "\n" for line in content])
 
         # Generate master postprocessing script
         post = common + [
             "${RUNNER} " + os.path.join(*instance, "post.sh")
             for instance in instances
         ]
-        open(os.path.join(dir, case, "postprocessall.sh"),"w").writelines([ line + "\n" for line in post ])
 
+        open(os.path.join(dir, case, "postprocessall.sh"), "w").writelines([line + "\n" for line in post])
 
 
 def createRunScript(outdir, path, case):
@@ -145,8 +149,10 @@ def createRunScript(outdir, path, case):
     branks = case["B"]["ranks"]
     bmeshLocation = os.path.relpath(os.path.join(outdir, "../nng-mapping-tester/meshes", bmesh, str(branks), bmesh), path)
     mapped_data_name = case["function"] + "(mapped)"
-    bcmd = "/usr/bin/time -f %M -a -o memory-B.log preciceMap -v -p B --data \"{}\" --mesh {} --output mapped || kill 0 &".format(mapped_data_name, bmeshLocation)
-    if branks > 1: bcmd = "mpirun -n {} $ASTE_B_MPIARGS {}".format(branks, bcmd)
+    bcmd = "/usr/bin/time -f %M -a -o memory-B.log preciceMap -v -p B --data \"{}\" --mesh {} --output mapped || kill 0 &".format(
+        mapped_data_name, bmeshLocation)
+    if branks > 1:
+        bcmd = "mpirun -n {} $ASTE_B_MPIARGS {}".format(branks, bcmd)
 
     content = [
         "#!/bin/bash",
@@ -176,7 +182,7 @@ def createRunScript(outdir, path, case):
         "fi",
         "rm -f running",
     ]
-    open(os.path.join(path, "run.sh"),"w").writelines([ line + "\n" for line in content ])
+    open(os.path.join(path, "run.sh"), "w").writelines([line + "\n" for line in content])
 
     # Generate wrapper script for runner
     wrapper = [
@@ -184,7 +190,7 @@ def createRunScript(outdir, path, case):
         'cd "$( dirname "${BASH_SOURCE[0]}" )"',
         "/bin/bash run.sh 2>&1 | tee run.log"
     ]
-    open(os.path.join(path, "run-wrapper.sh"),"w").writelines([ line + "\n" for line in wrapper ])
+    open(os.path.join(path, "run-wrapper.sh"), "w").writelines([line + "\n" for line in wrapper])
 
     # Generate post processing script
     post_content = [
@@ -199,15 +205,17 @@ def createRunScript(outdir, path, case):
     ]
     if (branks == 1):
         copycmd = "cp {}.conn.txt mapped.conn.txt".format(bmeshLocation)
-        diffcmd = "vtk_calculator.py --mesh mapped.txt -o error.vtk --diff --stats \"{}\" | tee diff.log".format(case["function"])
+        diffcmd = "vtk_calculator.py --mesh mapped.txt -o error.vtk --diff --stats \"{}\" | tee diff.log".format(
+            case["function"])
         post_content += [copycmd, diffcmd]
     else:
         [recoveryFileLocation, tmpPrefix] = os.path.split(os.path.normpath(bmeshLocation))
         tmprecoveryFile = recoveryFileLocation + "/recovery.json"
         joincmd = "join_mesh.py --mesh mapped -r {} -o result.vtk".format(tmprecoveryFile)
-        diffcmd = "vtk_calculator.py --data error --diffdata \"{1}\" --diff --stats --mesh result.vtk --function \"{0}\" | tee diff.log".format(case["function"], mapped_data_name)
-        post_content += [joincmd,diffcmd]
-    open(os.path.join(path, "post.sh"),"w").writelines([ line + "\n" for line in post_content ])
+        diffcmd = "vtk_calculator.py --data error --diffdata \"{1}\" --diff --stats --mesh result.vtk --function \"{0}\" | tee diff.log".format(
+            case["function"], mapped_data_name)
+        post_content += [joincmd, diffcmd]
+    open(os.path.join(path, "post.sh"), "w").writelines([line + "\n" for line in post_content])
 
 
 def setupCases(outdir, template, cases):
@@ -216,8 +224,8 @@ def setupCases(outdir, template, cases):
         folders = getCaseFolders(case)
         casemap.setdefault(folders[0], []).append(folders[1:])
         name = [outdir] + folders
-        path=os.path.join(*name)
-        config=os.path.join(path, "precice-config.xml")
+        path = os.path.join(*name)
+        config = os.path.join(path, "precice-config.xml")
 
         print(f"Generating {path}")
         os.makedirs(path, exist_ok=True)
@@ -233,8 +241,18 @@ def setupCases(outdir, template, cases):
 def parseArguments(args):
     parser = argparse.ArgumentParser(description="Generator for a mapping test suite")
     parser.add_argument('-o', '--outdir', default="cases", help='Directory to generate the test suite in.')
-    parser.add_argument('-s', '--setup', type=argparse.FileType('r'), default="setup.json", help='The test setup file to use.')
-    parser.add_argument('-t', '--template', type=argparse.FileType('r'), default="config-template.xml", help='The precice config template to use.')
+    parser.add_argument(
+        '-s',
+        '--setup',
+        type=argparse.FileType('r'),
+        default="setup.json",
+        help='The test setup file to use.')
+    parser.add_argument(
+        '-t',
+        '--template',
+        type=argparse.FileType('r'),
+        default="config-template.xml",
+        help='The precice config template to use.')
     return parser.parse_args(args)
 
 

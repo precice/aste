@@ -10,8 +10,14 @@ import itertools
 
 def parseArguments(args):
     parser = argparse.ArgumentParser(description="Creates convergence plots from gathered stats")
-    parser.add_argument('-f', '--file', type=argparse.FileType('r'), default="stats.csv", help='The CSV file containing the gathered stats.')
-    parser.add_argument('-ni', '--no-inverse', dest="inverse", action="store_false", help='Do not create inverse plots.')
+    parser.add_argument('-f', '--file', type=argparse.FileType('r'), default="stats.csv",
+                        help='The CSV file containing the gathered stats.')
+    parser.add_argument(
+        '-ni',
+        '--no-inverse',
+        dest="inverse",
+        action="store_false",
+        help='Do not create inverse plots.')
     parser.add_argument('--show', action="store_true", help='Shows the plots insead of saving them.')
     return parser.parse_args(args)
 
@@ -22,7 +28,17 @@ def lavg(l):
 
 def getStyler():
     styles = ['solid', 'dashed', 'dashdot']
-    colors = ['#0173b2', '#de8f05', '#029e73', '#d55e00', '#cc78bc', '#ca9161', '#fbafe4', '#949494', '#ece133', '#56b4e9']
+    colors = [
+        '#0173b2',
+        '#de8f05',
+        '#029e73',
+        '#d55e00',
+        '#cc78bc',
+        '#ca9161',
+        '#fbafe4',
+        '#949494',
+        '#ece133',
+        '#56b4e9']
     markers = ['o', 'v', '^', 'D', '*']
     for style in itertools.product(styles, markers, colors):
         yield style
@@ -59,13 +75,24 @@ def main(argv):
     args = parseArguments(argv[1:])
 
     df = pandas.read_csv(args.file)
-    numeric_cols = ['mesh A', 'mesh B', 'count', 'min', 'max', 'median', 'relative-l2', 'weighted-l2', '99th percentile', '95th percentile', '90th percentile']
+    numeric_cols = [
+        'mesh A',
+        'mesh B',
+        'count',
+        'min',
+        'max',
+        'median',
+        'relative-l2',
+        'weighted-l2',
+        '99th percentile',
+        '95th percentile',
+        '90th percentile']
     df[numeric_cols] = df[numeric_cols].apply(pandas.to_numeric)
 
     # A on x axes
     plot(df, False, True, args.show)
     plot(df, False, False, args.show)
-    
+
     if (args.inverse):
         # B on x axes
         plot(df, True, True, args.show)
@@ -82,7 +109,7 @@ def plot(df, inverse, idfilter, show=False):
         xname = "mesh A"
         groupname = "mesh B"
         fmt = "{} onto {}"
-    yname="relative-l2"
+    yname = "relative-l2"
     styler = getStyler()
 
     print("Plot x:{} y:{} grouped by {}".format(xname, yname, groupname))
@@ -90,7 +117,7 @@ def plot(df, inverse, idfilter, show=False):
     df.sort_values(xname, inplace=True)
     grouped = df.groupby(["mapping", groupname])
 
-    fig, ax = plt.subplots(sharex=True, sharey=True, figsize=(10,5))
+    fig, ax = plt.subplots(sharex=True, sharey=True, figsize=(10, 5))
 
     for name, group in grouped:
         filtered = group[group["mesh A"] != group["mesh B"]] if idfilter else group
@@ -117,9 +144,8 @@ def plot(df, inverse, idfilter, show=False):
 
     plt.gca().invert_xaxis()
     plt.grid()
-    ax.legend(loc="upper left", bbox_to_anchor=(1,1))
+    ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
     plt.subplots_adjust(right=0.7)
-
 
     if show:
         plt.show()
