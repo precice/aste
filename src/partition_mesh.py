@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 import argparse
+import json
 import logging
 import math
 import os
-from typing import List
-import numpy as np
+import platform
 import shutil
 from ctypes import *
-import json
-import platform
+
+import numpy as np
+import vtk
 
 
 class Mesh:

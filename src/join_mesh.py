@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 import argparse
+import json
 import logging
 import os
-import json
-from partition_mesh import MeshPartitioner
-import vtk
 import os.path
+
+import vtk
 
 
 class MeshJoiner:
