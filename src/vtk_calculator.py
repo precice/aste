@@ -29,12 +29,18 @@ class Calculator:
 
     @staticmethod
     def create_logger(level):
-        logging.basicConfig(level=getattr(logging, level))
+        logger = logging.getLogger('---[ASTE-Calculator]')
+        logger.setLevel(getattr(logging, level))
+        ch = logging.StreamHandler()
+        ch.setLevel(getattr(logging, level))
+        formatter = logging.Formatter('%(name)s %(levelname)s : %(message)s')
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
         return
 
     @staticmethod
     def get_logger():
-        return logging
+        return logging.getLogger('---[ASTE-Calculator]')
 
     @staticmethod
     def parse_args():
@@ -209,16 +215,20 @@ class Calculator:
             abs_diff), np.nanmin(difference), np.nanmax(abs_diff), np.nanmax(difference)
         p99, p95, p90, median = np.percentile(abs_diff, [99, 95, 90, 50])
         relative = np.sqrt(np.nansum(np.square(abs_diff)) / abs_diff.size)
-        logging.info("Vertex count {}".format(cnt))
-        logging.info("Relative l2 error {}".format(relative))
-        logging.info("Maximum absolute error per vertex {}".format(abs_max))
-        logging.info("Maximum signed error per vertex {}".format(signed_max))
-        logging.info("Minimum absolute error per vertex {}".format(abs_min))
-        logging.info("Minimum signed error per vertex {}".format(signed_min))
-        logging.info("Median absolute error per vertex {}".format(median))
-        logging.info("99th percentile of absolute error per vertex {}".format(p99))
-        logging.info("95th percentile of absolute error per vertex {}".format(p95))
-        logging.info("90th percentile of absolute error per vertex {}".format(p90))
+        decorator = 15 * "*"
+        spaces = 5 * " "
+        logger.info(f"\n\n{decorator}{spaces}Statistics{spaces}{decorator}\n\n")
+        logger.info("Vertex count {}".format(cnt))
+        logger.info("Relative l2 error {}".format(relative))
+        logger.info("Maximum absolute error per vertex {}".format(abs_max))
+        logger.info("Maximum signed error per vertex {}".format(signed_max))
+        logger.info("Minimum absolute error per vertex {}".format(abs_min))
+        logger.info("Minimum signed error per vertex {}".format(signed_min))
+        logger.info("Median absolute error per vertex {}".format(median))
+        logger.info("99th percentile of absolute error per vertex {}".format(p99))
+        logger.info("95th percentile of absolute error per vertex {}".format(p95))
+        logger.info("90th percentile of absolute error per vertex {}".format(p90))
+        logger.info(f"\n\n{decorator}{spaces}End Statistic{spaces}{decorator}\n\n")
 
         if stats:
             stat_file = os.path.splitext(out_meshname)[0] + ".stats.json"
