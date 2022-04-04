@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 import argparse
+import json
 import logging
 import os.path
-import vtk
-import json
-import sys
+
 import numpy as np
-from vtk.util.numpy_support import vtk_to_numpy as v2n
+import vtk
 from vtk.util.numpy_support import numpy_to_vtk as n2v
 from sympy import *
+from vtk.util.numpy_support import vtk_to_numpy as v2n
+
 
 
 class Calculator:
