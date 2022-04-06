@@ -46,12 +46,104 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     VLOG(1) << "Loading mesh from " << asteInterface.meshes.front().filename();
 
     asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim);
-    asteInterface.meshes.front().loadData(asteInterface.mesh);
-    VLOG(1) << "The mesh contains: " << asteInterface.mesh.summary();
 
     vertexIDs = setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshID);
     VLOG(1) << "Mesh setup completed on Rank " << context.rank;
     minMeshSize = std::max(minMeshSize, asteInterface.meshes.size());
+  }
+
+  dt = preciceInterface.initialize();
+
+  const std::string init_file = (asteConfiguration.starttime == 1) ? "init" : std::to_string(asteConfiguration.starttime - 1);
+  int               round{0};
+
+  VLOG(1) << "Looking for " << init_file << "\n";
+  for (const auto &mesh : asteConfiguration.asteInterfaces.front().meshes) {
+    if (mesh.filename().find(init_file) == std::string::npos)
+      round++;
+    else
+      break;
+  }
+  VLOG(1) << "Found in position" << round << "\n";
+
+  if (preciceInterface.isActionRequired(precice::constants::actionWriteInitialData())) {
+    VLOG(1) << "Write initial data for participant " << participantName;
+    for (auto &asteInterface : asteConfiguration.asteInterfaces) {
+      asteInterface.meshes[round].loadData(asteInterface.mesh);
+      VLOG(1) << "The mesh contains: " << asteInterface.mesh.summary();
+      for (const auto &meshdata : asteInterface.mesh.meshdata) {
+        if (meshdata.type == aste::datatype::WRITE) {
+          switch (meshdata.numcomp) {
+          case 1:
+            assert(meshdata.dataVector.size() == vertexIDs.size());
+            preciceInterface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          default:
+            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
+            preciceInterface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          }
+        }
+      }
+      VLOG(1) << "Data written: " << asteInterface.mesh.previewData();
+    }
+    preciceInterface.markActionFulfilled(precice::constants::actionWriteInitialData());
+  }
+
+  preciceInterface.initializeData();
+  const std::string &coric = precice::constants::actionReadIterationCheckpoint();
+  const std::string &cowic = precice::constants::actionWriteIterationCheckpoint();
+
+  round++;
+
+  while (preciceInterface.isCouplingOngoing() and round < minMeshSize) {
+    if (preciceInterface.isActionRequired(cowic)) {
+      throw std::runtime_error("Implicit coupling schemes cannot be used with ASTE");
+    }
+    for (auto &asteInterface : asteConfiguration.asteInterfaces) {
+      VLOG(1) << "Read mesh for t=" << round << " from " << asteInterface.meshes[round];
+      asteInterface.meshes[round].resetData(asteInterface.mesh);
+      asteInterface.meshes[round].loadData(asteInterface.mesh);
+      VLOG(1) << "This roundmesh contains: " << asteInterface.mesh.summary();
+
+      for (const auto meshdata : asteInterface.mesh.meshdata) {
+        if (meshdata.type == aste::datatype::WRITE) {
+          switch (meshdata.numcomp) {
+          case 1:
+            assert(meshdata.dataVector.size() == vertexIDs.size());
+            preciceInterface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          default:
+            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
+            preciceInterface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          }
+          VLOG(1) << "Data written: " << asteInterface.mesh.previewData(meshdata);
+        }
+      }
+    }
+    dt = preciceInterface.advance(dt);
+    if (preciceInterface.isActionRequired(coric)) {
+      throw std::runtime_error("Implicit coupling schemes cannot be used with ASTE");
+    }
+    for (auto &asteInterface : asteConfiguration.asteInterfaces) {
+      for (auto &meshdata : asteInterface.mesh.meshdata) {
+        if (meshdata.type == aste::datatype::READ) {
+          switch (meshdata.numcomp) {
+          case 1:
+            meshdata.dataVector.resize(vertexIDs.size());
+            preciceInterface.readBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          default:
+            meshdata.dataVector.resize(vertexIDs.size() * dim);
+            preciceInterface.readBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          }
+          VLOG(1) << "Data read: " << asteInterface.mesh.previewData(meshdata);
+        }
+      }
+    }
+    round++;
   }
 };
 
