@@ -43,11 +43,11 @@ OptionMap getOptions(int argc, char *argv[])
     // Needs to be called before we look for participants
     po::notify(vm);
 
-    if (vm["participant"].as<string>() != "A" &&
+    if (!vm.count("aste-config") && vm["participant"].as<string>() != "A" &&
         vm["participant"].as<string>() != "B")
       throw runtime_error("Invalid participant, must be either 'A' or 'B'");
 
-    if ((vm.count("participant") || vm.count("data") || vm.count("mesh") || vm.count("output") || vm.count("vector")) && vm.count("aste-config"))
+    if (!(vm.count("participant") || vm.count("data") || vm.count("mesh") || vm.count("output") || vm.count("vector")) && vm.count("aste-config"))
       throw runtime_error("Replay mode can only be combined with logging options");
 
     if ((vm.count("aste-config") == 0) && not(vm.count("participant") && vm.count("data") && vm.count("mesh")))
