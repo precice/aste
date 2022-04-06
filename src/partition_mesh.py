@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 import argparse
+import json
 import logging
 import math
 import os
-from typing import List
-import numpy as np
+import platform
 import shutil
 from ctypes import *
-import json
-import platform
+
+import numpy as np
+import vtk
 
 
 class Mesh:
@@ -352,7 +353,6 @@ class MeshPartitioner:
 
     @staticmethod
     def read_mesh(filename: str) -> Mesh:
-        import vtk
         extension = os.path.splitext(filename)[1]
         if (extension == ".vtu"):
             reader = vtk.vtkXMLUnstructuredGridReader()
@@ -386,7 +386,6 @@ class MeshPartitioner:
         if (cell_types is not None):
             assert (len(cell_types) in [0, len(cells)])
         assert (len(points) == len(data_index))
-        import vtk
         logger = MeshPartitioner.get_logger()
 
         vtkGrid = vtk.vtkUnstructuredGrid()
@@ -482,7 +481,6 @@ class MeshPartitioner:
 
     @staticmethod
     def vtu2vtk(inmesh, outmesh):
-        import vtk
         reader = vtk.vtkXMLUnstructuredGridReader()
         reader.SetFileName(inmesh)
         reader.Update()
