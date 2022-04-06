@@ -13,6 +13,11 @@ void asteConfig::load(const std::string &asteConfigFile)
 
   participantName = config["participant"];
 
+  starttime = config["starttime"].get<int>();
+  if (starttime < 1) {
+    throw std::runtime_error("Start time cannot be smaller than 1, check your ASTE configuration file.");
+  }
+
   const int numInterfaces = config["meshes"].size();
 
   for (auto i = 0; i < numInterfaces; i++) {

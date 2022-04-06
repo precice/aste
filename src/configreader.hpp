@@ -40,6 +40,7 @@ public:
   std::string                preciceConfigFilename; // preCICE config file
   std::vector<asteInterface> asteInterfaces;        // Vector of ASTE interfaces(meshes)
   std::string                participantName;       // The name of participant in preCICE config
+  int                        starttime;
 };
 
 } // namespace aste
