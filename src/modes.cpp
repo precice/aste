@@ -98,14 +98,12 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
   const std::string &coric = precice::constants::actionReadIterationCheckpoint();
   const std::string &cowic = precice::constants::actionWriteIterationCheckpoint();
 
-  round++;
-
   while (preciceInterface.isCouplingOngoing() and round < minMeshSize) {
     if (preciceInterface.isActionRequired(cowic)) {
       throw std::runtime_error("Implicit coupling schemes cannot be used with ASTE");
     }
     for (auto &asteInterface : asteConfiguration.asteInterfaces) {
-      VLOG(1) << "Read mesh for t=" << round << " from " << asteInterface.meshes[round];
+      VLOG(1) << "Read mesh for t= " << round << " from " << asteInterface.meshes[round];
       asteInterface.meshes[round].resetData(asteInterface.mesh);
       asteInterface.meshes[round].loadData(asteInterface.mesh);
       VLOG(1) << "This roundmesh contains: " << asteInterface.mesh.summary();
@@ -149,6 +147,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     }
     round++;
   }
+  preciceInterface.finalize();
 };
 
 void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap &options)
@@ -290,5 +289,6 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     }
     round++;
   }
+  preciceInterface.finalize();
   return;
 }
