@@ -53,23 +53,27 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
   }
 
   dt = preciceInterface.initialize();
+  int round{0};
 
-  const std::string init_file = (asteConfiguration.starttime == 1) ? "init" : std::to_string(asteConfiguration.starttime - 1);
-  int               round{0};
-
-  VLOG(1) << "Looking for " << init_file << "\n";
+  VLOG(1) << "Looking for dt = " << asteConfiguration.startdt;
   for (const auto &mesh : asteConfiguration.asteInterfaces.front().meshes) {
-    if (mesh.filename().find(init_file) == std::string::npos)
+    if (mesh.filename().find(std::to_string(asteConfiguration.startdt)) == std::string::npos)
       round++;
     else
       break;
   }
-  VLOG(1) << "Found in position" << round << "\n";
+  VLOG(1) << "Found in position " << round << "\n";
+  VLOG(1) << "ASTE Start mesh is " << asteConfiguration.asteInterfaces.front().meshes[round].filename();
+  VLOG(1) << "ASTE Final mesh is " << asteConfiguration.asteInterfaces.front().meshes.back().filename();
 
   if (preciceInterface.isActionRequired(precice::constants::actionWriteInitialData())) {
+    if (round == 0) {
+      throw std::runtime_error("Starting from dt = " + std::to_string(asteConfiguration.startdt) + " but previous timestep \".init\" or " + std::to_string(asteConfiguration.startdt - 1) + " is cannot be found check your mesh folder");
+      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
     VLOG(1) << "Write initial data for participant " << participantName;
     for (auto &asteInterface : asteConfiguration.asteInterfaces) {
-      asteInterface.meshes[round].loadData(asteInterface.mesh);
+      asteInterface.meshes[round - 1].loadData(asteInterface.mesh);
       VLOG(1) << "The mesh contains: " << asteInterface.mesh.summary();
       for (const auto &meshdata : asteInterface.mesh.meshdata) {
         if (meshdata.type == aste::datatype::WRITE) {
