@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <json.hpp>
 #include <string>
 #include <vector>

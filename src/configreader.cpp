@@ -13,12 +13,27 @@ void asteConfig::load(const std::string &asteConfigFile)
 
   participantName = config["participant"];
 
-  startdt = config["startdt"].get<int>();
+  try {
+    startdt = config["startdt"].get<int>();
+  } catch (nlohmann::detail::type_error) {
+    try {
+      startdt = std::stoi(config["startdt"].get<std::string>());
+    } catch (nlohmann::detail::type_error) {
+      std::cerr << "Error while parsing startdt from ASTE configuration file.\n";
+    } catch (std::invalid_argument) {
+      std::cerr << "Error while parsing startdt from ASTE configuration file it must be an integer or integer convertable string.\n";
+    }
+  }
+
   if (startdt < 1) {
-    throw std::runtime_error("Start dt cannot be smaller than 1, check your ASTE configuration file.");
+    throw std::runtime_error("Start dt cannot be smaller than 1, please check your ASTE configuration file.");
   }
 
   const int numInterfaces = config["meshes"].size();
+
+  if (numInterfaces == 0) {
+    throw std::runtime_error("ASTE configuration should contain at least 1 mesh. Please check your ASTE configuration file. ");
+  }
 
   for (auto i = 0; i < numInterfaces; i++) {
     asteInterface interface;
