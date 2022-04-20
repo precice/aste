@@ -19,7 +19,8 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     const std::string meshname = asteInterface.meshFilePrefix;
     asteInterface.meshes       = aste::BaseName(meshname).findAll(context);
     if (asteInterface.meshes.empty()) {
-      throw std::invalid_argument("ERROR: Could not find meshes for name: " + meshname);
+      std::cerr << "ERROR: Could not find meshes for name: " << meshname;
+      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
     asteInterface.meshID = preciceInterface.getMeshID(asteInterface.meshName);
     const int dim        = preciceInterface.getDimensions();
@@ -68,7 +69,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
 
   if (preciceInterface.isActionRequired(precice::constants::actionWriteInitialData())) {
     if (round == 0) {
-      throw std::runtime_error("Starting from dt = " + std::to_string(asteConfiguration.startdt) + " but previous timestep \".init\" or " + std::to_string(asteConfiguration.startdt - 1) + " was not found. Please make sure the relevant Mesh exists.");
+      std::cerr << "Starting from dt = " << std::to_string(asteConfiguration.startdt) << " but previous timestep \".init\" or " << std::to_string(asteConfiguration.startdt - 1) << " was not found. Please make sure the relevant Mesh exists.";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
     VLOG(1) << "Write initial data for participant " << participantName;
@@ -100,7 +101,8 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
 
   while (preciceInterface.isCouplingOngoing() and round < minMeshSize) {
     if (preciceInterface.isActionRequired(cowic)) {
-      throw std::runtime_error("Implicit coupling schemes cannot be used with ASTE");
+      std::cerr << "Implicit coupling schemes cannot be used with ASTE";
+      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
     for (auto &asteInterface : asteConfiguration.asteInterfaces) {
       VLOG(1) << "Read mesh for t= " << round << " from " << asteInterface.meshes[round];
@@ -126,7 +128,8 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     }
     dt = preciceInterface.advance(dt);
     if (preciceInterface.isActionRequired(coric)) {
-      throw std::runtime_error("Implicit coupling schemes cannot be used with ASTE");
+      std::cerr << "Implicit coupling schemes cannot be used with ASTE";
+      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
     for (auto &asteInterface : asteConfiguration.asteInterfaces) {
       for (auto &meshdata : asteInterface.mesh.meshdata) {
@@ -242,7 +245,8 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
 
   while (preciceInterface.isCouplingOngoing() and round < asteInterface.meshes.size()) {
     if (preciceInterface.isActionRequired(cowic)) {
-      throw std::runtime_error("Implicit coupling schemes cannot be used with ASTE");
+      std::cerr << "Implicit coupling schemes cannot be used with ASTE";
+      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
     for (auto &asteInterface : asteConfiguration.asteInterfaces) {
       VLOG(1) << "Read mesh for t=" << round << " from " << asteInterface.meshes[round];
@@ -268,7 +272,8 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     }
     dt = preciceInterface.advance(dt);
     if (preciceInterface.isActionRequired(coric)) {
-      throw std::runtime_error("Implicit coupling schemes cannot be used with ASTE");
+      std::cerr << "Implicit coupling schemes cannot be used with ASTE";
+      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
     for (auto &asteInterface : asteConfiguration.asteInterfaces) {
       for (auto &meshdata : asteInterface.mesh.meshdata) {

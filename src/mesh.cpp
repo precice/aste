@@ -6,6 +6,7 @@
 #include <iostream>
 #include <limits>
 #include <mesh.hpp>
+#include <mpi.h>
 #include <sstream>
 #include <stdexcept>
 #include <vtkCell.h>
@@ -44,7 +45,8 @@ Mesh::VID vtkToPos(vtkIdType id)
 void readMesh(Mesh &mesh, const std::string &filename, const int dim)
 {
   if (!fs::is_regular_file(filename)) {
-    throw std::invalid_argument{"The mesh file does not exist: " + filename};
+    std::cerr << "The mesh file does not exist: " << filename;
+    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
   mesh.fname                               = filename; // Store data loaded from which mesh
@@ -62,7 +64,8 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim)
     reader->Update();
     grid = reader->GetOutput();
   } else {
-    throw std::runtime_error("Unknown File Extension for file " + filename + "Extension should be .vtk or .vtu");
+    std::cerr << "Unknown File Extension for file " << filename << "Extension should be .vtk or .vtu";
+    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
   // Get Points
@@ -93,8 +96,8 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim)
       std::array<Mesh::VID, 4> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2)), vtkToPos(cell->GetPointId(3))};
       mesh.quadrilaterals.push_back(elem);
     } else {
-      throw std::runtime_error{
-          std::string{"Invalid cell type in VTK file. Valid cell types are, VTK_LINE, VTK_TRIANGLE, and VTK_QUAD."}};
+      std::cerr << "Invalid cell type in VTK file. Valid cell types are, VTK_LINE, VTK_TRIANGLE, and VTK_QUAD.";
+      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
   }
 };
@@ -103,7 +106,8 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim)
 void readData(Mesh &mesh, const std::string &filename)
 {
   if (!fs::is_regular_file(filename)) {
-    throw std::invalid_argument{"The mesh file does not exist: " + filename};
+    std::cerr << "The mesh file does not exist: " << filename;
+    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
   mesh.fname                               = filename; // Store data loaded from which mesh
@@ -124,7 +128,8 @@ void readData(Mesh &mesh, const std::string &filename)
     reader->Update();
     grid = reader->GetOutput();
   } else {
-    throw std::runtime_error("Unknown File Extension for file " + filename + "Extension should be .vtk or .vtu");
+    std::cerr << "Unknown File Extension for file " << filename << "Extension should be .vtk or .vtu";
+    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
   vtkIdType NumPoints = grid->GetNumberOfPoints();
@@ -171,7 +176,8 @@ void readData(Mesh &mesh, const std::string &filename)
         }
         break;
       default: // Unknown number of component
-        throw std::runtime_error(std::string("Please check your VTK file there is/are ").append(std::string(std::to_string(NumComp))).append(" component for data ").append(dataname));
+        std::cerr << std::string("Please check your VTK file there is/are ").append(std::string(std::to_string(NumComp))).append(" component for data ").append(dataname);
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
         break;
       }
     }
@@ -219,7 +225,8 @@ void MeshName::save(const Mesh &mesh) const
     reader->Update();
     grid = reader->GetOutput();
   } else {
-    throw std::runtime_error("Unknown File Extension for file " + mesh.fname + "Extension should be .vtk or .vtu");
+    std::cerr << "Unknown File Extension for file " << mesh.fname << " Extension should be .vtk or .vtu";
+    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
   for (const auto meshdata : mesh.meshdata) {
@@ -328,7 +335,9 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
     std::cerr << "Total number of detected meshes: " << meshNames.size() << '\n';
     return meshNames;
   }
-  throw std::runtime_error("Unable to handle basename " + _bname + " no meshes found");
+  std::cerr << "Unable to handle basename " << _bname << " no meshes found";
+  MPI_Finalize();
+  std::exit(EXIT_FAILURE);
 }
 
 std::string Mesh::previewData(std::size_t max) const
