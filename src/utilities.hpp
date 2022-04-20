@@ -38,10 +38,10 @@ aste::ExecutionContext initializeMPI(int argc, char *argv[]);
 /**
  * @brief Sets Vertices in preCICE and returns vertexIDs
  *
- * @param interface
- * @param mesh
- * @param meshID
- * @return std::vector<int>
+ * @param interface preCICE interface 
+ * @param mesh Mesh in ASTE 
+ * @param meshID Mesh ID of the Mesh in preCICE
+ * @return std::vector<int> a vector of vertexIDs in preCICE
  */
 std::vector<int> setupVertexIDs(precice::SolverInterface &interface,
                                 const aste::Mesh &mesh, int meshID);
@@ -50,10 +50,10 @@ EdgeIdMap setupEdgeIDs(precice::SolverInterface &interface, const aste::Mesh &me
 /**
  * @brief Setup mesh in preCICE (with connectivity information of provided).
  *
- * @param interface
- * @param mesh
- * @param meshID
- * @return std::vector<int>
+ * @param interface preCICE interface
+ * @param mesh Mesh in ASTE 
+ * @param meshID ID of the Mesh in preCICE
+ * @return std::vector<int> a vector of vertexIDs in preCICE
  */
 std::vector<int> setupMesh(precice::SolverInterface &interface, const aste::Mesh &mesh, int meshID);
 } // namespace aste
