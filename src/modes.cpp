@@ -68,7 +68,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
 
   if (preciceInterface.isActionRequired(precice::constants::actionWriteInitialData())) {
     if (round == 0) {
-      throw std::runtime_error("Starting from dt = " + std::to_string(asteConfiguration.startdt) + " but previous timestep \".init\" or " + std::to_string(asteConfiguration.startdt - 1) + " is cannot be found check your mesh folder");
+      throw std::runtime_error("Starting from dt = " + std::to_string(asteConfiguration.startdt) + " but previous timestep \".init\" or " + std::to_string(asteConfiguration.startdt - 1) + " was not found. Please make sure the relevant Mesh exists.");
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
     VLOG(1) << "Write initial data for participant " << participantName;
