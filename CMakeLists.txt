@@ -23,7 +23,7 @@ find_package (Threads REQUIRED)
 
 find_package(precice REQUIRED CONFIG)
 
-find_package(Boost 1.65.1 REQUIRED COMPONENTS system program_options filesystem unit_test_framework)
+find_package(Boost 1.65.1 REQUIRED COMPONENTS log log_setup system program_options filesystem unit_test_framework)
 
 find_package(VTK REQUIRED)
 message (STATUS "VTK_VERSION: ${VTK_VERSION}")
@@ -38,16 +38,13 @@ endif()
 
 find_package(MPI REQUIRED)
 
-add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/easylogging++.cc src/mesh.cpp src/configreader.cpp src/modes.cpp src/utilities.cpp)
+add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/mesh.cpp src/configreader.cpp src/modes.cpp src/utilities.cpp)
 target_include_directories(preciceMap PRIVATE src)
 target_link_libraries(preciceMap
   precice::precice
   Threads::Threads
-  Boost::boost
-  Boost::filesystem
-  Boost::program_options
-  Boost::system
   MPI::MPI_CXX
+  ${Boost_LIBRARIES}
   ${VTK_LIBRARIES}
 )
 
@@ -62,9 +59,7 @@ endif()
 add_executable(testing src/tests/testing.cpp src/tests/read_test.cpp src/tests/write_test.cpp src/mesh.cpp)
 target_include_directories(testing PRIVATE src)
 target_link_libraries(testing
-  Boost::filesystem
-  Boost::boost
-  Boost::unit_test_framework
+  ${Boost_LIBRARIES}
   ${VTK_LIBRARIES}
 )
 
