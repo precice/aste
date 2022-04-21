@@ -6,12 +6,11 @@
 
 int main(int argc, char *argv[])
 {
-  INIT_LOGGING(info);
   auto context = aste::initializeMPI(argc, argv);
   auto options = getOptions(argc, argv);
 
   if (options["verbose"].as<bool>()) {
-    CHANGE_LOG_SEV_LEVEL(debug);
+    boost::log::core::get()->set_filter(logging::trivial::severity >= logging::trivial::debug);
   }
 
   if (options.count("aste-config")) {

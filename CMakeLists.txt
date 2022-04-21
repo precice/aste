@@ -38,7 +38,7 @@ endif()
 
 find_package(MPI REQUIRED)
 
-add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/mesh.cpp src/configreader.cpp src/modes.cpp src/utilities.cpp)
+add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/mesh.cpp src/configreader.cpp src/modes.cpp src/utilities.cpp src/logger.cpp)
 target_include_directories(preciceMap PRIVATE src)
 target_link_libraries(preciceMap
   precice::precice
@@ -56,7 +56,7 @@ if(METIS_FOUND)
   target_link_libraries(preciceMap metisAPI)
 endif()
 
-add_executable(testing src/tests/testing.cpp src/tests/read_test.cpp src/tests/write_test.cpp src/mesh.cpp)
+add_executable(testing src/tests/testing.cpp src/tests/read_test.cpp src/tests/write_test.cpp src/mesh.cpp src/logger.cpp)
 target_include_directories(testing PRIVATE src)
 target_link_libraries(testing
   ${Boost_LIBRARIES}
