@@ -71,7 +71,6 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim)
       mesh.quadrilaterals.push_back(elem);
     } else {
       ASTE_ERROR << "Invalid cell type in VTK file. Valid cell types are, VTK_LINE, VTK_TRIANGLE, and VTK_QUAD.";
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
   }
 };
