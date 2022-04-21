@@ -1,7 +1,12 @@
 #pragma once
+
 #include <boost/program_options.hpp>
+
 #include <iostream>
+
 #include <mpi.h>
+
+#include "logger.hpp"
 
 using DistVertex = std::vector<double>;
 

@@ -1,8 +1,4 @@
 #include "common.hpp"
-#include <boost/program_options.hpp>
-#include <iostream>
-#include <mpi.h>
-#include "easylogging++.h"
 
 using namespace std;
 
@@ -36,7 +32,7 @@ OptionMap getOptions(int argc, char *argv[])
     po::store(parse_command_line(argc, argv, desc), vm);
 
     if (vm.count("help")) {
-      std::cout << desc << std::endl;
+      ASTE_INFO << desc << std::endl;
       std::exit(EXIT_SUCCESS);
     }
 
@@ -54,8 +50,8 @@ OptionMap getOptions(int argc, char *argv[])
       throw runtime_error("One of the following arguments is missing \"--participant\" \"--data\" \"--mesh\"");
 
   } catch (const std::exception &e) {
-    LOG(ERROR) << "ERROR: " << e.what() << "\n";
-    LOG(ERROR) << desc << std::endl;
+    ASTE_ERROR << "ERROR: " << e.what() << "\n";
+    ASTE_ERROR << desc << std::endl;
     std::exit(EXIT_FAILURE);
   }
   return vm;

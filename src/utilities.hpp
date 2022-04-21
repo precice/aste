@@ -1,21 +1,25 @@
 #pragma once
 
-#include <algorithm>
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
 #include <boost/filesystem.hpp>
+
+#include <algorithm>
 #include <cassert>
 #include <chrono>
 #include <exception>
 #include <functional>
 #include <iostream>
-#include <mpi.h>
 #include <string>
+
+#include <mpi.h>
+
 #include "common.hpp"
 #include "configreader.hpp"
-#include "easylogging++.h"
+#include "logger.hpp"
 #include "mesh.hpp"
 #include "modes.hpp"
+
 #include "precice/SolverInterface.hpp"
 
 namespace fs = boost::filesystem;

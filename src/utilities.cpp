@@ -58,10 +58,10 @@ std::vector<int> aste::setupVertexIDs(precice::SolverInterface &interface,
 
 EdgeIdMap aste::setupEdgeIDs(precice::SolverInterface &interface, const aste::Mesh &mesh, int meshID, const std::vector<int> &vertexIDs)
 {
-  VLOG(1) << "Mesh Setup: 2.1) Gather Unique Edges";
+  ASTE_DEBUG << "Mesh Setup: 2.1) Gather Unique Edges";
   const auto unique_edges{gather_unique_edges(mesh)};
 
-  VLOG(1) << "Mesh Setup: 2.2) Register Edges";
+  ASTE_DEBUG << "Mesh Setup: 2.2) Register Edges";
   boost::container::flat_map<Edge, EdgeID> edgeMap;
   edgeMap.reserve(unique_edges.size());
 
@@ -79,14 +79,14 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
 {
   auto tstart = std::chrono::steady_clock::now();
 
-  VLOG(1) << "Mesh Setup: 1) Vertices";
+  ASTE_DEBUG << "Mesh Setup: 1) Vertices";
   const auto vertexIDs = setupVertexIDs(interface, mesh, meshID);
 
   auto tconnectivity = std::chrono::steady_clock::now();
-  VLOG(1) << "Mesh Setup: 2) Edges";
+  ASTE_DEBUG << "Mesh Setup: 2) Edges";
   const auto edgeMap = setupEdgeIDs(interface, mesh, meshID, vertexIDs);
 
-  VLOG(1) << "Mesh Setup: 3) Triangles";
+  ASTE_DEBUG << "Mesh Setup: 3) Triangles";
   for (auto const &triangle : mesh.triangles) {
     const auto a = vertexIDs[triangle[0]];
     const auto b = vertexIDs[triangle[1]];
@@ -98,7 +98,7 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
                               edgeMap.at(Edge{c, a}));
   }
 
-  VLOG(1) << "Mesh Setup: 4) Quadrilaterals";
+  ASTE_DEBUG << "Mesh Setup: 4) Quadrilaterals";
   for (auto const &quadrilateral : mesh.quadrilaterals) {
     const auto a = vertexIDs[quadrilateral[0]];
     const auto b = vertexIDs[quadrilateral[1]];
@@ -114,7 +114,7 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
 
   auto tend = std::chrono::steady_clock::now();
 
-  VLOG(1)
+  ASTE_DEBUG
       << "Mesh Setup Took "
       << std::chrono::duration_cast<std::chrono::milliseconds>(tend - tstart).count() << "ms ("
       << std::chrono::duration_cast<std::chrono::milliseconds>(tconnectivity - tstart).count() << "ms for vertices, "
