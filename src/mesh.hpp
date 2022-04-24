@@ -50,7 +50,7 @@ public:
   void loadMesh(Mesh &mesh, const int dim);
   void loadData(Mesh &mesh);
   void resetData(Mesh &mesh);
-  void save(const Mesh &mesh) const;
+  void save(const Mesh &mesh, const std::string &outputFilename) const;
 
 private:
   void createDirectories() const;
