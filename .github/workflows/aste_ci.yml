@@ -48,7 +48,7 @@ jobs:
         run: |
           cmake ..
           cmake --build .
-          cmake --install .
+          sudo make --install .
       - name: run test clang
         working-directory: build_clang
         run: |
