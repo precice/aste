@@ -171,7 +171,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     asteConfiguration.participantName       = "A";
     asteConfiguration.preciceConfigFilename = preciceConfig;
     aste::asteInterface asteInterface;
-    asteInterface.meshName       = "MeshA";
+    asteInterface.meshName       = "A-Mesh";
     asteInterface.meshFilePrefix = meshname;
     asteInterface.meshID         = preciceInterface.getMeshID(asteInterface.meshName);
     asteInterface.meshes         = aste::BaseName(meshname).findAll(context);
@@ -189,7 +189,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     asteConfiguration.participantName       = "B";
     asteConfiguration.preciceConfigFilename = preciceConfig;
     aste::asteInterface asteInterface;
-    asteInterface.meshName       = "MeshB";
+    asteInterface.meshName       = "B-Mesh";
     asteInterface.meshFilePrefix = meshname;
     asteInterface.meshID         = preciceInterface.getMeshID(asteInterface.meshName);
     asteInterface.meshes         = aste::BaseName(meshname).findAll(context);
