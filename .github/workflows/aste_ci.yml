@@ -56,5 +56,4 @@ jobs:
       - name: run example
         working-directory: tests/example
         run: |
-           pwd && ls 
-           ./run.sh
+          ./run.sh
