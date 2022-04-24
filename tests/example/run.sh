@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 set -e -x
 
-# Tests the data evaluation as well as preciceMap
-# This script assumes the ASTE binaries and python scripts are in $PATH
+# Calculate franke function on fine mesh
+vtk_calculator.py -m fine_mesh.vtk -f "franke3d" -d "Franke Function"
 
-# Evaluate a predefined function on the coarse mesh
-vtk_calculator.py --mesh coarseMesh.vtk --output coarseMeshWithData.vtk --function "franke3d" --data "franke function"
+# Map from the finer mesh to coarser mesh
+preciceMap -v -p A --mesh fine_mesh --data "Franke Function" &
+preciceMap -v -p B --mesh coarse_mesh --output map --data "InterpolatedData"
 
-preciceMap -v -p A --mesh coarseMeshWithData --data "franke function" &
-preciceMap -v -p B --mesh turbineFine --output mapped --data "result data"
-
-
-vtk_calculator.py --mesh mapped.vtk --function "franke3d" --diffdata "result data"
-
+# Calculate statistics
+vtk_calculator.py -m map.vtk -f "franke3d" -d difference --diffdata "InterpolatedData" --diff
