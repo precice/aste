@@ -22,7 +22,7 @@ void writetest(const WriteCase &current_case)
   std::iota(testMesh.meshdata.front().dataVector.begin(), testMesh.meshdata.front().dataVector.end(), rand());
 
   auto scalar_test = aste::BaseName{"write_test"}.with(aste::ExecutionContext());
-  scalar_test.save(testMesh);
+  scalar_test.save(testMesh, "write_test");
 
   // Read written data and compare with created data
   auto       read = aste::BaseName{"write_test"}.with(aste::ExecutionContext());
@@ -31,31 +31,31 @@ void writetest(const WriteCase &current_case)
   testMeshRead.meshdata.push_back(caseData);
   read.loadData(testMeshRead);
 
-  //Check Elements are correctly written
+  // Check Elements are correctly written
   BOOST_TEST(testMeshRead.positions.size() == testMesh.positions.size());
   BOOST_TEST(testMeshRead.edges.size() == testMesh.edges.size());
   BOOST_TEST(testMeshRead.quadrilaterals.size() == testMesh.quadrilaterals.size());
   BOOST_TEST(testMeshRead.triangles.size() == testMesh.triangles.size());
-  //Check Edges
+  // Check Edges
   BOOST_TEST(testMeshRead.edges[1][0] == testMesh.edges[1][0]);
   BOOST_TEST(testMeshRead.edges[1][1] == testMesh.edges[1][1]);
-  //Check Triangles
+  // Check Triangles
   BOOST_TEST(testMeshRead.triangles[0][0] == testMesh.triangles[0][0]);
   BOOST_TEST(testMeshRead.triangles[0][1] == testMesh.triangles[0][1]);
   BOOST_TEST(testMeshRead.triangles[0][2] == testMesh.triangles[0][2]);
-  //Check Quads
+  // Check Quads
   BOOST_TEST(testMeshRead.quadrilaterals[1][0] == testMesh.quadrilaterals[1][0]);
   BOOST_TEST(testMeshRead.quadrilaterals[1][1] == testMesh.quadrilaterals[1][1]);
   BOOST_TEST(testMeshRead.quadrilaterals[1][2] == testMesh.quadrilaterals[1][2]);
   BOOST_TEST(testMeshRead.quadrilaterals[1][3] == testMesh.quadrilaterals[1][3]);
-  //Check Datasize
+  // Check Datasize
   BOOST_TEST(testMeshRead.meshdata.front().dataVector.size() == testMesh.meshdata.front().dataVector.size());
-  //Check Data Values
+  // Check Data Values
   for (size_t i = 0; i < testMeshRead.meshdata.front().dataVector.size(); ++i) {
     BOOST_TEST(testMeshRead.meshdata.front().dataVector[i] == testMesh.meshdata.front().dataVector[i]);
   }
 
-  //Remove Artifacts
+  // Remove Artifacts
   if (fs::is_regular_file(current_case.fname + ".vtk")) {
     fs::remove(current_case.fname + ".vtk");
   }

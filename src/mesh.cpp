@@ -84,15 +84,15 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim)
 
     // Here we use static cast since VTK library returns a long long unsigned int however preCICE uses int for PointId's
     if (cellType == VTK_TRIANGLE) {
-      vtkCell *                cell = grid->GetCell(i);
+      vtkCell                 *cell = grid->GetCell(i);
       std::array<Mesh::VID, 3> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2))};
       mesh.triangles.push_back(elem);
     } else if (cellType == VTK_LINE) {
-      vtkCell *                cell = grid->GetCell(i);
+      vtkCell                 *cell = grid->GetCell(i);
       std::array<Mesh::VID, 2> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1))};
       mesh.edges.push_back(elem);
     } else if (cellType == VTK_QUAD) {
-      vtkCell *                cell = grid->GetCell(i);
+      vtkCell                 *cell = grid->GetCell(i);
       std::array<Mesh::VID, 4> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2)), vtkToPos(cell->GetPointId(3))};
       mesh.quadrilaterals.push_back(elem);
     } else {
@@ -209,7 +209,7 @@ void MeshName::createDirectories() const
   }
 }
 
-void MeshName::save(const Mesh &mesh) const
+void MeshName::save(const Mesh &mesh, const std::string &outputFileName) const
 {
 
   auto                                 ext = fs::path(mesh.fname).extension();
@@ -253,14 +253,18 @@ void MeshName::save(const Mesh &mesh) const
     vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer =
         vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
     writer->SetInputData(grid);
-    writer->SetFileName(filename().c_str());
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    auto outputFileName_withCont = outputFileName + "_" + std::to_string(rank) + ext.string();
+    writer->SetFileName(outputFileName_withCont.c_str());
     writer->Write();
 
   } else {
     vtkSmartPointer<vtkUnstructuredGridWriter> writer =
         vtkSmartPointer<vtkUnstructuredGridWriter>::New();
     writer->SetInputData(grid);
-    writer->SetFileName(filename().c_str());
+    auto outputFileName_withCont = outputFileName + ext.string();
+    writer->SetFileName(outputFileName_withCont.c_str());
     writer->SetFileTypeToBinary();
     writer->Write();
   }
