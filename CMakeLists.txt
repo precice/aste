@@ -59,7 +59,7 @@ if(METIS_FOUND)
   target_link_libraries(preciceMap metisAPI)
 endif()
 
-add_executable(testing src/tests/testing.cpp src/tests/read_test.cpp src/tests/write_test.cpp src/mesh.cpp)
+add_executable(testing tests/testing.cpp tests/read_test.cpp tests/write_test.cpp src/mesh.cpp)
 target_include_directories(testing PRIVATE src)
 target_link_libraries(testing
   Boost::filesystem
@@ -92,5 +92,5 @@ install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py ${CMAKE_CURRE
 
 enable_testing()
 
-add_test(NAME read_write_test  COMMAND testing WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/tests")
+add_test(NAME read_write_test  COMMAND testing WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests")
 

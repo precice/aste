@@ -2,54 +2,58 @@ name: ASTE CI
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [master, develop]
   pull_request:
-    branches: [ master, develop ]
+    branches: [master, develop]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
       CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
     steps:
-    - uses: actions/checkout@v2
-    - name: install preCICE
-      run: | 
-         wget https://github.com/precice/precice/releases/download/v2.3.0/libprecice2_2.3.0_focal.deb && \
-         sudo apt-get -y update && \
-         sudo apt-get -y install ./libprecice2_2.3.0_focal.deb
-    - name: install VTK
-      run: |
-        sudo apt-get -y install libvtk7-dev
-    - name: prepare directories
-      run: |
-        mkdir build_gcc build_clang
-    - name: build aste gcc
-      working-directory: build_gcc
-      env:
-        CC: gcc
-        CXX: g++
-      run: | 
-        cmake ..
-        cmake --build .
-    - name: run test gcc
-      working-directory: build_gcc
-      run: |
-        ctest
-    - name: install clang
-      run: |
-        sudo apt-get -y install clang
-    - name: build aste clang
-      working-directory: build_clang
-      env:
-        CC: clang
-        CXX: clang++
-      run: |
-        cmake ..
-        cmake --build .
-    - name: run test clang
-      working-directory: build_clang
-      run: |
-        ctest
+      - uses: actions/checkout@v2
+      - name: install preCICE
+        run: |
+          wget https://github.com/precice/precice/releases/download/v2.3.0/libprecice2_2.3.0_focal.deb && \
+          sudo apt-get -y update && \
+          sudo apt-get -y install ./libprecice2_2.3.0_focal.deb
+      - name: install VTK
+        run: |
+          sudo apt-get -y install libvtk7-dev
+      - name: prepare directories
+        run: |
+          mkdir build_gcc build_clang
+      - name: build aste gcc
+        working-directory: build_gcc
+        env:
+          CC: gcc
+          CXX: g++
+        run: |
+          cmake ..
+          cmake --build .
+      - name: run test gcc
+        working-directory: build_gcc
+        run: |
+          ctest
+      - name: install clang
+        run: |
+          sudo apt-get -y install clang
+      - name: build aste clang
+        working-directory: build_clang
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          cmake ..
+          cmake --build .
+          sudo cmake --install .
+      - name: run test clang
+        working-directory: build_clang
+        run: |
+          ctest
+      - name: run example
+        working-directory: tests/example
+        run: |
+          ./run.sh
