@@ -382,7 +382,7 @@ class MeshPartitioner:
         return Mesh(points, cells, cell_types, vtkmesh)
 
     @staticmethod
-    def write_mesh(filename: str, points: List, data_index: List, cells=None, cell_types=None, orig_mesh=None) -> None:
+    def write_mesh(filename: str, points: list, data_index: list, cells=None, cell_types=None, orig_mesh=None) -> None:
         if (cell_types is not None):
             assert (len(cell_types) in [0, len(cells)])
         assert (len(points) == len(data_index))

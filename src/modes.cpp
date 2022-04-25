@@ -169,7 +169,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     asteConfiguration.participantName       = "A";
     asteConfiguration.preciceConfigFilename = preciceConfig;
     aste::asteInterface asteInterface;
-    asteInterface.meshName       = "MeshA";
+    asteInterface.meshName       = "A-Mesh";
     asteInterface.meshFilePrefix = meshname;
     asteInterface.meshID         = preciceInterface.getMeshID(asteInterface.meshName);
     asteInterface.meshes         = aste::BaseName(meshname).findAll(context);
@@ -187,7 +187,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     asteConfiguration.participantName       = "B";
     asteConfiguration.preciceConfigFilename = preciceConfig;
     aste::asteInterface asteInterface;
-    asteInterface.meshName       = "MeshB";
+    asteInterface.meshName       = "B-Mesh";
     asteInterface.meshFilePrefix = meshname;
     asteInterface.meshID         = preciceInterface.getMeshID(asteInterface.meshName);
     asteInterface.meshes         = aste::BaseName(meshname).findAll(context);
@@ -290,6 +290,27 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
       }
     }
     round++;
+  }
+
+  // Write out results in same format as data was read
+  if (asteConfiguration.participantName == "B") {
+    auto meshname = asteConfiguration.asteInterfaces.front().meshes.front();
+    auto filename = fs::path(options["output"].as<std::string>());
+    if (context.rank == 0 && fs::exists(filename)) {
+      if (context.isParallel()) {
+        auto dir = filename.parent_path();
+        if (!dir.empty()) {
+          fs::remove_all(dir);
+          fs::create_directory(dir);
+        }
+      } else {
+        fs::remove(filename);
+      }
+    }
+    MPI_Barrier(MPI_COMM_WORLD);
+    //
+    std::cout << "Writing results to " << options["output"].as<std::string>();
+    meshname.save(asteConfiguration.asteInterfaces.front().mesh, options["output"].as<std::string>());
   }
   preciceInterface.finalize();
   return;
