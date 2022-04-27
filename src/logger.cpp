@@ -4,7 +4,7 @@ namespace attrs   = boost::log::attributes;
 namespace expr    = boost::log::expressions;
 namespace logging = boost::log;
 
-//Defines a global logger initialization routine
+// Defines a global logger initialization routine
 BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, src::severity_logger_mt<boost::log::trivial::severity_level>)
 {
   src::severity_logger_mt<boost::log::trivial::severity_level> lg;
