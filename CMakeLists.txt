@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.1)
 project(ASTE)
 
 
-list (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake-modules")
+list (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 set (CMAKE_CXX_STANDARD 14)
 set (CMAKE_CXX_STANDARD_REQUIRED YES)
@@ -56,6 +56,7 @@ if(METIS_FOUND)
   target_link_libraries(preciceMap metisAPI)
 endif()
 
+
 add_executable(testing src/tests/testing.cpp src/tests/read_test.cpp src/tests/write_test.cpp src/mesh.cpp src/logger.cpp)
 target_include_directories(testing PRIVATE src)
 target_link_libraries(testing
@@ -87,5 +88,5 @@ install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py ${CMAKE_CURRE
 
 enable_testing()
 
-add_test(NAME read_write_test  COMMAND testing WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/tests")
+add_test(NAME read_write_test  COMMAND testing WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests")
 
