@@ -309,7 +309,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     }
     MPI_Barrier(MPI_COMM_WORLD);
     //
-    std::cout << "Writing results to " << options["output"].as<std::string>();
+    ASTE_INFO << "Writing results to " << options["output"].as<std::string>();
     meshname.save(asteConfiguration.asteInterfaces.front().mesh, options["output"].as<std::string>());
   }
   preciceInterface.finalize();
