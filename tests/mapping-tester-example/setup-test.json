@@ -12,10 +12,10 @@
     "syncmode": false,
     "meshes": {
       "A": {
-        "fine_mesh": "${TEST_LOCATION}/fine_mesh.vtk"
+        "coarse_mesh": "${TEST_LOCATION}/coarse_mesh.vtk"
       },
       "B": {
-        "coarse_mesh": "${TEST_LOCATION}/coarse_mesh.vtk"
+        "fine_mesh": "${TEST_LOCATION}/fine_mesh.vtk"
       }
     }
   },
@@ -34,10 +34,10 @@
       },
       "meshes": {
         "A": [
-          "fine_mesh"
+          "coarse_mesh"
         ],
         "B": [
-          "coarse_mesh"
+          "fine_mesh"
         ]
       }
     }
