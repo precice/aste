@@ -57,6 +57,10 @@ jobs:
         working-directory: tests/example
         run: |
           ./run.sh
+      - name: install mapping-tester dependencies
+        working-directory: tests/
+        run: |
+          python3 -m pip install scipy json jinja2
       - name: test mapping-tester
         working-directory: tests/mapping-tester-example
         run: |
