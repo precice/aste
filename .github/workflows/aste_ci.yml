@@ -57,3 +57,7 @@ jobs:
         working-directory: tests/example
         run: |
           ./run.sh
+      - name: test mapping-tester
+        working-directory: tests/mapping-tester-example
+        run: |
+          ./run.sh
