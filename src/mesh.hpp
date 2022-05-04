@@ -41,7 +41,7 @@ struct ExecutionContext {
 
 class MeshName {
 public:
-  MeshName() = default;
+
   MeshName(std::string meshname, std::string extension, const ExecutionContext &context)
       : _mname(std::move(meshname)), _ext(std::move(extension)), _context(context) {}
 
