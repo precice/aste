@@ -198,10 +198,9 @@ def createRunScript(outdir, path, case):
         ),
     ]
     if (branks == 1):
-        copycmd = "cp {}.conn.txt mapped.conn.txt".format(bmeshLocation)
-        diffcmd = "vtk_calculator.py --mesh mapped.txt -o error.vtk --diff --stats \"{}\" | tee diff.log".format(
-            case["function"])
-        post_content += [copycmd, diffcmd]
+        diffcmd = "vtk_calculator.py --data error --diffdata \"{1}\" --diff --stats --mesh mapped.vtk --function \"{0}\" | tee diff.log".format(
+            case["function"], mapped_data_name)
+        post_content += [diffcmd]
     else:
         [recoveryFileLocation, tmpPrefix] = os.path.split(os.path.normpath(bmeshLocation))
         tmprecoveryFile = recoveryFileLocation + "/{}_recovery.json".format(bmesh)

@@ -44,7 +44,10 @@ def prepareMainMesh(meshdir, name, file, function, force=False):
 
 
 def preparePartMesh(meshdir, name, p, force=False):
-    assert(p > 1)
+
+    if p == 1:
+        return
+
     mainMesh = os.path.join(meshdir, name, "1", name + ".vtu")
     partDir = os.path.join(meshdir, name, str(p))
     partMesh = os.path.join(partDir, name)

@@ -27,9 +27,9 @@ def statsFromTimings(dir):
             stats["globalTime"] = timings["_GLOBAL"]["Max"]
             stats["initializeTime"] = timings["initialize"]["Max"]
             computeMappingName = [x for x in timings.keys() if x.startswith(
-                "advance/map") and x.endswith("computeMapping.FromMeshAToMeshB")][0]
+                "advance/map") and x.endswith("computeMapping.FromA-MeshToB-Mesh")][0]
             mapDataName = [x for x in timings.keys() if x.startswith(
-                "advance/map") and x.endswith("mapData.FromMeshAToMeshB")][0]
+                "advance/map") and x.endswith("mapData.FromA-MeshToB-Mesh")][0]
             stats["computeMappingTime"] = timings[computeMappingName]["Max"]
             stats["mapDataTime"] = timings[mapDataName]["Max"]
         except BaseException:
