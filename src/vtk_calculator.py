@@ -2,7 +2,6 @@
 import argparse
 import json
 import logging
-from multiprocessing import get_logger
 import os.path
 
 import numpy as np
