@@ -2,10 +2,12 @@
 import argparse
 import json
 import logging
+from multiprocessing import get_logger
 import os.path
 
 import numpy as np
 import vtk
+import sympy 
 from vtk.util.numpy_support import numpy_to_vtk as n2v
 from vtk.util.numpy_support import vtk_to_numpy as v2n
 
@@ -67,6 +69,7 @@ class Calculator:
             action='store_true',
             help="Calculate the difference between \"--diffdata\" and the specified"
             "function \"--function\"")
+        parser.add_argument("--gradient","-g",action='store_true',help="Adds array with gradient data")
         parser.add_argument("--stats", "-s", action='store_true',
                             help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
         args, _ = parser.parse_known_args()
@@ -172,8 +175,12 @@ class Calculator:
         logger.info("Evaluated \"{}\" on the input mesh \"{}\".".format(inputfunc, args.in_meshname))
         calc.SetResultArrayName(args.data)
         calc.Update()
+        vtk_dataset.GetPointData().AddArray(calc.GetOutput().GetPointData().GetAbstractArray(args.data))
         logger.info(f"Evaluated function saved to \"{args.data}\" variable on output mesh \"{out_meshname}\"")
-        Calculator.write_mesh(calc.GetOutput(), out_meshname, args.directory)
+        if args.gradient:
+            Calculator.add_gradient(calc,vtk_dataset,inputfunc)
+            
+        Calculator.write_mesh(vtk_dataset, out_meshname, args.directory)
 
     @staticmethod
     def calculate_difference(calc, inputfunc, args, out_meshname):
@@ -285,7 +292,32 @@ class Calculator:
         writer.SetFileName(out_meshname)
         writer.Write()
         logger.info(f"Written output to \"{out_meshname}\".")
+        
+        
+    @staticmethod
+    def sympy_to_vtk(string):
+        return string.replace("**", "^")
 
+    @staticmethod
+    def vtk_to_sympy(string):
+        return string.replace("^", "**")
+    
+    @staticmethod
+    def add_gradient(calc,vtk_dataset, inputfunc):
+        logger = Calculator.get_logger()
+        function_in_sympy = sympy.Matrix([sympy.parsing.parse_expr(Calculator.vtk_to_sympy(inputfunc))])
+        variables = sympy.Matrix(sympy.symbols('x y z'))
+        gradients = [Calculator.sympy_to_vtk(str(x)) for x in function_in_sympy.jacobian(variables)]
+        gradient_name_list = ['gradientx','gradienty','gradientz']    
+        for name,function in zip(gradient_name_list,gradients):
+            calc.SetFunction(function)
+            calc.SetResultArrayName(name)
+            calc.Update()
+            vtk_dataset.GetPointData().AddArray(calc.GetOutput().GetPointData().GetAbstractArray(name))
+            logger.info("Evaluated \"{}\" on the input mesh.".format(name))
+        return
+        
+               
 
 if __name__ == "__main__":
     Calculator()
