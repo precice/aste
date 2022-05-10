@@ -53,6 +53,10 @@ jobs:
         working-directory: build_clang
         run: |
           ctest
+      - name: install example dependencies
+        working-directory: tests/example
+        run: |
+          python3 -m pip install sympy
       - name: run example
         working-directory: tests/example
         run: |
