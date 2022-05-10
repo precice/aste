@@ -198,7 +198,7 @@ def createRunScript(outdir, path, case):
         ),
     ]
     if (branks == 1):
-        joincmd = "mv mapped.vtu mapped.vtk"
+        joincmd = "[ ! -f mapped.vtu ] || mv --update mapped.vtu mapped.vtk"
         diffcmd = "vtk_calculator.py --data error --diffdata \"{1}\" --diff --stats --mesh mapped.vtk --function \"{0}\" | tee diff.log".format(
             case["function"], mapped_data_name)
         post_content += [joincmd, diffcmd]
