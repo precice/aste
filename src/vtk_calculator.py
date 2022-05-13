@@ -5,7 +5,6 @@ import logging
 import os.path
 
 import numpy as np
-import sympy
 import vtk
 from vtk.util.numpy_support import numpy_to_vtk as n2v
 from vtk.util.numpy_support import vtk_to_numpy as v2n
@@ -302,6 +301,7 @@ class Calculator:
 
     @staticmethod
     def add_gradient(calc, vtk_dataset, inputfunc):
+        import sympy
         logger = Calculator.get_logger()
         function_in_sympy = sympy.Matrix([sympy.parsing.parse_expr(Calculator.vtk_to_sympy(inputfunc))])
         variables = sympy.Matrix(sympy.symbols('x y z'))
