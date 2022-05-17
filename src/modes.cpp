@@ -247,13 +247,12 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
         else if (meshdata.type == aste::datatype::GRADIENT) {
           switch (meshdata.numcomp) {
           case 1:
-            assert(meshdata.dataVector.size() == vertexIDs.size());
+            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
             // preciceInterface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             preciceInterface.writeBlockScalarGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           default:
-            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            preciceInterface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            assert(meshdata.dataVector.size() == vertexIDs.size() * dim * dim);
             preciceInterface.writeBlockVectorGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data(), true);
             break;
           }
@@ -300,13 +299,11 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
         else if (meshdata.type == aste::datatype::GRADIENT) {
           switch (meshdata.numcomp) {
           case 1:
-            assert(meshdata.dataVector.size() == vertexIDs.size());
-            // preciceInterface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
             preciceInterface.writeBlockScalarGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           default:
-            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            preciceInterface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            assert(meshdata.dataVector.size() == vertexIDs.size() * dim * dim);
             preciceInterface.writeBlockVectorGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data(), true);
             break;
           }
