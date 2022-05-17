@@ -18,6 +18,8 @@ endif()
 message(STATUS "Build configuration: " ${CMAKE_BUILD_TYPE})
 
 option(ASTE_SET_MESH_BLOCK "Use block versions to set mesh primitives." ON)
+option(ASTE_NN_GRADIENT_MAPPING "Support nearest neighbour gradient mapping." ON)
+
 
 find_package (Threads REQUIRED)
 
@@ -53,6 +55,10 @@ target_link_libraries(preciceMap
 
 if(ASTE_SET_MESH_BLOCK)
   target_compile_definitions(preciceMap PRIVATE ASTE_SET_MESH_BLOCK)
+endif()
+
+if(ASTE_NN_GRADIENT_MAPPING)
+  target_compile_definitions(preciceMap PRIVATE ASTE_NN_GRADIENT_MAPPING)
 endif()
 
 if(METIS_FOUND)

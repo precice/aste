@@ -181,6 +181,87 @@ void readData(Mesh &mesh, const std::string &filename)
         break;
       }
     }
+#ifdef ASTE_NN_GRADIENT_MAPPING
+    else if (datatype == aste::datatype::GRADIENT) {
+      const int gradDim = data.gradDimension; // Number of components of gradient
+      // Get Data and Add to Mesh
+      vtkDataArray *gradX, *gradY, *gradZ;
+
+      (PD->HasArray("gradientx")) ? gradX = PD->GetArray("gradientx") : gradX = nullptr;
+      (PD->HasArray("gradienty")) ? gradY = PD->GetArray("gradienty") : gradY = nullptr;
+      (PD->HasArray("gradientz")) ? gradZ = PD->GetArray("gradientZ") : gradZ = nullptr;
+
+      if (gradX == nullptr || gradY == nullptr || (gradDim == 3 && gradZ == nullptr)) {
+        std::cerr << "Error while parsing gradient data, please check your input mesh";
+      }
+
+      int NumComp = gradX->GetNumberOfComponents();
+
+      assert(NumComp >= data.numcomp); // 3D case it should match 2D case it match or less
+      data.dataVector.reserve(NumComp * gradDim * NumPoints);
+
+      switch (NumComp) {
+      case 1: // Scalar Data
+        assert(data.numcomp == 1);
+        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
+          const double x = gradX->GetTuple1(tupleIdx);
+          const double y = gradY->GetTuple1(tupleIdx);
+          data.dataVector.push_back(x);
+          data.dataVector.push_back(y);
+          if (gradDim == 3) {
+            const double z = gradZ->GetTuple1(tupleIdx);
+            data.dataVector.push_back(z);
+          }
+        }
+        break;
+      case 2: // Vector Data with 2 component
+      {
+        assert(data.numcomp == 2);
+        double *x, *y;
+        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
+          x = gradX->GetTuple2(tupleIdx);
+          y = gradY->GetTuple2(tupleIdx);
+          data.dataVector.push_back(x[0]);
+          data.dataVector.push_back(x[1]);
+          data.dataVector.push_back(y[0]);
+          data.dataVector.push_back(y[1]);
+        }
+        break;
+      }
+      case 3: // Vector Data with 3 component
+      {
+        double *x, *y, *z;
+        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
+          x = gradX->GetTuple3(tupleIdx);
+          data.dataVector.push_back(x[0]);
+          data.dataVector.push_back(x[1]);
+          if (data.numcomp == 3) {
+            data.dataVector.push_back(x[2]);
+          }
+          y = gradY->GetTuple3(tupleIdx);
+          data.dataVector.push_back(y[0]);
+          data.dataVector.push_back(y[1]);
+          if (data.numcomp == 3) {
+            data.dataVector.push_back(y[2]);
+          }
+          if (gradZ != nullptr) {
+            z = gradZ->GetTuple3(tupleIdx);
+            data.dataVector.push_back(z[0]);
+            data.dataVector.push_back(z[1]);
+            if (data.numcomp == 3) {
+              data.dataVector.push_back(z[2]);
+            }
+          }
+        }
+        break;
+      }
+      default: // Unknown number of component
+        std::cerr << std::string("Please check your VTK file there is/are ").append(std::string(std::to_string(NumComp))).append(" component for data ").append(dataname);
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+        break;
+      }
+    }
+#endif
   }
 };
 
