@@ -189,7 +189,7 @@ void readData(Mesh &mesh, const std::string &filename)
 
       (PD->HasArray("gradientx")) ? gradX = PD->GetArray("gradientx") : gradX = nullptr;
       (PD->HasArray("gradienty")) ? gradY = PD->GetArray("gradienty") : gradY = nullptr;
-      (PD->HasArray("gradientz")) ? gradZ = PD->GetArray("gradientZ") : gradZ = nullptr;
+      (PD->HasArray("gradientz")) ? gradZ = PD->GetArray("gradientz") : gradZ = nullptr;
 
       if (gradX == nullptr || gradY == nullptr || (gradDim == 3 && gradZ == nullptr)) {
         std::cerr << "Error while parsing gradient data, please check your input mesh";
