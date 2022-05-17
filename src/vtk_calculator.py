@@ -301,7 +301,10 @@ class Calculator:
 
     @staticmethod
     def add_gradient(calc, vtk_dataset, inputfunc):
-        import sympy
+        try:
+            import sympy
+        except ImportError:
+            raise ImportError('For gradient calculations \"sympy\" is required please install \"sympy\" package.')
         logger = Calculator.get_logger()
         function_in_sympy = sympy.Matrix([sympy.parsing.parse_expr(Calculator.vtk_to_sympy(inputfunc))])
         variables = sympy.Matrix(sympy.symbols('x y z'))
