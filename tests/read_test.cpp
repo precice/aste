@@ -5,7 +5,7 @@ void readtest(const ReadCase &current_case)
 
   auto       read_test = aste::BaseName{current_case.fname}.with(aste::ExecutionContext());
   aste::Mesh mesh;
-  read_test.loadMesh(mesh, current_case.dim);
+  read_test.loadMesh(mesh, current_case.dim, true);
 
   BOOST_TEST(mesh.positions.size() == 12);
   BOOST_TEST(mesh.edges.size() == 2);

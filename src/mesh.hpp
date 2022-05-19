@@ -41,13 +41,12 @@ struct ExecutionContext {
 
 class MeshName {
 public:
-
   MeshName(std::string meshname, std::string extension, const ExecutionContext &context)
       : _mname(std::move(meshname)), _ext(std::move(extension)), _context(context) {}
 
   std::string filename() const;
 
-  void loadMesh(Mesh &mesh, const int dim);
+  void loadMesh(Mesh &mesh, const int dim, const bool requireConnectivy);
   void loadData(Mesh &mesh);
   void resetData(Mesh &mesh);
   void save(const Mesh &mesh, const std::string &outputFilename) const;

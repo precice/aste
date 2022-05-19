@@ -11,7 +11,7 @@ void writetest(const WriteCase &current_case)
 
   auto       write_test = aste::BaseName{current_case.basename}.with(aste::ExecutionContext());
   aste::Mesh testMesh;
-  write_test.loadMesh(testMesh, current_case.dim);
+  write_test.loadMesh(testMesh, current_case.dim, true);
   aste::MeshData caseData(aste::datatype::WRITE, current_case.dim, current_case.dataname, 1);
   testMesh.meshdata.push_back(caseData);
   write_test.loadData(testMesh);
@@ -27,7 +27,7 @@ void writetest(const WriteCase &current_case)
   // Read written data and compare with created data
   auto       read = aste::BaseName{"write_test"}.with(aste::ExecutionContext());
   aste::Mesh testMeshRead;
-  read.loadMesh(testMeshRead, current_case.dim);
+  read.loadMesh(testMeshRead, current_case.dim, true);
   testMeshRead.meshdata.push_back(caseData);
   read.loadData(testMeshRead);
 
