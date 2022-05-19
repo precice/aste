@@ -18,12 +18,22 @@ endif()
 message(STATUS "Build configuration: " ${CMAKE_BUILD_TYPE})
 
 option(ASTE_SET_MESH_BLOCK "Use block versions to set mesh primitives." ON)
-option(ASTE_NN_GRADIENT_MAPPING "Support nearest neighbour gradient mapping." ON)
-
 
 find_package (Threads REQUIRED)
 
 find_package(precice REQUIRED CONFIG)
+
+
+# 2.4.0 has a bug so it requires something greater than 2.4.0
+IF(${precice_VERSION} GREATER "2.4.0")
+  SET(SUPPORT_NN_GRADIENT_MAPPING ON)
+ELSE()
+  SET(SUPPORT_NN_GRADIENT_MAPPING OFF)
+ENDIF()
+
+option(ASTE_NN_GRADIENT_MAPPING "Support nearest neighbour gradient mapping." ${SUPPORT_NN_GRADIENT_MAPPING})
+
+
 
 find_package(Boost 1.65.1 REQUIRED COMPONENTS system program_options filesystem unit_test_framework)
 
