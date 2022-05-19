@@ -61,6 +61,7 @@ jobs:
         working-directory: tests/example
         run: |
           ./run.sh
+          ./run_nn_gradient.sh
       - name: install mapping-tester dependencies
         working-directory: tests/
         run: |
