@@ -2,7 +2,6 @@ cmake_minimum_required (VERSION 3.1)
 
 project(ASTE)
 
-
 list (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 set (CMAKE_CXX_STANDARD 14)
@@ -14,7 +13,6 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   # Set the possible values of build type for cmake-gui
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
     "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
-endif()
 message(STATUS "Build configuration: " ${CMAKE_BUILD_TYPE})
 
 option(ASTE_SET_MESH_BLOCK "Use block versions to set mesh primitives." ON)
@@ -25,14 +23,13 @@ find_package(precice REQUIRED CONFIG)
 
 
 # 2.4.0 has a bug so it requires something greater than 2.4.0
-IF(${precice_VERSION} GREATER "2.4.0")
+IF(${precice_VERSION} VERSION_GREATER "2.4.0")
   SET(SUPPORT_NN_GRADIENT_MAPPING ON)
 ELSE()
   SET(SUPPORT_NN_GRADIENT_MAPPING OFF)
 ENDIF()
 
 option(ASTE_NN_GRADIENT_MAPPING "Support nearest neighbour gradient mapping." ${SUPPORT_NN_GRADIENT_MAPPING})
-
 
 
 find_package(Boost 1.65.1 REQUIRED COMPONENTS system program_options filesystem unit_test_framework)
