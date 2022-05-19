@@ -84,7 +84,7 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim, const bool
       int cellType = grid->GetCell(i)->GetCellType();
 
       // Here we use static cast since VTK library returns a long long unsigned int however preCICE uses int for PointId's
-      if (cellType == VTK_TRIANGLE) {
+      if (cellType == VTK_TRIANGLE && dim == 3) {
         vtkCell                 *cell = grid->GetCell(i);
         std::array<Mesh::VID, 3> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2))};
         mesh.triangles.push_back(elem);
@@ -92,7 +92,7 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim, const bool
         vtkCell                 *cell = grid->GetCell(i);
         std::array<Mesh::VID, 2> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1))};
         mesh.edges.push_back(elem);
-      } else if (cellType == VTK_QUAD) {
+      } else if (cellType == VTK_QUAD && dim == 3) {
         vtkCell                 *cell = grid->GetCell(i);
         std::array<Mesh::VID, 4> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2)), vtkToPos(cell->GetPointId(3))};
         mesh.quadrilaterals.push_back(elem);
