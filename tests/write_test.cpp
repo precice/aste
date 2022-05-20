@@ -34,20 +34,24 @@ void writetest(const WriteCase &current_case)
   // Check Elements are correctly written
   BOOST_TEST(testMeshRead.positions.size() == testMesh.positions.size());
   BOOST_TEST(testMeshRead.edges.size() == testMesh.edges.size());
-  BOOST_TEST(testMeshRead.quadrilaterals.size() == testMesh.quadrilaterals.size());
-  BOOST_TEST(testMeshRead.triangles.size() == testMesh.triangles.size());
+  if (current_case.dim == 3) {
+    BOOST_TEST(testMeshRead.quadrilaterals.size() == testMesh.quadrilaterals.size());
+    BOOST_TEST(testMeshRead.triangles.size() == testMesh.triangles.size());
+  }
   // Check Edges
   BOOST_TEST(testMeshRead.edges[1][0] == testMesh.edges[1][0]);
   BOOST_TEST(testMeshRead.edges[1][1] == testMesh.edges[1][1]);
-  // Check Triangles
-  BOOST_TEST(testMeshRead.triangles[0][0] == testMesh.triangles[0][0]);
-  BOOST_TEST(testMeshRead.triangles[0][1] == testMesh.triangles[0][1]);
-  BOOST_TEST(testMeshRead.triangles[0][2] == testMesh.triangles[0][2]);
-  // Check Quads
-  BOOST_TEST(testMeshRead.quadrilaterals[1][0] == testMesh.quadrilaterals[1][0]);
-  BOOST_TEST(testMeshRead.quadrilaterals[1][1] == testMesh.quadrilaterals[1][1]);
-  BOOST_TEST(testMeshRead.quadrilaterals[1][2] == testMesh.quadrilaterals[1][2]);
-  BOOST_TEST(testMeshRead.quadrilaterals[1][3] == testMesh.quadrilaterals[1][3]);
+  if (current_case.dim == 3) {
+    // Check Triangles
+    BOOST_TEST(testMeshRead.triangles[0][0] == testMesh.triangles[0][0]);
+    BOOST_TEST(testMeshRead.triangles[0][1] == testMesh.triangles[0][1]);
+    BOOST_TEST(testMeshRead.triangles[0][2] == testMesh.triangles[0][2]);
+    // Check Quads
+    BOOST_TEST(testMeshRead.quadrilaterals[1][0] == testMesh.quadrilaterals[1][0]);
+    BOOST_TEST(testMeshRead.quadrilaterals[1][1] == testMesh.quadrilaterals[1][1]);
+    BOOST_TEST(testMeshRead.quadrilaterals[1][2] == testMesh.quadrilaterals[1][2]);
+    BOOST_TEST(testMeshRead.quadrilaterals[1][3] == testMesh.quadrilaterals[1][3]);
+  }
   // Check Datasize
   BOOST_TEST(testMeshRead.meshdata.front().dataVector.size() == testMesh.meshdata.front().dataVector.size());
   // Check Data Values
