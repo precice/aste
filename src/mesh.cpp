@@ -180,9 +180,7 @@ void readData(Mesh &mesh, const std::string &filename)
         MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
         break;
       }
-    }
-#ifdef ASTE_NN_GRADIENT_MAPPING
-    else if (datatype == aste::datatype::GRADIENT) {
+    } else if (datatype == aste::datatype::GRADIENT) {
       const int gradDim = data.gradDimension; // Number of components of gradient
       // Get Data and Add to Mesh
       vtkDataArray *gradX, *gradY, *gradZ;
@@ -261,7 +259,6 @@ void readData(Mesh &mesh, const std::string &filename)
         break;
       }
     }
-#endif
   }
 };
 
