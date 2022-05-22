@@ -85,8 +85,9 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
   auto tconnectivity = std::chrono::steady_clock::now();
   VLOG(1) << "Mesh Setup: 2) Edges";
   const auto edgeMap = setupEdgeIDs(interface, mesh, meshID, vertexIDs);
-
-  VLOG(1) << "Mesh Setup: 3) Triangles";
+  if (!mesh.triangles.empty()) {
+    VLOG(1) << "Mesh Setup: 3) Triangles";
+  }
   for (auto const &triangle : mesh.triangles) {
     const auto a = vertexIDs[triangle[0]];
     const auto b = vertexIDs[triangle[1]];
@@ -97,8 +98,9 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
                               edgeMap.at(Edge{b, c}),
                               edgeMap.at(Edge{c, a}));
   }
-
-  VLOG(1) << "Mesh Setup: 4) Quadrilaterals";
+  if (!mesh.quadrilaterals.empty()) {
+    VLOG(1) << "Mesh Setup: 4) Quadrilaterals";
+  }
   for (auto const &quadrilateral : mesh.quadrilaterals) {
     const auto a = vertexIDs[quadrilateral[0]];
     const auto b = vertexIDs[quadrilateral[1]];
