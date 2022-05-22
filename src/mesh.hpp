@@ -46,7 +46,7 @@ public:
 
   std::string filename() const;
 
-  void loadMesh(Mesh &mesh, const int dim, const bool requireConnectivy);
+  void loadMesh(Mesh &mesh, const int dim, const bool requireConnectivity);
   void loadData(Mesh &mesh);
   void resetData(Mesh &mesh);
   void save(const Mesh &mesh, const std::string &outputFilename) const;

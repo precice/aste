@@ -45,8 +45,8 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     }
 
     VLOG(1) << "Loading mesh from " << asteInterface.meshes.front().filename();
-    const bool requireConnectivy = preciceInterface.isMeshConnectivityRequired(asteInterface.meshID);
-    asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim, requireConnectivy);
+    const bool requireConnectivity = preciceInterface.isMeshConnectivityRequired(asteInterface.meshID);
+    asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim, requireConnectivity);
 
     vertexIDs = setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshID);
     VLOG(1) << "Mesh setup completed on Rank " << context.rank;
@@ -207,8 +207,8 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
 
   auto asteInterface = asteConfiguration.asteInterfaces.front();
   VLOG(1) << "Loading mesh from " << asteInterface.meshes.front().filename();
-  const bool requireConnectivy = preciceInterface.isMeshConnectivityRequired(asteInterface.meshID);
-  asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim, requireConnectivy);
+  const bool requireConnectivity = preciceInterface.isMeshConnectivityRequired(asteInterface.meshID);
+  asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim, requireConnectivity);
   asteInterface.meshes.front().loadData(asteInterface.mesh);
   VLOG(1) << "The mesh contains: " << asteInterface.mesh.summary();
   auto vertexIDs = aste::setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshID);

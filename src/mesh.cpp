@@ -42,7 +42,7 @@ Mesh::VID vtkToPos(vtkIdType id)
 }
 
 // Read vertices and mesh connectivity
-void readMesh(Mesh &mesh, const std::string &filename, const int dim, const bool requireConnectivy)
+void readMesh(Mesh &mesh, const std::string &filename, const int dim, const bool requireConnectivity)
 {
   if (!fs::is_regular_file(filename)) {
     std::cerr << "The mesh file does not exist: " << filename;
@@ -79,7 +79,7 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim, const bool
     mesh.positions.push_back(vertexLoc);
   }
 
-  if (requireConnectivy) {
+  if (requireConnectivity) {
     for (int i = 0; i < grid->GetNumberOfCells(); i++) {
       int cellType = grid->GetCell(i)->GetCellType();
 
@@ -190,9 +190,9 @@ void readData(Mesh &mesh, const std::string &filename)
   }
 };
 
-void MeshName::loadMesh(Mesh &mesh, const int dim, const bool requireConnectivy)
+void MeshName::loadMesh(Mesh &mesh, const int dim, const bool requireConnectivity)
 {
-  readMesh(mesh, filename(), dim, requireConnectivy);
+  readMesh(mesh, filename(), dim, requireConnectivity);
 }
 
 void MeshName::loadData(Mesh &mesh)
