@@ -2,11 +2,11 @@
 set -e -x
 
 # Calculate franke function on fine mesh
-vtk_calculator.py -m fine_mesh.vtk -f "franke3d" -d "Franke Function" -o "fine_mesh_nn.vtk"
+vtk_calculator.py -m ../fine_mesh.vtk -f "franke3d" -d "Franke Function" -o "fine_mesh_nn.vtk"
 
 # Map from the finer mesh to coarser mesh
 preciceMap -v -p A --mesh fine_mesh_nn --data "Franke Function" &
-preciceMap -v -p B --mesh coarse_mesh --output map_nn --data "InterpolatedData"
+preciceMap -v -p B --mesh ../coarse_mesh --output map_nn --data "InterpolatedData"
 
 # Calculate statistics
 vtk_calculator.py -m map_nn.vtk -f "franke3d" -d difference --diffdata "InterpolatedData" --diff
