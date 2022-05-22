@@ -11,7 +11,7 @@ void writetest(const WriteCase &current_case)
 
   auto       write_test = aste::BaseName{current_case.basename}.with(aste::ExecutionContext());
   aste::Mesh testMesh;
-  write_test.loadMesh(testMesh, current_case.dim, true);
+  write_test.loadMesh(testMesh, current_case.dim, current_case.connectivity);
   aste::MeshData caseData(aste::datatype::WRITE, current_case.dim, current_case.dataname, 1);
   testMesh.meshdata.push_back(caseData);
   write_test.loadData(testMesh);
@@ -27,21 +27,25 @@ void writetest(const WriteCase &current_case)
   // Read written data and compare with created data
   auto       read = aste::BaseName{"write_test"}.with(aste::ExecutionContext());
   aste::Mesh testMeshRead;
-  read.loadMesh(testMeshRead, current_case.dim, true);
+  read.loadMesh(testMeshRead, current_case.dim, current_case.connectivity);
   testMeshRead.meshdata.push_back(caseData);
   read.loadData(testMeshRead);
 
   // Check Elements are correctly written
   BOOST_TEST(testMeshRead.positions.size() == testMesh.positions.size());
-  BOOST_TEST(testMeshRead.edges.size() == testMesh.edges.size());
-  if (current_case.dim == 3) {
+  if (current_case.connectivity) {
+    BOOST_TEST(testMeshRead.edges.size() == testMesh.edges.size());
+  }
+  if (current_case.dim == 3 && current_case.connectivity) {
     BOOST_TEST(testMeshRead.quadrilaterals.size() == testMesh.quadrilaterals.size());
     BOOST_TEST(testMeshRead.triangles.size() == testMesh.triangles.size());
   }
   // Check Edges
-  BOOST_TEST(testMeshRead.edges[1][0] == testMesh.edges[1][0]);
-  BOOST_TEST(testMeshRead.edges[1][1] == testMesh.edges[1][1]);
-  if (current_case.dim == 3) {
+  if (current_case.connectivity) {
+    BOOST_TEST(testMeshRead.edges[1][0] == testMesh.edges[1][0]);
+    BOOST_TEST(testMeshRead.edges[1][1] == testMesh.edges[1][1]);
+  }
+  if (current_case.dim == 3 && current_case.connectivity) {
     // Check Triangles
     BOOST_TEST(testMeshRead.triangles[0][0] == testMesh.triangles[0][0]);
     BOOST_TEST(testMeshRead.triangles[0][1] == testMesh.triangles[0][1]);
