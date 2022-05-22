@@ -160,19 +160,14 @@ void readData(Mesh &mesh, const std::string &filename)
         double *vector2ref;
         for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
           vector2ref = ArrayData->GetTuple2(tupleIdx);
-          data.dataVector.push_back(vector2ref[0]);
-          data.dataVector.push_back(vector2ref[1]);
+          std::copy_n(vector2ref, 2, std::back_inserter(data.dataVector));
         }
         break;
       case 3: // Vector Data with 3 component
         double *vector3ref;
         for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
           vector3ref = ArrayData->GetTuple3(tupleIdx);
-          data.dataVector.push_back(vector3ref[0]);
-          data.dataVector.push_back(vector3ref[1]);
-          if (data.numcomp == 3) {
-            data.dataVector.push_back(vector3ref[2]);
-          }
+          std::copy_n(vector3ref, data.numcomp, std::back_inserter(data.dataVector));
         }
         break;
       default: // Unknown number of component
@@ -219,36 +214,23 @@ void readData(Mesh &mesh, const std::string &filename)
         for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
           x = gradX->GetTuple2(tupleIdx);
           y = gradY->GetTuple2(tupleIdx);
-          data.dataVector.push_back(x[0]);
-          data.dataVector.push_back(x[1]);
-          data.dataVector.push_back(y[0]);
-          data.dataVector.push_back(y[1]);
+          std::copy_n(x, 2, std::back_inserter(data.dataVector));
+          std::copy_n(y, 2, std::back_inserter(data.dataVector));
         }
         break;
       }
       case 3: // Vector Data with 3 component
       {
-        double *x, *y, *z;
+        double    *x, *y, *z;
+        const bool haveGradZ = (gradZ != nullptr);
         for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
           x = gradX->GetTuple3(tupleIdx);
-          data.dataVector.push_back(x[0]);
-          data.dataVector.push_back(x[1]);
-          if (data.numcomp == 3) {
-            data.dataVector.push_back(x[2]);
-          }
+          std::copy_n(x, data.numcomp, std::back_inserter(data.dataVector));
           y = gradY->GetTuple3(tupleIdx);
-          data.dataVector.push_back(y[0]);
-          data.dataVector.push_back(y[1]);
-          if (data.numcomp == 3) {
-            data.dataVector.push_back(y[2]);
-          }
-          if (gradZ != nullptr) {
+          std::copy_n(y, data.numcomp, std::back_inserter(data.dataVector));
+          if (haveGradZ) {
             z = gradZ->GetTuple3(tupleIdx);
-            data.dataVector.push_back(z[0]);
-            data.dataVector.push_back(z[1]);
-            if (data.numcomp == 3) {
-              data.dataVector.push_back(z[2]);
-            }
+            std::copy_n(z, data.numcomp, std::back_inserter(data.dataVector));
           }
         }
         break;
