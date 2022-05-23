@@ -32,7 +32,7 @@ ENDIF()
 
 option(ASTE_NN_GRADIENT_MAPPING "Support nearest neighbour gradient mapping." ${SUPPORT_NN_GRADIENT_MAPPING})
 
-MESSAGE(STATUS "Support for nearest-neighbor-gradient mapping: ${SUPPORT_NN_GRADIENT_MAPPING}")
+MESSAGE(STATUS "Support for nearest-neighbor-gradient mapping: ${ASTE_NN_GRADIENT_MAPPING}")
 
 find_package(Boost 1.65.1 REQUIRED COMPONENTS system program_options filesystem unit_test_framework)
 
