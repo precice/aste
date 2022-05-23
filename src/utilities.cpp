@@ -90,7 +90,7 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
     const auto edgeMap = setupEdgeIDs(interface, mesh, meshID, vertexIDs);
     VLOG(1) << "Total " << edgeMap.size() << " edges are configured";
     if (!mesh.triangles.empty()) {
-      VLOG(1) << "Mesh Setup: 3) Triangles";
+      VLOG(1) << "Mesh Setup: 3) " << mesh.triangles.size() << " Triangles";
       for (auto const &triangle : mesh.triangles) {
         const auto a = vertexIDs[triangle[0]];
         const auto b = vertexIDs[triangle[1]];
@@ -105,7 +105,7 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
       VLOG(1) << "Mesh Setup: 3) No Triangles are found/required. Skipped";
     }
     if (!mesh.quadrilaterals.empty()) {
-      VLOG(1) << "Mesh Setup: 4) Quadrilaterals";
+      VLOG(1) << "Mesh Setup: 4) " << mesh.quadrilaterals.size() << " Quadrilaterals";
       for (auto const &quadrilateral : mesh.quadrilaterals) {
         const auto a = vertexIDs[quadrilateral[0]];
         const auto b = vertexIDs[quadrilateral[1]];
