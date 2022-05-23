@@ -42,7 +42,7 @@ Mesh::VID vtkToPos(vtkIdType id)
 }
 
 // Read vertices and mesh connectivity
-void readMesh(Mesh &mesh, const std::string &filename, const int dim)
+void readMesh(Mesh &mesh, const std::string &filename, const int dim, const bool requireConnectivity)
 {
   if (!fs::is_regular_file(filename)) {
     std::cerr << "The mesh file does not exist: " << filename;
@@ -79,26 +79,36 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim)
     mesh.positions.push_back(vertexLoc);
   }
 
-  for (int i = 0; i < grid->GetNumberOfCells(); i++) {
-    int cellType = grid->GetCell(i)->GetCellType();
+  if (requireConnectivity) {
+    for (int i = 0; i < grid->GetNumberOfCells(); i++) {
+      int cellType = grid->GetCell(i)->GetCellType();
 
-    // Here we use static cast since VTK library returns a long long unsigned int however preCICE uses int for PointId's
-    if (cellType == VTK_TRIANGLE) {
-      vtkCell                 *cell = grid->GetCell(i);
-      std::array<Mesh::VID, 3> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2))};
-      mesh.triangles.push_back(elem);
-    } else if (cellType == VTK_LINE) {
-      vtkCell                 *cell = grid->GetCell(i);
-      std::array<Mesh::VID, 2> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1))};
-      mesh.edges.push_back(elem);
-    } else if (cellType == VTK_QUAD) {
-      vtkCell                 *cell = grid->GetCell(i);
-      std::array<Mesh::VID, 4> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2)), vtkToPos(cell->GetPointId(3))};
-      mesh.quadrilaterals.push_back(elem);
-    } else {
-      std::cerr << "Invalid cell type in VTK file. Valid cell types are, VTK_LINE, VTK_TRIANGLE, and VTK_QUAD.";
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+      // Here we use static cast since VTK library returns a long long unsigned int however preCICE uses int for PointId's
+      if (cellType == VTK_TRIANGLE) {
+        if (dim == 3) {
+          vtkCell                 *cell = grid->GetCell(i);
+          std::array<Mesh::VID, 3> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2))};
+          mesh.triangles.push_back(elem);
+        }
+      } else if (cellType == VTK_LINE) {
+        vtkCell                 *cell = grid->GetCell(i);
+        std::array<Mesh::VID, 2> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1))};
+        mesh.edges.push_back(elem);
+      } else if (cellType == VTK_QUAD) {
+        if (dim == 3) {
+          vtkCell                 *cell = grid->GetCell(i);
+          std::array<Mesh::VID, 4> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2)), vtkToPos(cell->GetPointId(3))};
+          mesh.quadrilaterals.push_back(elem);
+        }
+      } else if (cellType == VTK_VERTEX) {
+        // Skip the VTK_VERTEX type, @TODO: Print out a warning when the logger works properly
+      } else {
+        std::cerr << "Invalid cell type in VTK file. Valid cell types are, VTK_LINE, VTK_TRIANGLE, and VTK_QUAD.";
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+      }
     }
+  } else {
+    std::cerr << "Connectivity information for " << mesh.fname << "skipped since connectivity is not required.";
   }
 };
 
@@ -252,9 +262,9 @@ void readData(Mesh &mesh, const std::string &filename)
   }
 };
 
-void MeshName::loadMesh(Mesh &mesh, const int dim)
+void MeshName::loadMesh(Mesh &mesh, const int dim, const bool requireConnectivity)
 {
-  readMesh(mesh, filename(), dim);
+  readMesh(mesh, filename(), dim, requireConnectivity);
 }
 
 void MeshName::loadData(Mesh &mesh)
