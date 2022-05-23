@@ -99,7 +99,8 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim, const bool
           vtkCell                 *cell = grid->GetCell(i);
           std::array<Mesh::VID, 4> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2)), vtkToPos(cell->GetPointId(3))};
           mesh.quadrilaterals.push_back(elem);
-        }
+      } else if (cellType == VTK_VERTEX) {
+        // Skip the VTK_VERTEX type, @TODO: Print out a warning when the logger works properly
       } else {
         std::cerr << "Invalid cell type in VTK file. Valid cell types are, VTK_LINE, VTK_TRIANGLE, and VTK_QUAD.";
         MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
