@@ -88,7 +88,7 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
   if (interface.isMeshConnectivityRequired(meshID)) {
     VLOG(1) << "Mesh Setup: 2) Edges";
     const auto edgeMap = setupEdgeIDs(interface, mesh, meshID, vertexIDs);
-    VLOG(1) << "Total " << edgeMap.size() << " edges are written";
+    VLOG(1) << "Total " << edgeMap.size() << " edges are configured";
     if (!mesh.triangles.empty()) {
       VLOG(1) << "Mesh Setup: 3) Triangles";
       for (auto const &triangle : mesh.triangles) {
