@@ -105,6 +105,8 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim, const bool
         MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
       }
     }
+  } else {
+    std::cerr << "Connectivity information for " << mesh.fname << "skipped since connectivity is not required.";
   }
 };
 
