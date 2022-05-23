@@ -122,7 +122,7 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
       VLOG(1) << "Mesh Setup: 4) No Quadrilaterals are found/required. Skipped";
     }
   } else {
-    VLOG(1) << "Mesh Setup: 2) Connectivity information on mesh " << mesh.fname << " not required skipped.";
+    VLOG(1) << "Mesh Setup: 2) Skipped connectivity information on mesh " << mesh.fname << " as it is not  required.";
   }
   auto tend = std::chrono::steady_clock::now();
 
