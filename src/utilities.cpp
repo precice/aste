@@ -79,39 +79,51 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
 {
   auto tstart = std::chrono::steady_clock::now();
 
+  VLOG(1) << "Mesh Setup started for mesh: " << mesh.fname;
   VLOG(1) << "Mesh Setup: 1) Vertices";
   const auto vertexIDs = setupVertexIDs(interface, mesh, meshID);
 
   auto tconnectivity = std::chrono::steady_clock::now();
-  VLOG(1) << "Mesh Setup: 2) Edges";
-  const auto edgeMap = setupEdgeIDs(interface, mesh, meshID, vertexIDs);
 
-  VLOG(1) << "Mesh Setup: 3) Triangles";
-  for (auto const &triangle : mesh.triangles) {
-    const auto a = vertexIDs[triangle[0]];
-    const auto b = vertexIDs[triangle[1]];
-    const auto c = vertexIDs[triangle[2]];
+  if (interface.isMeshConnectivityRequired(meshID)) {
+    VLOG(1) << "Mesh Setup: 2) Edges";
+    const auto edgeMap = setupEdgeIDs(interface, mesh, meshID, vertexIDs);
+    VLOG(1) << "Total " << edgeMap.size() << " edges are configured";
+    if (!mesh.triangles.empty()) {
+      VLOG(1) << "Mesh Setup: 3) " << mesh.triangles.size() << " Triangles";
+      for (auto const &triangle : mesh.triangles) {
+        const auto a = vertexIDs[triangle[0]];
+        const auto b = vertexIDs[triangle[1]];
+        const auto c = vertexIDs[triangle[2]];
 
-    interface.setMeshTriangle(meshID,
+        interface.setMeshTriangle(meshID,
+                                  edgeMap.at(Edge{a, b}),
+                                  edgeMap.at(Edge{b, c}),
+                                  edgeMap.at(Edge{c, a}));
+      }
+    } else {
+      VLOG(1) << "Mesh Setup: 3) No Triangles are found/required. Skipped";
+    }
+    if (!mesh.quadrilaterals.empty()) {
+      VLOG(1) << "Mesh Setup: 4) " << mesh.quadrilaterals.size() << " Quadrilaterals";
+      for (auto const &quadrilateral : mesh.quadrilaterals) {
+        const auto a = vertexIDs[quadrilateral[0]];
+        const auto b = vertexIDs[quadrilateral[1]];
+        const auto c = vertexIDs[quadrilateral[2]];
+        const auto d = vertexIDs[quadrilateral[3]];
+
+        interface.setMeshQuad(meshID,
                               edgeMap.at(Edge{a, b}),
                               edgeMap.at(Edge{b, c}),
-                              edgeMap.at(Edge{c, a}));
+                              edgeMap.at(Edge{c, d}),
+                              edgeMap.at(Edge{d, a}));
+      }
+    } else {
+      VLOG(1) << "Mesh Setup: 4) No Quadrilaterals are found/required. Skipped";
+    }
+  } else {
+    VLOG(1) << "Mesh Setup: 2) Skipped connectivity information on mesh \"" << mesh.fname << "\" as it is not required.";
   }
-
-  VLOG(1) << "Mesh Setup: 4) Quadrilaterals";
-  for (auto const &quadrilateral : mesh.quadrilaterals) {
-    const auto a = vertexIDs[quadrilateral[0]];
-    const auto b = vertexIDs[quadrilateral[1]];
-    const auto c = vertexIDs[quadrilateral[2]];
-    const auto d = vertexIDs[quadrilateral[3]];
-
-    interface.setMeshQuad(meshID,
-                          edgeMap.at(Edge{a, b}),
-                          edgeMap.at(Edge{b, c}),
-                          edgeMap.at(Edge{c, d}),
-                          edgeMap.at(Edge{d, a}));
-  }
-
   auto tend = std::chrono::steady_clock::now();
 
   VLOG(1)
