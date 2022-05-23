@@ -307,6 +307,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
             preciceInterface.writeBlockVectorGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data(), true);
             break;
           }
+          VLOG(1) << "Gradient data written: " << asteInterface.mesh.previewData(meshdata);
         }
 #endif
       }
