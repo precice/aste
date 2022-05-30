@@ -11,6 +11,7 @@ def parseArguments(args):
     parser = argparse.ArgumentParser(description="Creates convergence plots from gathered stats")
     parser.add_argument('-f', '--file', type=argparse.FileType('r'), default="stats.csv",
                         help='The CSV file containing the gathered stats.')
+    parser.add_argument('-p', '--prefix', default="result", help='The prefix for all generated PDF plots.')
     return parser.parse_args(args)
 
 
@@ -35,7 +36,6 @@ styles = [(c, m) for m in style_markers for c in style_colours]
 
 
 def plotConv(ax, df, yname):
-    return
     xmin = df["mesh A"].min()
     xmax = df["mesh A"].max()
     ymin = df[yname].min()
@@ -72,7 +72,7 @@ def plotConv(ax, df, yname):
     )
 
 
-def plotError(df):
+def plotError(df, prefix):
     yname = "relative-l2"
     fig, ax = plt.subplots(sharex=True, sharey=True)
     series = df.groupby("mapping")
@@ -98,10 +98,10 @@ def plotError(df):
 
     plt.gca().invert_xaxis()
     plt.grid()
-    plt.savefig("turbine-small-error.pdf")
+    plt.savefig(prefix + "-error.pdf")
 
 
-def plotMemory(df):
+def plotMemory(df, prefix):
     yname = "peakMemB"
     fig, ax = plt.subplots(sharex=True, sharey=True)
     series = df.groupby("mapping")
@@ -123,14 +123,14 @@ def plotMemory(df):
     ax.set_xlabel("edge length(h) of mesh A")
     ax.set_ylabel("peak memory of participant B")
 
-    plotConv(ax, df, yname)
+    #plotConv(ax, df, yname)
 
     plt.gca().invert_xaxis()
     plt.grid()
-    plt.savefig("turbine-small-peakMemB.pdf")
+    plt.savefig(prefix + "-peakMemB.pdf")
 
 
-def plotComputeMappingTime(df):
+def plotComputeMappingTime(df, prefix):
     yname = "computeMappingTime"
     fig, ax = plt.subplots(sharex=True, sharey=True)
     series = df.groupby("mapping")
@@ -153,14 +153,14 @@ def plotComputeMappingTime(df):
     ax.set_xlabel("edge length(h) of mesh A")
     ax.set_ylabel("time to compute mapping [ms]")
 
-    plotConv(ax, df, yname)
+    #plotConv(ax, df, yname)
 
     plt.gca().invert_xaxis()
     plt.grid()
-    plt.savefig("turbine-small-computet.pdf")
+    plt.savefig(prefix + "-computet.pdf")
 
 
-def plotMapDataTime(df):
+def plotMapDataTime(df, prefix):
     yname = "mapDataTime"
     fig, ax = plt.subplots(sharex=True, sharey=True)
     series = df.groupby("mapping")
@@ -183,11 +183,11 @@ def plotMapDataTime(df):
     ax.set_xlabel("edge length(h) of mesh A")
     ax.set_ylabel("time to map Data [ms]")
 
-    plotConv(ax, df, yname)
+    #plotConv(ax, df, yname)
 
     plt.gca().invert_xaxis()
     plt.grid()
-    plt.savefig("turbine-small-mapt.pdf")
+    plt.savefig(prefix + "-mapt.pdf")
 
 
 def main(argv):
@@ -201,10 +201,10 @@ def main(argv):
     toMeshes = df["mesh B"].unique()
     assert len(toMeshes) == 1, f"There are {len(toMeshes)} to-meshes but only 1 is allowed. Fix your dataset!"
     df.sort_values("mesh A", inplace=True)
-    plotError(df)
-    plotMemory(df)
-    plotMapDataTime(df)
-    plotComputeMappingTime(df)
+    plotError(df, args.prefix)
+    plotMemory(df, args.prefix)
+    plotMapDataTime(df, args.prefix)
+    plotComputeMappingTime(df, args.prefix)
     return 0
 
 
