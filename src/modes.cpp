@@ -253,7 +253,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
             break;
           default:
             assert(meshdata.dataVector.size() == vertexIDs.size() * dim * dim);
-            preciceInterface.writeBlockVectorGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data(), true);
+            preciceInterface.writeBlockVectorGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           }
         }
@@ -304,7 +304,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
             break;
           default:
             assert(meshdata.dataVector.size() == vertexIDs.size() * dim * dim);
-            preciceInterface.writeBlockVectorGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data(), true);
+            preciceInterface.writeBlockVectorGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           }
           VLOG(1) << "Gradient data written: " << asteInterface.mesh.previewData(meshdata);

@@ -223,11 +223,7 @@ void readData(Mesh &mesh, const std::string &filename)
         double *x, *y;
         for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
           x = gradX->GetTuple2(tupleIdx);
-          y = gradY->GetTuple2(tupleIdx);
           std::copy_n(x, 2, std::back_inserter(data.dataVector));
-          std::copy_n(y, 2, std::back_inserter(data.dataVector));
-        }
-        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
           y = gradY->GetTuple2(tupleIdx);
           std::copy_n(y, 2, std::back_inserter(data.dataVector));
         }
@@ -240,13 +236,11 @@ void readData(Mesh &mesh, const std::string &filename)
         for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
           x = gradX->GetTuple3(tupleIdx);
           std::copy_n(x, data.numcomp, std::back_inserter(data.dataVector));
-        }
-        for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
+
           y = gradY->GetTuple3(tupleIdx);
           std::copy_n(y, data.numcomp, std::back_inserter(data.dataVector));
-        }
-        if (haveGradZ) {
-          for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
+
+          if (haveGradZ) {
             z = gradZ->GetTuple3(tupleIdx);
             std::copy_n(z, data.numcomp, std::back_inserter(data.dataVector));
           }
