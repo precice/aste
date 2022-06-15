@@ -240,7 +240,7 @@ void readData(Mesh &mesh, const std::string &filename)
           y = gradY->GetTuple3(tupleIdx);
           std::copy_n(y, data.numcomp, std::back_inserter(data.dataVector));
 
-          if (haveGradZ) {
+          if (gradDim == 3 && haveGradZ) {
             z = gradZ->GetTuple3(tupleIdx);
             std::copy_n(z, data.numcomp, std::back_inserter(data.dataVector));
           }
