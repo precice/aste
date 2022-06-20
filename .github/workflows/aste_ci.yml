@@ -60,7 +60,7 @@ jobs:
       - name: run example
         working-directory: tests/example
         run: |
-          ./run.sh
+          ./run-all.sh
       - name: install mapping-tester dependencies
         working-directory: tests/
         run: |

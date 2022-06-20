@@ -66,7 +66,9 @@ private:
  *
  */
 enum datatype { READ,
-                WRITE };
+                WRITE,
+                GRADIENT,
+};
 /**
  * @brief Information about data in mesh.
  * Contains whether data is write or read type
@@ -77,13 +79,16 @@ enum datatype { READ,
  */
 struct MeshData {
   MeshData(datatype type, int numcomp, std::string name, int dataID)
-      : type(type), numcomp(numcomp), name(std::move(name)), dataID(dataID) {}
+      : type(type), numcomp(numcomp), name(std::move(name)), dataID(dataID){};
+  MeshData(datatype type, int numcomp, std::string name, int dataID, int gradDimension)
+      : type(type), numcomp(numcomp), name(std::move(name)), dataID(dataID), gradDimension(gradDimension){};
 
   datatype            type;
   int                 numcomp;
   std::string         name; // name of data
   std::vector<double> dataVector;
-  int                 dataID; // preCICE dataID
+  int                 dataID;        // preCICE dataID
+  int                 gradDimension; // Dimensions for gradient data
 };
 
 std::ostream &operator<<(std::ostream &out, const MeshName &mname);
