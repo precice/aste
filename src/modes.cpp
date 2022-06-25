@@ -39,7 +39,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, 1, dataname, dataID));
     }
-    for (const auto dataname : asteInterface.writeScalarNames) {
+    for (const auto dataname : asteInterface.readScalarNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::READ, 1, dataname, dataID));
     }
