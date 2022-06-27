@@ -209,9 +209,9 @@ void readData(Mesh &mesh, const std::string &filename)
         std::cerr << "Error while parsing gradient data " << dataname << " , please check your input mesh";
       }
 
-      int NumComp = gradX->GetNumberOfComponents();
-      assert(NumComp == 3);   // It should be a 3D vector
-      if (gradY = !nullptr) { // 2/3D Vector data
+      // Safety checks
+      assert(gradX->GetNumberOfComponents() == 3); // Gradient should be 3D
+      if (gradY = !nullptr) {                      // 2/3D Vector data
         assert(gradY->GetNumberOfComponents() == 3);
       }
       if (gradZ = !nullptr) { // 3D Vector data
