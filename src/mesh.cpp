@@ -211,10 +211,10 @@ void readData(Mesh &mesh, const std::string &filename)
 
       // Safety checks
       assert(gradX->GetNumberOfComponents() == 3); // Gradient should be 3D
-      if (gradY = !nullptr) {                      // 2/3D Vector data
+      if (gradY != nullptr) {                      // 2/3D Vector data
         assert(gradY->GetNumberOfComponents() == 3);
       }
-      if (gradZ = !nullptr) { // 3D Vector data
+      if (gradZ != nullptr) { // 3D Vector data
         assert(gradZ->GetNumberOfComponents() == 3);
       }
 
