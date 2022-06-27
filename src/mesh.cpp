@@ -210,7 +210,14 @@ void readData(Mesh &mesh, const std::string &filename)
       }
 
       int NumComp = gradX->GetNumberOfComponents();
-      assert(NumComp == 3); // It should be a 3D vector
+      assert(NumComp == 3);   // It should be a 3D vector
+      if (gradY = !nullptr) { // 2/3D Vector data
+        assert(gradY->GetNumberOfComponents() == 3);
+      }
+      if (gradZ = !nullptr) { // 3D Vector data
+        assert(gradZ->GetNumberOfComponents() == 3);
+      }
+
       data.dataVector.reserve(dataDim * gradDim * NumPoints);
 
       switch (dataDim) {
