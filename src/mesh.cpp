@@ -196,6 +196,8 @@ void readData(Mesh &mesh, const std::string &filename)
       {
         const std::string gradName = dataname + "_gradient";
         (PD->HasArray(gradName.c_str())) ? gradX = PD->GetArray(gradName.c_str()) : gradX = nullptr;
+        gradY = nullptr;
+        gradZ = nullptr;
       } else { // Vector data
         const std::string gradNameX = dataname + "_dx";
         const std::string gradNameY = dataname + "_dy";
