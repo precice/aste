@@ -129,12 +129,11 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
         const auto c = vertexIDs[tetra[2]];
         const auto d = vertexIDs[tetra[3]];
 
-        interface.setMeshQuad(meshID,
-                              edgeMap.at(Edge{a, b}),
-                              edgeMap.at(Edge{b, c}),
-                              edgeMap.at(Edge{c, d}),
-                              edgeMap.at(Edge{d, a}));
+        interface.setMeshTetrahedron(meshID,
+                                     a, b, c, d);
       }
+    } else {
+      VLOG(1) << "Mesh Setup: 5) No Tetrahedra are found/required. Skipped";
     }
   } else {
     VLOG(1) << "Mesh Setup: 2) Skipped connectivity information on mesh \"" << mesh.fname << "\" as it is not required.";
