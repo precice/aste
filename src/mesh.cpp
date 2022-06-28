@@ -214,7 +214,7 @@ void readData(Mesh &mesh, const std::string &filename)
       if (gradY != nullptr) {                      // 2/3D Vector data
         assert(gradY->GetNumberOfComponents() == 3);
       }
-      if (gradZ != nullptr) { // 3D Vector data
+      if (gradDim == 3 && gradZ != nullptr) { // 3D Vector data
         assert(gradZ->GetNumberOfComponents() == 3);
       }
 
