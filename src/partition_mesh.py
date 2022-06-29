@@ -368,7 +368,7 @@ class MeshPartitioner:
         for i in range(vtkmesh.GetNumberOfCells()):
             cell = vtkmesh.GetCell(i)
             cell_type = cell.GetCellType()
-            if cell_type not in [vtk.VTK_LINE, vtk.VTK_TRIANGLE, vtk.VTK_QUAD]:
+            if cell_type not in [vtk.VTK_LINE, vtk.VTK_TRIANGLE, vtk.VTK_QUAD, vtk.VTK_TETRA]:
                 continue
             cell_types.append(cell_type)
             entry = ()
