@@ -2,6 +2,7 @@ import gmsh
 import meshio
 import sys
 
+
 def generate_unit_cube_vtk(out, resolution):
 
     gmsh.initialize()
@@ -9,21 +10,21 @@ def generate_unit_cube_vtk(out, resolution):
     gmsh.model.add("t1")
 
     lc = resolution
-    gmsh.model.geo.addPoint(0,0,0, lc, 1)
-    gmsh.model.geo.addPoint(1,0,0, lc, 2)
-    gmsh.model.geo.addPoint(1,1,0, lc, 3)
-    gmsh.model.geo.addPoint(0,1,0, lc, 4)
-    gmsh.model.geo.addPoint(0,0,1, lc, 5)
-    gmsh.model.geo.addPoint(1,0,1, lc, 6)
-    gmsh.model.geo.addPoint(1,1,1, lc, 7)
-    gmsh.model.geo.addPoint(0,1,1, lc, 8)
+    gmsh.model.geo.addPoint(0, 0, 0, lc, 1)
+    gmsh.model.geo.addPoint(1, 0, 0, lc, 2)
+    gmsh.model.geo.addPoint(1, 1, 0, lc, 3)
+    gmsh.model.geo.addPoint(0, 1, 0, lc, 4)
+    gmsh.model.geo.addPoint(0, 0, 1, lc, 5)
+    gmsh.model.geo.addPoint(1, 0, 1, lc, 6)
+    gmsh.model.geo.addPoint(1, 1, 1, lc, 7)
+    gmsh.model.geo.addPoint(0, 1, 1, lc, 8)
 
     # Lower face
     ab = gmsh.model.geo.addLine(1, 2)
     bc = gmsh.model.geo.addLine(2, 3)
     cd = gmsh.model.geo.addLine(3, 4)
     da = gmsh.model.geo.addLine(4, 1)
-    
+
     # Upper face
     ef = gmsh.model.geo.addLine(5, 6)
     fg = gmsh.model.geo.addLine(6, 7)
@@ -35,7 +36,6 @@ def generate_unit_cube_vtk(out, resolution):
     bf = gmsh.model.geo.addLine(2, 6)
     cg = gmsh.model.geo.addLine(3, 7)
     dh = gmsh.model.geo.addLine(4, 8)
-    
 
     gmsh.model.geo.addCurveLoop([ab, bc, cd, da], 1)
     gmsh.model.geo.addCurveLoop([ef, fg, gh, he], 2)
@@ -43,7 +43,6 @@ def generate_unit_cube_vtk(out, resolution):
     gmsh.model.geo.addCurveLoop([bc, cg, -fg, -bf], 4)
     gmsh.model.geo.addCurveLoop([cd, dh, -gh, -cg], 5)
     gmsh.model.geo.addCurveLoop([da, ae, -he, -dh], 6)
-
 
     gmsh.model.geo.addPlaneSurface([1], 1)
     gmsh.model.geo.addPlaneSurface([2], 2)
@@ -57,20 +56,22 @@ def generate_unit_cube_vtk(out, resolution):
     gmsh.model.geo.synchronize()
 
     # Add groups
-    gmsh.model.addPhysicalGroup(3, [1], name = "Volume")
+    gmsh.model.addPhysicalGroup(3, [1], name="Volume")
 
     gmsh.model.mesh.generate(3)
     gmsh.write("tmp.msh")
 
     gmsh.finalize()
 
-    # Convert 
+    # Convert
 
     mesh = meshio.read("tmp.msh")
-    mesh.write(out, binary=True) 
+    mesh.write(out, binary=True)
+
 
 def print_usage():
     print("Usage: generate_unit_cube.py filename.vtk/vtu mesh_resolution. Example: generate_unit_cube.py coarse.vtk 0.25")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
