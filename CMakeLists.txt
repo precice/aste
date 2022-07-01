@@ -23,16 +23,17 @@ find_package (Threads REQUIRED)
 find_package(precice REQUIRED CONFIG)
 
 
-# 2.4.0 has a bug so it requires something greater than 2.4.0
+# 2.4.0 has a bug so it requires something greater than 2.4.0 for NN
+# Also, tetrahedra appeared after 2.4.0
 IF(${precice_VERSION} VERSION_GREATER "2.4.0")
-  SET(SUPPORT_NN_GRADIENT_MAPPING ON)
+  SET(SUPPORT_NN_GRADIENT_MAPPING_AND_TETRA ON)
 ELSE()
-  SET(SUPPORT_NN_GRADIENT_MAPPING OFF)
+  SET(SUPPORT_NN_GRADIENT_MAPPING_AND_TETRA OFF)
 ENDIF()
 
-option(ASTE_NN_GRADIENT_MAPPING "Support nearest neighbour gradient mapping." ${SUPPORT_NN_GRADIENT_MAPPING})
+option(ASTE_NN_GRADIENT_MAPPING_AND_TETRA "Support nearest neighbour gradient mapping." ${SUPPORT_NN_GRADIENT_MAPPING_AND_TETRA})
 
-MESSAGE(STATUS "Support for nearest-neighbor-gradient mapping: ${ASTE_NN_GRADIENT_MAPPING}")
+MESSAGE(STATUS "Support for nearest-neighbor-gradient mapping and tetrahedra: ${ASTE_NN_GRADIENT_MAPPING_AND_TETRA}")
 
 find_package(Boost 1.65.1 REQUIRED COMPONENTS system program_options filesystem unit_test_framework)
 
@@ -66,8 +67,8 @@ if(ASTE_SET_MESH_BLOCK)
   target_compile_definitions(preciceMap PRIVATE ASTE_SET_MESH_BLOCK)
 endif()
 
-if(ASTE_NN_GRADIENT_MAPPING)
-  target_compile_definitions(preciceMap PRIVATE ASTE_NN_GRADIENT_MAPPING)
+if(ASTE_NN_GRADIENT_MAPPING_AND_TETRA)
+  target_compile_definitions(preciceMap PRIVATE ASTE_NN_GRADIENT_MAPPING_AND_TETRA)
 endif()
 
 if(METIS_FOUND)

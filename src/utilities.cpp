@@ -121,7 +121,7 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
     } else {
       VLOG(1) << "Mesh Setup: 4) No Quadrilaterals are found/required. Skipped";
     }
-#ifdef ASTE_NN_GRADIENT_MAPPING
+#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
     if (!mesh.tetrahedra.empty()) {
       VLOG(1) << "Mesh Setup: 5) " << mesh.tetrahedra.size() << " Tetrahedra";
       for (auto const &tetra : mesh.tetrahedra) {
