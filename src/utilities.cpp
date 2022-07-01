@@ -121,6 +121,7 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
     } else {
       VLOG(1) << "Mesh Setup: 4) No Quadrilaterals are found/required. Skipped";
     }
+#ifdef ASTE_NN_GRADIENT_MAPPING
     if (!mesh.tetrahedra.empty()) {
       VLOG(1) << "Mesh Setup: 5) " << mesh.tetrahedra.size() << " Tetrahedra";
       for (auto const &tetra : mesh.tetrahedra) {
@@ -135,6 +136,9 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
     } else {
       VLOG(1) << "Mesh Setup: 5) No Tetrahedra are found/required. Skipped";
     }
+#else
+    VLOG(1) << "Mesh Setup: 5) Tetrahedra support was disabled.";
+#endif
   } else {
     VLOG(1) << "Mesh Setup: 2) Skipped connectivity information on mesh \"" << mesh.fname << "\" as it is not required.";
   }
