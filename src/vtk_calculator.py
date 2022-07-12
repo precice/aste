@@ -304,16 +304,16 @@ class Calculator:
         try:
             import sympy
         except ImportError:
-            raise ImportError('For gradient calculations \"sympy\" is required please install the \"sympy\" package.')
+            raise ImportError('For gradient calculations "sympy" is required please install the "sympy" package.')
         logger = Calculator.get_logger()
         function_in_sympy = sympy.Matrix([sympy.parsing.parse_expr(Calculator.vtk_to_sympy(inputfunc))])
-        variables = sympy.Matrix(sympy.symbols('x y z'))
-        if ('iHat' in str(function_in_sympy)):  # Vector Data
-            gradient_name_list = [dataname + "_d" + i for i in ['x', 'y', 'z']]
+        variables = sympy.Matrix(sympy.symbols("x y z"))
+        if any(x in str(function_in_sympy) for x in ["iHat", "kHat", "jHat"]):  # Vector Data
+            gradient_name_list = [dataname + "_d" + i for i in ["x", "y", "z"]]
             gradient_function = []
             derivatives = []
             # Find components of vector
-            unitvectors = sympy.Matrix(sympy.symbols('iHat jHat kHat'))
+            unitvectors = sympy.Matrix(sympy.symbols("iHat jHat kHat"))
             components = [x for x in function_in_sympy.jacobian(unitvectors)]
             # Convert components to sympy
             for component in components:
@@ -321,24 +321,27 @@ class Calculator:
                 derivatives.append([Calculator.sympy_to_vtk(str(x)) for x in sympy_component.jacobian(variables)])
             # Create gradient function
             for i in range(3):
-                gradient_function.append(str(derivatives[0][i]) +
-                                         '*iHat+' +
-                                         str(derivatives[1][i]) +
-                                         '*jHat+' +
-                                         str(derivatives[2][i]) +
-                                         '*kHat')
+                gradient_function.append(
+                    str(derivatives[0][i])
+                    + "*iHat+"
+                    + str(derivatives[1][i])
+                    + "*jHat+"
+                    + str(derivatives[2][i])
+                    + "*kHat"
+                )
         else:  # Scalar Data
             gradients = [Calculator.sympy_to_vtk(str(x)) for x in function_in_sympy.jacobian(variables)]
             gradient_name_list = [dataname + "_gradient"]
-            gradient_function = [str(gradients[0]) + '*iHat+' + str(gradients[1]) +
-                                 '*jHat+' + str(gradients[2]) + '*kHat']
+            gradient_function = [
+                str(gradients[0]) + "*iHat+" + str(gradients[1]) + "*jHat+" + str(gradients[2]) + "*kHat"
+            ]
         # Add gradient function to vtk_dataset
         for name, function in zip(gradient_name_list, gradient_function):
             calc.SetFunction(function)
             calc.SetResultArrayName(name)
             calc.Update()
             vtk_dataset.GetPointData().AddArray(calc.GetOutput().GetPointData().GetAbstractArray(name))
-            logger.info("Evaluated \"{}\" on the input mesh.".format(name))
+            logger.info('Evaluated "{}" on the input mesh.'.format(name))
         return
 
 
