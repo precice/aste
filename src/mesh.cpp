@@ -208,7 +208,7 @@ void readData(Mesh &mesh, const std::string &filename)
       }
 
       if (gradX == nullptr || (gradDim > 1 && gradY == nullptr) || (gradDim == 3 && gradZ == nullptr)) {
-        std::cerr << "Error while parsing gradient data " << dataname << " , please check your input mesh";
+        std::cerr << "Error while parsing gradient data \"" << dataname << "\", please check your input mesh\n";
       }
 
       // Safety checks
