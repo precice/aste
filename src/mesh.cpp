@@ -207,7 +207,7 @@ void readData(Mesh &mesh, const std::string &filename)
         (PD->HasArray(gradNameZ.c_str())) ? gradZ = PD->GetArray(gradNameZ.c_str()) : gradZ = nullptr;
       }
 
-      if (gradX == nullptr || (gradDim > 1 && gradY == nullptr) || (gradDim == 3 && gradZ == nullptr)) {
+      if (gradX == nullptr || (dataDim > 1 && gradY == nullptr) || (dataDim == 3 && gradZ == nullptr)) {
         std::cerr << "Error while parsing gradient data \"" << dataname << "\", please check your input mesh\n";
       }
 
@@ -216,7 +216,7 @@ void readData(Mesh &mesh, const std::string &filename)
       if (gradY != nullptr) {                      // 2/3D Vector data
         assert(gradY->GetNumberOfComponents() == 3);
       }
-      if (gradDim == 3 && gradZ != nullptr) { // 3D Vector data
+      if (dataDim == 3 && gradZ != nullptr) { // 3D Vector data
         assert(gradZ->GetNumberOfComponents() == 3);
       }
 
