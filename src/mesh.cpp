@@ -108,7 +108,7 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim, const bool
       }
     }
   } else {
-    std::cerr << "Connectivity information for " << mesh.fname << " skipped since connectivity is not required.";
+    std::cerr << "Connectivity information for " << mesh.fname << " skipped since connectivity is not required.\n";
   }
 };
 
