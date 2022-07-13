@@ -28,6 +28,12 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     for (const auto dataname : asteInterface.writeVectorNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, dim, dataname, dataID));
+#ifdef ASTE_NN_GRADIENT_MAPPING
+      if (preciceInterface.isGradientDataRequired(dataID)) {
+        asteInterface.writeVectorNames.push_back(dataname + "_gradient");
+        asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, dim, dataname, dataID, dim));
+      }
+#endif
     }
 
     for (const auto dataname : asteInterface.readVectorNames) {
@@ -38,8 +44,14 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     for (const auto dataname : asteInterface.writeScalarNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, 1, dataname, dataID));
+#ifdef ASTE_NN_GRADIENT_MAPPING
+      if (preciceInterface.isGradientDataRequired(dataID)) {
+        asteInterface.writeVectorNames.push_back(dataname + "_gradient");
+        asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, 1, dataname, dataID, dim));
+      }
+#endif
     }
-    for (const auto dataname : asteInterface.writeScalarNames) {
+    for (const auto dataname : asteInterface.readScalarNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::READ, 1, dataname, dataID));
     }
@@ -122,8 +134,23 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
             preciceInterface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           }
-          VLOG(1) << "Data written: " << asteInterface.mesh.previewData(meshdata);
         }
+#ifdef ASTE_NN_GRADIENT_MAPPING
+        else if (meshdata.type == aste::datatype::GRADIENT) {
+          switch (meshdata.numcomp) {
+          case 1:
+            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
+            // preciceInterface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockScalarGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          default:
+            assert(meshdata.dataVector.size() == vertexIDs.size() * dim * dim);
+            preciceInterface.writeBlockVectorGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          }
+        }
+#endif
+        VLOG(1) << "Data written: " << asteInterface.mesh.previewData(meshdata);
       }
     }
     dt = preciceInterface.advance(dt);
@@ -182,8 +209,8 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, dim, dataname, dataID));
 #ifdef ASTE_NN_GRADIENT_MAPPING
       if (preciceInterface.isGradientDataRequired(dataID)) {
-        asteInterface.writeVectorNames.push_back("Gradient");
-        asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, dim, "Gradient", dataID, dim));
+        asteInterface.writeVectorNames.push_back(dataname + "_gradient");
+        asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, dim, dataname, dataID, dim));
       }
 #endif
     } else {
@@ -191,8 +218,8 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, 1, dataname, dataID));
 #ifdef ASTE_NN_GRADIENT_MAPPING
       if (preciceInterface.isGradientDataRequired(dataID)) {
-        asteInterface.writeVectorNames.push_back("Gradient");
-        asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, 1, "Gradient", dataID, dim));
+        asteInterface.writeVectorNames.push_back(dataname + "_gradient");
+        asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, 1, dataname, dataID, dim));
       }
 #endif
     }
