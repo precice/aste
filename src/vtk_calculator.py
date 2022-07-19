@@ -77,9 +77,9 @@ class Calculator:
     def create_predeffunctions():
         twoDFunctions = {
             "franke2d": "0.75*exp(-((9*{first}-2)^2+(9*{second}-2)^2)/4)"
-            "+0.75*exp(-(9*{first}+1)^2/49-(9*{second}+1)/10)"
+            "+0.75*exp(-((9*{first}+1)^2/49+(9*{second}+1)/10))"
             "+0.5*exp(-((9*{first}-7)^2+(9*{second}-3)^2)/4)"
-            "-0.2*exp(-(9*{first}-4)^2-(9*{second}-7)^2)",
+            "-0.2*exp(-((9*{first}-4)^2+(9*{second}-7)^2))",
             "eggholder2d": "-{first}*sin(sqrt(abs({first}-{second}-47)))"
             "-({second}+47)*sin(sqrt(abs(0.5*{first}+{second}+47)))",
             "rosenbrock2d": "(100*({second}-{first}^2)^2+({first}-1)^2)"
@@ -93,9 +93,9 @@ class Calculator:
 
         preDefFunctions = {
             "franke3d": "0.75*exp(-((9*x-2)^2+(9*y-2)^2+(9*z-2)^2)/4)"
-            "+0.75*exp(-(9*x+1)^2/49-(9*y+1)/10-(9*z+1)/10)"
+            "+0.75*exp(-((9*x+1)^2/49+(9*y+1)/10+(9*z+1)/10))"
             "+0.5*exp(-((9*x-7)^2+(9*y-3)^2+(9*y-5)^2)/4)"
-            "-0.2*exp(-(9*x-4)^2-(9*y-7)^2-(9*z-5)^2)",
+            "-0.2*exp(-((9*x-4)^2+(9*y-7)^2+(9*z-5)^2))",
             "eggholder3d": "-x*sin(sqrt(abs(x-y-47)))-(y+47)*sin(sqrt(abs(0.5*x+y+47)))"
                         "-y*sin(sqrt(abs(y-z-47)))-(z+47)*sin(sqrt(abs(0.5*y+z+47)))",
             "rosenbrock3d": "(100*(y-x^2)^2+(x-1)^2)+(100*(z-y^2)^2+(y-1)^2)"
