@@ -80,6 +80,7 @@ target_link_libraries(testing
   Boost::filesystem
   Boost::boost
   Boost::unit_test_framework
+  MPI::MPI_CXX
   ${VTK_LIBRARIES}
 )
 
