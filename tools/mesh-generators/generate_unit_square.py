@@ -2,6 +2,7 @@ import gmsh
 import meshio
 import argparse
 
+
 def generate_unit_square_vtk(out, resolution):
 
     gmsh.initialize()
@@ -49,11 +50,12 @@ def parse_args():
     group.add_argument("--mesh", "-m", dest="output",
                        help="The name of the file to create. Must be a .vtk or .vtu file.")
     parser.add_argument("--resolution", "-r", dest="resolution", default="0.1",
-                            help="Target mesh size (each element should be smaller than this)")
+                        help="Target mesh size (each element should be smaller than this)")
 
     args, _ = parser.parse_known_args()
     return args
 
+
 if __name__ == "__main__":
-    args = parse_args();
+    args = parse_args()
     generate_unit_square_vtk(args.output, float(args.resolution))
