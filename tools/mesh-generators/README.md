@@ -4,7 +4,7 @@ These scripts can generate mesh of a unit square/cube (with triangles or tetrahe
 Run with output file name and target mesh size as arguments. For instance : 
 
 ```
-python generate_unit_cube.py coarse.vtk 0.2
+python generate_unit_cube.py --mesh  coarse.vtk --resolution 0.2
 ```
 
 This requires the `gmsh` and `meshio` Python packages.
