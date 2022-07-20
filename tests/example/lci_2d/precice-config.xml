@@ -9,7 +9,7 @@
       enabled="true" />
   </log>
   
-  <solver-interface dimensions="3">
+  <solver-interface dimensions="2">
     
     <data:scalar name="Data" />
 
