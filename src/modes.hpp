@@ -4,9 +4,9 @@
 #include <string>
 #include "common.hpp"
 #include "configreader.hpp"
-#include "easylogging++.h"
 #include "mesh.hpp"
 #include "precice/SolverInterface.hpp"
+#include "thirdparty/easylogging++.h"
 
 namespace aste {
 /**
