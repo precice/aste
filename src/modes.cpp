@@ -207,7 +207,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     if (isVector) {
       asteInterface.writeVectorNames.push_back(dataname);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, dim, dataname, dataID));
-#ifdef ASTE_NN_GRADIENT_MAPPING
+#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
       if (preciceInterface.isGradientDataRequired(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
         asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, dim, dataname, dataID, dim));
@@ -216,7 +216,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     } else {
       asteInterface.writeScalarNames.push_back(dataname);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, 1, dataname, dataID));
-#ifdef ASTE_NN_GRADIENT_MAPPING
+#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
       if (preciceInterface.isGradientDataRequired(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
         asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, 1, dataname, dataID, dim));
@@ -270,7 +270,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
             break;
           }
         }
-#ifdef ASTE_NN_GRADIENT_MAPPING
+#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
         else if (meshdata.type == aste::datatype::GRADIENT) {
           switch (meshdata.numcomp) {
           case 1:
@@ -322,7 +322,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
           }
           VLOG(1) << "Data written: " << asteInterface.mesh.previewData(meshdata);
         }
-#ifdef ASTE_NN_GRADIENT_MAPPING
+#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
         else if (meshdata.type == aste::datatype::GRADIENT) {
           switch (meshdata.numcomp) {
           case 1:
