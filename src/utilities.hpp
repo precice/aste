@@ -13,10 +13,10 @@
 #include <string>
 #include "common.hpp"
 #include "configreader.hpp"
-#include "easylogging++.h"
 #include "mesh.hpp"
 #include "modes.hpp"
 #include "precice/SolverInterface.hpp"
+#include "thirdparty/easylogging++.h"
 
 namespace fs = boost::filesystem;
 
@@ -38,8 +38,8 @@ aste::ExecutionContext initializeMPI(int argc, char *argv[]);
 /**
  * @brief Sets Vertices in preCICE and returns vertexIDs
  *
- * @param interface preCICE interface 
- * @param mesh Mesh in ASTE 
+ * @param interface preCICE interface
+ * @param mesh Mesh in ASTE
  * @param meshID Mesh ID of the Mesh in preCICE
  * @return std::vector<int> a vector of vertexIDs in preCICE
  */
@@ -51,7 +51,7 @@ EdgeIdMap setupEdgeIDs(precice::SolverInterface &interface, const aste::Mesh &me
  * @brief Setup mesh in preCICE (with connectivity information of provided).
  *
  * @param interface preCICE interface
- * @param mesh Mesh in ASTE 
+ * @param mesh Mesh in ASTE
  * @param meshID ID of the Mesh in preCICE
  * @return std::vector<int> a vector of vertexIDs in preCICE
  */

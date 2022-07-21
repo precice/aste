@@ -2,7 +2,7 @@
 #include <boost/program_options.hpp>
 #include <iostream>
 #include <mpi.h>
-#include "easylogging++.h"
+#include "thirdparty/easylogging++.h"
 
 using namespace std;
 

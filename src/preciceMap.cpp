@@ -1,6 +1,6 @@
 #include <mpi.h>
 #include <string>
-#include "easylogging++.h"
+#include "thirdparty/easylogging++.h"
 #include "modes.hpp"
 #include "utilities.hpp"
 
