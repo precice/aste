@@ -7,6 +7,7 @@ struct ReadCase {
   std::string fname{};
   std::string dataname{};
   int         dim{};
+  bool        connectivity;
 };
 
 struct WriteCase {
@@ -14,6 +15,7 @@ struct WriteCase {
   std::string fname{};
   std::string dataname{};
   int         dim{};
+  bool        connectivity;
 };
 
 void writetest(const WriteCase &current_case);

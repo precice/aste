@@ -272,7 +272,6 @@ class MeshPartitioner:
         big_dim = 0 if max_point[0] - min_point[0] >= max_point[1] - min_point[1] else 1
         small_dim = 1 - big_dim
 
-        @staticmethod
         def prime_factors(n):
             """ Straight from SO"""
             i = 2
@@ -287,7 +286,6 @@ class MeshPartitioner:
                 factors.append(n)
             return factors
 
-        @staticmethod
         def greedy_choose(factors):
             """ Greedily choose "best" divisors"""
             small = big = 1
@@ -370,7 +368,7 @@ class MeshPartitioner:
         for i in range(vtkmesh.GetNumberOfCells()):
             cell = vtkmesh.GetCell(i)
             cell_type = cell.GetCellType()
-            if cell_type not in [vtk.VTK_LINE, vtk.VTK_TRIANGLE, vtk.VTK_QUAD]:
+            if cell_type not in [vtk.VTK_LINE, vtk.VTK_TRIANGLE, vtk.VTK_QUAD, vtk.VTK_TETRA]:
                 continue
             cell_types.append(cell_type)
             entry = ()

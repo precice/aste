@@ -28,6 +28,12 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     for (const auto dataname : asteInterface.writeVectorNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, dim, dataname, dataID));
+#ifdef ASTE_NN_GRADIENT_MAPPING
+      if (preciceInterface.isGradientDataRequired(dataID)) {
+        asteInterface.writeVectorNames.push_back(dataname + "_gradient");
+        asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, dim, dataname, dataID, dim));
+      }
+#endif
     }
 
     for (const auto dataname : asteInterface.readVectorNames) {
@@ -38,16 +44,22 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     for (const auto dataname : asteInterface.writeScalarNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, 1, dataname, dataID));
+#ifdef ASTE_NN_GRADIENT_MAPPING
+      if (preciceInterface.isGradientDataRequired(dataID)) {
+        asteInterface.writeVectorNames.push_back(dataname + "_gradient");
+        asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, 1, dataname, dataID, dim));
+      }
+#endif
     }
-    for (const auto dataname : asteInterface.writeScalarNames) {
+    for (const auto dataname : asteInterface.readScalarNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::READ, 1, dataname, dataID));
     }
 
     VLOG(1) << "Loading mesh from " << asteInterface.meshes.front().filename();
-
-    asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim);
-
+    const bool requireConnectivity = preciceInterface.isMeshConnectivityRequired(asteInterface.meshID);
+    asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim, requireConnectivity);
+    VLOG(1) << "The loaded mesh " << asteInterface.meshes.front().filename() << " contains: " << asteInterface.mesh.summary();
     vertexIDs = setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshID);
     VLOG(1) << "Mesh setup completed on Rank " << context.rank;
     minMeshSize = std::max(minMeshSize, asteInterface.meshes.size());
@@ -122,8 +134,23 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
             preciceInterface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           }
-          VLOG(1) << "Data written: " << asteInterface.mesh.previewData(meshdata);
         }
+#ifdef ASTE_NN_GRADIENT_MAPPING
+        else if (meshdata.type == aste::datatype::GRADIENT) {
+          switch (meshdata.numcomp) {
+          case 1:
+            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
+            // preciceInterface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockScalarGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          default:
+            assert(meshdata.dataVector.size() == vertexIDs.size() * dim * dim);
+            preciceInterface.writeBlockVectorGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          }
+        }
+#endif
+        VLOG(1) << "Data written: " << asteInterface.mesh.previewData(meshdata);
       }
     }
     dt = preciceInterface.advance(dt);
@@ -180,9 +207,21 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     if (isVector) {
       asteInterface.writeVectorNames.push_back(dataname);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, dim, dataname, dataID));
+#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
+      if (preciceInterface.isGradientDataRequired(dataID)) {
+        asteInterface.writeVectorNames.push_back(dataname + "_gradient");
+        asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, dim, dataname, dataID, dim));
+      }
+#endif
     } else {
       asteInterface.writeScalarNames.push_back(dataname);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, 1, dataname, dataID));
+#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
+      if (preciceInterface.isGradientDataRequired(dataID)) {
+        asteInterface.writeVectorNames.push_back(dataname + "_gradient");
+        asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, 1, dataname, dataID, dim));
+      }
+#endif
     }
     asteConfiguration.asteInterfaces.push_back(asteInterface);
   } else if (participantName == "B") {
@@ -207,10 +246,10 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
 
   auto asteInterface = asteConfiguration.asteInterfaces.front();
   VLOG(1) << "Loading mesh from " << asteInterface.meshes.front().filename();
-  ;
-  asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim);
+  const bool requireConnectivity = preciceInterface.isMeshConnectivityRequired(asteInterface.meshID);
+  asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim, requireConnectivity);
   asteInterface.meshes.front().loadData(asteInterface.mesh);
-  VLOG(1) << "The mesh contains: " << asteInterface.mesh.summary();
+  VLOG(1) << "The loaded mesh " << asteInterface.meshes.front().filename() << " contains: " << asteInterface.mesh.summary();
   auto vertexIDs = aste::setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshID);
   VLOG(1) << "Mesh setup completed on Rank " << context.rank;
   double dt = preciceInterface.initialize();
@@ -231,6 +270,21 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
             break;
           }
         }
+#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
+        else if (meshdata.type == aste::datatype::GRADIENT) {
+          switch (meshdata.numcomp) {
+          case 1:
+            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
+            // preciceInterface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockScalarGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          default:
+            assert(meshdata.dataVector.size() == vertexIDs.size() * dim * dim);
+            preciceInterface.writeBlockVectorGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          }
+        }
+#endif
       }
       VLOG(1) << "Data written: " << asteInterface.mesh.previewData();
     }
@@ -268,6 +322,21 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
           }
           VLOG(1) << "Data written: " << asteInterface.mesh.previewData(meshdata);
         }
+#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
+        else if (meshdata.type == aste::datatype::GRADIENT) {
+          switch (meshdata.numcomp) {
+          case 1:
+            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
+            preciceInterface.writeBlockScalarGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          default:
+            assert(meshdata.dataVector.size() == vertexIDs.size() * dim * dim);
+            preciceInterface.writeBlockVectorGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            break;
+          }
+          VLOG(1) << "Gradient data written: " << asteInterface.mesh.previewData(meshdata);
+        }
+#endif
       }
     }
     dt = preciceInterface.advance(dt);
