@@ -68,7 +68,7 @@ fi
 
 if [ ! -z "$PYCMD" ]; then
   # Check XML
-  XMLFILES="$(git ls-files -- '*.xml' '!docs')"
+  XMLFILES="$(git ls-files -- '*.xml' '!docs' ':!tools')"
   XMLFMT="$SCRIPTDIR/config-formatter"
   echo "Checking $(echo "$XMLFILES" | wc -l) XML files"
   if $HAS_PARALLEL; then

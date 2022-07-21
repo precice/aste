@@ -54,7 +54,7 @@ else
   PYCMD="python"
 fi
 
-XMLFILES="$(git ls-files -- '*.xml' '!docs')"
+XMLFILES="$(git ls-files -- '*.xml' '!docs' ':!tools')"
 XMLFMT="$SCRIPTDIR/config-formatter"
 echo "Formatting $(echo "$XMLFILES" | wc -l) XML files"
 if $HAS_PARALLEL; then
