@@ -116,12 +116,12 @@ struct Mesh {
   using Edge     = std::array<VID, 2>;
   using Triangle = std::array<VID, 3>;
   using Quad     = std::array<VID, 4>;
-  using Tetra     = std::array<VID, 4>;
+  using Tetra    = std::array<VID, 4>;
   std::vector<Vertex>   positions;
   std::vector<Edge>     edges;
   std::vector<Triangle> triangles;
   std::vector<Quad>     quadrilaterals;
-  std::vector<Tetra>     tetrahedra;
+  std::vector<Tetra>    tetrahedra;
   std::string           fname;
   std::vector<MeshData> meshdata;
 
