@@ -3561,7 +3561,7 @@ public:
 // Logging from Logger class. Why this is here? Because we have Storage and Writer class available
 #if ELPP_VARIADIC_TEMPLATES_SUPPORTED
 template <typename T, typename... Args>
-void Logger::log_(Level level, int vlevel, const char *s, const T &value, const Args &... args)
+void Logger::log_(Level level, int vlevel, const char *s, const T &value, const Args &...args)
 {
   base::MessageBuilder b;
   b.initialize(this);
@@ -3600,7 +3600,7 @@ void Logger::log_(Level level, int vlevel, const T &log)
   }
 }
 template <typename T, typename... Args>
-inline void Logger::log(Level level, const char *s, const T &value, const Args &... args)
+inline void Logger::log(Level level, const char *s, const T &value, const Args &...args)
 {
   acquireLock(); // released in Writer!
   log_(level, 0, s, value, args...);
@@ -3613,7 +3613,7 @@ inline void Logger::log(Level level, const T &log)
 }
 #if ELPP_VERBOSE_LOG
 template <typename T, typename... Args>
-inline void Logger::verbose(int vlevel, const char *s, const T &value, const Args &... args)
+inline void Logger::verbose(int vlevel, const char *s, const T &value, const Args &...args)
 {
   acquireLock(); // released in Writer!
   log_(el::Level::Verbose, vlevel, s, value, args...);
@@ -3636,16 +3636,16 @@ inline void Logger::verbose(int, const T &)
   return;
 }
 #endif // ELPP_VERBOSE_LOG
-#define LOGGER_LEVEL_WRITERS(FUNCTION_NAME, LOG_LEVEL)                                   \
-  template <typename T, typename... Args>                                                \
-  inline void Logger::FUNCTION_NAME(const char *s, const T &value, const Args &... args) \
-  {                                                                                      \
-    log(LOG_LEVEL, s, value, args...);                                                   \
-  }                                                                                      \
-  template <typename T>                                                                  \
-  inline void Logger::FUNCTION_NAME(const T &value)                                      \
-  {                                                                                      \
-    log(LOG_LEVEL, value);                                                               \
+#define LOGGER_LEVEL_WRITERS(FUNCTION_NAME, LOG_LEVEL)                                  \
+  template <typename T, typename... Args>                                               \
+  inline void Logger::FUNCTION_NAME(const char *s, const T &value, const Args &...args) \
+  {                                                                                     \
+    log(LOG_LEVEL, s, value, args...);                                                  \
+  }                                                                                     \
+  template <typename T>                                                                 \
+  inline void Logger::FUNCTION_NAME(const T &value)                                     \
+  {                                                                                     \
+    log(LOG_LEVEL, value);                                                              \
   }
 #define LOGGER_LEVEL_WRITERS_DISABLED(FUNCTION_NAME, LOG_LEVEL)               \
   template <typename T, typename... Args>                                     \

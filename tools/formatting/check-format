@@ -8,14 +8,14 @@
 # 2 is clang-format 8 could not be found
 
 # Detect version
-if command -v clang-format-8 > /dev/null; then
-    BINARY="clang-format-8"
+if command -v clang-format-12 > /dev/null; then
+    BINARY="clang-format-12"
 elif command -v clang-format > /dev/null; then
     BINARY="clang-format"
     VERSION=$(clang-format --version | grep -o '[0-9]\+.[0-9]\+.[0-9]\+' | head -1 | cut -d '.' -f 1)
-    if (( $VERSION != 8 )); then
+    if (( $VERSION != 12 )); then
         echo "clang-format version 8 expected, but ${VERSION} found!"
-        echo "Please install a suffixed binary (clang-format-8) or install clang-format version 8."
+        echo "Please install a suffixed binary (clang-format-12) or install clang-format version 12."
         exit 2
     fi
 else
@@ -39,7 +39,7 @@ else
 fi
 
 # Check C/C++
-CFILES=$(git ls-files -- '*.[ch]pp' '*.[ch]' ':!thirdparty')
+CFILES=$(git ls-files -- '*.[ch]pp' '*.[ch]' ':!src/thirdparty')
 echo "Checking $(echo "$CFILES" | wc -l) C/C++ files"
 DIFFS=""
 if $HAS_PARALLEL; then
