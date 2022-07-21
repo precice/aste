@@ -1,8 +1,8 @@
 #pragma once
 
 #include <iostream>
-#include <json.hpp>
 #include <string>
+#include <thirdparty/json.hpp>
 #include <vector>
 #include "mesh.hpp"
 #include "precice/SolverInterface.hpp"
