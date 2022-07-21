@@ -15,7 +15,7 @@ jobs:
     - uses: DoozyX/clang-format-lint-action@v0.13
       with:
         source: '.'
-        exclude: './src/thirdparty/json.hpp'
+        exclude: './src/thirdparty/*'
         extensions: 'hpp,cpp'
         clangFormatVersion: 12
         inplace: true
