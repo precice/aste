@@ -1,7 +1,7 @@
 #include <mpi.h>
 #include <string>
-#include "thirdparty/easylogging++.h"
 #include "modes.hpp"
+#include "thirdparty/easylogging++.h"
 #include "utilities.hpp"
 
 INITIALIZE_EASYLOGGINGPP
