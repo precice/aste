@@ -16,7 +16,7 @@ jobs:
       with:
         source: '.'
         exclude: './src/json.hpp'
-        extensions: 'hpp,cpp,c,h'
+        extensions: 'hpp,cpp'
         clangFormatVersion: 12
         inplace: true
     - run: |
