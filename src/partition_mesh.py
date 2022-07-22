@@ -231,6 +231,7 @@ class MeshPartitioner:
             cellPtr.append(cellPtr[-1] + len(cell))
         binpath = os.path.dirname(__file__)
         libpath = os.path.normpath(os.path.join(binpath, "../lib"))
+        lib64path = os.path.normpath(os.path.join(binpath, "../lib64"))
         os_type = platform.system()
         if os_type == "Linux":
             ext = ".so"
@@ -242,6 +243,8 @@ class MeshPartitioner:
             libmetispath = os.path.join(binpath, "libmetisAPI" + ext)
         elif os.path.isfile(os.path.join(libpath, "libmetisAPI" + ext)):
             libmetispath = os.path.join(libpath, "libmetisAPI" + ext)
+        elif os.path.isfile(os.path.join(lib64path, "libmetisAPI" + ext)):
+            libmetispath = os.path.join(lib64path, "libmetisAPI" + ext)
         else:
             raise Exception("libmetisAPI" + ext + " cannot found!")
         libmetis = cdll.LoadLibrary(libmetispath)
