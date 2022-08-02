@@ -29,7 +29,7 @@ def main(argv):
         grouped.get_group(key).plot(
             ax=ax,
             x="count",
-            y=["relative-l2", "median"],
+            y=["relative-l2", "median(abs)"],
             loglog=True,
             title=str(key)
         )
