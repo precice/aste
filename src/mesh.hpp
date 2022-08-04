@@ -71,13 +71,12 @@ struct ExecutionContext {
 
 class MeshName {
 public:
-  MeshName() = default;
   MeshName(std::string meshname, std::string extension, const ExecutionContext &context)
       : _mname(std::move(meshname)), _ext(std::move(extension)), _context(context) {}
 
   std::string filename() const;
 
-  void loadMesh(Mesh &mesh, const int dim);
+  void loadMesh(Mesh &mesh, const int dim, const bool requireConnectivity);
   void loadData(Mesh &mesh);
   void resetData(Mesh &mesh);
   void save(const Mesh &mesh, const std::string &outputFilename) const;
@@ -97,7 +96,9 @@ private:
  *
  */
 enum datatype { READ,
-                WRITE };
+                WRITE,
+                GRADIENT,
+};
 /**
  * @brief Information about data in mesh.
  * Contains whether data is write or read type
@@ -108,13 +109,16 @@ enum datatype { READ,
  */
 struct MeshData {
   MeshData(datatype type, int numcomp, std::string name, int dataID)
-      : type(type), numcomp(numcomp), name(std::move(name)), dataID(dataID) {}
+      : type(type), numcomp(numcomp), name(std::move(name)), dataID(dataID){};
+  MeshData(datatype type, int numcomp, std::string name, int dataID, int gradDimension)
+      : type(type), numcomp(numcomp), name(std::move(name)), dataID(dataID), gradDimension(gradDimension){};
 
   datatype            type;
   int                 numcomp;
   std::string         name; // name of data
   std::vector<double> dataVector;
-  int                 dataID; // preCICE dataID
+  int                 dataID;        // preCICE dataID
+  int                 gradDimension; // Dimensions for gradient data
 };
 
 std::ostream &operator<<(std::ostream &out, const MeshName &mname);
@@ -142,10 +146,12 @@ struct Mesh {
   using Edge     = std::array<VID, 2>;
   using Triangle = std::array<VID, 3>;
   using Quad     = std::array<VID, 4>;
+  using Tetra    = std::array<VID, 4>;
   std::vector<Vertex>   positions;
   std::vector<Edge>     edges;
   std::vector<Triangle> triangles;
   std::vector<Quad>     quadrilaterals;
+  std::vector<Tetra>    tetrahedra;
   std::string           fname;
   std::vector<MeshData> meshdata;
 

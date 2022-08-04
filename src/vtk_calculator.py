@@ -67,6 +67,7 @@ class Calculator:
             action='store_true',
             help="Calculate the difference between \"--diffdata\" and the specified"
             "function \"--function\"")
+        parser.add_argument("--gradient", "-g", action='store_true', help="Adds array with gradient data")
         parser.add_argument("--stats", "-s", action='store_true',
                             help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
         args, _ = parser.parse_known_args()
@@ -76,9 +77,9 @@ class Calculator:
     def create_predeffunctions():
         twoDFunctions = {
             "franke2d": "0.75*exp(-((9*{first}-2)^2+(9*{second}-2)^2)/4)"
-            "+0.75*exp(-(9*{first}+1)^2/49-(9*{second}+1)/10)"
+            "+0.75*exp(-((9*{first}+1)^2/49+(9*{second}+1)/10))"
             "+0.5*exp(-((9*{first}-7)^2+(9*{second}-3)^2)/4)"
-            "-0.2*exp(-(9*{first}-4)^2-(9*{second}-7)^2)",
+            "-0.2*exp(-((9*{first}-4)^2+(9*{second}-7)^2))",
             "eggholder2d": "-{first}*sin(sqrt(abs({first}-{second}-47)))"
             "-({second}+47)*sin(sqrt(abs(0.5*{first}+{second}+47)))",
             "rosenbrock2d": "(100*({second}-{first}^2)^2+({first}-1)^2)"
@@ -92,9 +93,9 @@ class Calculator:
 
         preDefFunctions = {
             "franke3d": "0.75*exp(-((9*x-2)^2+(9*y-2)^2+(9*z-2)^2)/4)"
-            "+0.75*exp(-(9*x+1)^2/49-(9*y+1)/10-(9*z+1)/10)"
+            "+0.75*exp(-((9*x+1)^2/49+(9*y+1)/10+(9*z+1)/10))"
             "+0.5*exp(-((9*x-7)^2+(9*y-3)^2+(9*y-5)^2)/4)"
-            "-0.2*exp(-(9*x-4)^2-(9*y-7)^2-(9*z-5)^2)",
+            "-0.2*exp(-((9*x-4)^2+(9*y-7)^2+(9*z-5)^2))",
             "eggholder3d": "-x*sin(sqrt(abs(x-y-47)))-(y+47)*sin(sqrt(abs(0.5*x+y+47)))"
                         "-y*sin(sqrt(abs(y-z-47)))-(z+47)*sin(sqrt(abs(0.5*y+z+47)))",
             "rosenbrock3d": "(100*(y-x^2)^2+(x-1)^2)+(100*(z-y^2)^2+(y-1)^2)"
@@ -172,8 +173,12 @@ class Calculator:
         logger.info("Evaluated \"{}\" on the input mesh \"{}\".".format(inputfunc, args.in_meshname))
         calc.SetResultArrayName(args.data)
         calc.Update()
+        vtk_dataset.GetPointData().AddArray(calc.GetOutput().GetPointData().GetAbstractArray(args.data))
         logger.info(f"Evaluated function saved to \"{args.data}\" variable on output mesh \"{out_meshname}\"")
-        Calculator.write_mesh(calc.GetOutput(), out_meshname, args.directory)
+        if args.gradient:
+            Calculator.add_gradient(calc, vtk_dataset, inputfunc, args.data)
+
+        Calculator.write_mesh(vtk_dataset, out_meshname, args.directory)
 
     @staticmethod
     def calculate_difference(calc, inputfunc, args, out_meshname):
@@ -285,6 +290,59 @@ class Calculator:
         writer.SetFileName(out_meshname)
         writer.Write()
         logger.info(f"Written output to \"{out_meshname}\".")
+
+    @staticmethod
+    def sympy_to_vtk(string):
+        return string.replace("**", "^")
+
+    @staticmethod
+    def vtk_to_sympy(string):
+        return string.replace("^", "**")
+
+    @staticmethod
+    def add_gradient(calc, vtk_dataset, inputfunc, dataname):
+        try:
+            import sympy
+        except ImportError:
+            raise ImportError('For gradient calculations "sympy" is required please install the "sympy" package.')
+        logger = Calculator.get_logger()
+        function_in_sympy = sympy.Matrix([sympy.parsing.parse_expr(Calculator.vtk_to_sympy(inputfunc))])
+        variables = sympy.Matrix(sympy.symbols("x y z"))
+        if any(x in str(function_in_sympy) for x in ["iHat", "kHat", "jHat"]):  # Vector Data
+            gradient_name_list = [dataname + "_d" + i for i in ["x", "y", "z"]]
+            gradient_function = []
+            derivatives = []
+            # Find components of vector
+            unitvectors = sympy.Matrix(sympy.symbols("iHat jHat kHat"))
+            components = [x for x in function_in_sympy.jacobian(unitvectors)]
+            # Convert components to sympy
+            for component in components:
+                sympy_component = sympy.Matrix([sympy.parsing.parse_expr(str(component))])
+                derivatives.append([Calculator.sympy_to_vtk(str(x)) for x in sympy_component.jacobian(variables)])
+            # Create gradient function
+            for i in range(3):
+                gradient_function.append(
+                    str(derivatives[0][i])
+                    + "*iHat+"
+                    + str(derivatives[1][i])
+                    + "*jHat+"
+                    + str(derivatives[2][i])
+                    + "*kHat"
+                )
+        else:  # Scalar Data
+            gradients = [Calculator.sympy_to_vtk(str(x)) for x in function_in_sympy.jacobian(variables)]
+            gradient_name_list = [dataname + "_gradient"]
+            gradient_function = [
+                str(gradients[0]) + "*iHat+" + str(gradients[1]) + "*jHat+" + str(gradients[2]) + "*kHat"
+            ]
+        # Add gradient function to vtk_dataset
+        for name, function in zip(gradient_name_list, gradient_function):
+            calc.SetFunction(function)
+            calc.SetResultArrayName(name)
+            calc.Update()
+            vtk_dataset.GetPointData().AddArray(calc.GetOutput().GetPointData().GetAbstractArray(name))
+            logger.info('Evaluated "{}" on the input mesh.'.format(name))
+        return
 
 
 if __name__ == "__main__":

@@ -1,0 +1,48 @@
+{
+  "general": {
+    "function": "0.78 + cos(10*(x+y+z))",
+    "ranks": {
+      "A": [
+        2
+      ],
+      "B": [
+        2
+      ]
+    },
+    "syncmode": false,
+    "meshes": {
+      "A": {
+        "coarse_mesh": "${TEST_LOCATION}/coarse_mesh.vtk"
+      },
+      "B": {
+        "fine_mesh": "${TEST_LOCATION}/fine_mesh.vtk"
+      }
+    }
+  },
+  "groups": [
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "tps": {
+            "kind": "rbf-thin-plate-splines",
+            "options": "use-qr-decomposition=\"1\""
+          },
+         "np": {
+            "kind": "nearest-projection"
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "coarse_mesh"
+        ],
+        "B": [
+          "fine_mesh"
+        ]
+      }
+    }
+  ]
+}

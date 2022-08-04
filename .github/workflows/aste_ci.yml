@@ -16,9 +16,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: install preCICE
         run: |
-          wget https://github.com/precice/precice/releases/download/v2.3.0/libprecice2_2.3.0_focal.deb && \
+          wget https://github.com/precice/precice/releases/download/v2.4.0/libprecice2_2.4.0_focal.deb && \
           sudo apt-get -y update && \
-          sudo apt-get -y install ./libprecice2_2.3.0_focal.deb
+          sudo apt-get -y install ./libprecice2_2.4.0_focal.deb
       - name: install VTK
         run: |
           sudo apt-get -y install libvtk7-dev
@@ -53,7 +53,19 @@ jobs:
         working-directory: build_clang
         run: |
           ctest
+      - name: install example dependencies
+        working-directory: tests/example
+        run: |
+          python3 -m pip install sympy
       - name: run example
         working-directory: tests/example
+        run: |
+          ./run-all.sh
+      - name: install mapping-tester dependencies
+        working-directory: tests/
+        run: |
+          python3 -m pip install scipy jinja2
+      - name: test mapping-tester
+        working-directory: tests/mapping-tester-example
         run: |
           ./run.sh
