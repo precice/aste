@@ -90,7 +90,7 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
     const auto edgeMap = setupEdgeIDs(interface, mesh, meshID, vertexIDs);
     ASTE_DEBUG << "Total " << edgeMap.size() << " edges are configured";
     if (!mesh.triangles.empty()) {
-      VLOG(1) << "Mesh Setup: 3) " << mesh.triangles.size() << " Triangles";
+      ASTE_DEBUG << "Mesh Setup: 3) " << mesh.triangles.size() << " Triangles";
       for (auto const &triangle : mesh.triangles) {
         const auto a = vertexIDs[triangle[0]];
         const auto b = vertexIDs[triangle[1]];

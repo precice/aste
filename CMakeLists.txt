@@ -76,9 +76,7 @@ endif()
 add_executable(testing tests/testing.cpp tests/read_test.cpp tests/write_test.cpp src/mesh.cpp src/logger.cpp)
 target_include_directories(testing PRIVATE src)
 target_link_libraries(testing
-  Boost::filesystem
-  Boost::boost
-  Boost::unit_test_framework
+  ${Boost_LIBRARIES}
   MPI::MPI_CXX
   ${VTK_LIBRARIES}
 )
