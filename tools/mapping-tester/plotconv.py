@@ -121,7 +121,7 @@ def plotMemory(df, prefix):
             color=color
         )
     ax.set_xlabel("edge length(h) of mesh A")
-    ax.set_ylabel("peak memory of participant B")
+    ax.set_ylabel("peak memory of participant B [bytes]")
 
     #plotConv(ax, df, yname)
 
