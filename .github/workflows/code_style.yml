@@ -1,0 +1,27 @@
+name: Code Style
+on:
+  pull_request:
+    paths:
+      - "**.[ch]pp"
+      - "**.[ch]"
+      - "**.xml"
+      - "**.py"
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout preCICE
+        uses: actions/checkout@v3
+      - name: Setup python
+        uses: actions/setup-python@v3
+      - name: Install pre-commit
+        run: pip install pre-commit
+      - name: Run checks
+        run: pre-commit run -a -v
+      - name: Git status
+        if: always()
+        run: git status
+      - name: Full diff
+        if: always()
+        run: git diff
