@@ -28,10 +28,10 @@ namespace keywords = boost::log::keywords;
 
 using boost::shared_ptr;
 
-//Narrow-char thread-safe logger.
+// Narrow-char thread-safe logger.
 typedef boost::log::sources::severity_logger_mt<boost::log::trivial::severity_level> logger_t;
 
-//declares a global logger with a custom initialization
+// declares a global logger with a custom initialization
 BOOST_LOG_GLOBAL_LOGGER(my_logger, logger_t)
 
 #define ASTE_DEBUG BOOST_LOG_SEV(my_logger::get(), boost::log::trivial::severity_level::debug)

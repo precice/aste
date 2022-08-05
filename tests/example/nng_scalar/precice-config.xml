@@ -1,7 +1,5 @@
-<?xml version="1.0"?>
-
+<?xml version="1.0" encoding="UTF-8" ?>
 <precice-configuration>
-
   <log>
     <sink
       filter="%Severity% > debug and %Rank% = 0"
@@ -10,8 +8,7 @@
   </log>
 
   <solver-interface dimensions="3" experimental="true">
-
-    <data:scalar name="Data" gradient="on"/>
+    <data:scalar name="Data" gradient="on" />
 
     <mesh name="A-Mesh">
       <use-data name="Data" />
@@ -32,8 +29,11 @@
       <use-mesh name="A-Mesh" provide="no" from="A" />
       <use-mesh name="B-Mesh" provide="yes" />
       <read-data name="Data" mesh="B-Mesh" />
-
-      <mapping:nearest-neighbor-gradient constraint="consistent" direction="read" from="A-Mesh" to="B-Mesh" />
+      <mapping:nearest-neighbor-gradient
+        constraint="consistent"
+        direction="read"
+        from="A-Mesh"
+        to="B-Mesh" />
     </participant>
 
     <coupling-scheme:parallel-explicit>
@@ -42,7 +42,5 @@
       <time-window-size value="1" />
       <exchange data="Data" mesh="A-Mesh" from="A" to="B" />
     </coupling-scheme:parallel-explicit>
-
   </solver-interface>
-
 </precice-configuration>

@@ -1,23 +1,33 @@
 #! /usr/bin/env python3
 
-import json
-import csv
-import os
 import argparse
+import csv
 import glob
+import json
+import os
 
 
 def parseArguments(args):
     parser = argparse.ArgumentParser(description="Gathers stats after a run")
-    parser.add_argument('-o', '--outdir', default="cases", help='Directory to generate the test suite in.')
-    parser.add_argument('-f', '--file', type=argparse.FileType('w'), default="stats.csv",
-                        help='The resulting CSV file containing all stats.')
+    parser.add_argument(
+        "-o",
+        "--outdir",
+        default="cases",
+        help="Directory to generate the test suite in.",
+    )
+    parser.add_argument(
+        "-f",
+        "--file",
+        type=argparse.FileType("w"),
+        default="stats.csv",
+        help="The resulting CSV file containing all stats.",
+    )
     return parser.parse_args(args)
 
 
 def statsFromTimings(dir):
     stats = {}
-    assert(os.path.isdir(dir))
+    assert os.path.isdir(dir)
     file = os.path.join(dir, "precice-B-events.json")
     if os.path.isfile(file):
         try:
@@ -26,10 +36,18 @@ def statsFromTimings(dir):
                 timings = json.load(jsonfile)["Ranks"][0]["Timings"]
             stats["globalTime"] = timings["_GLOBAL"]["Max"]
             stats["initializeTime"] = timings["initialize"]["Max"]
-            computeMappingName = [x for x in timings.keys() if x.startswith(
-                "advance/map") and x.endswith("computeMapping.FromA-MeshToB-Mesh")][0]
-            mapDataName = [x for x in timings.keys() if x.startswith(
-                "advance/map") and x.endswith("mapData.FromA-MeshToB-Mesh")][0]
+            computeMappingName = [
+                x
+                for x in timings.keys()
+                if x.startswith("advance/map")
+                and x.endswith("computeMapping.FromA-MeshToB-Mesh")
+            ][0]
+            mapDataName = [
+                x
+                for x in timings.keys()
+                if x.startswith("advance/map")
+                and x.endswith("mapData.FromA-MeshToB-Mesh")
+            ][0]
             stats["computeMappingTime"] = timings[computeMappingName]["Max"]
             stats["mapDataTime"] = timings[mapDataName]["Max"]
         except BaseException:
@@ -39,7 +57,7 @@ def statsFromTimings(dir):
 
 def memoryStats(dir):
     stats = {}
-    assert(os.path.isdir(dir))
+    assert os.path.isdir(dir)
     for P in "A", "B":
         memfile = os.path.join(dir, f"memory-{P}.log")
         total = 0
@@ -68,10 +86,10 @@ def main(argv):
         print("Found: " + file)
         casedir = os.path.join(args.outdir, os.path.dirname(file))
         parts = os.path.normpath(file).split(os.sep)
-        assert(len(parts) >= 5)
+        assert len(parts) >= 5
         mapping, constraint, meshes, ranks, _ = parts[-5:]
-        meshA, meshB = meshes.split('-')
-        ranksA, ranksB = meshes.split('-')
+        meshA, meshB = meshes.split("-")
+        ranksA, ranksB = meshes.split("-")
 
         with open(os.path.join(args.outdir, file), "r") as jsonfile:
             stats = json.load(jsonfile)
@@ -87,7 +105,7 @@ def main(argv):
             if not fields:
                 fields += stats.keys()
 
-    assert(fields)
+    assert fields
     writer = csv.DictWriter(args.file, fieldnames=fields)
     writer.writeheader()
     writer.writerows(allstats)
@@ -96,4 +114,5 @@ def main(argv):
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main(sys.argv))
