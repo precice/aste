@@ -1,24 +1,35 @@
 #! python3
 
 import argparse
-import pandas
-import numpy as np
-import matplotlib.pyplot as plt
-import math
 import itertools
+import math
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas
 
 
 def parseArguments(args):
-    parser = argparse.ArgumentParser(description="Creates convergence plots from gathered stats")
-    parser.add_argument('-f', '--file', type=argparse.FileType('r'), default="stats.csv",
-                        help='The CSV file containing the gathered stats.')
+    parser = argparse.ArgumentParser(
+        description="Creates convergence plots from gathered stats"
+    )
     parser.add_argument(
-        '-ni',
-        '--no-inverse',
+        "-f",
+        "--file",
+        type=argparse.FileType("r"),
+        default="stats.csv",
+        help="The CSV file containing the gathered stats.",
+    )
+    parser.add_argument(
+        "-ni",
+        "--no-inverse",
         dest="inverse",
         action="store_false",
-        help='Do not create inverse plots.')
-    parser.add_argument('--show', action="store_true", help='Shows the plots insead of saving them.')
+        help="Do not create inverse plots.",
+    )
+    parser.add_argument(
+        "--show", action="store_true", help="Shows the plots insead of saving them."
+    )
     return parser.parse_args(args)
 
 
@@ -27,19 +38,20 @@ def lavg(l):
 
 
 def getStyler():
-    styles = ['solid', 'dashed', 'dashdot']
+    styles = ["solid", "dashed", "dashdot"]
     colors = [
-        '#0173b2',
-        '#de8f05',
-        '#029e73',
-        '#d55e00',
-        '#cc78bc',
-        '#ca9161',
-        '#fbafe4',
-        '#949494',
-        '#ece133',
-        '#56b4e9']
-    markers = ['o', 'v', '^', 'D', '*']
+        "#0173b2",
+        "#de8f05",
+        "#029e73",
+        "#d55e00",
+        "#cc78bc",
+        "#ca9161",
+        "#fbafe4",
+        "#949494",
+        "#ece133",
+        "#56b4e9",
+    ]
+    markers = ["o", "v", "^", "D", "*"]
     for style in itertools.product(styles, markers, colors):
         yield style
 
@@ -48,7 +60,7 @@ def plot_order(ax, nth, xmin, xmax, ymin, ymax):
     x1, y1 = xmax, ymax
 
     def f(x):
-        return y1 * ((x / x1)**nth)
+        return y1 * ((x / x1) ** nth)
 
     xl, xu = xmin, xmax
     for step in range(4):
@@ -64,10 +76,7 @@ def plot_order(ax, nth, xmin, xmax, ymin, ymax):
     xs, ys = [x1, x2], [y1, y2]
     ax.plot(xs, ys, color="lightgray", linewidth=1.0, zorder=-1)
     ax.annotate(
-        "{} order".format(nth),
-        xy=(lavg(xs), lavg(ys)),
-        color="gray",
-        zorder=-1
+        "{} order".format(nth), xy=(lavg(xs), lavg(ys)), color="gray", zorder=-1
     )
 
 
@@ -76,24 +85,25 @@ def main(argv):
 
     df = pandas.read_csv(args.file)
     numeric_cols = [
-        'mesh A',
-        'mesh B',
-        'count',
-        'min',
-        'max',
-        'median',
-        'relative-l2',
-        'weighted-l2',
-        '99th percentile',
-        '95th percentile',
-        '90th percentile']
+        "mesh A",
+        "mesh B",
+        "count",
+        "min",
+        "max",
+        "median",
+        "relative-l2",
+        "weighted-l2",
+        "99th percentile",
+        "95th percentile",
+        "90th percentile",
+    ]
     df[numeric_cols] = df[numeric_cols].apply(pandas.to_numeric)
 
     # A on x axes
     plot(df, False, True, args.show)
     plot(df, False, False, args.show)
 
-    if (args.inverse):
+    if args.inverse:
         # B on x axes
         plot(df, True, True, args.show)
         plot(df, True, False, args.show)
@@ -131,16 +141,22 @@ def plot(df, inverse, idfilter, show=False):
             label=fmt.format(*name),
             marker=m,
             linestyle=l,
-            color=c
+            color=c,
         )
     ax.set_xlabel("edge length(h) of {}".format(xname))
     ax.set_ylabel("{} error mapping to mesh B".format(yname))
 
-    if(not inverse):
-        filtered = df[df['mesh A'] != df['mesh B']][yname]
-        plot_order(ax, 1, df[xname].min(), df[xname].max(), filtered.min(), filtered.max())
-        plot_order(ax, 2, df[xname].min(), df[xname].max(), filtered.min(), filtered.max())
-        plot_order(ax, 3, df[xname].min(), df[xname].max(), filtered.min(), filtered.max())
+    if not inverse:
+        filtered = df[df["mesh A"] != df["mesh B"]][yname]
+        plot_order(
+            ax, 1, df[xname].min(), df[xname].max(), filtered.min(), filtered.max()
+        )
+        plot_order(
+            ax, 2, df[xname].min(), df[xname].max(), filtered.min(), filtered.max()
+        )
+        plot_order(
+            ax, 3, df[xname].min(), df[xname].max(), filtered.min(), filtered.max()
+        )
 
     plt.gca().invert_xaxis()
     plt.grid()
@@ -161,4 +177,5 @@ def plot(df, inverse, idfilter, show=False):
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main(sys.argv))

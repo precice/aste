@@ -1,10 +1,10 @@
 #! python3
 
-import sys
 import argparse
 import itertools
-import math
 import json
+import math
+import sys
 
 
 class ArgumentSanitizationError(BaseException):
@@ -13,7 +13,7 @@ class ArgumentSanitizationError(BaseException):
 
 
 def sanitize(element, options):
-    if (element not in options):
+    if element not in options:
         raise ArgumentSanitizationError(
             f"Argument {element} is not one of the following valid options: {', '.join(options)}"
         )
@@ -23,10 +23,17 @@ def sanitize(element, options):
 def parseArguments(argv):
     # Setup options
     valid_polynomials = set(["on", "separate", "off"])
-    valid_types = set([
-        "multiquadrics", "inverse-multiquadrics", "volume-splines", "gaussian",
-        "compact-tps-c2", "compact-polynomial-c0", "compact-polynomial-c6"
-    ])
+    valid_types = set(
+        [
+            "multiquadrics",
+            "inverse-multiquadrics",
+            "volume-splines",
+            "gaussian",
+            "compact-tps-c2",
+            "compact-polynomial-c0",
+            "compact-polynomial-c6",
+        ]
+    )
 
     # Setup defaults
     default_polynomials = "on,separate"
@@ -36,16 +43,12 @@ def parseArguments(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument("-A", "--a-meshes", dest="a", type=str, required=True)
     parser.add_argument("-B", "--b-meshes", dest="b", type=str, required=True)
-    parser.add_argument("-p",
-                        "--polynomials",
-                        default=default_polynomials,
-                        type=str)
+    parser.add_argument("-p", "--polynomials", default=default_polynomials, type=str)
     parser.add_argument("-t", "--types", default=default_types, type=str)
     parser.add_argument("-n", "--coverage", default="3,5,10,15", type=str)
-    parser.add_argument("-o",
-                        "--output",
-                        default=sys.stdout,
-                        type=argparse.FileType('w'))
+    parser.add_argument(
+        "-o", "--output", default=sys.stdout, type=argparse.FileType("w")
+    )
     parser.add_argument("-r", "--solver-rtol", default=1e-9, type=float)
 
     args = parser.parse_args(argv[1:])
@@ -78,10 +81,10 @@ def getConfigurator(type):
     def gauss(h, n):
         GAUSSIAN_DECAY = 1e-9
         shape = math.sqrt(-math.log(GAUSSIAN_DECAY)) / (float(h) * int(n))
-        return f"shape-parameter=\"{shape}\""
+        return f'shape-parameter="{shape}"'
 
     def compact_tps_c2(h, n):
-        return f"support-radius=\"{h*n}\""
+        return f'support-radius="{h*n}"'
 
     # This dictionary maps a type to a configuration function defined above
     res = {
@@ -102,32 +105,28 @@ def main(argv):
     for a in args.a:
         cases = {}
         for polynomial, coverage, type in itertools.product(
-                args.polynomials, args.coverage, args.types):
+            args.polynomials, args.coverage, args.types
+        ):
             name = f"{type}-n{coverage}-{polynomial}"
-            assert (name not in cases)
+            assert name not in cases
             config = getConfigurator(type)(a, coverage)
             cases[name] = {
-                "kind":
-                f"rbf-{type}",
-                "options":
-                f"{config} polynomial=\"{polynomial}\" solver-rtol=\"{args.solver_rtol}\""
+                "kind": f"rbf-{type}",
+                "options": f'{config} polynomial="{polynomial}" solver-rtol="{args.solver_rtol}"',
             }
         section = {
-            "mapping": {
-                "constraints": ["consistent"],
-                "cases": cases
-            },
+            "mapping": {"constraints": ["consistent"], "cases": cases},
             "meshes": {
                 "A": ["{:g}".format(a)],
-                "B": ["{:g}".format(b) for b in args.b]
-            }
+                "B": ["{:g}".format(b) for b in args.b],
+            },
         }
         sections.append(section)
 
     json.dump(sections, args.output, indent=2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         main(sys.argv)
     except Exception as e:

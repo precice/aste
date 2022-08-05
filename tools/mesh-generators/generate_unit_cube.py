@@ -1,6 +1,7 @@
+import argparse
+
 import gmsh
 import meshio
-import argparse
 
 
 def generate_unit_cube_vtk(out, resolution):
@@ -70,16 +71,27 @@ def generate_unit_cube_vtk(out, resolution):
 
 
 def print_usage():
-    print("Usage: generate_unit_cube.py filename.vtk/vtu mesh_resolution. Example: generate_unit_cube.py coarse.vtk 0.25")
+    print(
+        "Usage: generate_unit_cube.py filename.vtk/vtu mesh_resolution. Example: generate_unit_cube.py coarse.vtk 0.25"
+    )
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="__doc__")
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--mesh", "-m", dest="output",
-                       help="The name of the file to create. Must be a .vtk or .vtu file.")
-    parser.add_argument("--resolution", "-r", dest="resolution", default="0.1",
-                        help="Target mesh size (each element should be smaller than this)")
+    group.add_argument(
+        "--mesh",
+        "-m",
+        dest="output",
+        help="The name of the file to create. Must be a .vtk or .vtu file.",
+    )
+    parser.add_argument(
+        "--resolution",
+        "-r",
+        dest="resolution",
+        default="0.1",
+        help="Target mesh size (each element should be smaller than this)",
+    )
 
     args, _ = parser.parse_known_args()
     return args

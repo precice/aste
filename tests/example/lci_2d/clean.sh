@@ -6,4 +6,3 @@ rm precice-*-events*.json &
 rm *.log &
 rm map*.vtk &
 rm fine_mesh_*.vtk &
-
