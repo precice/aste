@@ -1,11 +1,41 @@
 #pragma once
 
+#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
+
+#include <mpi.h>
+
+#include <vtkCell.h>
+#include <vtkCellArray.h>
+#include <vtkDoubleArray.h>
+#include <vtkIdList.h>
+#include <vtkLine.h>
+#include <vtkNew.h>
+#include <vtkPointData.h>
+#include <vtkPoints.h>
+#include <vtkQuad.h>
+#include <vtkSmartPointer.h>
+#include <vtkTriangle.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkUnstructuredGridReader.h>
+#include <vtkUnstructuredGridWriter.h>
+#include <vtkXMLUnstructuredGridReader.h>
+#include <vtkXMLUnstructuredGridWriter.h>
+
+#include <algorithm>
 #include <cassert>
 #include <exception>
+#include <fstream>
 #include <iosfwd>
+#include <iostream>
+#include <limits>
+#include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
+
+#include "logger.hpp"
 
 namespace aste {
 

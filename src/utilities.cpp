@@ -58,10 +58,10 @@ std::vector<int> aste::setupVertexIDs(precice::SolverInterface &interface,
 
 EdgeIdMap aste::setupEdgeIDs(precice::SolverInterface &interface, const aste::Mesh &mesh, int meshID, const std::vector<int> &vertexIDs)
 {
-  VLOG(1) << "Mesh Setup: 2.1) Gather Unique Edges";
+  ASTE_DEBUG << "Mesh Setup: 2.1) Gather Unique Edges";
   const auto unique_edges{gather_unique_edges(mesh)};
 
-  VLOG(1) << "Mesh Setup: 2.2) Register Edges";
+  ASTE_DEBUG << "Mesh Setup: 2.2) Register Edges";
   boost::container::flat_map<Edge, EdgeID> edgeMap;
   edgeMap.reserve(unique_edges.size());
 
@@ -79,18 +79,18 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
 {
   auto tstart = std::chrono::steady_clock::now();
 
-  VLOG(1) << "Mesh Setup started for mesh: " << mesh.fname;
-  VLOG(1) << "Mesh Setup: 1) Vertices";
+  ASTE_DEBUG << "Mesh Setup started for mesh: " << mesh.fname;
+  ASTE_DEBUG << "Mesh Setup: 1) Vertices";
   const auto vertexIDs = setupVertexIDs(interface, mesh, meshID);
 
   auto tconnectivity = std::chrono::steady_clock::now();
 
   if (interface.isMeshConnectivityRequired(meshID)) {
-    VLOG(1) << "Mesh Setup: 2) Edges";
+    ASTE_DEBUG << "Mesh Setup: 2) Edges";
     const auto edgeMap = setupEdgeIDs(interface, mesh, meshID, vertexIDs);
-    VLOG(1) << "Total " << edgeMap.size() << " edges are configured";
+    ASTE_DEBUG << "Total " << edgeMap.size() << " edges are configured";
     if (!mesh.triangles.empty()) {
-      VLOG(1) << "Mesh Setup: 3) " << mesh.triangles.size() << " Triangles";
+      ASTE_DEBUG << "Mesh Setup: 3) " << mesh.triangles.size() << " Triangles";
       for (auto const &triangle : mesh.triangles) {
         const auto a = vertexIDs[triangle[0]];
         const auto b = vertexIDs[triangle[1]];
@@ -102,10 +102,10 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
                                   edgeMap.at(Edge{c, a}));
       }
     } else {
-      VLOG(1) << "Mesh Setup: 3) No Triangles are found/required. Skipped";
+      ASTE_DEBUG << "Mesh Setup: 3) No Triangles are found/required. Skipped";
     }
     if (!mesh.quadrilaterals.empty()) {
-      VLOG(1) << "Mesh Setup: 4) " << mesh.quadrilaterals.size() << " Quadrilaterals";
+      ASTE_DEBUG << "Mesh Setup: 4) " << mesh.quadrilaterals.size() << " Quadrilaterals";
       for (auto const &quadrilateral : mesh.quadrilaterals) {
         const auto a = vertexIDs[quadrilateral[0]];
         const auto b = vertexIDs[quadrilateral[1]];
@@ -119,11 +119,11 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
                               edgeMap.at(Edge{d, a}));
       }
     } else {
-      VLOG(1) << "Mesh Setup: 4) No Quadrilaterals are found/required. Skipped";
+      ASTE_DEBUG << "Mesh Setup: 4) No Quadrilaterals are found/required. Skipped";
     }
 #ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
     if (!mesh.tetrahedra.empty()) {
-      VLOG(1) << "Mesh Setup: 5) " << mesh.tetrahedra.size() << " Tetrahedra";
+      ASTE_DEBUG << "Mesh Setup: 5) " << mesh.tetrahedra.size() << " Tetrahedra";
       for (auto const &tetra : mesh.tetrahedra) {
         const auto a = vertexIDs[tetra[0]];
         const auto b = vertexIDs[tetra[1]];
@@ -134,17 +134,17 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
                                      a, b, c, d);
       }
     } else {
-      VLOG(1) << "Mesh Setup: 5) No Tetrahedra are found/required. Skipped";
+      ASTE_DEBUG << "Mesh Setup: 5) No Tetrahedra are found/required. Skipped";
     }
 #else
-    VLOG(1) << "Mesh Setup: 5) Tetrahedra support was disabled.";
+    ASTE_DEBUG << "Mesh Setup: 5) Tetrahedra support was disabled.";
 #endif
   } else {
-    VLOG(1) << "Mesh Setup: 2) Skipped connectivity information on mesh \"" << mesh.fname << "\" as it is not required.";
+    ASTE_DEBUG << "Mesh Setup: 2) Skipped connectivity information on mesh \"" << mesh.fname << "\" as it is not required.";
   }
   auto tend = std::chrono::steady_clock::now();
 
-  VLOG(1)
+  ASTE_DEBUG
       << "Mesh Setup Took "
       << std::chrono::duration_cast<std::chrono::milliseconds>(tend - tstart).count() << "ms ("
       << std::chrono::duration_cast<std::chrono::milliseconds>(tconnectivity - tstart).count() << "ms for vertices, "

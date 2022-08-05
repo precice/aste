@@ -1,10 +1,16 @@
 #pragma once
 
+#include <fstream>
 #include <iostream>
-#include <json.hpp>
 #include <string>
 #include <vector>
+
+#include <mpi.h>
+
+#include "json.hpp"
+#include "logger.hpp"
 #include "mesh.hpp"
+
 #include "precice/SolverInterface.hpp"
 
 using json = nlohmann::json;

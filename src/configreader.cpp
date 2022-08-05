@@ -1,7 +1,5 @@
 #include "configreader.hpp"
-#include <fstream>
-#include <iostream>
-#include <mpi.h>
+
 namespace aste {
 void asteConfig::load(const std::string &asteConfigFile)
 {
@@ -12,20 +10,20 @@ void asteConfig::load(const std::string &asteConfigFile)
   try {
     preciceConfigFilename = config["precice-config"].get<std::string>();
   } catch (nlohmann::detail::parse_error) {
-    std::cerr << "Error while parsing ASTE configuration file \"precice-config\" is missing\n";
+    ASTE_ERROR << "Error while parsing ASTE configuration file \"precice-config\" is missing";
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   } catch (nlohmann::detail::type_error) {
-    std::cerr << "Error while parsing ASTE configuration file \"precice-config\" is missing\n";
+    ASTE_ERROR << "Error while parsing ASTE configuration file \"precice-config\" is missing";
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
   try {
     participantName = config["participant"].get<std::string>();
   } catch (nlohmann::detail::parse_error) {
-    std::cerr << "Error while parsing ASTE configuration file \"participant\" is missing\n";
+    ASTE_ERROR << "Error while parsing ASTE configuration file \"participant\" is missing";
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   } catch (nlohmann::detail::type_error) {
-    std::cerr << "Error while parsing ASTE configuration file \"participant\" is missing\n";
+    ASTE_ERROR << "Error while parsing ASTE configuration file \"participant\" is missing";
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
@@ -35,22 +33,23 @@ void asteConfig::load(const std::string &asteConfigFile)
     try {
       startdt = std::stoi(config["startdt"].get<std::string>());
     } catch (nlohmann::detail::type_error) {
-      std::cerr << "Error while parsing ASTE configuration file \"startdt\" is missing or has a wrong type, it must be an integer or integer convertable string.\n";
+      ASTE_ERROR << "Error while parsing ASTE configuration file \"startdt\" is missing or has a wrong type, it must be an integer or integer convertable string.";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     } catch (std::invalid_argument) {
-      std::cerr << "Error while parsing startdt from ASTE configuration file it must be an integer or integer convertable string.\n";
+      ASTE_ERROR << "Error while parsing startdt from ASTE configuration file it must be an integer or integer convertable string.";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
   }
 
   if (startdt < 1) {
-    throw std::runtime_error("Start dt cannot be smaller than 1, please check your ASTE configuration file.");
+    ASTE_ERROR << "Start dt cannot be smaller than 1, please check your ASTE configuration file.";
+    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
   const int numInterfaces = config["meshes"].size();
 
   if (numInterfaces == 0) {
-    std::cerr << "ASTE configuration should contain at least 1 mesh. Please check your ASTE configuration file.\n";
+    ASTE_ERROR << "ASTE configuration should contain at least 1 mesh. Please check your ASTE configuration file.";
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
@@ -59,20 +58,20 @@ void asteConfig::load(const std::string &asteConfigFile)
     try {
       interface.meshName = config["meshes"][i]["mesh"].get<std::string>();
     } catch (nlohmann::detail::parse_error) {
-      std::cerr << "Error while parsing ASTE configuration file \"mesh\" is missing\n";
+      ASTE_ERROR << "Error while parsing ASTE configuration file \"mesh\" is missing";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     } catch (nlohmann::detail::type_error) {
-      std::cerr << "Error while parsing ASTE configuration file \"mesh\" is missing or not a string\n";
+      ASTE_ERROR << "Error while parsing ASTE configuration file \"mesh\" is missing or not a string";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
 
     try {
       interface.meshFilePrefix = config["meshes"][i]["meshfileprefix"];
     } catch (nlohmann::detail::parse_error) {
-      std::cerr << "Error while parsing ASTE configuration file \"meshfileprefix\" is missing\n";
+      ASTE_ERROR << "Error while parsing ASTE configuration file \"meshfileprefix\" is missing";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     } catch (nlohmann::detail::type_error) {
-      std::cerr << "Error while parsing ASTE configuration file \"meshfileprefix\" is missing or not a string\n";
+      ASTE_ERROR << "Error while parsing ASTE configuration file \"meshfileprefix\" is missing or not a string";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
 

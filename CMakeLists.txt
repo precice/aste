@@ -35,7 +35,7 @@ option(ASTE_NN_GRADIENT_MAPPING_AND_TETRA "Support nearest neighbour gradient ma
 
 MESSAGE(STATUS "Support for nearest-neighbor-gradient mapping and tetrahedra: ${ASTE_NN_GRADIENT_MAPPING_AND_TETRA}")
 
-find_package(Boost 1.65.1 REQUIRED COMPONENTS system program_options filesystem unit_test_framework)
+find_package(Boost 1.65.1 REQUIRED COMPONENTS log log_setup system program_options filesystem unit_test_framework)
 
 find_package(VTK REQUIRED)
 message (STATUS "VTK_VERSION: ${VTK_VERSION}")
@@ -50,16 +50,13 @@ endif()
 
 find_package(MPI REQUIRED)
 
-add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/easylogging++.cc src/mesh.cpp src/configreader.cpp src/modes.cpp src/utilities.cpp)
+add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/mesh.cpp src/configreader.cpp src/modes.cpp src/utilities.cpp src/logger.cpp)
 target_include_directories(preciceMap PRIVATE src)
 target_link_libraries(preciceMap
   precice::precice
   Threads::Threads
-  Boost::boost
-  Boost::filesystem
-  Boost::program_options
-  Boost::system
   MPI::MPI_CXX
+  ${Boost_LIBRARIES}
   ${VTK_LIBRARIES}
 )
 
@@ -75,12 +72,11 @@ if(METIS_FOUND)
   target_link_libraries(preciceMap metisAPI)
 endif()
 
-add_executable(testing tests/testing.cpp tests/read_test.cpp tests/write_test.cpp src/mesh.cpp)
+
+add_executable(testing tests/testing.cpp tests/read_test.cpp tests/write_test.cpp src/mesh.cpp src/logger.cpp)
 target_include_directories(testing PRIVATE src)
 target_link_libraries(testing
-  Boost::filesystem
-  Boost::boost
-  Boost::unit_test_framework
+  ${Boost_LIBRARIES}
   MPI::MPI_CXX
   ${VTK_LIBRARIES}
 )
