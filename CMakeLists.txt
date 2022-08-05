@@ -51,7 +51,7 @@ endif()
 find_package(MPI REQUIRED)
 
 add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/mesh.cpp src/configreader.cpp src/modes.cpp src/utilities.cpp src/logger.cpp)
-target_include_directories(preciceMap PRIVATE src)
+target_include_directories(preciceMap PRIVATE src thirdparty)
 target_link_libraries(preciceMap
   precice::precice
   Threads::Threads
@@ -74,7 +74,7 @@ endif()
 
 
 add_executable(testing tests/testing.cpp tests/read_test.cpp tests/write_test.cpp src/mesh.cpp src/logger.cpp)
-target_include_directories(testing PRIVATE src)
+target_include_directories(testing PRIVATE src thirdparty)
 target_link_libraries(testing
   ${Boost_LIBRARIES}
   MPI::MPI_CXX
@@ -106,4 +106,3 @@ install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py ${CMAKE_CURRE
 enable_testing()
 
 add_test(NAME read_write_test  COMMAND testing WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests")
-
