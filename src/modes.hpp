@@ -1,11 +1,15 @@
 #pragma once
 
 #include <cassert>
+#include <iostream>
 #include <string>
+
 #include "common.hpp"
 #include "configreader.hpp"
-#include "easylogging++.h"
+#include "logger.hpp"
 #include "mesh.hpp"
+#include "utilities.hpp"
+
 #include "precice/SolverInterface.hpp"
 
 namespace aste {

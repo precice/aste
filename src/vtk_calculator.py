@@ -26,50 +26,97 @@ class Calculator:
 
     @staticmethod
     def create_logger(level):
-        logger = logging.getLogger('---[ASTE-Calculator]')
+        logger = logging.getLogger("---[ASTE-Calculator]")
         logger.setLevel(getattr(logging, level))
         ch = logging.StreamHandler()
         ch.setLevel(getattr(logging, level))
-        formatter = logging.Formatter('%(name)s %(levelname)s : %(message)s')
+        formatter = logging.Formatter("%(name)s %(levelname)s : %(message)s")
         ch.setFormatter(formatter)
         logger.addHandler(ch)
         return
 
     @staticmethod
     def get_logger():
-        return logging.getLogger('---[ASTE-Calculator]')
+        return logging.getLogger("---[ASTE-Calculator]")
 
     @staticmethod
     def parse_args():
         parser = argparse.ArgumentParser(description=__doc__)
         group = parser.add_mutually_exclusive_group(required=True)
-        group.add_argument("--mesh", "-m", dest="in_meshname",
-                           help="The mesh (VTK Unstructured Grid) used as input")
-        parser.add_argument("--function", "-f", dest="function", default="eggholder3d",
-                            help="""The function to evalutate on the mesh.
+        group.add_argument(
+            "--mesh",
+            "-m",
+            dest="in_meshname",
+            help="The mesh (VTK Unstructured Grid) used as input",
+        )
+        parser.add_argument(
+            "--function",
+            "-f",
+            dest="function",
+            default="eggholder3d",
+            help="""The function to evalutate on the mesh.
                 Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.
                 Alternatively, you can use predefined function
-                Default is Eggholder function in 3D (eggholder3d).""")
-        group.add_argument("--list-functions", dest="listfunctions", action="store_true",
-                           help="Prints list of predefined functions.")
-        parser.add_argument("--output", "-o", dest="out_meshname", default=None, help="""The output meshname.
-                Default is the same as for the input mesh""")
-        parser.add_argument("--data", "-d", dest="data", help="The name of output data.")
-        parser.add_argument("--diffdata", "-diffd", dest="diffdata", help="""The name of difference data.
-                Required in diff mode.""")
-        parser.add_argument("--log", "-l", dest="logging", default="INFO",
-                            choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="""Set the log level.
-                Default is INFO""")
-        parser.add_argument("--directory", "-dir", dest="directory", default=None,
-                            help="Directory for output files (optional)")
+                Default is Eggholder function in 3D (eggholder3d).""",
+        )
+        group.add_argument(
+            "--list-functions",
+            dest="listfunctions",
+            action="store_true",
+            help="Prints list of predefined functions.",
+        )
+        parser.add_argument(
+            "--output",
+            "-o",
+            dest="out_meshname",
+            default=None,
+            help="""The output meshname.
+                Default is the same as for the input mesh""",
+        )
+        parser.add_argument(
+            "--data", "-d", dest="data", help="The name of output data."
+        )
+        parser.add_argument(
+            "--diffdata",
+            "-diffd",
+            dest="diffdata",
+            help="""The name of difference data.
+                Required in diff mode.""",
+        )
+        parser.add_argument(
+            "--log",
+            "-l",
+            dest="logging",
+            default="INFO",
+            choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+            help="""Set the log level.
+                Default is INFO""",
+        )
+        parser.add_argument(
+            "--directory",
+            "-dir",
+            dest="directory",
+            default=None,
+            help="Directory for output files (optional)",
+        )
         parser.add_argument(
             "--diff",
-            action='store_true',
-            help="Calculate the difference between \"--diffdata\" and the specified"
-            "function \"--function\"")
-        parser.add_argument("--gradient", "-g", action='store_true', help="Adds array with gradient data")
-        parser.add_argument("--stats", "-s", action='store_true',
-                            help="Store stats of the difference calculation as the separate file inputmesh.stats.json")
+            action="store_true",
+            help='Calculate the difference between "--diffdata" and the specified'
+            'function "--function"',
+        )
+        parser.add_argument(
+            "--gradient",
+            "-g",
+            action="store_true",
+            help="Adds array with gradient data",
+        )
+        parser.add_argument(
+            "--stats",
+            "-s",
+            action="store_true",
+            help="Store stats of the difference calculation as the separate file inputmesh.stats.json",
+        )
         args, _ = parser.parse_known_args()
         return args
 
@@ -82,7 +129,7 @@ class Calculator:
             "-0.2*exp(-((9*{first}-4)^2+(9*{second}-7)^2))",
             "eggholder2d": "-{first}*sin(sqrt(abs({first}-{second}-47)))"
             "-({second}+47)*sin(sqrt(abs(0.5*{first}+{second}+47)))",
-            "rosenbrock2d": "(100*({second}-{first}^2)^2+({first}-1)^2)"
+            "rosenbrock2d": "(100*({second}-{first}^2)^2+({first}-1)^2)",
         }
 
         preDef2DFunctions = {
@@ -97,8 +144,8 @@ class Calculator:
             "+0.5*exp(-((9*x-7)^2+(9*y-3)^2+(9*y-5)^2)/4)"
             "-0.2*exp(-((9*x-4)^2+(9*y-7)^2+(9*z-5)^2))",
             "eggholder3d": "-x*sin(sqrt(abs(x-y-47)))-(y+47)*sin(sqrt(abs(0.5*x+y+47)))"
-                        "-y*sin(sqrt(abs(y-z-47)))-(z+47)*sin(sqrt(abs(0.5*y+z+47)))",
-            "rosenbrock3d": "(100*(y-x^2)^2+(x-1)^2)+(100*(z-y^2)^2+(y-1)^2)"
+            "-y*sin(sqrt(abs(y-z-47)))-(z+47)*sin(sqrt(abs(0.5*y+z+47)))",
+            "rosenbrock3d": "(100*(y-x^2)^2+(x-1)^2)+(100*(z-y^2)^2+(y-1)^2)",
         }
 
         preDefFunctions.update(preDef2DFunctions)
@@ -111,7 +158,8 @@ class Calculator:
             "Franke": "Franke's function has two Gaussian peaks of different heights, and a smaller dip.",
             "Eggholder": "A function has many local maxima. It is difficult to optimize.",
             "Rosenbrock": "A function that is unimodal, and the global minimum lies"
-            " in a narrow, parabolic valley."}
+            " in a narrow, parabolic valley.",
+        }
         return functionDefinitions
 
     @staticmethod
@@ -134,12 +182,17 @@ class Calculator:
             Calculator.print_predef_functions(preDefFunctions)
             return
         assert os.path.isfile(
-            args.in_meshname), "Input mesh file not found. Please check your input mesh \"--mesh\"."
-        assert args.data, "Dataname \"--data\" is missing. Please give an dataname for given input."
+            args.in_meshname
+        ), 'Input mesh file not found. Please check your input mesh "--mesh".'
+        assert (
+            args.data
+        ), 'Dataname "--data" is missing. Please give an dataname for given input.'
 
         out_meshname = args.out_meshname
         if args.out_meshname is None:
-            logger.info("No output mesh name is given {} will be used.".format(args.in_meshname))
+            logger.info(
+                "No output mesh name is given {} will be used.".format(args.in_meshname)
+            )
             out_meshname = args.in_meshname
 
         if args.function in preDefFunctions:
@@ -170,11 +223,17 @@ class Calculator:
         vtk_dataset = Calculator.read_mesh(args.in_meshname)
         calc.SetInputData(vtk_dataset)
         calc.SetFunction(inputfunc)
-        logger.info("Evaluated \"{}\" on the input mesh \"{}\".".format(inputfunc, args.in_meshname))
+        logger.info(
+            'Evaluated "{}" on the input mesh "{}".'.format(inputfunc, args.in_meshname)
+        )
         calc.SetResultArrayName(args.data)
         calc.Update()
-        vtk_dataset.GetPointData().AddArray(calc.GetOutput().GetPointData().GetAbstractArray(args.data))
-        logger.info(f"Evaluated function saved to \"{args.data}\" variable on output mesh \"{out_meshname}\"")
+        vtk_dataset.GetPointData().AddArray(
+            calc.GetOutput().GetPointData().GetAbstractArray(args.data)
+        )
+        logger.info(
+            f'Evaluated function saved to "{args.data}" variable on output mesh "{out_meshname}"'
+        )
         if args.gradient:
             Calculator.add_gradient(calc, vtk_dataset, inputfunc, args.data)
 
@@ -187,7 +246,9 @@ class Calculator:
         calc.SetInputData(vtk_dataset)
         diffdata = args.diffdata
         if not vtk_dataset.GetPointData().HasArray(diffdata):
-            raise Exception(f"Given mesh \"{args.in_meshname}\" has no data with given name \"{diffdata}\"")
+            raise Exception(
+                f'Given mesh "{args.in_meshname}" has no data with given name "{diffdata}"'
+            )
         else:
             data = v2n(vtk_dataset.GetPointData().GetAbstractArray(diffdata))
             # Calculate given function on the mesh
@@ -196,7 +257,9 @@ class Calculator:
         calc.Update()
         func = v2n(calc.GetOutput().GetPointData().GetAbstractArray("function"))
         difference = data - func
-        logger.info(f"Evaluated \"{diffdata}\"-\"({inputfunc})\" on the mesh \"{args.in_meshname}\".")
+        logger.info(
+            f'Evaluated "{diffdata}"-"({inputfunc})" on the mesh "{args.in_meshname}".'
+        )
 
         Calculator.calculate_stats(vtk_dataset, difference, out_meshname, args.stats)
 
@@ -211,8 +274,13 @@ class Calculator:
         # Calculate Statistics
         abs_diff = np.absolute(difference)
         num_points = vtk_dataset.GetNumberOfPoints()
-        cnt, abs_min, signed_min, abs_max, signed_max = num_points, np.nanmin(
-            abs_diff), np.nanmin(difference), np.nanmax(abs_diff), np.nanmax(difference)
+        cnt, abs_min, signed_min, abs_max, signed_max = (
+            num_points,
+            np.nanmin(abs_diff),
+            np.nanmin(difference),
+            np.nanmax(abs_diff),
+            np.nanmax(difference),
+        )
         p99, p95, p90, median = np.percentile(abs_diff, [99, 95, 90, 50])
         relative = np.sqrt(np.nansum(np.square(abs_diff)) / abs_diff.size)
         decorator = 15 * "*"
@@ -232,35 +300,39 @@ class Calculator:
 
         if stats:
             stat_file = os.path.splitext(out_meshname)[0] + ".stats.json"
-            logger.info("Saving stats data to \"{}\"".format(stat_file))
-            json.dump({
-                "count": cnt,
-                "abs_min": abs_min,
-                "abs_max": abs_max,
-                "signed_min:": signed_min,
-                "signed_max": signed_max,
-                "median(abs)": median,
-                "relative-l2": relative,
-                "99th percentile(abs)": p99,
-                "95th percentile(abs)": p95,
-                "90th percentile(abs)": p90
-            }, open(stat_file, "w"))
+            logger.info('Saving stats data to "{}"'.format(stat_file))
+            json.dump(
+                {
+                    "count": cnt,
+                    "abs_min": abs_min,
+                    "abs_max": abs_max,
+                    "signed_min:": signed_min,
+                    "signed_max": signed_max,
+                    "median(abs)": median,
+                    "relative-l2": relative,
+                    "99th percentile(abs)": p99,
+                    "95th percentile(abs)": p95,
+                    "90th percentile(abs)": p90,
+                },
+                open(stat_file, "w"),
+            )
 
     @staticmethod
     def read_mesh(in_meshname):
         logger = Calculator.get_logger()
-        logger.info(f"Reading input mesh \"{in_meshname}\"")
+        logger.info(f'Reading input mesh "{in_meshname}"')
         extension = os.path.splitext(in_meshname)[1]
-        if (extension == ".vtu"):
+        if extension == ".vtu":
             reader = vtk.vtkXMLUnstructuredGridReader()
-        elif (extension == ".vtk"):
+        elif extension == ".vtk":
             reader = vtk.vtkUnstructuredGridReader()
             reader.ReadAllScalarsOn()
             reader.ReadAllVectorsOn()
             reader.ReadAllFieldsOn()
         else:
             raise Exception(
-                "Unkown input file extension please check your input file or hype \"--help\" for more information.")
+                'Unkown input file extension please check your input file or hype "--help" for more information.'
+            )
         reader.SetFileName(in_meshname)
         reader.Update()
         vtk_dataset = reader.GetOutput()
@@ -289,7 +361,7 @@ class Calculator:
 
         writer.SetFileName(out_meshname)
         writer.Write()
-        logger.info(f"Written output to \"{out_meshname}\".")
+        logger.info(f'Written output to "{out_meshname}".')
 
     @staticmethod
     def sympy_to_vtk(string):
@@ -304,11 +376,17 @@ class Calculator:
         try:
             import sympy
         except ImportError:
-            raise ImportError('For gradient calculations "sympy" is required please install the "sympy" package.')
+            raise ImportError(
+                'For gradient calculations "sympy" is required please install the "sympy" package.'
+            )
         logger = Calculator.get_logger()
-        function_in_sympy = sympy.Matrix([sympy.parsing.parse_expr(Calculator.vtk_to_sympy(inputfunc))])
+        function_in_sympy = sympy.Matrix(
+            [sympy.parsing.parse_expr(Calculator.vtk_to_sympy(inputfunc))]
+        )
         variables = sympy.Matrix(sympy.symbols("x y z"))
-        if any(x in str(function_in_sympy) for x in ["iHat", "kHat", "jHat"]):  # Vector Data
+        if any(
+            x in str(function_in_sympy) for x in ["iHat", "kHat", "jHat"]
+        ):  # Vector Data
             gradient_name_list = [dataname + "_d" + i for i in ["x", "y", "z"]]
             gradient_function = []
             derivatives = []
@@ -317,8 +395,15 @@ class Calculator:
             components = [x for x in function_in_sympy.jacobian(unitvectors)]
             # Convert components to sympy
             for component in components:
-                sympy_component = sympy.Matrix([sympy.parsing.parse_expr(str(component))])
-                derivatives.append([Calculator.sympy_to_vtk(str(x)) for x in sympy_component.jacobian(variables)])
+                sympy_component = sympy.Matrix(
+                    [sympy.parsing.parse_expr(str(component))]
+                )
+                derivatives.append(
+                    [
+                        Calculator.sympy_to_vtk(str(x))
+                        for x in sympy_component.jacobian(variables)
+                    ]
+                )
             # Create gradient function
             for i in range(3):
                 gradient_function.append(
@@ -330,17 +415,27 @@ class Calculator:
                     + "*kHat"
                 )
         else:  # Scalar Data
-            gradients = [Calculator.sympy_to_vtk(str(x)) for x in function_in_sympy.jacobian(variables)]
+            gradients = [
+                Calculator.sympy_to_vtk(str(x))
+                for x in function_in_sympy.jacobian(variables)
+            ]
             gradient_name_list = [dataname + "_gradient"]
             gradient_function = [
-                str(gradients[0]) + "*iHat+" + str(gradients[1]) + "*jHat+" + str(gradients[2]) + "*kHat"
+                str(gradients[0])
+                + "*iHat+"
+                + str(gradients[1])
+                + "*jHat+"
+                + str(gradients[2])
+                + "*kHat"
             ]
         # Add gradient function to vtk_dataset
         for name, function in zip(gradient_name_list, gradient_function):
             calc.SetFunction(function)
             calc.SetResultArrayName(name)
             calc.Update()
-            vtk_dataset.GetPointData().AddArray(calc.GetOutput().GetPointData().GetAbstractArray(name))
+            vtk_dataset.GetPointData().AddArray(
+                calc.GetOutput().GetPointData().GetAbstractArray(name)
+            )
             logger.info('Evaluated "{}" on the input mesh.'.format(name))
         return
 

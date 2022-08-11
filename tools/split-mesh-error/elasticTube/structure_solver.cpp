@@ -48,7 +48,7 @@ int main(int argc, char **argv)
   SolverInterface interface(solverName, configFileName, 0, 1);
   cout << "preCICE configured..." << endl;
 
-  //init data
+  // init data
   double *crossSectionLength, *crossSectionLength_n, *pressure, *pressure_n;
   int     dimensions   = interface.getDimensions();
   crossSectionLength   = new double[N]; // Second dimension (only one cell deep) stored right after the first dimension: see SolverInterfaceImpl::setMeshVertices
@@ -65,13 +65,13 @@ int main(int argc, char **argv)
         grid[w * 3 + 1] = j * lenY;
         grid[w * 3 + 2] = k * lenZ;
         std::cout << "Grid points are: X = " << grid[w * 3] << ", Y = " << grid[w * 3 + 1] << ", Z = " << grid[w * 3 + 2] << std::endl;
-        //pressure[w] = (0.1 - (k*lenZ)/2)*((i*lenX)+(j*lenY));
+        // pressure[w] = (0.1 - (k*lenZ)/2)*((i*lenX)+(j*lenY));
         pressure[w]           = 1;
         pressure_n[w]         = pressure[w];
         crossSectionLength[w] = (0.1 - (k * lenZ) / 2) * ((i * lenX) + (j * lenY));
-        //crossSectionLength[w] = 1;
+        // crossSectionLength[w] = 1;
         crossSectionLength_n[w] = crossSectionLength[w];
-        //dataIndices[w] = interface.setMeshVertex(meshID, vertices[w].data());
+        // dataIndices[w] = interface.setMeshVertex(meshID, vertices[w].data());
         w++;
       }
     }
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
   double dt = 1;     // solver timestep size
   double precice_dt; // maximum precice timestep size
 
-  //precice stuff
+  // precice stuff
   int  meshID               = interface.getMeshID("Structure_Nodes");
   int  crossSectionLengthID = interface.getDataID("CrossSectionLength", meshID);
   int  pressureID           = interface.getDataID("Pressure", meshID);
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
   int t             = 0; // number of time steps (including subcycling time steps)
   int tsub          = 0; // number of current subcycling time steps
   int n_subcycles   = 0; // number of subcycles
-  //int t_steps_total = 0; // number of total timesteps, i.e., t_steps*n_subcycles
+  // int t_steps_total = 0; // number of total timesteps, i.e., t_steps*n_subcycles
 
   interface.setMeshVertices(meshID, N, grid, vertexIDs);
 
@@ -116,11 +116,11 @@ int main(int argc, char **argv)
   precice_dt = interface.initialize();
 
   n_subcycles = (int) (precice_dt / dt);
-  //t_steps_total = 100*n_subcycles;
+  // t_steps_total = 100*n_subcycles;
 
   if (interface.isActionRequired(actionWriteInitialData())) {
     interface.writeBlockScalarData(crossSectionLengthID, N, vertexIDs, crossSectionLength);
-    //interface.initializeData();
+    // interface.initializeData();
     interface.markActionFulfilled(actionWriteInitialData());
   }
 
@@ -155,8 +155,8 @@ int main(int argc, char **argv)
       for (double j = 0; j < ny; j++){
         for (double i = 0; i < nx; i++){
           crossSectionLength[i] = (0.1 - (lenZ)/2)*((lenX)+(lenY));
-	  std::cout << "crossSectionLength: " << crossSectionLength[i] << std::endl;
-	}
+    std::cout << "crossSectionLength: " << crossSectionLength[i] << std::endl;
+  }
       }
     }
 */

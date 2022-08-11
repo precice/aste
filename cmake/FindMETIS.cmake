@@ -18,7 +18,7 @@
 #  METIS_LIB_SUFFIX   - Also search for non-standard library names with the
 #                       given suffix appended
 #
-# NOTE: This file was modified from a ParMETIS detection script 
+# NOTE: This file was modified from a ParMETIS detection script
 
 #=============================================================================
 # Copyright (C) 2015 Jack Poulson. All rights reserved.

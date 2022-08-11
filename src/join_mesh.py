@@ -23,39 +23,69 @@ class MeshJoiner:
 
     @staticmethod
     def parse_args():
-        parser = argparse.ArgumentParser(description="Read a partitioned mesh and join it into a .vtk or .vtu file.")
-        parser.add_argument("--mesh", "-m", required=True, dest="in_meshname",
-                            help="""The partitioned mesh prefix used as input (only VTU format is accepted)
-        (Looking for <prefix>_<#filerank>.vtu) """)
-        parser.add_argument("--output", "-o", dest="out_meshname",
-                            help="""The output mesh. Can be VTK or VTU format.
-                            If it is not given <inputmesh>_joined.vtk will be used.""")
-        parser.add_argument("-r", "--recovery", dest="recovery",
-                            help="The path to the recovery file to fully recover it's state.")
-        parser.add_argument("--numparts", "-n", dest="numparts", type=int,
-                            help="The number of parts to read from the input mesh. By default the entire mesh is read.")
-        parser.add_argument("--directory", "-dir", dest="directory", default=None,
-                            help="Directory for output files (optional)")
-        parser.add_argument("--log", "-l", dest="logging", default="INFO",
-                            choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-                            help="Set the log level. Default is INFO")
+        parser = argparse.ArgumentParser(
+            description="Read a partitioned mesh and join it into a .vtk or .vtu file."
+        )
+        parser.add_argument(
+            "--mesh",
+            "-m",
+            required=True,
+            dest="in_meshname",
+            help="""The partitioned mesh prefix used as input (only VTU format is accepted)
+        (Looking for <prefix>_<#filerank>.vtu) """,
+        )
+        parser.add_argument(
+            "--output",
+            "-o",
+            dest="out_meshname",
+            help="""The output mesh. Can be VTK or VTU format.
+                            If it is not given <inputmesh>_joined.vtk will be used.""",
+        )
+        parser.add_argument(
+            "-r",
+            "--recovery",
+            dest="recovery",
+            help="The path to the recovery file to fully recover it's state.",
+        )
+        parser.add_argument(
+            "--numparts",
+            "-n",
+            dest="numparts",
+            type=int,
+            help="The number of parts to read from the input mesh. By default the entire mesh is read.",
+        )
+        parser.add_argument(
+            "--directory",
+            "-dir",
+            dest="directory",
+            default=None,
+            help="Directory for output files (optional)",
+        )
+        parser.add_argument(
+            "--log",
+            "-l",
+            dest="logging",
+            default="INFO",
+            choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+            help="Set the log level. Default is INFO",
+        )
         args, _ = parser.parse_known_args()
         return args
 
     @staticmethod
     def create_logger(args):
-        logger = logging.getLogger('---[ASTE-Joiner]')
+        logger = logging.getLogger("---[ASTE-Joiner]")
         logger.setLevel(getattr(logging, args.logging))
         ch = logging.StreamHandler()
         ch.setLevel(getattr(logging, args.logging))
-        formatter = logging.Formatter('%(name)s %(levelname)s : %(message)s')
+        formatter = logging.Formatter("%(name)s %(levelname)s : %(message)s")
         ch.setFormatter(formatter)
         logger.addHandler(ch)
         return
 
     @staticmethod
     def get_logger():
-        return logging.getLogger('---[ASTE-Joiner]')
+        return logging.getLogger("---[ASTE-Joiner]")
 
     @staticmethod
     def join(args):
@@ -63,8 +93,12 @@ class MeshJoiner:
             recovery_file = args.recovery
         else:
             recovery_file = args.in_meshname + "_recovery.json"
-        out_meshname = args.out_meshname if args.out_meshname else args.in_meshname + "_joined.vtk"
-        joined_mesh = MeshJoiner.read_meshes(args.in_meshname, args.numparts, recovery_file)
+        out_meshname = (
+            args.out_meshname if args.out_meshname else args.in_meshname + "_joined.vtk"
+        )
+        joined_mesh = MeshJoiner.read_meshes(
+            args.in_meshname, args.numparts, recovery_file
+        )
         logger = MeshJoiner.get_logger()
         num_points = joined_mesh.GetNumberOfPoints()
         num_cells = joined_mesh.GetNumberOfCells()
@@ -79,7 +113,9 @@ class MeshJoiner:
         logger = MeshJoiner.get_logger()
         if not partitions:
             partitions = MeshJoiner.count_partitions(prefix)
-            logger.info("Detected " + str(partitions) + " partitions with prefix " + prefix)
+            logger.info(
+                "Detected " + str(partitions) + " partitions with prefix " + prefix
+            )
         if partitions == 0:
             raise Exception("No partitions found")
 
@@ -114,7 +150,11 @@ class MeshJoiner:
             reader.Update()
             part_mesh = reader.GetOutput()
 
-            logger.debug("File {} contains {} points".format(fname, part_mesh.GetNumberOfPoints()))
+            logger.debug(
+                "File {} contains {} points".format(
+                    fname, part_mesh.GetNumberOfPoints()
+                )
+            )
             for i in range(part_mesh.GetNumberOfPoints()):
                 joined_points.InsertNextPoint(part_mesh.GetPoint(i))
 
@@ -130,11 +170,18 @@ class MeshJoiner:
 
             for j in range(num_arrays):
                 array_name = part_point_data.GetArrayName(j)
-                logger.debug("Merging from file {} dataname {}".format(fname, array_name))
+                logger.debug(
+                    "Merging from file {} dataname {}".format(fname, array_name)
+                )
                 array_data = part_point_data.GetArray(array_name)
                 join_arr = joined_data_arrays[j]
                 join_arr.SetNumberOfComponents(array_data.GetNumberOfComponents())
-                join_arr.InsertTuples(join_arr.GetNumberOfTuples(), array_data.GetNumberOfTuples(), 0, array_data)
+                join_arr.InsertTuples(
+                    join_arr.GetNumberOfTuples(),
+                    array_data.GetNumberOfTuples(),
+                    0,
+                    array_data,
+                )
 
             for i in range(part_mesh.GetNumberOfCells()):
                 cell = part_mesh.GetCell(i)
@@ -207,19 +254,27 @@ class MeshJoiner:
             array_data = part_point_data.GetArray("GlobalIDs")
             # Check if GlobalIDs exist if not do partition-wise merge
             if array_data is None:
-                logger.info("GlobalIDs were not found, a recovery merge is not possible.")
+                logger.info(
+                    "GlobalIDs were not found, a recovery merge is not possible."
+                )
                 return MeshJoiner.join_mesh_partitionwise(prefix, partitions)
 
             for k in range(array_data.GetNumberOfTuples()):
                 global_ids.append(array_data.GetTuple(k))
-            logger.debug("File {} contains {} points".format(fname, part_mesh.GetNumberOfPoints()))
+            logger.debug(
+                "File {} contains {} points".format(
+                    fname, part_mesh.GetNumberOfPoints()
+                )
+            )
             for i in range(part_mesh.GetNumberOfPoints()):
                 joined_points.SetPoint(int(global_ids[i][0]), part_mesh.GetPoint(i))
 
             # Append Point Data to Original Locations
             for j in range(num_arrays):
                 array_name = part_point_data.GetArrayName(j)
-                logger.debug("Merging from file {} dataname {}".format(fname, array_name))
+                logger.debug(
+                    "Merging from file {} dataname {}".format(fname, array_name)
+                )
                 array_data = part_point_data.GetArray(array_name)
                 join_arr = joined_data_arrays[j]
                 join_arr.SetNumberOfComponents(array_data.GetNumberOfComponents())
@@ -239,7 +294,7 @@ class MeshJoiner:
                 joined_cell_types.append(cell.GetCellType())
                 joined_cells.InsertNextCell(vtkCell)
 
-        # Append Recovery Cells
+            # Append Recovery Cells
             for cell, cell_type in zip(cells, cell_types):
                 vtkCell = vtk.vtkGenericCell()
                 vtkCell.SetCellType(cell_type)
@@ -272,7 +327,7 @@ class MeshJoiner:
         detected = 0
         while True:
             partitionFile = prefix + "_" + str(detected) + ".vtu"
-            if (not os.path.isfile(partitionFile)):
+            if not os.path.isfile(partitionFile):
                 break
             detected += 1
         return detected
@@ -287,10 +342,10 @@ class MeshJoiner:
             filename = os.path.join(directory, filename)
 
         extension = os.path.splitext(filename)[1]
-        if (extension == ".vtk"):  # VTK Legacy format
+        if extension == ".vtk":  # VTK Legacy format
             writer = vtk.vtkUnstructuredGridWriter()
             writer.SetFileTypeToBinary()
-        elif (extension == ".vtu"):  # VTK XML Unstructured Grid format
+        elif extension == ".vtu":  # VTK XML Unstructured Grid format
             writer = vtk.vtkXMLUnstructuredGridWriter()
         else:
             raise Exception("Unkown File extension: " + extension)

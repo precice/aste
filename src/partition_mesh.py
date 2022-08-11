@@ -21,13 +21,20 @@ class Mesh:
         - vtk_Dataset: VTK Unstructured Grid Object.
     """
 
-    def __init__(self, points=None, cells=None, cell_types=None, vtk_dataset=None, data_index=None):
+    def __init__(
+        self,
+        points=None,
+        cells=None,
+        cell_types=None,
+        vtk_dataset=None,
+        data_index=None,
+    ):
         if points is not None:
             self.points = points
         else:
             self.points = []
         if cells is not None:
-            assert(cell_types is not None)
+            assert cell_types is not None
             self.cells = cells
             self.cell_types = cell_types
         else:
@@ -43,7 +50,8 @@ class Mesh:
 
     def __str__(self):
         return "Mesh with {} Points and {} Cells ({} Cell Types)".format(
-            len(self.points), len(self.cells), len(self.cell_types))
+            len(self.points), len(self.cells), len(self.cell_types)
+        )
 
 
 class MeshPartitioner:
@@ -54,8 +62,11 @@ class MeshPartitioner:
     def __init__(self) -> None:
         args = self.parse_arguments()
         self.create_logger(args)
-        assert os.path.isfile(args.in_meshname), ("Input file cannot be found \"" +
-                                                  args.in_meshname + "\", please check your input.")
+        assert os.path.isfile(args.in_meshname), (
+            'Input file cannot be found "'
+            + args.in_meshname
+            + '", please check your input.'
+        )
         self.run(args)
 
     @staticmethod
@@ -64,7 +75,7 @@ class MeshPartitioner:
         mesh_name = args.in_meshname
         algorithm = args.algorithm
         if not algorithm:
-            logger.info("No algorithm given. Defaulting to \"meshfree\"")
+            logger.info('No algorithm given. Defaulting to "meshfree"')
             algorithm = "meshfree"
         mesh = MeshPartitioner.read_mesh(mesh_name)
         if args.numparts > 1:
@@ -85,49 +96,89 @@ class MeshPartitioner:
                 MeshPartitioner.vtu2vtk(mesh_name, out_meshname)
                 return
             else:
-                raise Exception(f"Unkown input file extension {extension} please check your input file.")
+                raise Exception(
+                    f"Unkown input file extension {extension} please check your input file."
+                )
 
         logger.info("Processing mesh " + mesh_name)
-        meshes, recoveryInfo = MeshPartitioner.apply_partition(mesh, part, args.numparts)
+        meshes, recoveryInfo = MeshPartitioner.apply_partition(
+            mesh, part, args.numparts
+        )
         logger.info("Writing output to " + args.out_meshname)
-        MeshPartitioner.write_meshes(meshes, recoveryInfo, args.out_meshname, mesh.vtk_dataset, args.directory)
+        MeshPartitioner.write_meshes(
+            meshes, recoveryInfo, args.out_meshname, mesh.vtk_dataset, args.directory
+        )
 
     @staticmethod
     def parse_arguments():
-        parser = argparse.ArgumentParser(description="Read meshes, partition them and write them out in VTU format.")
-        parser.add_argument("--mesh", "-m", required=True, dest="in_meshname", help="The mesh used as input")
-        parser.add_argument("--output", "-o", dest="out_meshname", default="partitioned_mesh",
-                            help="The output mesh name.")
-        parser.add_argument("--directory", "-dir", dest="directory", default=None,
-                            help="Directory for output files (optional)")
-        parser.add_argument("--numparts", "-n", dest="numparts", default=1, type=int,
-                            help="The number of parts to split into")
-        parser.add_argument("--algorithm", "-a", dest="algorithm", choices=["meshfree", "topology", "uniform"],
-                            help="""Change the algorithm used for determining a partition.
+        parser = argparse.ArgumentParser(
+            description="Read meshes, partition them and write them out in VTU format."
+        )
+        parser.add_argument(
+            "--mesh",
+            "-m",
+            required=True,
+            dest="in_meshname",
+            help="The mesh used as input",
+        )
+        parser.add_argument(
+            "--output",
+            "-o",
+            dest="out_meshname",
+            default="partitioned_mesh",
+            help="The output mesh name.",
+        )
+        parser.add_argument(
+            "--directory",
+            "-dir",
+            dest="directory",
+            default=None,
+            help="Directory for output files (optional)",
+        )
+        parser.add_argument(
+            "--numparts",
+            "-n",
+            dest="numparts",
+            default=1,
+            type=int,
+            help="The number of parts to split into",
+        )
+        parser.add_argument(
+            "--algorithm",
+            "-a",
+            dest="algorithm",
+            choices=["meshfree", "topology", "uniform"],
+            help="""Change the algorithm used for determining a partition.
                 A meshfree algorithm works on arbitrary meshes without needing topological information.
                 A topology-based algorithm needs topology information
                 and is therefore useless on point clouds.
-                A uniform algorithm will assume a uniform 2d mesh layed out somehow in 3d and partition accordingly.""")
-        parser.add_argument("--log", "-l", dest="logging", default="INFO",
-                            choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-                            help="Set the log level. Default is INFO")
+                A uniform algorithm will assume a uniform 2d mesh layed out somehow in 3d and partition accordingly.""",
+        )
+        parser.add_argument(
+            "--log",
+            "-l",
+            dest="logging",
+            default="INFO",
+            choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+            help="Set the log level. Default is INFO",
+        )
         args, _ = parser.parse_known_args()
         return args
 
     @staticmethod
     def create_logger(args):
-        logger = logging.getLogger('---[ASTE-Partitioner]')
+        logger = logging.getLogger("---[ASTE-Partitioner]")
         logger.setLevel(getattr(logging, args.logging))
         ch = logging.StreamHandler()
         ch.setLevel(getattr(logging, args.logging))
-        formatter = logging.Formatter('%(name)s %(levelname)s : %(message)s')
+        formatter = logging.Formatter("%(name)s %(levelname)s : %(message)s")
         ch.setFormatter(formatter)
         logger.addHandler(ch)
         return
 
     @staticmethod
     def get_logger():
-        return logging.getLogger('---[ASTE-Partitioner]')
+        return logging.getLogger("---[ASTE-Partitioner]")
 
     @staticmethod
     def partition(mesh: Mesh, numparts: int, algorithm):
@@ -148,8 +199,9 @@ class MeshPartitioner:
 
     @staticmethod
     def partition_kmeans(mesh: Mesh, numparts: int):
-        """ Partitions a mesh using k-means. This is a meshfree algorithm and requires scipy"""
+        """Partitions a mesh using k-means. This is a meshfree algorithm and requires scipy"""
         from scipy.cluster.vq import kmeans2
+
         points = np.copy(mesh.points)
         points = MeshPartitioner.reduce_dimension(points)
         _, label = kmeans2(points, numparts)
@@ -196,17 +248,36 @@ class MeshPartitioner:
             n /= np.linalg.norm(n)  # Normalize
             zUnit = np.array((0, 0, 1))
             phi = math.acos(np.dot(n, zUnit))
-            logger.info("Rotating mesh with phi = " + str(360 * phi / (2 * math.pi)) + " degrees.")
+            logger.info(
+                "Rotating mesh with phi = "
+                + str(360 * phi / (2 * math.pi))
+                + " degrees."
+            )
             axis = np.cross(n, zUnit)
             axis /= np.linalg.norm(axis)
             a = math.cos(phi / 2)
             b = math.sin(phi / 2) * axis[0]
             c = math.sin(phi / 2) * axis[1]
             d = math.sin(phi / 2) * axis[2]
-            rotMat = np.array((
-                (a**2 + b**2 - c**2 - d**2, 2 * (b * c - a * d), 2 * (b * d + a * c)),
-                (2 * (b * c + a * d), a**2 + c**2 - b**2 - d**2, 2 * (c * d - a * b)),
-                (2 * (b * d - a * c), 2 * (c * d + a * b), a**2 + d**2 - b**2 - c**2)))
+            rotMat = np.array(
+                (
+                    (
+                        a**2 + b**2 - c**2 - d**2,
+                        2 * (b * c - a * d),
+                        2 * (b * d + a * c),
+                    ),
+                    (
+                        2 * (b * c + a * d),
+                        a**2 + c**2 - b**2 - d**2,
+                        2 * (c * d - a * b),
+                    ),
+                    (
+                        2 * (b * d - a * c),
+                        2 * (c * d + a * b),
+                        a**2 + d**2 - b**2 - c**2,
+                    ),
+                )
+            )
             for i, x in enumerate(mesh):  # Translate & Rotate
                 x -= pA
                 x = x @ rotMat
@@ -224,7 +295,9 @@ class MeshPartitioner:
         cellPtr = [0]
         cellData = []
         if len(mesh.cells) == 0:
-            logger.warning("No topology information provided. Partitioning with metis will likely provide bad partition")
+            logger.warning(
+                "No topology information provided. Partitioning with metis will likely provide bad partition"
+            )
         for i in range(len(mesh.cells)):
             cell = mesh.cells[i]
             cellData += list(cell)
@@ -255,7 +328,9 @@ class MeshPartitioner:
         partition = (idx_t * len(mesh.points))()
         cell_ptr = (idx_t * len(cellPtr))(*cellPtr)
         cell_data = (idx_t * len(cellData))(*cellData)
-        libmetis.partitionMetis(cell_count, point_count, cell_ptr, cell_data, num_parts, partition)
+        libmetis.partitionMetis(
+            cell_count, point_count, cell_ptr, cell_data, num_parts, partition
+        )
         return np.ctypeslib.as_array(partition)
 
     @staticmethod
@@ -276,7 +351,7 @@ class MeshPartitioner:
         small_dim = 1 - big_dim
 
         def prime_factors(n):
-            """ Straight from SO"""
+            """Straight from SO"""
             i = 2
             factors = []
             while i * i <= n:
@@ -290,7 +365,7 @@ class MeshPartitioner:
             return factors
 
         def greedy_choose(factors):
-            """ Greedily choose "best" divisors"""
+            """Greedily choose "best" divisors"""
             small = big = 1
             for factor in reversed(factors):
                 if big <= small:
@@ -303,8 +378,11 @@ class MeshPartitioner:
         small_interval = (max_point[small_dim] - min_point[small_dim]) / small
         big_interval = (max_point[big_dim] - min_point[big_dim]) / big
         labels = []
-        logger.info("Uniform partioning of mesh size {} into {} x {} partitions.".format(
-            len(mesh), small, big))
+        logger.info(
+            "Uniform partioning of mesh size {} into {} x {} partitions.".format(
+                len(mesh), small, big
+            )
+        )
         for point in mesh:
             small_offset = point[small_dim] - min_point[small_dim]
             small_index = int(small_offset / small_interval)
@@ -330,15 +408,17 @@ class MeshPartitioner:
             selected.points.append(point)
             selected.data_index.append(i)
 
-        assert(len(mapping) == len(orig_mesh.points))
-        assert(len(orig_mesh.cells) == len(orig_mesh.cell_types))
+        assert len(mapping) == len(orig_mesh.points)
+        assert len(orig_mesh.cells) == len(orig_mesh.cell_types)
         # Save discarded cells and their types to allow recovery
         discardedCells = []
         discardedCellTypes = []
         for cell, type in zip(orig_mesh.cells, orig_mesh.cell_types):
             partitions = list(map(lambda idx: mapping[idx][0], cell))
             if len(set(partitions)) == 1:
-                meshes[partitions[0]].cells.append(tuple([mapping[gidx][1] for gidx in cell]))
+                meshes[partitions[0]].cells.append(
+                    tuple([mapping[gidx][1] for gidx in cell])
+                )
                 meshes[partitions[0]].cell_types.append(type)
             else:
                 discardedCells.append(list(cell))
@@ -347,7 +427,7 @@ class MeshPartitioner:
         recoveryInfo = {
             "size": len(orig_mesh.points),
             "cells": discardedCells,
-            "cell_types": discardedCellTypes
+            "cell_types": discardedCellTypes,
         }
 
         return meshes, recoveryInfo
@@ -355,12 +435,14 @@ class MeshPartitioner:
     @staticmethod
     def read_mesh(filename: str) -> Mesh:
         extension = os.path.splitext(filename)[1]
-        if (extension == ".vtu"):
+        if extension == ".vtu":
             reader = vtk.vtkXMLUnstructuredGridReader()
-        elif (extension == ".vtk"):
+        elif extension == ".vtk":
             reader = vtk.vtkUnstructuredGridReader()
         else:
-            raise Exception(f"Unkown input file extension {extension}, please check your input.")
+            raise Exception(
+                f"Unkown input file extension {extension}, please check your input."
+            )
         reader.SetFileName(filename)
         reader.Update()
         vtkmesh = reader.GetOutput()
@@ -371,22 +453,34 @@ class MeshPartitioner:
         for i in range(vtkmesh.GetNumberOfCells()):
             cell = vtkmesh.GetCell(i)
             cell_type = cell.GetCellType()
-            if cell_type not in [vtk.VTK_LINE, vtk.VTK_TRIANGLE, vtk.VTK_QUAD, vtk.VTK_TETRA]:
+            if cell_type not in [
+                vtk.VTK_LINE,
+                vtk.VTK_TRIANGLE,
+                vtk.VTK_QUAD,
+                vtk.VTK_TETRA,
+            ]:
                 continue
             cell_types.append(cell_type)
             entry = ()
             for j in range(cell.GetNumberOfPoints()):
-                entry += (cell.GetPointId(j), )
+                entry += (cell.GetPointId(j),)
             cells.append(entry)
 
-        assert (len(cell_types) in [0, len(cells)])
+        assert len(cell_types) in [0, len(cells)]
         return Mesh(points, cells, cell_types, vtkmesh)
 
     @staticmethod
-    def write_mesh(filename: str, points: list, data_index: list, cells=None, cell_types=None, orig_mesh=None) -> None:
-        if (cell_types is not None):
-            assert (len(cell_types) in [0, len(cells)])
-        assert (len(points) == len(data_index))
+    def write_mesh(
+        filename: str,
+        points: list,
+        data_index: list,
+        cells=None,
+        cell_types=None,
+        orig_mesh=None,
+    ) -> None:
+        if cell_types is not None:
+            assert len(cell_types) in [0, len(cells)]
+        assert len(points) == len(data_index)
         logger = MeshPartitioner.get_logger()
 
         vtkGrid = vtk.vtkUnstructuredGrid()
@@ -439,14 +533,16 @@ class MeshPartitioner:
                         data = oldArr.GetTuple3(j)
                         newArr.InsertNextTuple3(data[0], data[1], data[2])
                 else:
-                    logger.warning("Skipped data {} check dimension of data".format(array_name))
+                    logger.warning(
+                        "Skipped data {} check dimension of data".format(array_name)
+                    )
                 vtkGrid.GetPointData().AddArray(newArr)
 
         extension = os.path.splitext(filename)[1]
-        if (extension == ".vtk"):  # VTK Legacy format
+        if extension == ".vtk":  # VTK Legacy format
             writer = vtk.vtkUnstructuredGridWriter()
             writer.SetFileTypeToBinary()
-        elif (extension == ".vtu"):  # VTK XML Unstructured Grid format
+        elif extension == ".vtu":  # VTK XML Unstructured Grid format
             writer = vtk.vtkXMLUnstructuredGridWriter()
         else:
             raise Exception("Unkown File extension: " + extension)
@@ -456,27 +552,43 @@ class MeshPartitioner:
         return
 
     @staticmethod
-    def write_meshes(meshes, recoveryInfo, meshname: str, orig_mesh, directory=None) -> None:
+    def write_meshes(
+        meshes, recoveryInfo, meshname: str, orig_mesh, directory=None
+    ) -> None:
         """
         Writes meshes to given directory.
         """
         # Strip off the mesh-prefix for the directory creation
         mesh_prefix = os.path.basename(os.path.normpath(meshname))
-        recoveryName = os.path.basename(os.path.normpath(mesh_prefix + '_recovery.json'))
+        recoveryName = os.path.basename(
+            os.path.normpath(mesh_prefix + "_recovery.json")
+        )
         if directory:
             # Get the absolute directory where we want to store the mesh
             directory = os.path.abspath(directory)
-            recoveryName = os.path.join(directory, mesh_prefix + '_recovery.json')
+            recoveryName = os.path.join(directory, mesh_prefix + "_recovery.json")
             os.makedirs(directory, exist_ok=True)
 
         for i in range(len(meshes)):
             mesh = meshes[i]
             if directory:
-                MeshPartitioner.write_mesh(os.path.join(directory, mesh_prefix) + "_" + str(i) + ".vtu", mesh.points,
-                                           mesh.data_index, mesh.cells, mesh.cell_types, orig_mesh)
+                MeshPartitioner.write_mesh(
+                    os.path.join(directory, mesh_prefix) + "_" + str(i) + ".vtu",
+                    mesh.points,
+                    mesh.data_index,
+                    mesh.cells,
+                    mesh.cell_types,
+                    orig_mesh,
+                )
             else:
-                MeshPartitioner.write_mesh(mesh_prefix + "_" + str(i) + ".vtu", mesh.points,
-                                           mesh.data_index, mesh.cells, mesh.cell_types, orig_mesh)
+                MeshPartitioner.write_mesh(
+                    mesh_prefix + "_" + str(i) + ".vtu",
+                    mesh.points,
+                    mesh.data_index,
+                    mesh.cells,
+                    mesh.cell_types,
+                    orig_mesh,
+                )
         json.dump(recoveryInfo, open(recoveryName, "w"))
         return
 

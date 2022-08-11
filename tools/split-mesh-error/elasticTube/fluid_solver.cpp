@@ -71,15 +71,15 @@ int main(int argc, char **argv)
         grid[w * 3 + 1] = j * lenY;
         grid[w * 3 + 2] = k * lenZ;
         pressure[w]     = (0.1 - (k * lenZ) / 2) * ((i * lenX) + (j * lenY));
-        //pressure[w] = 1;
+        // pressure[w] = 1;
         pressure_n[w]         = pressure[w];
         crossSectionLength[w] = (0.1 - (k * lenZ) / 2) * ((i * lenX) + (j * lenY));
-        //crossSectionLength[w] = 1;
+        // crossSectionLength[w] = 1;
         crossSectionLength_n[w] = crossSectionLength[w];
         std::cout << "Grid points are: X = " << grid[w * 3] << ", Y = " << grid[w * 3 + 1] << ", Z = " << grid[w * 3 + 2] << std::endl;
         std::cout << "Pressure = " << pressure[w] << std::endl;
-        //patchIDs[w] = 1;
-        //dataIndices[w] = interface.setMeshVertex(meshID, vertices[w].data());
+        // patchIDs[w] = 1;
+        // dataIndices[w] = interface.setMeshVertex(meshID, vertices[w].data());
         w++;
       }
     }
@@ -92,13 +92,13 @@ int main(int argc, char **argv)
   for (i = 0; i < N; i++) {
     velocity[i]   = 1.0 / (kappa * 1.0);
     velocity_n[i] = 1.0 / (kappa * 1.0);
-    //crossSectionLength[i]   = 1.0;
-    //crossSectionLength_n[i] = 0.0;
-    //pressure[i]             = 0.0;
-    //pressure_n[i]           = 0.0;
+    // crossSectionLength[i]   = 1.0;
+    // crossSectionLength_n[i] = 0.0;
+    // pressure[i]             = 0.0;
+    // pressure_n[i]           = 0.0;
 
-    //for (int dim = 0; dim < dimensions; dim++)
-    //  grid[i * dimensions + dim] = i * (1 - dim);
+    // for (int dim = 0; dim < dimensions; dim++)
+    //   grid[i * dimensions + dim] = i * (1 - dim);
   }
 
   double t  = 0.0; // time
@@ -183,18 +183,18 @@ int main(int argc, char **argv)
     }
 
     // set variables back to checkpoint
-    //if (interface.isActionRequired(actionReadIterationCheckpoint())) {
+    // if (interface.isActionRequired(actionReadIterationCheckpoint())) {
     // i.e. not yet converged, you could restore a checkpoint here (not necessary for this scenario)
     //   interface.markActionFulfilled(actionReadIterationCheckpoint());
     // }
-    //else{
-    //t += dt;
-    //for (i = 0; i < N; i++) {
-    //velocity_n[i]           = velocity[i];
-    //pressure_n[i]           = pressure[i];
-    //crossSectionLength_n[i] = crossSectionLength[i];
+    // else{
+    // t += dt;
+    // for (i = 0; i < N; i++) {
+    // velocity_n[i]           = velocity[i];
+    // pressure_n[i]           = pressure[i];
+    // crossSectionLength_n[i] = crossSectionLength[i];
     //}
-    //write_vtk(t, out_counter, outputFilePrefix.c_str(), N, grid, velocity_n, pressure, crossSectionLength, crossSectionLength_n);
+    // write_vtk(t, out_counter, outputFilePrefix.c_str(), N, grid, velocity_n, pressure, crossSectionLength, crossSectionLength_n);
     out_counter++;
     //}
   }

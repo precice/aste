@@ -6,9 +6,9 @@
     <sink type="stream" output="stdout" filter="%Severity% > debug" format='%TimeStamp(format="%H:%M:%S.%f")%|%Participant%|%Rank%|%Module%|l%Line%|%Function%|%Severity%%Message%' enabled="true" />
     <sink type="file" output="debug.log" filter="" format='%TimeStamp(format="%H:%M:%S.%f")%|%Participant%|%Rank%|%Module%|l%Line%|%Function%|%Severity%%Message%' enabled="true"/>
   </log>
-  
+
   <solver-interface dimensions="3">
-    
+
     <!-- Data fields that are exchanged between the solvers -->
     <data:scalar name="Data" />
 
@@ -20,7 +20,7 @@
     <mesh name="B-Mesh">
       <use-data name="Data" />
     </mesh>
-    
+
     <m2n:sockets from="A" to="B" network="{{ network }}" exchange-directory="." />
 
     <participant name="A">
@@ -33,7 +33,7 @@
       <mapping:{{ mapping.kind }} {{ mapping.options }} constraint="conservative" direction="write" from="A-Mesh" to="B-Mesh" />
       {% endif %}
     </participant>
-    
+
     <participant name="B">
       <use-mesh name="B-Mesh" provide="yes" />
       <read-data name="Data" mesh="B-Mesh" />
@@ -44,7 +44,7 @@
       <mapping:{{ mapping.kind }} {{ mapping.options }} constraint="consistent" direction="read" from="A-Mesh" to="B-Mesh" />
       {% endif %}
     </participant>
-    
+
     <coupling-scheme:parallel-explicit>
       <participants first="A" second="B" />
       <max-time value="1.0" />
@@ -56,7 +56,7 @@
       <exchange data="Data" mesh="B-Mesh" from="B" to="A" />
       {% endif %}
     </coupling-scheme:parallel-explicit>
-    
+
   </solver-interface>
-  
+
 </precice-configuration>

@@ -210,4 +210,4 @@ For example, to join a partitioned mesh using a recovery file:
 
 ```bash
 ./join_mesh.py --mesh partitoned_mesh_directory/partitioned_mesh --recovery partitioned_directory --output rejoined_mesh.vtk
-```
+```ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss

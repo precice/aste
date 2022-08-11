@@ -10,14 +10,22 @@ import subprocess
 
 def parseArguments(args):
     parser = argparse.ArgumentParser(description="Prepares meshes for a test suite")
-    parser.add_argument('-o', '--outdir', default="cases", help='Directory to generate the test suite in.')
     parser.add_argument(
-        '-s',
-        '--setup',
-        type=argparse.FileType('r'),
+        "-o",
+        "--outdir",
+        default="cases",
+        help="Directory to generate the test suite in.",
+    )
+    parser.add_argument(
+        "-s",
+        "--setup",
+        type=argparse.FileType("r"),
         default="setup.json",
-        help='The test setup file to use.')
-    parser.add_argument('-f', '--force', action="store_true", help='Remove existing meshes.')
+        help="The test setup file to use.",
+    )
+    parser.add_argument(
+        "-f", "--force", action="store_true", help="Remove existing meshes."
+    )
 
     return parser.parse_args(args)
 
@@ -39,8 +47,21 @@ def prepareMainMesh(meshdir, name, file, function, force=False):
     os.makedirs(mainDir, exist_ok=True)
     data_name = "{}".format(function)
     [pathName, tmpfilename] = os.path.split(os.path.normpath(mainMesh))
-    subprocess.run(["vtk_calculator.py", "--mesh", os.path.expandvars(file), "--function",
-                    function, "--data", data_name, "--directory", pathName, "-o", tmpfilename])
+    subprocess.run(
+        [
+            "vtk_calculator.py",
+            "--mesh",
+            os.path.expandvars(file),
+            "--function",
+            function,
+            "--data",
+            data_name,
+            "--directory",
+            pathName,
+            "-o",
+            tmpfilename,
+        ]
+    )
 
 
 def preparePartMesh(meshdir, name, p, force=False):
@@ -64,8 +85,21 @@ def preparePartMesh(meshdir, name, p, force=False):
 
     os.makedirs(partDir, exist_ok=True)
     [pathName, tmpfilename] = os.path.split(os.path.normpath(partMesh))
-    subprocess.run(["partition_mesh.py", "--mesh", mainMesh, "--algorithm",
-                    "meshfree", "-o", partMesh, "--directory", pathName, "-n", str(p)])
+    subprocess.run(
+        [
+            "partition_mesh.py",
+            "--mesh",
+            mainMesh,
+            "--algorithm",
+            "meshfree",
+            "-o",
+            partMesh,
+            "--directory",
+            pathName,
+            "-n",
+            str(p),
+        ]
+    )
 
 
 def main(argv):
@@ -73,15 +107,21 @@ def main(argv):
     setup = json.load(args.setup)
     outdir = os.path.normpath(args.outdir)
 
-    if (os.path.isdir(outdir)):
+    if os.path.isdir(outdir):
         print('Warning: outdir "{}" already exisits.'.format(outdir))
     meshdir = os.path.join(outdir, "meshes")
     function = setup["general"]["function"]
 
-    partitions = set([int(rank) for pranks in setup["general"]["ranks"].values() for rank in pranks])
+    partitions = set(
+        [int(rank) for pranks in setup["general"]["ranks"].values() for rank in pranks]
+    )
 
-    for name, file in set(itertools.chain(setup["general"]["meshes"]["A"].items(),
-                                          setup["general"]["meshes"]["B"].items())):
+    for name, file in set(
+        itertools.chain(
+            setup["general"]["meshes"]["A"].items(),
+            setup["general"]["meshes"]["B"].items(),
+        )
+    ):
 
         if not os.path.isfile(os.path.expandvars(file)):
             raise Exception(f'\033[91m Unable to open file called "{file}".\033[0m')
@@ -95,4 +135,5 @@ def main(argv):
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main(sys.argv))

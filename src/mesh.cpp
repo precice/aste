@@ -46,7 +46,7 @@ Mesh::VID vtkToPos(vtkIdType id)
 void readMesh(Mesh &mesh, const std::string &filename, const int dim, const bool requireConnectivity)
 {
   if (!fs::is_regular_file(filename)) {
-    std::cerr << "The mesh file does not exist: " << filename;
+    ASTE_ERROR << "The mesh file does not exist: " << filename;
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
@@ -65,7 +65,7 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim, const bool
     reader->Update();
     grid = reader->GetOutput();
   } else {
-    std::cerr << "Unknown File Extension for file " << filename << "Extension should be .vtk or .vtu";
+    ASTE_ERROR << "Unknown File Extension for file " << filename << "Extension should be .vtk or .vtu";
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
@@ -86,32 +86,32 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim, const bool
 
       // Here we use static cast since VTK library returns a long long unsigned int however preCICE uses int for PointId's
       if (cellType == VTK_TRIANGLE) {
-        vtkCell *                cell = grid->GetCell(i);
+        vtkCell                 *cell = grid->GetCell(i);
         std::array<Mesh::VID, 3> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2))};
         mesh.triangles.push_back(elem);
       } else if (cellType == VTK_LINE) {
-        vtkCell *                cell = grid->GetCell(i);
+        vtkCell                 *cell = grid->GetCell(i);
         std::array<Mesh::VID, 2> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1))};
         mesh.edges.push_back(elem);
       } else if (cellType == VTK_QUAD) {
-        vtkCell *                cell = grid->GetCell(i);
+        vtkCell                 *cell = grid->GetCell(i);
         std::array<Mesh::VID, 4> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2)), vtkToPos(cell->GetPointId(3))};
         mesh.quadrilaterals.push_back(elem);
       } else if (cellType == VTK_TETRA) {
         if (dim == 3) {
-          vtkCell *                cell = grid->GetCell(i);
+          vtkCell                 *cell = grid->GetCell(i);
           std::array<Mesh::VID, 4> elem{vtkToPos(cell->GetPointId(0)), vtkToPos(cell->GetPointId(1)), vtkToPos(cell->GetPointId(2)), vtkToPos(cell->GetPointId(3))};
           mesh.tetrahedra.push_back(elem);
         }
       } else if (cellType == VTK_VERTEX) {
         // Skip the VTK_VERTEX type, @TODO: Print out a warning when the logger works properly
       } else {
-        std::cerr << "Invalid cell type in VTK file. Valid cell types are, VTK_LINE, VTK_TRIANGLE, and VTK_QUAD.";
+        ASTE_ERROR << "Invalid cell type in VTK file. Valid cell types are, VTK_LINE, VTK_TRIANGLE, and VTK_QUAD.";
         MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
       }
     }
   } else {
-    std::cerr << "Connectivity information for " << mesh.fname << " skipped since connectivity is not required.\n";
+    ASTE_ERROR << "Connectivity information for " << mesh.fname << " skipped since connectivity is not required.\n";
   }
 };
 
@@ -119,7 +119,7 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim, const bool
 void readData(Mesh &mesh, const std::string &filename)
 {
   if (!fs::is_regular_file(filename)) {
-    std::cerr << "The mesh file does not exist: " << filename;
+    ASTE_ERROR << "The mesh file does not exist: " << filename;
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
@@ -141,7 +141,7 @@ void readData(Mesh &mesh, const std::string &filename)
     reader->Update();
     grid = reader->GetOutput();
   } else {
-    std::cerr << "Unknown File Extension for file " << filename << "Extension should be .vtk or .vtu";
+    ASTE_ERROR << "Unknown File Extension for file " << filename << "Extension should be .vtk or .vtu";
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
@@ -184,7 +184,7 @@ void readData(Mesh &mesh, const std::string &filename)
         }
         break;
       default: // Unknown number of component
-        std::cerr << std::string("Please check your VTK file there is/are ").append(std::string(std::to_string(NumComp))).append(" component for data ").append(dataname);
+        ASTE_ERROR << std::string("Please check your VTK file there is/are ").append(std::string(std::to_string(NumComp))).append(" component for data ").append(dataname);
         MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
         break;
       }
@@ -304,7 +304,7 @@ void MeshName::save(const Mesh &mesh, const std::string &outputFileName) const
     reader->Update();
     grid = reader->GetOutput();
   } else {
-    std::cerr << "Unknown File Extension for file " << mesh.fname << " Extension should be .vtk or .vtu";
+    ASTE_ERROR << "Unknown File Extension for file " << mesh.fname << " Extension should be .vtk or .vtu";
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
@@ -390,7 +390,7 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
         meshNames.emplace_back(MeshName{stepMeshName, ext, context});
       }
       if (!meshNames.empty()) {
-        std::cerr << "Total number of detected meshes: " << meshNames.size() << '\n';
+        ASTE_ERROR << "Total number of detected meshes: " << meshNames.size() << '\n';
         return meshNames;
       }
     }
@@ -415,10 +415,10 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
         break;
       meshNames.emplace_back(rankMeshName, ext, context);
     }
-    std::cerr << "Total number of detected meshes: " << meshNames.size() << '\n';
+    ASTE_ERROR << "Total number of detected meshes: " << meshNames.size() << '\n';
     return meshNames;
   }
-  std::cerr << "Unable to handle basename " << _bname << " no meshes found";
+  ASTE_ERROR << "Unable to handle basename " << _bname << " no meshes found";
   MPI_Finalize();
   std::exit(EXIT_FAILURE);
 }
