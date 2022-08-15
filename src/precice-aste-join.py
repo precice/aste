@@ -74,7 +74,7 @@ class MeshJoiner:
 
     @staticmethod
     def create_logger(args):
-        logger = logging.getLogger("---[ASTE-Joiner]")
+        logger = logging.getLogger("---[ASTE-Join]")
         logger.setLevel(getattr(logging, args.logging))
         ch = logging.StreamHandler()
         ch.setLevel(getattr(logging, args.logging))
