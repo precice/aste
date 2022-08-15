@@ -89,7 +89,7 @@ There are some flags are common in every module here is a list of them.
 
 For demo usage please check [ASTE Tutorial](https://github.com/precice/tutorials/tree/develop).
 
-### preciceMap
+### precice-aste-run
 
 The main tool used for mapping. It is a wrapper around the preCICE interface. It can be run in serial or parallel. There are two modes available, namely, mapper mode and replay mode. The first mode is used to assess mapping data from one mesh to another; later, one is mainly developed for diagnostic and adapter development purposes. In Replay mode, ASTE replicates one participant of preCICE.
 
@@ -136,7 +136,7 @@ For the Replay mode ASTE uses a configuration file in JSON format as follows
 
 The above configuration file is an example of a participant with one mesh. The user can add as many meshes as required.
 
-### vtk_calculator.py
+### precice-aste-evaluate.py
 
 Reads a mesh as either `.vtk` or `.vtu` and evaluates a function given by `--function` on it. Using the `--diff` flag can compute the difference between the mesh values and the values of the analytical solution (usually applied after a mapping).
 
@@ -162,20 +162,20 @@ There are also some predefined common interpolation functions can by specified h
 All function provided has 3D and 2D variants. For example, to calculate Egg-Holder function on different meshes:
 
 ```bash
-vtk_calculator.py --mesh 3DMesh.vtk --function "eggholder3d" --data "EggHolder"
-vtk_calculator.py --mesh 2DMeshonXY.vtk --function "eggholder2d(xy)" --data "EggHolder"
-vtk_calculator.py --mesh 2DMeshonXZ.vtk --function "eggholder2d(xz)" --data "EggHolder"
-vtk_calculator.py --mesh 2DMeshonYZ.vtk --function "eggholder2d(yz)" --data "EggHolder"
+precice-aste-evaluate.py --mesh 3DMesh.vtk --function "eggholder3d" --data "EggHolder"
+precice-aste-evaluate.py --mesh 2DMeshonXY.vtk --function "eggholder2d(xy)" --data "EggHolder"
+precice-aste-evaluate.py --mesh 2DMeshonXZ.vtk --function "eggholder2d(xz)" --data "EggHolder"
+precice-aste-evaluate.py --mesh 2DMeshonYZ.vtk --function "eggholder2d(yz)" --data "EggHolder"
 ```
 
 For example, calculate function "sin(x)+exp(y)" on mesh MeshA and store in "MyFunc" or calculation of difference between mapped data and function "x+y" and "MappedData" and store it in "Error":
 
 ```bash
-vtk_calculator.py --mesh MeshA.vtk --function "sin(x)+exp(y)" --data "MyFunc"
-vtk_calculator.py --mesh Mapped.vtk --function "x+y" --data "Error" --diffdata "MappedData" --diff
+precice-aste-evaluate.py --mesh MeshA.vtk --function "sin(x)+exp(y)" --data "MyFunc"
+precice-aste-evaluate.py --mesh Mapped.vtk --function "x+y" --data "Error" --diffdata "MappedData" --diff
 ```
 
-### partition_mesh.py
+### precice-aste-partition.py
 
 Reads a mesh either `.vtk` or `.vtu` , partitions it and stores the parts `output_1.vtu, output_2.vtu, ...`. For partitioning, there are there algorithms available. The meshfree and uniform algorithm does not need any mesh topology information, whereas the topological algorithm needs topology information. This python module needs the C++ module `libmetisAPI.so` if the topological algorithm is used.
 
@@ -188,14 +188,14 @@ Reads a mesh either `.vtk` or `.vtu` , partitions it and stores the parts `outpu
 For example, to divide a mesh into 2 parts using topological partitioning and store it in a directory:
 
 ```bash
-partition_mesh.py --mesh MeshA.vtk --algorithm topology --numparts 2 --output fine_mesh --directory partitioned_mesh
+precice-aste-partition.py --mesh MeshA.vtk --algorithm topology --numparts 2 --output fine_mesh --directory partitioned_mesh
 ```
 
 #### libMetisAPI
 
-This is a small C++ wrapper around METIS. It is only required if `partition_mesh.py` should use a topological algorithm.
+This is a small C++ wrapper around METIS. It is only required if `precice-aste-partition.py` should use a topological algorithm.
 
-### join_mesh.py
+### precice-aste-join.py
 
 Reads a partitioned mesh from a given prefix (looking for `<prefix>_<#filerank>.vtu)`) and saves it to a single `.vtk` or `.vtu` file.
 The `-r` flag also recovers the connectivity information from a mesh. Notice that for recovery, partitions should contain `GlobalIDs` data.
@@ -209,5 +209,5 @@ The `-r` flag also recovers the connectivity information from a mesh. Notice tha
 For example, to join a partitioned mesh using a recovery file:
 
 ```bash
-./join_mesh.py --mesh partitoned_mesh_directory/partitioned_mesh --recovery partitioned_directory --output rejoined_mesh.vtk
-```ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
+./precice-aste-join.py --mesh partitoned_mesh_directory/partitioned_mesh --recovery partitioned_directory --output rejoined_mesh.vtk
+```
