@@ -49,7 +49,7 @@ def prepareMainMesh(meshdir, name, file, function, force=False):
     [pathName, tmpfilename] = os.path.split(os.path.normpath(mainMesh))
     subprocess.run(
         [
-            "vtk_calculator.py",
+            "precice-aste-evaluate.py",
             "--mesh",
             os.path.expandvars(file),
             "--function",
@@ -87,7 +87,7 @@ def preparePartMesh(meshdir, name, p, force=False):
     [pathName, tmpfilename] = os.path.split(os.path.normpath(partMesh))
     subprocess.run(
         [
-            "partition_mesh.py",
+            "precice-aste-partition.py",
             "--mesh",
             mainMesh,
             "--algorithm",

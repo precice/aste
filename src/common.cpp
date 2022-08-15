@@ -19,7 +19,7 @@ OptionMap getOptions(int argc, char *argv[])
       "mesh", po::value<std::string>(),
       "Mesh prefix (i.e. mesh name without the format extension such as '.vtk' or '.vtu'). "
       "Example: solution.vtk has the prefix 'solution'. "
-      "preciceMap will look for timeseries as well as distributed meshes (e.g. from preCICE exports) "
+      "precice-aste-run will look for timeseries as well as distributed meshes (e.g. from preCICE exports) "
       "automatically and load them if required.")(
       "output", po::value<std::string>(),
       "Output file name.")(
