@@ -18,7 +18,7 @@ err_count=0
 
 # Run all cases
 for testcase in $test_cases; do
-    array=$(echo "$testcase" | tr "/" "\n")
+    array=($(echo "$testcase" | tr "/" "\n"))
     cd "${array[1]}"
     echo "- Running test case ${array[1]}..."
     ./run.sh || detect_error
