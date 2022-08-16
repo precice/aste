@@ -26,7 +26,7 @@ for testcase in $test_cases; do
 done
 
 if [  $err_count -eq 0 ]; then
-    echo "All test are completed succesfully"
+    echo "All tests passed"
 else
     echo "$err_count out of $number_of_cases cannot be completed"
     exit 1
