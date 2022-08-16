@@ -1,6 +1,21 @@
 #!/bin/sh
 set -e -u
 
-echo "- Running all examples cases..."
+error_exit(){
+    echo "Error while running case ${array[1]}"
+    exit 1
+}
 
-find . -maxdepth 2 -mindepth 2 -name run.sh -execdir sh -c './run.sh' \;
+set -e -u
+
+echo "- Running all examples cases..."
+testcases=$(find . -maxdepth 2 -mindepth 2 -name run.sh)
+numberofcases=$(echo $testcases | wc -w)
+echo "- There are $numberofcases case(s) found..."
+
+for testcase in $testcases; do
+    IFS='/' read -ra array <<< "$testcase"
+    cd ${array[1]}
+    echo "- Running test case ${array[1]}..."
+    ./run.sh > run.log || error_exit && cd -
+done
