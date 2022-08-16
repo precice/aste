@@ -28,6 +28,6 @@ done
 if [  $err_count -eq 0 ]; then
     echo "All tests passed"
 else
-    echo "$err_count out of $number_of_cases cannot be completed"
+    echo "$err_count out of $number_of_cases failed"
     exit 1
 fi
