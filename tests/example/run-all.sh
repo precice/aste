@@ -17,5 +17,5 @@ for testcase in $testcases; do
     IFS='/' read -ra array <<< "$testcase"
     cd ${array[1]}
     echo "- Running test case ${array[1]}..."
-    ./run.sh > run.log || error_exit && cd -
+    ./run.sh || error_exit && cd -
 done
