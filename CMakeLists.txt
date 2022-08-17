@@ -92,16 +92,16 @@ else ()
     )
 endif()
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-partition.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-join.py           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-evaluate.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-partition      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-join           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-evaluate      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 include(GNUInstallDirs)
 install(TARGETS precice-aste-run DESTINATION ${CMAKE_INSTALL_BINDIR})
 if(METIS_FOUND)
 install(TARGETS metisAPI DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
-install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-partition.py ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-join.py ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-evaluate.py DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-partition ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-join ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-evaluate DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 enable_testing()
 
