@@ -213,7 +213,7 @@ def createRunScript(outdir, path, case):
     ]
     if branks == 1:
         joincmd = "[ ! -f mapped.vtu ] || mv --update mapped.vtu mapped.vtk"
-        diffcmd = 'precice-aste-evaluate.py --data error --diffdata "{1}" --diff --stats --mesh mapped.vtk --function "{0}" | tee diff.log'.format(
+        diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh mapped.vtk --function "{0}" | tee diff.log'.format(
             case["function"], mapped_data_name
         )
         post_content += [joincmd, diffcmd]
@@ -222,10 +222,10 @@ def createRunScript(outdir, path, case):
             os.path.normpath(bmeshLocation)
         )
         tmprecoveryFile = recoveryFileLocation + "/{}_recovery.json".format(bmesh)
-        joincmd = "precice-aste-join.py --mesh mapped -r {} -o result.vtk".format(
+        joincmd = "precice-aste-join --mesh mapped -r {} -o result.vtk".format(
             tmprecoveryFile
         )
-        diffcmd = 'precice-aste-evaluate.py --data error --diffdata "{1}" --diff --stats --mesh result.vtk --function "{0}" | tee diff.log'.format(
+        diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh result.vtk --function "{0}" | tee diff.log'.format(
             case["function"], mapped_data_name
         )
         post_content += [joincmd, diffcmd]
