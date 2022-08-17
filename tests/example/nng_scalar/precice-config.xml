@@ -8,7 +8,7 @@
   </log>
 
   <solver-interface dimensions="3" experimental="true">
-    <data:scalar name="Data" gradient="on" />
+    <data:scalar name="Data" />
 
     <mesh name="A-Mesh">
       <use-data name="Data" />
