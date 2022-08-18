@@ -26,7 +26,7 @@ class Calculator:
 
     @staticmethod
     def create_logger(level):
-        logger = logging.getLogger("---[ASTE-Calculator]")
+        logger = logging.getLogger("---[ASTE-Evaluate]")
         logger.setLevel(getattr(logging, level))
         ch = logging.StreamHandler()
         ch.setLevel(getattr(logging, level))

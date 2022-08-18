@@ -167,7 +167,7 @@ class MeshPartitioner:
 
     @staticmethod
     def create_logger(args):
-        logger = logging.getLogger("---[ASTE-Partitioner]")
+        logger = logging.getLogger("---[ASTE-Partition]")
         logger.setLevel(getattr(logging, args.logging))
         ch = logging.StreamHandler()
         ch.setLevel(getattr(logging, args.logging))

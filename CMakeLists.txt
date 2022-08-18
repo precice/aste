@@ -50,9 +50,9 @@ endif()
 
 find_package(MPI REQUIRED)
 
-add_executable(preciceMap src/preciceMap.cpp src/common.cpp src/mesh.cpp src/configreader.cpp src/modes.cpp src/utilities.cpp src/logger.cpp)
-target_include_directories(preciceMap PRIVATE src thirdparty)
-target_link_libraries(preciceMap
+add_executable(precice-aste-run src/precice-aste-run.cpp src/common.cpp src/mesh.cpp src/configreader.cpp src/modes.cpp src/utilities.cpp src/logger.cpp)
+target_include_directories(precice-aste-run PRIVATE src thirdparty)
+target_link_libraries(precice-aste-run
   precice::precice
   Threads::Threads
   MPI::MPI_CXX
@@ -61,15 +61,15 @@ target_link_libraries(preciceMap
 )
 
 if(ASTE_SET_MESH_BLOCK)
-  target_compile_definitions(preciceMap PRIVATE ASTE_SET_MESH_BLOCK)
+  target_compile_definitions(precice-aste-run PRIVATE ASTE_SET_MESH_BLOCK)
 endif()
 
 if(ASTE_NN_GRADIENT_MAPPING_AND_TETRA)
-  target_compile_definitions(preciceMap PRIVATE ASTE_NN_GRADIENT_MAPPING_AND_TETRA)
+  target_compile_definitions(precice-aste-run PRIVATE ASTE_NN_GRADIENT_MAPPING_AND_TETRA)
 endif()
 
 if(METIS_FOUND)
-  target_link_libraries(preciceMap metisAPI)
+  target_link_libraries(precice-aste-run metisAPI)
 endif()
 
 
@@ -87,21 +87,21 @@ if (VTK_VERSION VERSION_LESS "8.90.0")
 else ()
   # vtk_module_autoinit is needed
   vtk_module_autoinit(
-    TARGETS preciceMap testing
+    TARGETS precice-aste-run testing
     MODULES ${VTK_LIBRARIES}
     )
 endif()
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/join_mesh.py           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk_calculator.py      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-partition      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-join           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-evaluate      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 include(GNUInstallDirs)
-install(TARGETS preciceMap DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS precice-aste-run DESTINATION ${CMAKE_INSTALL_BINDIR})
 if(METIS_FOUND)
 install(TARGETS metisAPI DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
-install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/partition_mesh.py ${CMAKE_CURRENT_SOURCE_DIR}/src/join_mesh.py ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk_calculator.py DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-partition ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-join ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-evaluate DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 enable_testing()
 

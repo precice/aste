@@ -144,7 +144,7 @@ def createRunScript(outdir, path, case):
     )
 
     # Generate runner script
-    acmd = '/usr/bin/time -f %M -a -o memory-A.log preciceMap -v -p A --data "{}" --mesh {} || kill 0 &'.format(
+    acmd = '/usr/bin/time -f %M -a -o memory-A.log precice-aste-run -v -p A --data "{}" --mesh {} || kill 0 &'.format(
         case["function"], ameshLocation
     )
     if aranks > 1:
@@ -156,7 +156,7 @@ def createRunScript(outdir, path, case):
         os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path
     )
     mapped_data_name = case["function"] + "(mapped)"
-    bcmd = '/usr/bin/time -f %M -a -o memory-B.log preciceMap -v -p B --data "{}" --mesh {} --output mapped || kill 0 &'.format(
+    bcmd = '/usr/bin/time -f %M -a -o memory-B.log precice-aste-run -v -p B --data "{}" --mesh {} --output mapped || kill 0 &'.format(
         mapped_data_name, bmeshLocation
     )
     if branks > 1:
@@ -213,7 +213,7 @@ def createRunScript(outdir, path, case):
     ]
     if branks == 1:
         joincmd = "[ ! -f mapped.vtu ] || mv --update mapped.vtu mapped.vtk"
-        diffcmd = 'vtk_calculator.py --data error --diffdata "{1}" --diff --stats --mesh mapped.vtk --function "{0}" | tee diff.log'.format(
+        diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh mapped.vtk --function "{0}" | tee diff.log'.format(
             case["function"], mapped_data_name
         )
         post_content += [joincmd, diffcmd]
@@ -222,10 +222,10 @@ def createRunScript(outdir, path, case):
             os.path.normpath(bmeshLocation)
         )
         tmprecoveryFile = recoveryFileLocation + "/{}_recovery.json".format(bmesh)
-        joincmd = "join_mesh.py --mesh mapped -r {} -o result.vtk".format(
+        joincmd = "precice-aste-join --mesh mapped -r {} -o result.vtk".format(
             tmprecoveryFile
         )
-        diffcmd = 'vtk_calculator.py --data error --diffdata "{1}" --diff --stats --mesh result.vtk --function "{0}" | tee diff.log'.format(
+        diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh result.vtk --function "{0}" | tee diff.log'.format(
             case["function"], mapped_data_name
         )
         post_content += [joincmd, diffcmd]
