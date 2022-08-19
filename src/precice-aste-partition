@@ -178,7 +178,7 @@ class MeshPartitioner:
 
     @staticmethod
     def get_logger():
-        return logging.getLogger("---[ASTE-Partitioner]")
+        return logging.getLogger("---[ASTE-Partition]")
 
     @staticmethod
     def partition(mesh: Mesh, numparts: int, algorithm):

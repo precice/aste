@@ -85,7 +85,7 @@ class MeshJoiner:
 
     @staticmethod
     def get_logger():
-        return logging.getLogger("---[ASTE-Joiner]")
+        return logging.getLogger("---[ASTE-Join]")
 
     @staticmethod
     def join(args):

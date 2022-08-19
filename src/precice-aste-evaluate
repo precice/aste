@@ -37,7 +37,7 @@ class Calculator:
 
     @staticmethod
     def get_logger():
-        return logging.getLogger("---[ASTE-Calculator]")
+        return logging.getLogger("---[ASTE-Evaluate]")
 
     @staticmethod
     def parse_args():
