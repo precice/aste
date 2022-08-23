@@ -8,6 +8,8 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
   aste::asteConfig asteConfiguration;
   asteConfiguration.load(asteConfigName);
   const std::string participantName = asteConfiguration.participantName;
+  addLogIdentity(participantName, context.rank);
+  ASTE_INFO << "ASTE Running in replay mode";
 
   precice::SolverInterface preciceInterface(participantName, asteConfiguration.preciceConfigFilename, context.rank, context.size);
   const int                dim = preciceInterface.getDimensions();
@@ -189,6 +191,9 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
   const std::string dataname        = options["data"].as<std::string>();
   const bool        isVector        = options["vector"].as<bool>();
   const std::string preciceConfig   = options["precice-config"].as<std::string>();
+
+  addLogIdentity(participantName, context.rank);
+  ASTE_INFO << "ASTE Running in mapping test mode";
 
   aste::asteConfig asteConfiguration;
 
