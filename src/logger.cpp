@@ -27,7 +27,8 @@ void addLogSink(bool verbose)
   filter.append(" ) and %ASTE%");
   std::cerr << filter;
 
-  std::string formatter = "---[ASTE:%Participant%:%Rank%] %Message%";;
+  std::string formatter = "---[ASTE:%Participant%:%Rank%] %Message%";
+  ;
 
   logging::add_console_log(
       std::clog,

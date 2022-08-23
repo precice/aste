@@ -34,7 +34,7 @@ typedef boost::log::sources::severity_logger_mt<boost::log::trivial::severity_le
 // declares a global logger with a custom initialization
 BOOST_LOG_GLOBAL_LOGGER(my_logger, logger_t);
 
-void addLogIdentity(const std::string& participant, int rank);
+void addLogIdentity(const std::string &participant, int rank);
 void addLogSink(bool verbose);
 
 #define ASTE_DEBUG BOOST_LOG_SEV(my_logger::get(), boost::log::trivial::severity_level::debug)
