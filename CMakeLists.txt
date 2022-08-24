@@ -37,7 +37,14 @@ MESSAGE(STATUS "Support for nearest-neighbor-gradient mapping and tetrahedra: ${
 
 find_package(Boost 1.65.1 REQUIRED COMPONENTS log log_setup system program_options filesystem unit_test_framework)
 
-find_package(VTK REQUIRED COMPONENTS CommonCore CommonDataModel IOXML IOLegacy)
+option(ASTE_USE_VTK_COMPONENTS "Find VTK with components" OFF)
+if(ASTE_USE_VTK_COMPONENTS)
+  # This is broken on ubuntu 20.04
+  find_package(VTK REQUIRED COMPONENTS CommonCore CommonDataModel IOXML IOLegacy)
+else()
+  # This is broken on arch
+  find_package(VTK REQUIRED)
+endif()
 message (STATUS "VTK_VERSION: ${VTK_VERSION}")
 
 find_package(METIS)
