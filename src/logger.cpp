@@ -1,5 +1,8 @@
 #include "logger.hpp"
 #include <boost/log/attributes/constant.hpp>
+#include <boost/log/expressions/formatters/if.hpp>
+#include <boost/log/expressions/predicates/has_attr.hpp>
+#include <boost/log/trivial.hpp>
 
 namespace attrs   = boost::log::attributes;
 namespace expr    = boost::log::expressions;
@@ -22,16 +25,26 @@ void addLogIdentity(const std::string &participant, int rank)
 
 void addLogSink(bool verbose)
 {
-  std::string filter = "( %Severity% >= ";
-  filter.append(verbose ? "debug" : "info");
-  filter.append(" ) and %ASTE%");
-  std::cerr << filter;
+  int loglevel = verbose ? logging::trivial::debug : logging::trivial::info;
 
-  std::string formatter = "---[ASTE:%Participant%:%Rank%] %Message%";
-  ;
+  // Either "ASTE" or "preCICE"
+  auto origin = expr::if_(expr::has_attr<bool>("ASTE"))[expr::stream << "ASTE"].else_[expr::stream << "preCICE"];
+
+  // For preCICE logs "(Module in Function)"
+  auto location = expr::if_(!expr::has_attr<bool>("ASTE"))
+      [expr::stream << "(" << expr::attr<std::string>("Module") << " in " << expr::attr<std::string>("Function") << ") "];
+
+  auto formatter = expr::stream
+                   << "---["
+                   << origin
+                   << ':' << expr::attr<std::string>("Participant")
+                   << ':' << expr::attr<int>("Rank")
+                   << "] "
+                   << location
+                   << expr::smessage;
 
   logging::add_console_log(
       std::clog,
-      keywords::format = logging::parse_formatter(formatter),
-      keywords::filter = logging::parse_filter(filter));
+      keywords::format = formatter,
+      keywords::filter = logging::trivial::severity >= loglevel);
 }
