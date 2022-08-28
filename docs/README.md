@@ -58,6 +58,7 @@ sudo apt-get install libmetis-dev
 
 - NumPy
 - vtk (Visualization Toolkit)
+- sympy (optional)
 
 Requirements can be installed easily using pip
 
@@ -87,7 +88,7 @@ There are some flags are common in every module here is a list of them.
 | --data   | Name of data array   |
 | --output | Output filename      |
 
-For demo usage please check [ASTE Tutorial](https://github.com/precice/tutorials/tree/develop).
+For demo usage please check [ASTE Examples](https://github.com/precice/aste/tree/develop/tests/example).
 
 ### precice-aste-run
 
@@ -101,7 +102,7 @@ The main tool used for mapping. It is a wrapper around the preCICE interface. It
 | -p            | Participant name (A or B)                                     |
 | --vector      | A bool switch to specify vector data (default=False)          |
 
-Important note: For the mapper mode, `--mesh` option can be different from the one defined in the configuration file. The filename prefix should be passed. When using in mapper mode, please use `precice-config.xml` in `tests/example/precice-config.xml` and change only the required mapping method.
+Important note: For the mapper mode, `--mesh` option can be different from the one defined in the configuration file. The filename prefix should be passed. When using in mapper mode, please use `precice-config.xml` in `tests/example/nn/precice-config.xml` and change only the required mapping method.
 
 For example, mapping the data "x + y" from a mesh named fine_mesh in directory fine_mesh to anotherMesh and save into "mappedData" and "mappedMesh":
 
@@ -135,6 +136,22 @@ For the Replay mode ASTE uses a configuration file in JSON format as follows
 ```
 
 The above configuration file is an example of a participant with one mesh. The user can add as many meshes as required.
+
+#### Step by Step Guide for Replay Mode
+
+The replay mode only supports explicit coupling schemes.
+
+##### Step 1: Setup export of your original coupling
+
+Set vtk or vtu export of the participant you want to replace using preCICE export flag see [Export Configuration](https://precice.org/configuration-export.html)
+
+##### Step 2: Prepare your ASTE Configuration file
+
+Prepare an ASTE configuration for the solver which will be replaced. See above for ASTE configuration format.
+
+#### Step 3: Run your solver and ASTE
+
+Run your solver and ASTE as usual preCICE coupling. At this stage ASTE would work like a solver. Instead of calculation it would just only read from your export mesh data and use them for coupling.
 
 ### precice-aste-evaluate
 
@@ -209,5 +226,5 @@ The `-r` flag also recovers the connectivity information from a mesh. Notice tha
 For example, to join a partitioned mesh using a recovery file:
 
 ```bash
-./precice-aste-join --mesh partitoned_mesh_directory/partitioned_mesh --recovery partitioned_directory --output rejoined_mesh.vtk
+precice-aste-join --mesh partitoned_mesh_directory/partitioned_mesh --recovery partitioned_directory --output rejoined_mesh.vtk
 ```
