@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.1)
+cmake_minimum_required (VERSION 3.16.3)
 
 project(ASTE)
 
@@ -35,7 +35,7 @@ option(ASTE_NN_GRADIENT_MAPPING_AND_TETRA "Support nearest neighbour gradient ma
 
 MESSAGE(STATUS "Support for nearest-neighbor-gradient mapping and tetrahedra: ${ASTE_NN_GRADIENT_MAPPING_AND_TETRA}")
 
-find_package(Boost 1.65.1 REQUIRED COMPONENTS log log_setup system program_options filesystem unit_test_framework)
+find_package(Boost 1.71.0 REQUIRED COMPONENTS log log_setup system program_options filesystem unit_test_framework)
 
 find_package(VTK REQUIRED)
 message (STATUS "VTK_VERSION: ${VTK_VERSION}")
