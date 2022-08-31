@@ -6,11 +6,19 @@ import math
 import os
 import platform
 import shutil
-from ctypes import *
+from ctypes import c_int, c_longlong, cdll
 
 import numpy as np
 import vtk
 
+class ExtensionError(Exception):
+    pass
+
+class UnkownOSError(Exception):
+    pass
+
+class LibraryError(Exception):
+    pass
 
 class Mesh:
     """
@@ -96,17 +104,17 @@ class MeshPartitioner:
                 MeshPartitioner.vtu2vtk(mesh_name, out_meshname)
                 return
             else:
-                raise Exception(
+                raise ExtensionError(
                     f"Unkown input file extension {extension} please check your input file."
                 )
 
         logger.info("Processing mesh " + mesh_name)
-        meshes, recoveryInfo = MeshPartitioner.apply_partition(
+        meshes, recovery_info = MeshPartitioner.apply_partition(
             mesh, part, args.numparts
         )
         logger.info("Writing output to " + args.out_meshname)
         MeshPartitioner.write_meshes(
-            meshes, recoveryInfo, args.out_meshname, mesh.vtk_dataset, args.directory
+            meshes, recovery_info, args.out_meshname, mesh.vtk_dataset, args.directory
         )
 
     @staticmethod
@@ -173,8 +181,7 @@ class MeshPartitioner:
         ch.setLevel(getattr(logging, args.logging))
         formatter = logging.Formatter("%(name)s %(levelname)s : %(message)s")
         ch.setFormatter(formatter)
-        logger.addHandler(ch)
-        return
+        logger.addHandler(ch)     
 
     @staticmethod
     def get_logger():
@@ -213,8 +220,8 @@ class MeshPartitioner:
         A simple, efficient algorithm for a dimension reduction for a mesh
         with one or more "dead dimensions"
         """
-        testP = mesh[0]
-        dead_dims = np.argwhere(np.abs(np.array(testP)) < 1e-9)
+        test_p = mesh[0]
+        dead_dims = np.argwhere(np.abs(np.array(test_p)) < 1e-9)
         for point in mesh:
             current_dead_dims = np.argwhere(np.abs(np.array(point)) < 1e-9)
             dead_dims = np.intersect1d(dead_dims, current_dead_dims)
@@ -240,7 +247,7 @@ class MeshPartitioner:
         n = np.cross(AB, AC)
         # Every point x in the plane must fulfill (x - pA) * n = 0
         for x in mesh:
-            if not np.dot(x - pA, n) == 0:
+            if np.dot(x - pA, n) != 0:
                 return mesh
         else:  # All Points within plane
             # Transform mesh so all points have form (0, y, z)
@@ -311,7 +318,7 @@ class MeshPartitioner:
         elif os_type == "Darwin":  # MacOS
             ext = ".dylib"
         else:
-            raise Exception("Unknown OS type")
+            raise UnkownOSError("Unknown OS type")
         if os.path.isfile(os.path.join(binpath, "libmetisAPI" + ext)):
             libmetispath = os.path.join(binpath, "libmetisAPI" + ext)
         elif os.path.isfile(os.path.join(libpath, "libmetisAPI" + ext)):
@@ -319,7 +326,7 @@ class MeshPartitioner:
         elif os.path.isfile(os.path.join(lib64path, "libmetisAPI" + ext)):
             libmetispath = os.path.join(lib64path, "libmetisAPI" + ext)
         else:
-            raise Exception("libmetisAPI" + ext + " cannot found!")
+            raise LibraryError("libmetisAPI" + ext + " cannot found!")
         libmetis = cdll.LoadLibrary(libmetispath)
         idx_t = c_int if libmetis.typewidth() == 32 else c_longlong
         cell_count = idx_t(len(mesh.cells))
@@ -411,8 +418,8 @@ class MeshPartitioner:
         assert len(mapping) == len(orig_mesh.points)
         assert len(orig_mesh.cells) == len(orig_mesh.cell_types)
         # Save discarded cells and their types to allow recovery
-        discardedCells = []
-        discardedCellTypes = []
+        discarded_cells = []
+        discarded_cell_types = []
         for cell, type in zip(orig_mesh.cells, orig_mesh.cell_types):
             partitions = list(map(lambda idx: mapping[idx][0], cell))
             if len(set(partitions)) == 1:
@@ -421,16 +428,16 @@ class MeshPartitioner:
                 )
                 meshes[partitions[0]].cell_types.append(type)
             else:
-                discardedCells.append(list(cell))
-                discardedCellTypes.append(type)
+                discarded_cells.append(list(cell))
+                discarded_cell_types.append(type)
 
-        recoveryInfo = {
+        recovery_info = {
             "size": len(orig_mesh.points),
-            "cells": discardedCells,
-            "cell_types": discardedCellTypes,
+            "cells": discarded_cells,
+            "cell_types": discarded_cell_types,
         }
 
-        return meshes, recoveryInfo
+        return meshes, recovery_info
 
     @staticmethod
     def read_mesh(filename: str) -> Mesh:
@@ -440,7 +447,7 @@ class MeshPartitioner:
         elif extension == ".vtk":
             reader = vtk.vtkUnstructuredGridReader()
         else:
-            raise Exception(
+            raise ExtensionError(
                 f"Unkown input file extension {extension}, please check your input."
             )
         reader.SetFileName(filename)
@@ -483,60 +490,60 @@ class MeshPartitioner:
         assert len(points) == len(data_index)
         logger = MeshPartitioner.get_logger()
 
-        vtkGrid = vtk.vtkUnstructuredGrid()
+        vtk_grid = vtk.vtkUnstructuredGrid()
         vtkpoints = vtk.vtkPoints()
         vtkpoints.SetNumberOfPoints(len(points))
         for id, point in enumerate(points):
             vtkpoints.SetPoint(id, point)
-        vtkGrid.SetPoints(vtkpoints)
+        vtk_grid.SetPoints(vtkpoints)
 
         if cells:
-            cellArray = vtk.vtkCellArray()
+            cell_array = vtk.vtkCellArray()
             for i, cell in enumerate(cells):
-                vtkCell = vtk.vtkGenericCell()
-                vtkCell.SetCellType(cell_types[i])
-                idList = vtk.vtkIdList()
+                vtk_cell = vtk.vtkGenericCell()
+                vtk_cell.SetCellType(cell_types[i])
+                id_list = vtk.vtkIdList()
                 for cellid in cell:
-                    idList.InsertNextId(cellid)
-                vtkCell.SetPointIds(idList)
-                cellArray.InsertNextCell(vtkCell)
-            vtkGrid.SetCells(cell_types, cellArray)
+                    id_list.InsertNextId(cellid)
+                vtk_cell.SetPointIds(id_list)
+                cell_array.InsertNextCell(vtk_cell)
+            vtk_grid.SetCells(cell_types, cell_array)
 
         # Add GlobalIDs as a PointData
-        globalIdArr = vtk.vtkDoubleArray()
-        globalIdArr.SetNumberOfComponents(1)
-        globalIdArr.SetName("GlobalIDs")
+        global_id_array = vtk.vtkDoubleArray()
+        global_id_array.SetNumberOfComponents(1)
+        global_id_array.SetName("GlobalIDs")
         for j in data_index:
-            globalIdArr.InsertNextTuple1(j)
-        vtkGrid.GetPointData().AddArray(globalIdArr)
+            global_id_array.InsertNextTuple1(j)
+        vtk_grid.GetPointData().AddArray(global_id_array)
 
         if orig_mesh is not None:  # Take PointDatas
             point_data = orig_mesh.GetPointData()
             # Iterate over PointData
             for i in range(point_data.GetNumberOfArrays()):
                 array_name = point_data.GetArrayName(i)
-                oldArr = point_data.GetAbstractArray(array_name)
-                newArr = vtk.vtkDoubleArray()
-                num_comp = oldArr.GetNumberOfComponents()
-                newArr.SetNumberOfComponents(num_comp)
-                newArr.SetName(array_name)
+                old_array = point_data.GetAbstractArray(array_name)
+                new_array = vtk.vtkDoubleArray()
+                num_comp = old_array.GetNumberOfComponents()
+                new_array.SetNumberOfComponents(num_comp)
+                new_array.SetName(array_name)
                 if num_comp == 1:
                     for j in data_index:
-                        data = oldArr.GetTuple1(j)
-                        newArr.InsertNextTuple1(data)
+                        data = old_array.GetTuple1(j)
+                        new_array.InsertNextTuple1(data)
                 elif num_comp == 2:
                     for j in data_index:
-                        data = oldArr.GetTuple2(j)
-                        newArr.InsertNextTuple2(data[0], data[1])
+                        data = old_array.GetTuple2(j)
+                        new_array.InsertNextTuple2(data[0], data[1])
                 elif num_comp == 3:
                     for j in data_index:
-                        data = oldArr.GetTuple3(j)
-                        newArr.InsertNextTuple3(data[0], data[1], data[2])
+                        data = old_array.GetTuple3(j)
+                        new_array.InsertNextTuple3(data[0], data[1], data[2])
                 else:
                     logger.warning(
                         "Skipped data {} check dimension of data".format(array_name)
                     )
-                vtkGrid.GetPointData().AddArray(newArr)
+                vtk_grid.GetPointData().AddArray(new_array)
 
         extension = os.path.splitext(filename)[1]
         if extension == ".vtk":  # VTK Legacy format
@@ -545,28 +552,27 @@ class MeshPartitioner:
         elif extension == ".vtu":  # VTK XML Unstructured Grid format
             writer = vtk.vtkXMLUnstructuredGridWriter()
         else:
-            raise Exception("Unkown File extension: " + extension)
+            raise ExtensionError("Unkown File extension: " + extension)
         writer.SetFileName(filename)
-        writer.SetInputData(vtkGrid)
+        writer.SetInputData(vtk_grid)
         writer.Write()
-        return
 
     @staticmethod
     def write_meshes(
-        meshes, recoveryInfo, meshname: str, orig_mesh, directory=None
+        meshes, recovery_info, meshname: str, orig_mesh, directory=None
     ) -> None:
         """
         Writes meshes to given directory.
         """
         # Strip off the mesh-prefix for the directory creation
         mesh_prefix = os.path.basename(os.path.normpath(meshname))
-        recoveryName = os.path.basename(
+        recovery_name = os.path.basename(
             os.path.normpath(mesh_prefix + "_recovery.json")
         )
         if directory:
             # Get the absolute directory where we want to store the mesh
             directory = os.path.abspath(directory)
-            recoveryName = os.path.join(directory, mesh_prefix + "_recovery.json")
+            recovery_name = os.path.join(directory, mesh_prefix + "_recovery.json")
             os.makedirs(directory, exist_ok=True)
 
         for i in range(len(meshes)):
@@ -589,8 +595,7 @@ class MeshPartitioner:
                     mesh.cell_types,
                     orig_mesh,
                 )
-        json.dump(recoveryInfo, open(recoveryName, "w"))
-        return
+        json.dump(recovery_info, open(recovery_name, "w"))
 
     @staticmethod
     def vtu2vtk(inmesh, outmesh):
@@ -603,7 +608,6 @@ class MeshPartitioner:
         writer.SetInputData(mesh)
         writer.SetFileTypeToBinary()
         writer.Write()
-        return
 
 
 if __name__ == "__main__":
