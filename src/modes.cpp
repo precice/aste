@@ -3,11 +3,6 @@
 #include "logger.hpp"
 #include "utilities.hpp"
 
-#ifndef PRECICE_VERSION_GREATER_EQUAL
-// compatibility with older versions
-#define PRECICE_VERSION_GREATER_EQUAL(x, y, z) FALSE
-#endif
-
 void aste::runReplayMode(const aste::ExecutionContext &context, const std::string &asteConfigName)
 {
   aste::asteConfig asteConfiguration;

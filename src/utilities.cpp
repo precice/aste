@@ -1,10 +1,5 @@
 #include "utilities.hpp"
 
-#ifndef PRECICE_VERSION_GREATER_EQUAL
-// compatibility with older versions
-#define PRECICE_VERSION_GREATER_EQUAL(x, y, z) FALSE
-#endif
-
 bool operator==(const Edge &lhs, const Edge &rhs)
 {
   return (lhs.vA == rhs.vA) && (lhs.vB == rhs.vB);

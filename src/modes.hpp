@@ -12,6 +12,11 @@
 
 #include "precice/SolverInterface.hpp"
 
+#ifndef PRECICE_VERSION_GREATER_EQUAL
+// compatibility with older versions
+#define PRECICE_VERSION_GREATER_EQUAL(x, y, z) FALSE
+#endif
+
 namespace aste {
 /**
  * @brief The function runs ASTE in replay mode where aste simulates a participant in preCICE
