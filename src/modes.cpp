@@ -28,7 +28,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
 
     for (const auto dataname : asteInterface.writeVectorNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
-      asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, dim, dataname, dataID));
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, dim, dataname, dataID);
 #ifdef ASTE_NN_GRADIENT_MAPPING
       if (preciceInterface.isGradientDataRequired(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
@@ -37,14 +37,14 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
 #endif
     }
 
-    for (const auto dataname : asteInterface.readVectorNames) {
+    for (const auto &dataname : asteInterface.readVectorNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
-      asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::READ, dim, dataname, dataID));
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, dim, dataname, dataID);
     }
 
-    for (const auto dataname : asteInterface.writeScalarNames) {
+    for (const auto &dataname : asteInterface.writeScalarNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
-      asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, 1, dataname, dataID));
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, 1, dataname, dataID);
 #ifdef ASTE_NN_GRADIENT_MAPPING
       if (preciceInterface.isGradientDataRequired(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
@@ -52,9 +52,9 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
       }
 #endif
     }
-    for (const auto dataname : asteInterface.readScalarNames) {
+    for (const auto &dataname : asteInterface.readScalarNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
-      asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::READ, 1, dataname, dataID));
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, 1, dataname, dataID);
     }
 
     ASTE_INFO << "Loading mesh from " << asteInterface.meshes.front().filename();
@@ -112,7 +112,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
   const std::string &coric = precice::constants::actionReadIterationCheckpoint();
   const std::string &cowic = precice::constants::actionWriteIterationCheckpoint();
 
-  while (preciceInterface.isCouplingOngoing() and round < minMeshSize) {
+  while (preciceInterface.isCouplingOngoing() && round < minMeshSize) {
     if (preciceInterface.isActionRequired(cowic)) {
       ASTE_ERROR << "Implicit coupling schemes cannot be used with ASTE";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
@@ -123,7 +123,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
       asteInterface.meshes[round].loadData(asteInterface.mesh);
       ASTE_DEBUG << "This roundmesh contains: " << asteInterface.mesh.summary();
 
-      for (const auto meshdata : asteInterface.mesh.meshdata) {
+      for (const auto &meshdata : asteInterface.mesh.meshdata) {
         if (meshdata.type == aste::datatype::WRITE) {
           switch (meshdata.numcomp) {
           case 1:
@@ -207,20 +207,20 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     const int dataID = preciceInterface.getDataID("Data", asteInterface.meshID);
     if (isVector) {
       asteInterface.writeVectorNames.push_back(dataname);
-      asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, dim, dataname, dataID));
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, dim, dataname, dataID);
 #ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
       if (preciceInterface.isGradientDataRequired(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
-        asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, dim, dataname, dataID, dim));
+        asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, dim, dataname, dataID, dim);
       }
 #endif
     } else {
       asteInterface.writeScalarNames.push_back(dataname);
-      asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, 1, dataname, dataID));
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, 1, dataname, dataID);
 #ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
       if (preciceInterface.isGradientDataRequired(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
-        asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, 1, dataname, dataID, dim));
+        asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, 1, dataname, dataID, dim);
       }
 #endif
     }
@@ -237,10 +237,10 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     const int dataID = preciceInterface.getDataID("Data", asteInterface.meshID);
     if (isVector) {
       asteInterface.writeVectorNames.push_back(dataname);
-      asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::READ, dim, dataname, dataID));
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, dim, dataname, dataID);
     } else {
       asteInterface.writeScalarNames.push_back(dataname);
-      asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::READ, 1, dataname, dataID));
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, 1, dataname, dataID);
     }
     asteConfiguration.asteInterfaces.push_back(asteInterface);
   }
@@ -257,7 +257,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
 
   if (preciceInterface.isActionRequired(precice::constants::actionWriteInitialData())) {
     ASTE_DEBUG << "Write initial data for participant " << participantName;
-    for (auto &asteInterface : asteConfiguration.asteInterfaces) {
+    for (auto const &asteInterface : asteConfiguration.asteInterfaces) {
       for (const auto &meshdata : asteInterface.mesh.meshdata) {
         if (meshdata.type == aste::datatype::WRITE) {
           switch (meshdata.numcomp) {
@@ -309,7 +309,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
       asteInterface.meshes[round].loadData(asteInterface.mesh);
       ASTE_DEBUG << "This roundmesh contains: " << asteInterface.mesh.summary();
 
-      for (const auto meshdata : asteInterface.mesh.meshdata) {
+      for (const auto &meshdata : asteInterface.mesh.meshdata) {
         if (meshdata.type == aste::datatype::WRITE) {
           switch (meshdata.numcomp) {
           case 1:

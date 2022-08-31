@@ -47,7 +47,7 @@ struct MeshData;
 
 class MeshException : public std::runtime_error {
 public:
-  MeshException(const std::string &what_arg)
+  explicit MeshException(const std::string &what_arg)
       : std::runtime_error(what_arg){};
 };
 /**
