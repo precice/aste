@@ -3,10 +3,9 @@
 #include "logger.hpp"
 #include "utilities.hpp"
 
-#ifdef PRECICE_VERSION
-#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
-#define ASTE_NN_GRADIENT_MAPPING_AND_TETRA
-#endif
+#ifndef PRECICE_VERSION_GREATER_EQUAL
+// compatibility with older versions
+#define PRECICE_VERSION_GREATER_EQUAL(x, y, z) FALSE
 #endif
 
 void aste::runReplayMode(const aste::ExecutionContext &context, const std::string &asteConfigName)
@@ -35,7 +34,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     for (const auto dataname : asteInterface.writeVectorNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, dim, dataname, dataID));
-#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
+#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
       if (preciceInterface.isGradientDataRequired(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
         asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, dim, dataname, dataID, dim));
@@ -51,7 +50,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     for (const auto dataname : asteInterface.writeScalarNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, 1, dataname, dataID));
-#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
+#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
       if (preciceInterface.isGradientDataRequired(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
         asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, 1, dataname, dataID, dim));
@@ -142,7 +141,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
             break;
           }
         }
-#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
+#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
         else if (meshdata.type == aste::datatype::GRADIENT) {
           switch (meshdata.numcomp) {
           case 1:
@@ -214,7 +213,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     if (isVector) {
       asteInterface.writeVectorNames.push_back(dataname);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, dim, dataname, dataID));
-#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
+#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
       if (preciceInterface.isGradientDataRequired(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
         asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, dim, dataname, dataID, dim));
@@ -223,7 +222,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     } else {
       asteInterface.writeScalarNames.push_back(dataname);
       asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::WRITE, 1, dataname, dataID));
-#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
+#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
       if (preciceInterface.isGradientDataRequired(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
         asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, 1, dataname, dataID, dim));
@@ -277,7 +276,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
             break;
           }
         }
-#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
+#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
         else if (meshdata.type == aste::datatype::GRADIENT) {
           switch (meshdata.numcomp) {
           case 1:
@@ -329,7 +328,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
           }
           ASTE_DEBUG << "Data written: " << asteInterface.mesh.previewData(meshdata);
         }
-#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
+#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
         else if (meshdata.type == aste::datatype::GRADIENT) {
           switch (meshdata.numcomp) {
           case 1:

@@ -1,9 +1,8 @@
 #include "utilities.hpp"
 
-#ifdef PRECICE_VERSION
-#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
-#define ASTE_NN_GRADIENT_MAPPING_AND_TETRA
-#endif
+#ifndef PRECICE_VERSION_GREATER_EQUAL
+// compatibility with older versions
+#define PRECICE_VERSION_GREATER_EQUAL(x, y, z) FALSE
 #endif
 
 bool operator==(const Edge &lhs, const Edge &rhs)
@@ -128,7 +127,7 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
       ASTE_DEBUG << "Mesh Setup: 4) No Quadrilaterals are found/required. Skipped";
     }
 
-#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
+#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
     if (!mesh.tetrahedra.empty()) {
       ASTE_DEBUG << "Mesh Setup: 5) " << mesh.tetrahedra.size() << " Tetrahedra";
       for (auto const &tetra : mesh.tetrahedra) {
