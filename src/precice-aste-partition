@@ -11,14 +11,18 @@ from ctypes import c_int, c_longlong, cdll
 import numpy as np
 import vtk
 
+
 class ExtensionError(Exception):
     pass
+
 
 class UnkownOSError(Exception):
     pass
 
+
 class LibraryError(Exception):
     pass
+
 
 class Mesh:
     """
@@ -181,7 +185,7 @@ class MeshPartitioner:
         ch.setLevel(getattr(logging, args.logging))
         formatter = logging.Formatter("%(name)s %(levelname)s : %(message)s")
         ch.setFormatter(formatter)
-        logger.addHandler(ch)     
+        logger.addHandler(ch)
 
     @staticmethod
     def get_logger():

@@ -9,11 +9,14 @@ import vtk
 from vtk.util.numpy_support import numpy_to_vtk as n2v
 from vtk.util.numpy_support import vtk_to_numpy as v2n
 
+
 class ExtensionError(Exception):
     pass
 
+
 class MissingDataError(Exception):
     pass
+
 
 class Calculator:
     """Calculator class provided 3 main functionality:
@@ -177,7 +180,6 @@ class Calculator:
         longest = max(map(len, function_definitions.keys()))
         for name, definition in list(function_definitions.items()):
             print(f"{name:{longest}} := {definition}")
-        
 
     @staticmethod
     def evaluate(args, pre_def_functions):
