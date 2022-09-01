@@ -373,7 +373,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
         auto dir = filename.parent_path();
         fs::remove_all(dir);
         fs::create_directory(dir);
-      } else {
+      } else if (!context.isParallel()) {
         fs::remove(filename);
       }
     }
