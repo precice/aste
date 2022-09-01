@@ -24,15 +24,14 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
     asteInterface.meshID = preciceInterface.getMeshID(asteInterface.meshName);
-    const int dim        = preciceInterface.getDimensions();
 
-    for (const auto dataname : asteInterface.writeVectorNames) {
+    for (const auto &dataname : asteInterface.writeVectorNames) {
       const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, dim, dataname, dataID);
 #ifdef ASTE_NN_GRADIENT_MAPPING
       if (preciceInterface.isGradientDataRequired(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
-        asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, dim, dataname, dataID, dim));
+        asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, dim, dataname, dataID, dim);
       }
 #endif
     }
@@ -48,7 +47,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
 #ifdef ASTE_NN_GRADIENT_MAPPING
       if (preciceInterface.isGradientDataRequired(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
-        asteInterface.mesh.meshdata.push_back(aste::MeshData(aste::datatype::GRADIENT, 1, dataname, dataID, dim));
+        asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, 1, dataname, dataID, dim);
       }
 #endif
     }
@@ -298,7 +297,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
   const std::string &cowic = precice::constants::actionWriteIterationCheckpoint();
   size_t             round = 0;
 
-  while (preciceInterface.isCouplingOngoing() and round < asteInterface.meshes.size()) {
+  while (preciceInterface.isCouplingOngoing() && round < asteInterface.meshes.size()) {
     if (preciceInterface.isActionRequired(cowic)) {
       ASTE_ERROR << "Implicit coupling schemes cannot be used with ASTE";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
@@ -370,12 +369,10 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     auto meshname = asteConfiguration.asteInterfaces.front().meshes.front();
     auto filename = fs::path(options["output"].as<std::string>());
     if (context.rank == 0 && fs::exists(filename)) {
-      if (context.isParallel()) {
+      if (context.isParallel() && !filename.parent_path().empty()) {
         auto dir = filename.parent_path();
-        if (!dir.empty()) {
-          fs::remove_all(dir);
-          fs::create_directory(dir);
-        }
+        fs::remove_all(dir);
+        fs::create_directory(dir);
       } else {
         fs::remove(filename);
       }
