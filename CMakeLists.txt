@@ -134,3 +134,13 @@ foreach(example IN LISTS _examples)
     LABELS example
     RUN_SERIAL ON)
 endforeach()
+
+add_test(NAME aste.example.mapping-tester
+  COMMAND run.sh)
+
+set_tests_properties(aste.example.mapping-tester
+  PROPERTIES
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/mapping-tester-example"
+  ENVIRONMENT "PATH=$ENV{PATH}:${CMAKE_BINARY_DIR}"
+  LABELS example
+  RUN_SERIAL ON)
