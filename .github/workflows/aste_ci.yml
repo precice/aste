@@ -12,6 +12,7 @@ jobs:
     timeout-minutes: 30
     env:
       CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
+      CTEST_OUTPUT_ON_FAILURE: "Yes"
     steps:
       - uses: actions/checkout@v2
       - name: install preCICE
