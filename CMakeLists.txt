@@ -113,3 +113,39 @@ install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-partition ${CMAKE_
 enable_testing()
 
 add_test(NAME read_write_test  COMMAND testing WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests")
+
+# Detect and register examples as tests
+
+set(_examples lci_2d lci_3d nn nng_scalar nng_vector)
+
+foreach(example IN LISTS _examples)
+  add_test(NAME aste.example.${example}.setup
+    COMMAND clean.sh
+    FIXTURE_SETUP ${example})
+
+  add_test(NAME aste.example.${example}
+    COMMAND run.sh
+    FIXTURE_REQUIRES ${example})
+
+  set_tests_properties(aste.example.${example} aste.example.${example}.setup
+    PROPERTIES
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/example/${example}"
+    ENVIRONMENT "PATH=$ENV{PATH}:${CMAKE_BINARY_DIR}"
+    LABELS example
+    RUN_SERIAL ON)
+endforeach()
+
+add_test(NAME aste.example.mapping-tester.setup
+  COMMAND clean.sh
+  FIXTURE_SETUP mapping-tester)
+
+add_test(NAME aste.example.mapping-tester
+  COMMAND run.sh
+  FIXTURE_REQUIRES mapping-tester)
+
+set_tests_properties(aste.example.mapping-tester aste.example.mapping-tester.setup
+  PROPERTIES
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/mapping-tester-example"
+  ENVIRONMENT "PATH=$ENV{PATH}:${CMAKE_BINARY_DIR}"
+  LABELS example
+  RUN_SERIAL ON)
