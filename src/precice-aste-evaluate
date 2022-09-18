@@ -10,6 +10,14 @@ from vtk.util.numpy_support import numpy_to_vtk as n2v
 from vtk.util.numpy_support import vtk_to_numpy as v2n
 
 
+class ExtensionError(Exception):
+    pass
+
+
+class MissingDataError(Exception):
+    pass
+
+
 class Calculator:
     """Calculator class provided 3 main functionality:
     - Evaluates a given function (scalar or vector) on a given mesh
@@ -21,8 +29,8 @@ class Calculator:
     def __init__(self) -> None:
         args = Calculator.parse_args()
         Calculator.create_logger(args.logging)
-        preDefFunctions = Calculator.create_predeffunctions()
-        Calculator.evaluate(args, preDefFunctions)
+        pre_def_functions = Calculator.create_predeffunctions()
+        Calculator.evaluate(args, pre_def_functions)
 
     @staticmethod
     def create_logger(level):
@@ -33,7 +41,6 @@ class Calculator:
         formatter = logging.Formatter("%(name)s %(levelname)s : %(message)s")
         ch.setFormatter(formatter)
         logger.addHandler(ch)
-        return
 
     @staticmethod
     def get_logger():
@@ -122,7 +129,7 @@ class Calculator:
 
     @staticmethod
     def create_predeffunctions():
-        twoDFunctions = {
+        twod_functions = {
             "franke2d": "0.75*exp(-((9*{first}-2)^2+(9*{second}-2)^2)/4)"
             "+0.75*exp(-((9*{first}+1)^2/49+(9*{second}+1)/10))"
             "+0.5*exp(-((9*{first}-7)^2+(9*{second}-3)^2)/4)"
@@ -132,13 +139,13 @@ class Calculator:
             "rosenbrock2d": "(100*({second}-{first}^2)^2+({first}-1)^2)",
         }
 
-        preDef2DFunctions = {
-            f"{name}({arg})": twoDFunctions[name].format(first=arg[0], second=arg[1])
+        pre_def2d_functions = {
+            f"{name}({arg})": twod_functions[name].format(first=arg[0], second=arg[1])
             for name in ["franke2d", "eggholder2d", "rosenbrock2d"]
             for arg in ["xy", "xz", "yz"]
         }
 
-        preDefFunctions = {
+        pre_def_functions = {
             "franke3d": "0.75*exp(-((9*x-2)^2+(9*y-2)^2+(9*z-2)^2)/4)"
             "+0.75*exp(-((9*x+1)^2/49+(9*y+1)/10+(9*z+1)/10))"
             "+0.5*exp(-((9*x-7)^2+(9*y-3)^2+(9*y-5)^2)/4)"
@@ -148,38 +155,37 @@ class Calculator:
             "rosenbrock3d": "(100*(y-x^2)^2+(x-1)^2)+(100*(z-y^2)^2+(y-1)^2)",
         }
 
-        preDefFunctions.update(preDef2DFunctions)
+        pre_def_functions.update(pre_def2d_functions)
 
-        return preDefFunctions
+        return pre_def_functions
 
     @staticmethod
     def get_function_defitinitions():
-        functionDefinitions = {
+        function_definitions = {
             "Franke": "Franke's function has two Gaussian peaks of different heights, and a smaller dip.",
             "Eggholder": "A function has many local maxima. It is difficult to optimize.",
             "Rosenbrock": "A function that is unimodal, and the global minimum lies"
             " in a narrow, parabolic valley.",
         }
-        return functionDefinitions
+        return function_definitions
 
     @staticmethod
-    def print_predef_functions(preDefFunctions):
+    def print_predef_functions(pre_def_functions):
         print("Available predefined functions are:")
-        longest = max(map(len, preDefFunctions.keys()))
-        for name, func in list(preDefFunctions.items()):
+        longest = max(map(len, pre_def_functions.keys()))
+        for name, func in list(pre_def_functions.items()):
             print(f"{name:{longest}} := {func}")
-        functionDefinitions = Calculator.get_function_defitinitions()
+        function_definitions = Calculator.get_function_defitinitions()
         print("Definitions of functions are:")
-        longest = max(map(len, functionDefinitions.keys()))
-        for name, definition in list(functionDefinitions.items()):
+        longest = max(map(len, function_definitions.keys()))
+        for name, definition in list(function_definitions.items()):
             print(f"{name:{longest}} := {definition}")
-        return
 
     @staticmethod
-    def evaluate(args, preDefFunctions):
+    def evaluate(args, pre_def_functions):
         logger = Calculator.get_logger()
         if args.listfunctions:
-            Calculator.print_predef_functions(preDefFunctions)
+            Calculator.print_predef_functions(pre_def_functions)
             return
         assert os.path.isfile(
             args.in_meshname
@@ -195,8 +201,8 @@ class Calculator:
             )
             out_meshname = args.in_meshname
 
-        if args.function in preDefFunctions:
-            inputfunc = preDefFunctions[args.function]
+        if args.function in pre_def_functions:
+            inputfunc = pre_def_functions[args.function]
         else:
             inputfunc = args.function
 
@@ -246,7 +252,7 @@ class Calculator:
         calc.SetInputData(vtk_dataset)
         diffdata = args.diffdata
         if not vtk_dataset.GetPointData().HasArray(diffdata):
-            raise Exception(
+            raise MissingDataError(
                 f'Given mesh "{args.in_meshname}" has no data with given name "{diffdata}"'
             )
         else:
@@ -330,7 +336,7 @@ class Calculator:
             reader.ReadAllVectorsOn()
             reader.ReadAllFieldsOn()
         else:
-            raise Exception(
+            raise ExtensionError(
                 'Unkown input file extension please check your input file or hype "--help" for more information.'
             )
         reader.SetFileName(in_meshname)
@@ -349,7 +355,7 @@ class Calculator:
         elif os.path.splitext(out_meshname)[1] == ".vtu":
             writer = vtk.vtkXMLUnstructuredGridWriter()
         else:
-            raise Exception("Output mesh extension should be '.vtk' and '.vtu'")
+            raise ExtensionError("Output mesh extension should be '.vtk' and '.vtu'")
 
         writer.SetInputData(vtk_dataset)
         out_meshname = os.path.basename(os.path.normpath(out_meshname))
@@ -437,7 +443,6 @@ class Calculator:
                 calc.GetOutput().GetPointData().GetAbstractArray(name)
             )
             logger.info('Evaluated "{}" on the input mesh.'.format(name))
-        return
 
 
 if __name__ == "__main__":

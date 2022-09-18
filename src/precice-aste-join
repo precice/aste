@@ -8,6 +8,14 @@ import os.path
 import vtk
 
 
+class ExtensionError(Exception):
+    pass
+
+
+class PartitionError(Exception):
+    pass
+
+
 class MeshJoiner:
     """MeshJoiner class joins meshes partitioned by MeshPartitioner class.
     There are two possible ways of joining the meshes:
@@ -81,7 +89,6 @@ class MeshJoiner:
         formatter = logging.Formatter("%(name)s %(levelname)s : %(message)s")
         ch.setFormatter(formatter)
         logger.addHandler(ch)
-        return
 
     @staticmethod
     def get_logger():
@@ -106,7 +113,7 @@ class MeshJoiner:
         MeshJoiner.write_mesh(joined_mesh, out_meshname, args.directory)
 
     @staticmethod
-    def read_meshes(prefix: str, partitions=None, recoveryPath=None):
+    def read_meshes(prefix: str, partitions=None, recovery_path=None):
         """
         Reads meshes with given prefix.
         """
@@ -117,11 +124,11 @@ class MeshJoiner:
                 "Detected " + str(partitions) + " partitions with prefix " + prefix
             )
         if partitions == 0:
-            raise Exception("No partitions found")
+            raise PartitionError("No partitions found")
 
-        if os.path.exists(recoveryPath):
+        if os.path.exists(recovery_path):
             logger.info("Recovery data found. Full recovery will be executed")
-            return MeshJoiner.join_mesh_recovery(prefix, partitions, recoveryPath)
+            return MeshJoiner.join_mesh_recovery(prefix, partitions, recovery_path)
         else:
             logger.info("No recovery data found. Meshes will be joined partition-wise")
             return MeshJoiner.join_mesh_partitionwise(prefix, partitions)
@@ -164,9 +171,9 @@ class MeshJoiner:
             if joined_data_arrays is None:
                 joined_data_arrays = []
                 for j in range(num_arrays):
-                    newArr = vtk.vtkDoubleArray()
-                    newArr.SetName(part_point_data.GetArrayName(j))
-                    joined_data_arrays.append(newArr)
+                    new_array = vtk.vtkDoubleArray()
+                    new_array.SetName(part_point_data.GetArrayName(j))
+                    joined_data_arrays.append(new_array)
 
             for j in range(num_arrays):
                 array_name = part_point_data.GetArrayName(j)
@@ -185,14 +192,14 @@ class MeshJoiner:
 
             for i in range(part_mesh.GetNumberOfCells()):
                 cell = part_mesh.GetCell(i)
-                vtkCell = vtk.vtkGenericCell()
-                vtkCell.SetCellType(cell.GetCellType())
-                idList = vtk.vtkIdList()
+                vtk_cell = vtk.vtkGenericCell()
+                vtk_cell.SetCellType(cell.GetCellType())
+                id_list = vtk.vtkIdList()
                 for j in range(cell.GetNumberOfPoints()):
-                    idList.InsertNextId(cell.GetPointId(j) + offset)
-                vtkCell.SetPointIds(idList)
+                    id_list.InsertNextId(cell.GetPointId(j) + offset)
+                vtk_cell.SetPointIds(id_list)
                 joined_cell_types.append(cell.GetCellType())
-                joined_cells.InsertNextCell(vtkCell)
+                joined_cells.InsertNextCell(vtk_cell)
 
             offset += part_mesh.GetNumberOfPoints()
 
@@ -205,7 +212,7 @@ class MeshJoiner:
         return joined_mesh
 
     @staticmethod
-    def join_mesh_recovery(prefix: str, partitions: int, recoveryPath: str):
+    def join_mesh_recovery(prefix: str, partitions: int, recovery_path: str):
         """
         Partition merge with full recovery
 
@@ -213,7 +220,7 @@ class MeshJoiner:
         """
         logger = MeshJoiner.get_logger()
         logger.info("Starting full mesh recovery")
-        recovery = json.load(open(recoveryPath, "r"))
+        recovery = json.load(open(recovery_path, "r"))
         cells = recovery["cells"]
         size = recovery["size"]
         cell_types = recovery["cell_types"]
@@ -245,10 +252,10 @@ class MeshJoiner:
             if joined_data_arrays is None:
                 joined_data_arrays = []
                 for j in range(num_arrays):
-                    newArr = vtk.vtkDoubleArray()
-                    newArr.SetName(part_point_data.GetArrayName(j))
-                    newArr.SetNumberOfTuples(size)
-                    joined_data_arrays.append(newArr)
+                    new_array = vtk.vtkDoubleArray()
+                    new_array.SetName(part_point_data.GetArrayName(j))
+                    new_array.SetNumberOfTuples(size)
+                    joined_data_arrays.append(new_array)
 
             # Extract Global IDs
             array_data = part_point_data.GetArray("GlobalIDs")
@@ -285,25 +292,25 @@ class MeshJoiner:
             # Append Cells
             for i in range(part_mesh.GetNumberOfCells()):
                 cell = part_mesh.GetCell(i)
-                vtkCell = vtk.vtkGenericCell()
-                vtkCell.SetCellType(cell.GetCellType())
-                idList = vtk.vtkIdList()
+                vtk_cell = vtk.vtkGenericCell()
+                vtk_cell.SetCellType(cell.GetCellType())
+                id_list = vtk.vtkIdList()
                 for j in range(cell.GetNumberOfPoints()):
-                    idList.InsertNextId(int(global_ids[cell.GetPointId(j)][0]))
-                vtkCell.SetPointIds(idList)
+                    id_list.InsertNextId(int(global_ids[cell.GetPointId(j)][0]))
+                vtk_cell.SetPointIds(id_list)
                 joined_cell_types.append(cell.GetCellType())
-                joined_cells.InsertNextCell(vtkCell)
+                joined_cells.InsertNextCell(vtk_cell)
 
             # Append Recovery Cells
             for cell, cell_type in zip(cells, cell_types):
-                vtkCell = vtk.vtkGenericCell()
-                vtkCell.SetCellType(cell_type)
-                idList = vtk.vtkIdList()
+                vtk_cell = vtk.vtkGenericCell()
+                vtk_cell.SetCellType(cell_type)
+                id_list = vtk.vtkIdList()
                 for pointid in cell:
-                    idList.InsertNextId(pointid)
-                vtkCell.SetPointIds(idList)
+                    id_list.InsertNextId(pointid)
+                vtk_cell.SetPointIds(id_list)
                 joined_cell_types.append(cell_type)
-                joined_cells.InsertNextCell(vtkCell)
+                joined_cells.InsertNextCell(vtk_cell)
 
         # Set Points, Cells, Data on Grid
         if len(joined_cell_types) != 0:
@@ -326,8 +333,8 @@ class MeshJoiner:
         """
         detected = 0
         while True:
-            partitionFile = prefix + "_" + str(detected) + ".vtu"
-            if not os.path.isfile(partitionFile):
+            partition_file = prefix + "_" + str(detected) + ".vtu"
+            if not os.path.isfile(partition_file):
                 break
             detected += 1
         return detected
@@ -348,7 +355,7 @@ class MeshJoiner:
         elif extension == ".vtu":  # VTK XML Unstructured Grid format
             writer = vtk.vtkXMLUnstructuredGridWriter()
         else:
-            raise Exception("Unkown File extension: " + extension)
+            raise ExtensionError("Unkown File extension: " + extension)
         writer.SetFileName(filename)
         writer.SetInputData(meshfile)
         writer.Write()
