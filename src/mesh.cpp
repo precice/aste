@@ -111,7 +111,7 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim, const bool
       }
     }
   } else {
-    ASTE_ERROR << "Connectivity information for " << mesh.fname << " skipped since connectivity is not required.\n";
+    ASTE_INFO << "Connectivity information for mesh \"" << mesh.fname << "\" skipped since connectivity is not required.\n";
   }
 };
 
