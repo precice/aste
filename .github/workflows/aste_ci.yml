@@ -24,7 +24,6 @@ jobs:
         run: |
           sudo apt-get -y install libvtk7-dev
       - name: install example dependencies
-        working-directory: tests/example
         run: |
           python3 -m pip install sympy scipy jinja2
       - name: prepare directories
