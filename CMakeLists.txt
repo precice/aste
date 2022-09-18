@@ -22,19 +22,6 @@ find_package (Threads REQUIRED)
 
 find_package(precice REQUIRED CONFIG)
 
-
-# 2.4.0 has a bug so it requires something greater than 2.4.0 for NN
-# Also, tetrahedra appeared after 2.4.0
-IF(${precice_VERSION} VERSION_GREATER "2.4.0")
-  SET(SUPPORT_NN_GRADIENT_MAPPING_AND_TETRA ON)
-ELSE()
-  SET(SUPPORT_NN_GRADIENT_MAPPING_AND_TETRA OFF)
-ENDIF()
-
-option(ASTE_NN_GRADIENT_MAPPING_AND_TETRA "Support nearest neighbour gradient mapping." ${SUPPORT_NN_GRADIENT_MAPPING_AND_TETRA})
-
-MESSAGE(STATUS "Support for nearest-neighbor-gradient mapping and tetrahedra: ${ASTE_NN_GRADIENT_MAPPING_AND_TETRA}")
-
 find_package(Boost 1.65.1 REQUIRED COMPONENTS log log_setup system program_options filesystem unit_test_framework)
 
 option(ASTE_USE_VTK_COMPONENTS "Find VTK with components" OFF)
@@ -69,10 +56,6 @@ target_link_libraries(precice-aste-run
 
 if(ASTE_SET_MESH_BLOCK)
   target_compile_definitions(precice-aste-run PRIVATE ASTE_SET_MESH_BLOCK)
-endif()
-
-if(ASTE_NN_GRADIENT_MAPPING_AND_TETRA)
-  target_compile_definitions(precice-aste-run PRIVATE ASTE_NN_GRADIENT_MAPPING_AND_TETRA)
 endif()
 
 if(METIS_FOUND)
@@ -113,3 +96,39 @@ install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-partition ${CMAKE_
 enable_testing()
 
 add_test(NAME read_write_test  COMMAND testing WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests")
+
+# Detect and register examples as tests
+
+set(_examples lci_2d lci_3d nn nng_scalar nng_vector)
+
+foreach(example IN LISTS _examples)
+  add_test(NAME aste.example.${example}.setup
+    COMMAND clean.sh
+    FIXTURE_SETUP ${example})
+
+  add_test(NAME aste.example.${example}
+    COMMAND run.sh
+    FIXTURE_REQUIRES ${example})
+
+  set_tests_properties(aste.example.${example} aste.example.${example}.setup
+    PROPERTIES
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/example/${example}"
+    ENVIRONMENT "PATH=$ENV{PATH}:${CMAKE_BINARY_DIR}"
+    LABELS example
+    RUN_SERIAL ON)
+endforeach()
+
+add_test(NAME aste.example.mapping-tester.setup
+  COMMAND clean.sh
+  FIXTURE_SETUP mapping-tester)
+
+add_test(NAME aste.example.mapping-tester
+  COMMAND run.sh
+  FIXTURE_REQUIRES mapping-tester)
+
+set_tests_properties(aste.example.mapping-tester aste.example.mapping-tester.setup
+  PROPERTIES
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/mapping-tester-example"
+  ENVIRONMENT "PATH=$ENV{PATH}:${CMAKE_BINARY_DIR}"
+  LABELS example
+  RUN_SERIAL ON)
