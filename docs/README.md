@@ -107,48 +107,6 @@ precice-aste-run -p A --mesh fine_mesh --data "dummyData"
 precice-aste-run -p B --mesh coarse_mesh --data "mappedData" --output mappedMesh
 ```
 
-For the Replay mode ASTE uses a configuration file in JSON format as follows
-
-```json
-{
-  "participant": "Participant-Name",
-  "startdt": "PreCICE mesh dt number (>= 1)",
-  "meshes": [
-    {
-      "mesh": "Mesh name in preCICE config file",
-      "meshfileprefix": "/path/to/mesh/file/with/prefix/Mesh-Participant-A",
-      "read-data": {
-        "vector": ["Vector dataname in preCICE config which has a read type"],
-        "scalar": ["Scalar dataname in preCICE config which has a read type"]
-      },
-      "write-data": {
-        "vector": ["Vector dataname in preCICE config which has a write type"],
-        "scalar": ["Scalar dataname in preCICE config which has a write type"]
-      }
-    }
-  ],
-  "precice-config": "/path/to/precice/config/file/precice-config.xml"
-}
-```
-
-The above configuration file is an example of a participant with one mesh. The user can add as many meshes as required.
-
-#### Step by Step Guide for Replay Mode
-
-The replay mode only supports explicit coupling schemes.
-
-##### Step 1: Setup export of your original coupling
-
-Set vtk or vtu export of the participant you want to replace using preCICE export flag see [Export Configuration](https://precice.org/configuration-export.html)
-
-##### Step 2: Prepare your ASTE Configuration file
-
-Prepare an ASTE configuration for the solver which will be replaced. See above for ASTE configuration format.
-
-#### Step 3: Run your solver and ASTE
-
-Run your solver and ASTE as usual preCICE coupling. At this stage ASTE would work like a solver. Instead of calculation it would just only read from your export mesh data and use them for coupling.
-
 ### precice-aste-evaluate
 
 Reads a mesh as either `.vtk` or `.vtu` and evaluates a function given by `--function` on it. Using the `--diff` flag can compute the difference between the mesh values and the values of the analytical solution (usually applied after a mapping).
@@ -224,3 +182,47 @@ For example, to join a partitioned mesh using a recovery file:
 ```bash
 precice-aste-join --mesh partitoned_mesh_directory/partitioned_mesh --recovery partitioned_directory --output rejoined_mesh.vtk
 ```
+
+#### Replay mode
+
+For the Replay mode ASTE uses a configuration file in JSON format as follows
+
+```json
+{
+  "participant": "Participant-Name",
+  "startdt": "PreCICE mesh dt number (>= 1)",
+  "meshes": [
+    {
+      "mesh": "Mesh name in preCICE config file",
+      "meshfileprefix": "/path/to/mesh/file/with/prefix/Mesh-Participant-A",
+      "read-data": {
+        "vector": ["Vector dataname in preCICE config which has a read type"],
+        "scalar": ["Scalar dataname in preCICE config which has a read type"]
+      },
+      "write-data": {
+        "vector": ["Vector dataname in preCICE config which has a write type"],
+        "scalar": ["Scalar dataname in preCICE config which has a write type"]
+      }
+    }
+  ],
+  "precice-config": "/path/to/precice/config/file/precice-config.xml"
+}
+```
+
+The above configuration file is an example of a participant with one mesh. The user can add as many meshes as required.
+
+#### Step by Step Guide for Replay Mode
+
+The replay mode only supports explicit coupling schemes.
+
+##### Step 1: Setup export of your original coupling
+
+Set vtk or vtu export of the participant you want to replace using preCICE export flag see [Export Configuration](https://precice.org/configuration-export.html)
+
+##### Step 2: Prepare your ASTE Configuration file
+
+Prepare an ASTE configuration for the solver which will be replaced. See above for ASTE configuration format.
+
+#### Step 3: Run your solver and ASTE
+
+Run your solver and ASTE as usual preCICE coupling. At this stage ASTE would work like a solver. Instead of calculation it would just only read from your export mesh data and use them for coupling.
