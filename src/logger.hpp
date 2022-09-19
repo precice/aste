@@ -35,7 +35,11 @@ typedef boost::log::sources::severity_logger_mt<boost::log::trivial::severity_le
 BOOST_LOG_GLOBAL_LOGGER(my_logger, logger_t);
 
 void addLogIdentity(const std::string &participant, int rank);
-void addLogSink(bool verbose);
+
+enum struct LogLevel : bool { Quiet, Verbose };
+enum struct LogRankFilter : bool { All, OnlyPrimary };
+
+void addLogSink(LogLevel ll, LogRankFilter lrf);
 
 #define ASTE_DEBUG BOOST_LOG_SEV(my_logger::get(), boost::log::trivial::severity_level::debug)
 #define ASTE_INFO BOOST_LOG_SEV(my_logger::get(), boost::log::trivial::severity_level::info)
