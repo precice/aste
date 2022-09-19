@@ -9,7 +9,7 @@ namespace expr    = boost::log::expressions;
 namespace logging = boost::log;
 
 // Defines a global logger initialization routine
-BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, src::severity_logger_mt<logging::trivial::severity_level>)
+BOOST_LOG_GLOBAL_LOGGER_INIT(my_logger, logger_t)
 {
   src::severity_logger_mt<logging::trivial::severity_level> lg;
   lg.add_attribute("ASTE", attrs::constant<bool>(true));
@@ -30,8 +30,8 @@ void addLogSink(bool verbose)
   // Either "ASTE" or "preCICE"
   auto origin = expr::if_(expr::has_attr<bool>("ASTE"))[expr::stream << "ASTE"].else_[expr::stream << "preCICE"];
 
-  // For preCICE logs "(Module in Function)"
-  auto location = expr::if_(!expr::has_attr<bool>("ASTE"))
+  // For preCICE logs "(Module in Function)" if verbose
+  auto location = expr::if_(verbose && !expr::has_attr<bool>("ASTE"))
       [expr::stream << "(" << expr::attr<std::string>("Module") << " in " << expr::attr<std::string>("Function") << ") "];
 
   auto formatter = expr::stream
