@@ -52,6 +52,7 @@ git clone https://github.com/precice/aste.git
 mkdir build && cd build
 cmake .. && make
 ```
+
 {% tip %}
 You can use `ctest` in order to check that the building procedure succeeded.
 {% endtip %}
@@ -82,7 +83,6 @@ The following subsections explain each part of ASTE more in detail. All ASTE mod
 | --mesh   | The mesh filename/prefix used as input |
 | --data   | Name of data array (input or output depending on the module)  |
 | --output | The mesh filename used to store the output mesh      |
-
 
 ### precice-aste-run
 
@@ -223,6 +223,7 @@ The replay mode is a bit different from the scenarios we have seen so far. Here,
   "precice-config": "/path/to/precice/config/file/precice-config.xml"
 }
 ```
+
 The JSON configuration file is similar to an adapter configuration file. The above configuration file is an example of a participant with one mesh. The user can add as many meshes as required.
 
 {% important %}
