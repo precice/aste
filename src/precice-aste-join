@@ -355,7 +355,7 @@ class MeshJoiner:
         elif extension == ".vtu":  # VTK XML Unstructured Grid format
             writer = vtk.vtkXMLUnstructuredGridWriter()
         else:
-            raise ExtensionError("Unkown File extension: " + extension)
+            raise ExtensionError("Unknown File extension: " + extension)
         writer.SetFileName(filename)
         writer.SetInputData(meshfile)
         writer.Write()

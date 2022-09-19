@@ -7,7 +7,7 @@ OptionMap getOptions(int argc, char *argv[])
   namespace po = boost::program_options;
 
   po::options_description desc("ASTE: Artificial solver emulation tool");
-  desc.add_options()("help,h", "Print this help message")("aste-config", po::value<std::string>(), "ASTE Configration file for replay mode")(
+  desc.add_options()("help,h", "Print this help message")("aste-config", po::value<std::string>(), "ASTE Configuration file for replay mode")(
       "precice-config,c",
       po::value<std::string>()->default_value("precice-config.xml"),
       "preCICE configuratio file")(
@@ -24,7 +24,7 @@ OptionMap getOptions(int argc, char *argv[])
       "output", po::value<std::string>(),
       "Output file name.")(
       "vector", po::bool_switch(),
-      "Distinguish between vector valued data and scalar data")("verbose,v", po::bool_switch(), "Enable verbose output"); // not explicitely used, handled by easylogging
+      "Distinguish between vector valued data and scalar data")("verbose,v", po::bool_switch(), "Enable verbose output"); // not explicitly used, handled by easylogging
 
   po::variables_map vm;
 
