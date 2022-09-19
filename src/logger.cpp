@@ -1,6 +1,7 @@
 #include "logger.hpp"
 #include <boost/log/attributes/constant.hpp>
 #include <boost/log/detail/trivial_keyword.hpp>
+#include <boost/log/expressions/filter.hpp>
 #include <boost/log/expressions/formatters/if.hpp>
 #include <boost/log/expressions/formatters/stream.hpp>
 #include <boost/log/expressions/message.hpp>
@@ -30,10 +31,13 @@ void addLogSink(LogLevel ll, LogRankFilter lrf)
 {
   int loglevel = (ll == LogLevel::Verbose) ? logging::trivial::debug : logging::trivial::info;
 
-  logging::filter filter = logging::trivial::severity >= loglevel;
-  if (lrf == LogRankFilter::OnlyPrimary) {
-    filter &= (expr::attr<int>("Rank").or_default(0) == 0);
-  }
+  auto filter = [&]() -> logging::filter {
+    if (lrf == LogRankFilter::OnlyPrimary) {
+      return logging::trivial::severity >= loglevel & (expr::attr<int>("Rank").or_default(0) == 0);
+    } else {
+      return logging::trivial::severity >= loglevel;
+    }
+  }();
 
   // Either "ASTE" or "preCICE"
   auto origin = expr::if_(expr::has_attr<bool>("ASTE"))[expr::stream << "ASTE"].else_[expr::stream << "preCICE"];
@@ -74,4 +78,3 @@ void addLogSink(LogLevel ll, LogRankFilter lrf)
       keywords::format = formatter,
       keywords::filter = filter);
 }
-
