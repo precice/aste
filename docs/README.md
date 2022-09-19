@@ -74,7 +74,7 @@ After the installation procedure, the following executables are available
 - `precice-aste-partition`: python tool to partition a single mesh file into several ones for parallel runs
 - `precice-aste-join`: python tool to join several mesh files into a single mesh file for parallel runs.
 
-All ASTE tools are executed from the command line and running a particular executbale with `--help` prints a complete list of available command line arguments and their meaning. There is also an ASTE tutorial [in the preCICE tutorials](https://precice.org/tutorials-aste-turbine.html).
+All ASTE tools are executed from the command line and running a particular executable with `--help` prints a complete list of available command line arguments and their meaning. There is also an ASTE tutorial [in the preCICE tutorials](https://precice.org/tutorials-aste-turbine.html).
 
 The following subsections explain each part of ASTE more in detail. All ASTE modules have thwe following three command line arguments in common
 
@@ -93,7 +93,7 @@ The following subsections explain each part of ASTE more in detail. All ASTE mod
 | --aste-config | ASTE configuration file (only used for replay mode)           |
 | -v            | Enables verbose logging output from preCICE                   |
 | -c            | To specify preCICE config file (default="precice-config.xml") |
-| -p            | Participant name, which can take the arguemnts `A` or `B`     |
+| -p            | Participant name, which can take the arguments `A` or `B`     |
 | --vector      | A bool switch to specify vector data (default=`False`)       |
 
 {% important %}
@@ -115,7 +115,7 @@ If you want to reproduce a specific setup of your solvers, you can use the [expo
 
 ### precice-aste-partition
 
-Reads a single mesh file (either `.vtk` or `.vtu` extension) and partitions it into several mesh files. The resulting mesh files are are stored as `output_1.vtu, output_2.vtu, ...`. There are there algorithms available in order to execute the partitioning. The `meshfree` and `uniform` algorithm are rather simple algorithms, which don't require any mesh topology information. The `topological` algorithm relies on the optional depency METIS and is more powerful, but needs topology information.
+Reads a single mesh file (either `.vtk` or `.vtu` extension) and partitions it into several mesh files. The resulting mesh files are are stored as `output_1.vtu, output_2.vtu, ...`. There are there algorithms available in order to execute the partitioning. The `meshfree` and `uniform` algorithm are rather simple algorithms, which don't require any mesh topology information. The `topological` algorithm relies on the optional dependency METIS and is more powerful, but needs topology information.
 
 | Flag        | Explanation                                                                                 |
 | ----------- | ------------------------------------------------------------------------------------------- |
@@ -144,7 +144,7 @@ The `-r` flag also recovers the connectivity information across several ranks fr
 
 | Flag       | Explanation                                                                           |
 | ---------- | ------------------------------------------------------------------------------------- |
-| --recovery | The path to the recovery file to fully recover connectivity informaiton across ranks. |
+| --recovery | The path to the recovery file to fully recover connectivity information across ranks. |
 | --numparts | The number of parts to read from the input mesh. By default, the entire mesh is read. |
 | --log      | Logging level (default="INFO")                                                        |
 
@@ -242,7 +242,7 @@ In a first step we have to generate the required mesh and data files of the part
 
 ##### Step 2: Prepare your ASTE Configuration file
 
-Prepare an ASTE configuration for the solver which will be replaced. See above for the corresponding ASTE configuration format. If your previous simulation used an implicit coupling, make sure to change the configuraiton to an explicit coupling.
+Prepare an ASTE configuration for the solver which will be replaced. See above for the corresponding ASTE configuration format. If your previous simulation used an implicit coupling, make sure to change the configuration to an explicit coupling.
 
 #### Step 3: Run your solver and ASTE
 
