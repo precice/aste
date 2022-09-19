@@ -107,73 +107,44 @@ precice-aste-run -p A --mesh fine_mesh --data "dummyData"
 precice-aste-run -p B --mesh coarse_mesh --data "mappedData" --output mappedMesh
 ```
 
-### precice-aste-evaluate
+While the example above exexutes the mapping in serial, `precice-aste-run` can be executed in parallel. However, this requires a partitioned mesh (one per parallel rank). In order to decompose a single mesh appropriately, the tools `precice-aste-partition` and `precice-aste-join` can be used.
 
-Reads a mesh as either `.vtk` or `.vtu` and evaluates a function given by `--function` on it. Using the `--diff` flag can compute the difference between the mesh values and the values of the analytical solution (usually applied after a mapping).
-
-| Flag             | Explanation                                                                         |
-| ---------------- | ----------------------------------------------------------------------------------- |
-| --function       | The function which will be calculated on mesh                                       |
-| --list-functions | Prints a list of predefined functions                                               |
-| --diffdata       | The name for difference data. Used in diff mode. If not given, --data is used.      |
-| --log            | Logging level (default="INFO")                                                      |
-| --dir            | Output directory (optional)                                                         |
-| --diff           | Calculates the difference between --diffdata and given function.                    |
-| --stat           | Store stats of the difference calculation as the separate file inputmesh.stats.json |
-| --gradient       | Calculates gradient data for given input function                                   |
-
-There are also some predefined common interpolation functions can by specified here a list of them:
-
-| Function   | Explanation                                                                             |
-| ---------- | --------------------------------------------------------------------------------------- |
-| franke     | Franke's function has two Gaussian peaks of different heights, and a smaller dip.       |
-| eggholder  | A function has many local maxima. It is difficult to optimize.                          |
-| rosenbrock | A function that is unimodal, and the global minimum lies in a narrow, parabolic valley. |
-
-All function provided has 3D and 2D variants. For example, to calculate Egg-Holder function on different meshes:
-
-```bash
-precice-aste-evaluate --mesh 3DMesh.vtk --function "eggholder3d" --data "EggHolder"
-precice-aste-evaluate --mesh 2DMeshonXY.vtk --function "eggholder2d(xy)" --data "EggHolder"
-precice-aste-evaluate --mesh 2DMeshonXZ.vtk --function "eggholder2d(xz)" --data "EggHolder"
-precice-aste-evaluate --mesh 2DMeshonYZ.vtk --function "eggholder2d(yz)" --data "EggHolder"
-```
-
-For example, calculate function "sin(x)+exp(y)" on mesh MeshA and store in "MyFunc" or calculation of difference between mapped data and function "x+y" and "MappedData" and store it in "Error":
-
-```bash
-precice-aste-evaluate --mesh MeshA.vtk --function "sin(x)+exp(y)" --data "MyFunc"
-precice-aste-evaluate --mesh Mapped.vtk --function "x+y" --data "Error" --diffdata "MappedData" --diff
-```
+{% tip %}
+If you want to reproduce a specific setup of your solvers, you can use the [export functionality](https://precice.org/configuration-export.html#enabling-exporters) of preCICE and use the generated meshes directly in `precice-aste-run`. If you run your solver in parallel, preCICE will export the decomposed meshes directly, so that no further partitioning is required.
+{% endtip %}
 
 ### precice-aste-partition
 
-Reads a mesh either `.vtk` or `.vtu` , partitions it and stores the parts `output_1.vtu, output_2.vtu, ...`. For partitioning, there are there algorithms available. The meshfree and uniform algorithm does not need any mesh topology information, whereas the topological algorithm needs topology information. This python module needs the C++ module `libmetisAPI.so` if the topological algorithm is used.
+Reads a single mesh file (either `.vtk` or `.vtu` extension) and partitions it into several mesh files. The resulting mesh files are are stored as `output_1.vtu, output_2.vtu, ...`. There are there algorithms available in order to execute the partitioning. The `meshfree` and `uniform` algorithm are rather simple algorithms, which don't require any mesh topology information. The `topological` algorithm relies on the optional depency METIS and is more powerful, but needs topology information.
 
 | Flag        | Explanation                                                                                 |
 | ----------- | ------------------------------------------------------------------------------------------- |
 | --directory | Output directory (optional)                                                                 |
-| --numparts  | The number of parts to split into                                                           |
+| --numparts  | The number of parts to split the mesh into                                                           |
 | --algorithm | Algorithm used for determining the partitioning (options="meshfree", "topology", "uniform") |
 
-For example, to divide a mesh into 2 parts using topological partitioning and store it in a directory:
+Example: to divide a mesh into two parts using the `topological` partitioning and store it in a directory:
 
 ```bash
 precice-aste-partition --mesh MeshA.vtk --algorithm topology --numparts 2 --output fine_mesh --directory partitioned_mesh
 ```
 
-#### libMetisAPI
+{% note %}
+METIS is written in C++ and used through a library interface called `libMetisAPI`. Please check your ASTE installation in case you face issues with `libMetisAPI`.
+{% endnote %}
 
-This is a small C++ wrapper around METIS. It is only required if `precice-aste-partition` should use a topological algorithm.
+{% note %}
+`precice-aste-partition` creates also a `recovery.json` file in order to store connectivity information between the individual mesh files. The recovery file is optional and allows to restore the original connectivity information.
+{% endnote %}
 
 ### precice-aste-join
 
 Reads a partitioned mesh from a given prefix (looking for `<prefix>_<#filerank>.vtu)`) and saves it to a single `.vtk` or `.vtu` file.
-The `-r` flag also recovers the connectivity information from a mesh. Notice that for recovery, partitions should contain `GlobalIDs` data.
+The `-r` flag also recovers the connectivity information across several ranks from a mesh.
 
 | Flag       | Explanation                                                                           |
 | ---------- | ------------------------------------------------------------------------------------- |
-| --recovery | The path to the recovery file to fully recover its state.                             |
+| --recovery | The path to the recovery file to fully recover connectivity informaiton across ranks. |
 | --numparts | The number of parts to read from the input mesh. By default, the entire mesh is read. |
 | --log      | Logging level (default="INFO")                                                        |
 
@@ -183,9 +154,53 @@ For example, to join a partitioned mesh using a recovery file:
 precice-aste-join --mesh partitoned_mesh_directory/partitioned_mesh --recovery partitioned_directory --output rejoined_mesh.vtk
 ```
 
-#### Replay mode
+### precice-aste-evaluate
 
-For the Replay mode ASTE uses a configuration file in JSON format as follows
+While the previous two tools of ASTE handled the meshes for parallel runs, `precice-aste-evluate` takes care of pre- and postprocessing the actual data on the meshes. `precice-aste-evaluate` reads a mesh as either `.vtk` or `.vtu`, evaluates a function on the mesh given by `--function` on it and stores the resulting data on this particular mesh. When using the `--diff` flag, the tool can also compute the difference between the data values already stored on the mesh and the function values (usually applied after a mapping). The `diff` flag also reports common error metrics such as the l2-norm and minimum or maximum errors on the mesh
+
+| Flag             | Explanation                                                                         |
+| ---------------- | ----------------------------------------------------------------------------------- |
+| --function       | The function which should be evaluated on the mesh (see below for examples).        |
+| --list-functions | Prints a list of predefined functions.                                              |
+| --diff           | Calculates the difference between `--diffdata` and the given function.              |
+| --diffdata       | The name of the data to compute the difference used in `diff` mode. If not given, --data is used. |
+| --log            | Logging level (default="INFO")                                                      |
+| --dir            | Output directory (optional)                                                         |
+| --stat           | Store statistics of the difference calculation in a separate file called `mesh.stats.json` |
+| --gradient       | Calculate and store gradient data in addition to the given input function on the mesh.|
+
+The predefined functions are a collection of common interpolation functions, which are usuually too cumbersome for the command line:
+
+| Function   | Explanation                                                                             |
+| ---------- | --------------------------------------------------------------------------------------- |
+| franke     | Franke's function has two Gaussian peaks of different heights, and a smaller dip.       |
+| eggholder  | A function with many local extrema.                          |
+| rosenbrock | A function having a global minimum in a narrow, parabolic valley. |
+
+All function provided have 3D and 2D variants (which should be applied depending on your mesh topology). Example: calculate and store the Eggholder function on given mesh
+
+```bash
+precice-aste-evaluate --mesh 3DMesh.vtk --function "eggholder3d" --data "EggHolder"
+precice-aste-evaluate --mesh 2DMeshonXY.vtk --function "eggholder2d(xy)" --data "EggHolder"
+precice-aste-evaluate --mesh 2DMeshonXZ.vtk --function "eggholder2d(xz)" --data "EggHolder"
+precice-aste-evaluate --mesh 2DMeshonYZ.vtk --function "eggholder2d(yz)" --data "EggHolder"
+```
+
+Example: calculating the function "sin(x)+exp(y)" on mesh `MeshA` and store the result in "MyFunc"
+
+```bash
+precice-aste-evaluate --mesh MeshA.vtk --function "sin(x)+exp(y)" --data "MyFunc"
+```
+
+Example: calculating the difference between `MappedData` and the analytic function "sin(x)" and storing the resulting difference data in the variable "Error":
+
+```bash
+precice-aste-evaluate --mesh Mapped.vtk --function "sin(x)" --diff --diffdata "MappedData" --data "Error"
+```
+
+### Replay mode
+
+The replay mode is a bit different from the scenarios we have seen so far. Here, we emulate the behavior of individual participants in a coupled simulation. In order to configure such a scenario, each participant you want to replace needs a configuration file in JSON format with the following attributes:
 
 ```json
 {
@@ -208,21 +223,33 @@ For the Replay mode ASTE uses a configuration file in JSON format as follows
   "precice-config": "/path/to/precice/config/file/precice-config.xml"
 }
 ```
+The JSON configuration file is similar to an adapter configuration file. The above configuration file is an example of a participant with one mesh. The user can add as many meshes as required.
 
-The above configuration file is an example of a participant with one mesh. The user can add as many meshes as required.
+{% important %}
+The first entry `mesh` refers to the mesh name in the precice configuration file (e.g. `Solid-Mesh`), whereas the second argument refers to the actual filenames on your system, which are usually generated by preCICE.
+{% endimportant %}
 
-#### Step by Step Guide for Replay Mode
+#### Step-by-step guide for replay mode
 
+{% note %}
 The replay mode only supports explicit coupling schemes.
+{% endnote %}
 
 ##### Step 1: Setup export of your original coupling
 
-Set vtk or vtu export of the participant you want to replace using preCICE export flag see [Export Configuration](https://precice.org/configuration-export.html)
+In a first step we have to generate the required mesh and data files of the participant we want to emulate with ASTE. Therefore, we use the [export functionality](https://precice.org/configuration-export.html) of preCICE. After adding the `export` tag in the precice configuration file, start the coupled simulation and run as many time-steps as you need.
 
 ##### Step 2: Prepare your ASTE Configuration file
 
-Prepare an ASTE configuration for the solver which will be replaced. See above for ASTE configuration format.
+Prepare an ASTE configuration for the solver which will be replaced. See above for the corresponding ASTE configuration format. If your previous simulation used an implicit coupling, make sure to change the configuraiton to an explicit coupling.
 
 #### Step 3: Run your solver and ASTE
 
-Run your solver and ASTE as usual preCICE coupling. At this stage ASTE would work like a solver. Instead of calculation it would just only read from your export mesh data and use them for coupling.
+Run your solver and ASTE as usual, e.g., execute `myFluidSolver` in one shell and `precice-aste-run` in another shell:
+
+```bash
+./myFluidSolver &
+precice-aste-run -c solid-config.json
+```
+
+ASTE will pick up the correct mesh files, extract the data and pass the data to preCICE.
