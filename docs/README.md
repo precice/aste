@@ -45,7 +45,7 @@ pip3 install -r requirements.txt
 
 ### Building and installation
 
-In order to build ASTE, clone the project repository and use the usual `CMake` steps to steer the installation procedure: 
+In order to build ASTE, clone the project repository and use the usual `CMake` steps to steer the installation procedure:
 
 ```bash
 git clone https://github.com/precice/aste.git
