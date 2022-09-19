@@ -91,10 +91,11 @@ The following subsections explain each part of ASTE more in detail. All ASTE mod
 | Flag          | Explanation                                                   |
 | ------------- | ------------------------------------------------------------- |
 | --aste-config | ASTE configuration file (only used for replay mode)           |
-| -v            | Enables verbose logging output from preCICE                   |
+| -v            | Enables verbose logging output                                |
+| -a            | Enables logging from secondary ranks                          |
 | -c            | To specify preCICE config file (default="precice-config.xml") |
 | -p            | Participant name, which can take the arguments `A` or `B`     |
-| --vector      | A bool switch to specify vector data (default=`False`)       |
+| --vector      | A bool switch to specify vector data (default=`False`)        |
 
 {% important %}
 The `--mesh` option here can be different from the mesh defined in the configuration file. ASTE expects here the filename (prefix) of the mesh file (VTK or VTU), which is different from meshes defined in the simulation setup.
