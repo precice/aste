@@ -47,21 +47,16 @@ void addLogSink(LogLevel ll, LogRankFilter lrf)
       [expr::stream << "(" << expr::attr<std::string>("Module") << " in " << expr::attr<std::string>("Function") << ") "];
 
   // Format the severity
-  auto blankSeverity = 
-    expr::if_(logging::trivial::error == logging::trivial::severity)
-    [ expr::stream << "ERROR" ]
-    .else_[
-     expr::stream << expr::if_(logging::trivial::warning == logging::trivial::severity)
-      [ expr::stream << "WARNING" ]
-      .else_[
-     expr::stream << expr::if_(logging::trivial::info == logging::trivial::severity)
-      [ expr::stream << "INFO" ]
-      .else_[
-     expr::stream << expr::if_(logging::trivial::debug == logging::trivial::severity)
-        [ expr::stream << "DEBUG" ]
-      .else_[
-        expr::stream << logging::trivial::severity
-    ]]]];
+  auto blankSeverity =
+      expr::if_(logging::trivial::error == logging::trivial::severity)
+          [expr::stream << "ERROR"]
+              .else_[expr::stream << expr::if_(logging::trivial::warning == logging::trivial::severity)
+                                         [expr::stream << "WARNING"]
+                                             .else_[expr::stream << expr::if_(logging::trivial::info == logging::trivial::severity)
+                                                                        [expr::stream << "INFO"]
+                                                                            .else_[expr::stream << expr::if_(logging::trivial::debug == logging::trivial::severity)
+                                                                                                       [expr::stream << "DEBUG"]
+                                                                                                           .else_[expr::stream << logging::trivial::severity]]]];
 
   auto formatter = expr::stream
                    << "---["

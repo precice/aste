@@ -36,8 +36,10 @@ BOOST_LOG_GLOBAL_LOGGER(my_logger, logger_t);
 
 void addLogIdentity(const std::string &participant, int rank);
 
-enum struct LogLevel : bool { Quiet, Verbose };
-enum struct LogRankFilter : bool { All, OnlyPrimary };
+enum struct LogLevel : bool { Quiet,
+                              Verbose };
+enum struct LogRankFilter : bool { All,
+                                   OnlyPrimary };
 
 void addLogSink(LogLevel ll, LogRankFilter lrf);
 
