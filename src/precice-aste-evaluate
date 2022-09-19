@@ -61,7 +61,7 @@ class Calculator:
             "-f",
             dest="function",
             default="eggholder3d",
-            help="""The function to evalutate on the mesh.
+            help="""The function to evaluate on the mesh.
                 Syntax is the same as used in the calculator object, coordinates are given as e.g.  'cos(x)+y'.
                 Alternatively, you can use predefined function
                 Default is Eggholder function in 3D (eggholder3d).""",

@@ -33,10 +33,10 @@ void asteConfig::load(const std::string &asteConfigFile)
     try {
       startdt = std::stoi(config["startdt"].get<std::string>());
     } catch (nlohmann::detail::type_error) {
-      ASTE_ERROR << "Error while parsing ASTE configuration file \"startdt\" is missing or has a wrong type, it must be an integer or integer convertable string.";
+      ASTE_ERROR << "Error while parsing ASTE configuration file \"startdt\" is missing or has a wrong type, it must be an integer or integer convertible string.";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     } catch (std::invalid_argument) {
-      ASTE_ERROR << "Error while parsing startdt from ASTE configuration file it must be an integer or integer convertable string.";
+      ASTE_ERROR << "Error while parsing startdt from ASTE configuration file it must be an integer or integer convertible string.";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
   }

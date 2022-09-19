@@ -109,7 +109,7 @@ class MeshPartitioner:
                 return
             else:
                 raise ExtensionError(
-                    f"Unkown input file extension {extension} please check your input file."
+                    f"Unknown input file extension {extension} please check your input file."
                 )
 
         logger.info("Processing mesh " + mesh_name)
@@ -164,7 +164,7 @@ class MeshPartitioner:
                 A meshfree algorithm works on arbitrary meshes without needing topological information.
                 A topology-based algorithm needs topology information
                 and is therefore useless on point clouds.
-                A uniform algorithm will assume a uniform 2d mesh layed out somehow in 3d and partition accordingly.""",
+                A uniform algorithm will assume a uniform 2d mesh laid out somehow in 3d and partition accordingly.""",
         )
         parser.add_argument(
             "--log",
@@ -195,7 +195,7 @@ class MeshPartitioner:
     def partition(mesh: Mesh, numparts: int, algorithm):
         """
         Partitions a mesh using METIS or kmeans. This does not call METIS directly,
-        but instead uses a small C++ Wrapper around shared libary libmetisAPI for convenience.
+        but instead uses a small C++ Wrapper around shared library libmetisAPI for convenience.
         This shared library must be provided if this function should be called.
         """
         if algorithm == "meshfree":
@@ -348,7 +348,7 @@ class MeshPartitioner:
     def partition_uniform(mesh: Mesh, numparts: int):
         """
         Partitions a mesh assuming it is uniform. It must be two-dimensional
-        but is allowed to be layed out anyhow in three dimensions.
+        but is allowed to be laid out anyhow in three dimensions.
         """
         logger = MeshPartitioner.get_logger()
         mesh = mesh.points[:]
@@ -390,7 +390,7 @@ class MeshPartitioner:
         big_interval = (max_point[big_dim] - min_point[big_dim]) / big
         labels = []
         logger.info(
-            "Uniform partioning of mesh size {} into {} x {} partitions.".format(
+            "Uniform partitioning, of mesh size {} into {} x {} partitions.".format(
                 len(mesh), small, big
             )
         )
@@ -452,7 +452,7 @@ class MeshPartitioner:
             reader = vtk.vtkUnstructuredGridReader()
         else:
             raise ExtensionError(
-                f"Unkown input file extension {extension}, please check your input."
+                f"Unknown input file extension {extension}, please check your input."
             )
         reader.SetFileName(filename)
         reader.Update()
@@ -556,7 +556,7 @@ class MeshPartitioner:
         elif extension == ".vtu":  # VTK XML Unstructured Grid format
             writer = vtk.vtkXMLUnstructuredGridWriter()
         else:
-            raise ExtensionError("Unkown File extension: " + extension)
+            raise ExtensionError("Unknown File extension: " + extension)
         writer.SetFileName(filename)
         writer.SetInputData(vtk_grid)
         writer.Write()
