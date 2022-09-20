@@ -250,7 +250,7 @@ Run your solver and ASTE as usual, e.g., execute `myFluidSolver` in one shell an
 
 ```bash
 ./myFluidSolver &
-precice-aste-run -c solid-config.json
+precice-aste-run --aste-config solid-config.json
 ```
 
 ASTE picks up the correct mesh files, extracts the data and passes the data to preCICE.

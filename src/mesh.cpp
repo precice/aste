@@ -395,7 +395,7 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
         meshNames.emplace_back(stepMeshName, ext, context);
       }
       if (!meshNames.empty()) {
-        ASTE_ERROR << "Total number of detected meshes: " << meshNames.size() << '\n';
+        ASTE_INFO << "Total number of detected meshes: " << meshNames.size() << '\n';
         return meshNames;
       }
     }
@@ -420,7 +420,7 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
         break;
       meshNames.emplace_back(rankMeshName, ext, context);
     }
-    ASTE_ERROR << "Total number of detected meshes: " << meshNames.size() << '\n';
+    ASTE_INFO << "Total number of detected meshes: " << meshNames.size() << '\n';
     return meshNames;
   }
   ASTE_ERROR << "Unable to handle basename " << _bname << " no meshes found";
