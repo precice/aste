@@ -240,7 +240,7 @@ The replay mode only supports explicit coupling schemes.
 
 In a first step we have to generate the required mesh and data files of the participant we want to emulate with ASTE. Therefore, we use the [export functionality](https://precice.org/configuration-export.html) of preCICE. After adding the `export` tag in the precice configuration file, start the coupled simulation and run as many time-steps as you need.
 
-##### Step 2: Prepare your ASTE Configuration file
+##### Step 2: Prepare ASTE and preCICE configuration files
 
 Prepare an ASTE configuration for the solver you want to replace. See above for the corresponding ASTE configuration format. If your previous simulation used an implicit coupling, make sure to change the configuration to an explicit coupling.
 
