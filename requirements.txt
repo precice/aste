@@ -1,3 +1,2 @@
 numpy
-sympy
-vtk
+sympy>=1.9

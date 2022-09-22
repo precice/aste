@@ -25,6 +25,10 @@ The C++ core module of ASTE uses similar dependencies as preCICE itself. In part
 sudo apt install libvtk9-dev
 ```
 
+{% important %}
+The VTK package also installs a compatible python interface to VTK, which is used in ASTE. If you already have a python VTK installation on your system (e.g. through pip), make sure that your python-vtk version is compatible with your C++ VTK version.
+{% endimportant %}
+
 As an optional dependency for pre-processing, METIS can be installed. METIS is a graph partitioning library used for topological partitioning in the mesh partitioner and can be installed similarly via apt
 
 ```bash
@@ -34,7 +38,6 @@ sudo apt install libmetis-dev
 The python tools require
 
 - NumPy
-- VTK (Visualization Toolkit)
 - sympy (optional)
 
 which can be installed directly using pip and the `requirements.txt` file in the repository
