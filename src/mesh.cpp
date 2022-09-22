@@ -321,7 +321,7 @@ void MeshName::save(const Mesh &mesh, const std::string &outputFileName) const
 
     std::vector<double> pointData;
     pointData.reserve(3);
-    for (size_t i = 0; i < grid->GetNumberOfPoints(); i++) {
+    for (vtkIdType i = 0; i < grid->GetNumberOfPoints(); i++) {
       for (int j = 0; j < meshdata.numcomp; j++) {
         pointData.push_back(meshdata.dataVector[i * meshdata.numcomp + j]);
       }

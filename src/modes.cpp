@@ -68,7 +68,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
   }
 
   dt = preciceInterface.initialize();
-  int round{0};
+  std::size_t round{0};
 
   ASTE_DEBUG << "Looking for dt = " << asteConfiguration.startdt;
   for (const auto &mesh : asteConfiguration.asteInterfaces.front().meshes) {
@@ -113,7 +113,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
   const std::string &coric = precice::constants::actionReadIterationCheckpoint();
   const std::string &cowic = precice::constants::actionWriteIterationCheckpoint();
 
-  while (preciceInterface.isCouplingOngoing() && round < minMeshSize) {
+  while (preciceInterface.isCouplingOngoing() && (round < minMeshSize)) {
     if (preciceInterface.isActionRequired(cowic)) {
       ASTE_ERROR << "Implicit coupling schemes cannot be used with ASTE";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);

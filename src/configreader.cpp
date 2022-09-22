@@ -9,33 +9,33 @@ void asteConfig::load(const std::string &asteConfigFile)
 
   try {
     preciceConfigFilename = config["precice-config"].get<std::string>();
-  } catch (nlohmann::detail::parse_error) {
+  } catch (nlohmann::detail::parse_error &) {
     ASTE_ERROR << "Error while parsing ASTE configuration file \"precice-config\" is missing";
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-  } catch (nlohmann::detail::type_error) {
+  } catch (nlohmann::detail::type_error &) {
     ASTE_ERROR << "Error while parsing ASTE configuration file \"precice-config\" is missing";
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
   try {
     participantName = config["participant"].get<std::string>();
-  } catch (nlohmann::detail::parse_error) {
+  } catch (nlohmann::detail::parse_error &) {
     ASTE_ERROR << "Error while parsing ASTE configuration file \"participant\" is missing";
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-  } catch (nlohmann::detail::type_error) {
+  } catch (nlohmann::detail::type_error &) {
     ASTE_ERROR << "Error while parsing ASTE configuration file \"participant\" is missing";
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
   try {
     startdt = config["startdt"].get<int>();
-  } catch (nlohmann::detail::type_error) {
+  } catch (nlohmann::detail::type_error &) {
     try {
       startdt = std::stoi(config["startdt"].get<std::string>());
-    } catch (nlohmann::detail::type_error) {
+    } catch (nlohmann::detail::type_error &) {
       ASTE_ERROR << "Error while parsing ASTE configuration file \"startdt\" is missing or has a wrong type, it must be an integer or integer convertible string.";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    } catch (std::invalid_argument) {
+    } catch (std::invalid_argument &) {
       ASTE_ERROR << "Error while parsing startdt from ASTE configuration file it must be an integer or integer convertible string.";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
@@ -57,20 +57,20 @@ void asteConfig::load(const std::string &asteConfigFile)
     asteInterface interface;
     try {
       interface.meshName = config["meshes"][i]["mesh"].get<std::string>();
-    } catch (nlohmann::detail::parse_error) {
+    } catch (nlohmann::detail::parse_error &) {
       ASTE_ERROR << "Error while parsing ASTE configuration file \"mesh\" is missing";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    } catch (nlohmann::detail::type_error) {
+    } catch (nlohmann::detail::type_error &) {
       ASTE_ERROR << "Error while parsing ASTE configuration file \"mesh\" is missing or not a string";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
 
     try {
       interface.meshFilePrefix = config["meshes"][i]["meshfileprefix"];
-    } catch (nlohmann::detail::parse_error) {
+    } catch (nlohmann::detail::parse_error &) {
       ASTE_ERROR << "Error while parsing ASTE configuration file \"meshfileprefix\" is missing";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    } catch (nlohmann::detail::type_error) {
+    } catch (nlohmann::detail::type_error &) {
       ASTE_ERROR << "Error while parsing ASTE configuration file \"meshfileprefix\" is missing or not a string";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
@@ -80,19 +80,19 @@ void asteConfig::load(const std::string &asteConfigFile)
     const auto writeScalarSize = config["meshes"][i]["write-data"]["scalar"].size();
     const auto writeVectorSize = config["meshes"][i]["write-data"]["vector"].size();
 
-    for (auto k = 0; k < readScalarSize; k++) {
+    for (std::size_t k = 0; k < readScalarSize; k++) {
       const auto scalarName = config["meshes"][i]["read-data"]["scalar"][k];
       interface.readScalarNames.push_back(scalarName);
     }
-    for (auto k = 0; k < readVectorSize; k++) {
+    for (std::size_t k = 0; k < readVectorSize; k++) {
       const auto vectorName = config["meshes"][i]["read-data"]["vector"][k];
       interface.readVectorNames.push_back(vectorName);
     }
-    for (auto k = 0; k < writeScalarSize; k++) {
+    for (std::size_t k = 0; k < writeScalarSize; k++) {
       const auto scalarName = config["meshes"][i]["write-data"]["scalar"][k];
       interface.writeScalarNames.push_back(scalarName);
     }
-    for (auto k = 0; k < writeVectorSize; k++) {
+    for (std::size_t k = 0; k < writeVectorSize; k++) {
       const auto vectorName = config["meshes"][i]["write-data"]["vector"][k];
       interface.writeVectorNames.push_back(vectorName);
     }
