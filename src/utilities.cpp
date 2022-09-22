@@ -41,7 +41,7 @@ std::vector<int> aste::setupVertexIDs(precice::SolverInterface &interface,
   std::vector<double> posData(dimension * nvertices);
   for (unsigned long i = 0; i < nvertices; ++i) {
     const auto &pos = mesh.positions[i];
-    assert(pos.size() == dimension);
+    assert(pos.size() == static_cast<unsigned int>(dimension));
     std::copy(pos.begin(), pos.end(), &posData[i * dimension]);
   }
 
