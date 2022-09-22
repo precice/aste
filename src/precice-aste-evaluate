@@ -427,11 +427,17 @@ class Calculator:
             ]
             gradient_name_list = [dataname + "_gradient"]
             gradient_function = [
-                str(gradients[0])
+                "("
+                + str(gradients[0])
+                + ")"
                 + "*iHat+"
+                + "("
                 + str(gradients[1])
+                + ")"
                 + "*jHat+"
+                + "("
                 + str(gradients[2])
+                + ")"
                 + "*kHat"
             ]
         # Add gradient function to vtk_dataset
