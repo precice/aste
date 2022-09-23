@@ -213,7 +213,8 @@ void readData(Mesh &mesh, const std::string &filename)
       }
 
       if (gradX == nullptr || (dataDim > 1 && gradY == nullptr) || (dataDim == 3 && gradZ == nullptr)) {
-        std::cerr << "Error while parsing gradient data \"" << dataname << "\", please check your input mesh\n";
+        std::cerr << "Error while parsing gradient data for data called \"" << dataname << "\". ASTE searches in case of scalar data for \"" << dataname << "_gradient\", in case of vector-valued data for three gradient vectors called \"" << dataname << "_dx/dy/dz"
+                  << "\". Please ensure that the required gradient data fields are available on your input mesh. If you use the \"precice-aste-evaluate\" tool, you can add the \"--gradient\" flag when generating data in order to automatically add gradient data on the corresponding mesh.\n";
       }
 
       // Safety checks
