@@ -260,7 +260,7 @@ ASTE picks up the correct mesh files, extracts the data and passes the data to p
 
 #### Example
 
-As an example, we want to replace the `Fluid` participant of our [`perpendicular-flap`](https://precice.org/tutorials-perpendicular-flap.html) tutorial by ASTE. Therefore, we first set the export tag on the fluid participant in our configuration file (see below) and run the simulation with one of the available fluid solvers
+As an example, we replace the `Fluid` participant of the [`perpendicular-flap`](https://precice.org/tutorials-perpendicular-flap.html) tutorial by ASTE. Therefore, we first set the export tag on the fluid participant in the configuration file (see below) and then run the simulation with one of the available fluid solvers (e.g. `fluid-openfoam` coupled to `solid-fenics`).
 
 ```xml
     <participant name="Fluid">
@@ -269,7 +269,7 @@ As an example, we want to replace the `Fluid` participant of our [`perpendicular
     </participant>
 ```
 
-After the simulation finished, the directory `exported-meshes` contains now all the necessary information in order to use ASTE in our coupled simulation. We create a new directory in the `perpendicular-flap` directory called `fluid-aste` and move the `exported-meshes` into the new directory in order to run ASTE from a separate directory. Since ASTE supports only `explicit` coupling schemes, we switch from an `implicit` coupling scheme to an `explicit` coupling scheme in the preCICE configuration file as follows:
+Once the simulation is done, the directory `exported-meshes` contains all necessary coupling data in order to use ASTE for the coupled simulation. We create a new directory in the `perpendicular-flap` directory called `fluid-aste` and move the `exported-meshes` into the new directory in order to run ASTE from a separate directory. Since ASTE supports only `explicit` coupling schemes, we switch from an `implicit` coupling scheme to an `explicit` coupling scheme in the preCICE configuration file:
 
 ```xml
 <coupling-scheme:parallel-explicit>
@@ -281,7 +281,7 @@ After the simulation finished, the directory `exported-meshes` contains now all 
 </coupling-scheme:parallel-explicit>
 ```
 
-As a last step, we create and configure the `aste-config.json` file in the `fluid-aste` according to the data names in the `precice-config.xml` file:
+As a last step, we create and configure the `aste-config.json` file in the `fluid-aste` directory according to the data names in the `precice-config.xml` file:
 
 ```json
 {
@@ -309,4 +309,4 @@ Afterwards, the fluid solver emulation via ASTE can be started by executing
  precice-aste-run --aste-config aste-config.json
  ```
 
-in the `fluid-aste` directory.
+in the `fluid-aste` directory. Simply start any solid solver alongside (e.g. `solid-fenics`).
