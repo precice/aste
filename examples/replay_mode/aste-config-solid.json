@@ -1,0 +1,23 @@
+{
+  "participant": "Solid",
+  "startdt": "1",
+  "meshes": [
+    {
+      "mesh": "Solid-Mesh",
+      "meshfileprefix": "./Solid/Solid-Mesh-Solid",
+      "read-data": {
+        "vector": [
+          "Force"
+        ],
+        "scalar": [        ]
+      },
+      "write-data": {
+        "vector": [
+          "Displacement"
+        ],
+        "scalar": [        ]
+      }
+    }
+  ],
+  "precice-config": "./precice-config.xml"
+}

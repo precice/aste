@@ -1,0 +1,2 @@
+numpy
+sympy>=1.9

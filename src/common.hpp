@@ -1,7 +1,12 @@
 #pragma once
-#include <iostream>
-#include <mpi.h>
+
 #include <boost/program_options.hpp>
+
+#include <iostream>
+
+#include <mpi.h>
+
+#include "logger.hpp"
 
 using DistVertex = std::vector<double>;
 
@@ -20,18 +25,16 @@ void printOptions(const OptionMap &options);
 void printMesh(const DistMesh &mesh, const Data &data, bool verbose);
 
 // Partitions range in equal chunks
-template<typename T>
-std::vector<T> partition(T& range, int num)
+template <typename T>
+std::vector<T> partition(T &range, int num)
 {
-  int partSize = range.size() / num;
+  int            partSize = range.size() / num;
   std::vector<T> partitions;
   for (int i = 0; i < num; i++) {
-    if (i==num-1)
-      partitions.emplace_back(range.begin()+(i*partSize), range.end());
+    if (i == num - 1)
+      partitions.emplace_back(range.begin() + (i * partSize), range.end());
     else
-      partitions.emplace_back(range.begin()+(i*partSize), range.begin()+((i+1)*partSize));
-    
+      partitions.emplace_back(range.begin() + (i * partSize), range.begin() + ((i + 1) * partSize));
   }
   return partitions;
-    
 }
