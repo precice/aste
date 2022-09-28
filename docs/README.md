@@ -267,6 +267,7 @@ Referring to our example: once the simulation is done, the directory `exported-m
   <exchange data="Displacement" mesh="Solid-Mesh" from="Solid" to="Fluid" />
 </coupling-scheme:parallel-explicit>
 ```
+
 In addition, we create and configure the `aste-config.json` file in the `fluid-aste` directory according to the data names in the `precice-config.xml` file:
 
 ```json
