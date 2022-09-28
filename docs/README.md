@@ -243,9 +243,52 @@ The replay mode only supports explicit coupling schemes.
 
 In a first step we have to generate the required mesh and data files of the participant we want to emulate with ASTE. Therefore, we use the [export functionality](https://precice.org/configuration-export.html) of preCICE. After adding the `export` tag in the precice configuration file, start the coupled simulation and run as many time-steps as you need.
 
+As an example, we replace the `Fluid` participant of the [`perpendicular-flap`](https://precice.org/tutorials-perpendicular-flap.html) tutorial by ASTE. Therefore, we first set the export tag on the fluid participant in the configuration file (see below) and then run the simulation with one of the available fluid solvers (e.g. `fluid-openfoam` coupled to `solid-fenics`).
+
+```xml
+    <participant name="Fluid">
+      ...
+      <export:vtk directory="exported-meshes" />
+    </participant>
+```
+
 ##### Step 2: Prepare ASTE and preCICE configuration files
 
 Prepare an ASTE configuration for the solver you want to replace. See above for the corresponding ASTE configuration format. If your previous simulation used an implicit coupling, make sure to change the configuration to an explicit coupling.
+
+Referring to our example: once the simulation is done, the directory `exported-meshes` contains all necessary coupling data in order to use ASTE for the coupled simulation. We create a new directory in the `perpendicular-flap` directory called `fluid-aste` and move the `exported-meshes` into the new directory in order to run ASTE from a separate directory. Since ASTE supports only `explicit` coupling schemes, we switch from an `implicit` coupling scheme to an `explicit` coupling scheme in the preCICE configuration file:
+
+```xml
+<coupling-scheme:parallel-explicit>
+  <time-window-size value="0.01" />
+  <max-time value="5" />
+  <participants first="Fluid" second="Solid" />
+  <exchange data="Force" mesh="Solid-Mesh" from="Fluid" to="Solid" />
+  <exchange data="Displacement" mesh="Solid-Mesh" from="Solid" to="Fluid" />
+</coupling-scheme:parallel-explicit>
+```
+
+In addition, we create and configure the `aste-config.json` file in the `fluid-aste` directory according to the data names in the `precice-config.xml` file:
+
+```json
+{
+  "participant": "Fluid",
+  "startdt": "1",
+  "meshes": [
+    {
+      "mesh": "Fluid-Mesh",
+      "meshfileprefix": "./exported-meshes/Fluid-Mesh-Fluid",
+      "read-data": {
+        "vector": ["Displacement"]
+      },
+      "write-data": {
+        "vector": ["Force"]
+      }
+    }
+  ],
+  "precice-config": "../precice-config.xml"
+}
+```
 
 ##### Step 3: Run your solver and ASTE
 
@@ -257,3 +300,11 @@ precice-aste-run --aste-config solid-config.json
 ```
 
 ASTE picks up the correct mesh files, extracts the data and passes the data to preCICE.
+
+For our example above, the fluid solver emulation via ASTE can be started by executing
+
+```bash
+ precice-aste-run --aste-config aste-config.json
+```
+
+in the `fluid-aste` directory. Simply start any solid solver alongside (e.g. `solid-fenics`).
