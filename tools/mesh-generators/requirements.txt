@@ -2,4 +2,3 @@ gmsh>=4.10.0
 meshio>=5.3.4
 numpy
 scipy
-vtk

@@ -3,9 +3,9 @@
 import argparse
 
 import numpy as np
-import vtk
+import meshio
+import os
 from scipy.stats.qmc import Halton
-from vtk.util.numpy_support import numpy_to_vtk as n2v
 
 
 def parse_args():
@@ -35,32 +35,36 @@ def parse_args():
         default="2",
         help="Dimension of mesh (2D or 3D).",
     )
+    parser.add_argument(
+        "--seed", "-s", type=int, dest="seed", help="Seed for random number generator."
+    )
 
     args, _ = parser.parse_known_args()
     return args
 
 
-def generate_points(dim, num_points):
-    points = Halton(d=dim, scramble=False).random(num_points)
+def generate_points(dim, num_points, seed):
+    print(seed)
+    print(type(seed))
+    points = Halton(d=dim, scramble=False, seed=seed).random(num_points)
     if dim == 2:
         points = np.column_stack((points, np.zeros(num_points)))
     return points
 
 
 def write_mesh(mesh_filename, points):
-    mesh = vtk.vtkUnstructuredGrid()
-    point_data = vtk.vtkPoints()
-    point_data.SetData(n2v(points))
-    mesh.SetPoints(point_data)
-    writer = vtk.vtkXMLUnstructuredGridWriter()
-    writer.SetInputData(mesh)
-    writer.SetFileName(mesh_filename)
-    writer.Write()
+    # No connectivity information, so we just write the points
+    cells = [("vertex", np.arange(points.shape[0]).reshape(-1, 1))]
+    mesh = meshio.Mesh(points, cells)
+    mesh.write(mesh_filename)
 
 
 if __name__ == "__main__":
     args = parse_args()
     if args.dimension not in [2, 3]:
         raise ValueError("Dimension must be 2 or 3.")
-    points = generate_points(args.dimension, args.num_points)
+    _, ext = os.path.splitext(args.output)
+    if ext.lower() != ".vtk" and ext.lower() != ".vtu":
+        raise ValueError("Output file must be a .vtk or .vtu file.")
+    points = generate_points(args.dimension, args.num_points, args.seed)
     write_mesh(args.output, points)
