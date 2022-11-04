@@ -44,7 +44,7 @@ endif()
 
 find_package(MPI REQUIRED)
 
-option(ASTE_USE_ASTE_JOINER_CPP "Use C++ implementation of precice-aste-join" ON)
+option(ASTE_USE_ASTE_JOINER_CPP "Use C++ implementation of precice-aste-join" OFF)
 
 add_executable(precice-aste-run src/precice-aste-run.cpp src/common.cpp src/mesh.cpp src/configreader.cpp src/modes.cpp src/utilities.cpp src/logger.cpp)
 target_include_directories(precice-aste-run PRIVATE src thirdparty)
