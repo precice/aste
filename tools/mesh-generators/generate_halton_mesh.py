@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
-
-import numpy as np
-import meshio
 import os
+
+import meshio
+import numpy as np
 from scipy.stats.qmc import Halton
 
 
@@ -44,8 +44,6 @@ def parse_args():
 
 
 def generate_points(dim, num_points, seed):
-    print(seed)
-    print(type(seed))
     points = Halton(d=dim, scramble=False, seed=seed).random(num_points)
     if dim == 2:
         points = np.column_stack((points, np.zeros(num_points)))
