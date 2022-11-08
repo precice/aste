@@ -16,7 +16,7 @@ Run with output file name and mesh sizes.
 Defaults are `x=10`, `y=10`, `z=1`.
 
 ```bash
-# 10x10 2D grid with z=0
+# 10x10 2D grid with z coordinate of 0
 python generate_unit_grid.py --mesh name.vtu
 # 100x100 2D grid with z=0
 python generate_unit_grid.py --mesh name.vtu -x 100 -y 100
