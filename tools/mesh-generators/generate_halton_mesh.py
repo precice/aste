@@ -58,12 +58,12 @@ def write_mesh(mesh_filename, points, cells):
     mesh = meshio.Mesh(points, cells)
     mesh.write(mesh_filename)
 
-def get_trianglation(points,dim):
+
+def get_trianglation(points, dim):
     if dim == 2:
         return ("triangle", Delaunay(points[:, :-1]).simplices)
     else:
         return ("tetra", Delaunay(points).simplices)
-    
 
 
 if __name__ == "__main__":
@@ -75,6 +75,6 @@ if __name__ == "__main__":
         raise ValueError("Output file must be a .vtk or .vtu file.")
     points = generate_points(args.dimension, args.num_points, args.seed)
     cells = [("vertex", np.arange(points.shape[0]).reshape(-1, 1))]
-    if args.connectivity: # Generate connectivity
-        cells.append(get_trianglation(points,args.dimension))
+    if args.connectivity:  # Generate connectivity
+        cells.append(get_trianglation(points, args.dimension))
     write_mesh(args.output, points, cells)
