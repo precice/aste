@@ -31,11 +31,12 @@ This requires the `meshio` and `numpy` Python packages.
 ## Halton points mesh generator
 
 This script can generate a mesh bounded in a unit square/cube (without any connectivity information) with given number of points.
-Run with output file name, number of points and space dimension as arguments, optionally seed for Halton generator can be passed. For instance :
+Run with output file name, number of points and space dimension as arguments, optionally seed for Halton generator can be passed. Since it expensive the connectivity information (triangle/tetrahedron) can be also requested by using an additional argument. For instance :
 
 ```bash
 python generate_halton_mesh.py --mesh halton_cube.vtk --numpoints 1000 --dimension 3
 python generate_halton_mesh.py --mesh halton_square.vtu --numpoints 500 --dimension 2 --seed 42
+python generate_halton_mesh.py --mesh halton_square.vtu --numpoints 500 --dimension 2 --seed 42 --connnectivity
 ```
 
 This requires the `scipy`, `numpy` and `meshio` Python packages.

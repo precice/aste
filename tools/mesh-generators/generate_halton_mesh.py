@@ -5,6 +5,7 @@ import os
 
 import meshio
 import numpy as np
+from scipy.spatial import Delaunay
 from scipy.stats.qmc import Halton
 
 
@@ -38,6 +39,9 @@ def parse_args():
     parser.add_argument(
         "--seed", "-s", type=int, dest="seed", help="Seed for random number generator."
     )
+    parser.add_argument(
+        "--connectivity", "-c", action="store_true", help="Generate connectivity"
+    )
 
     args, _ = parser.parse_known_args()
     return args
@@ -50,11 +54,16 @@ def generate_points(dim, num_points, seed):
     return points
 
 
-def write_mesh(mesh_filename, points):
-    # No connectivity information, so we just write the points
-    cells = [("vertex", np.arange(points.shape[0]).reshape(-1, 1))]
+def write_mesh(mesh_filename, points, cells):
     mesh = meshio.Mesh(points, cells)
     mesh.write(mesh_filename)
+
+def get_trianglation(points,dim):
+    if dim == 2:
+        return ("triangle", Delaunay(points[:, :-1]).simplices)
+    else:
+        return ("tetra", Delaunay(points).simplices)
+    
 
 
 if __name__ == "__main__":
@@ -65,4 +74,7 @@ if __name__ == "__main__":
     if ext.lower() != ".vtk" and ext.lower() != ".vtu":
         raise ValueError("Output file must be a .vtk or .vtu file.")
     points = generate_points(args.dimension, args.num_points, args.seed)
-    write_mesh(args.output, points)
+    cells = [("vertex", np.arange(points.shape[0]).reshape(-1, 1))]
+    if args.connectivity: # Generate connectivity
+        cells.append(get_trianglation(points,args.dimension))
+    write_mesh(args.output, points, cells)
