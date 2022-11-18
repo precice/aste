@@ -1,10 +1,10 @@
-cmake_minimum_required (VERSION 3.1)
+cmake_minimum_required (VERSION 3.16.3)
 
 project(ASTE)
 
 list (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-set (CMAKE_CXX_STANDARD 14)
+set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED YES)
 set (CMAKE_CXX_EXTENSIONS NO)
 
@@ -22,7 +22,7 @@ find_package (Threads REQUIRED)
 
 find_package(precice REQUIRED CONFIG)
 
-find_package(Boost 1.65.1 REQUIRED COMPONENTS log log_setup system program_options filesystem unit_test_framework)
+find_package(Boost 1.71.0 REQUIRED COMPONENTS log log_setup system program_options filesystem unit_test_framework)
 
 option(ASTE_USE_VTK_COMPONENTS "Find VTK with components" OFF)
 if(ASTE_USE_VTK_COMPONENTS)
