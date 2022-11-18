@@ -95,6 +95,7 @@ The following subsections explain each part of ASTE in more detail. All ASTE mod
 | --------------- | ---------------------------------------------------------------------- |
 | `--aste-config` | ASTE configuration file (only used for replay mode)                    |
 | `-v`            | Enables verbose logging output from preCICE                            |
+| `-a`            | Enables additional logging from all secondary ranks                    |
 | `-c`            | To specify preCICE configuration file (default=`"precice-config.xml"`) |
 | `-p`            | Participant name, which can take the arguments `A` or `B`              |
 | `--vector`      | A bool switch to specify vector data (default=`False`)                 |
