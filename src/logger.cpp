@@ -33,7 +33,7 @@ void addLogSink(LogLevel ll, LogRankFilter lrf)
 
   auto filter = [&]() -> logging::filter {
     if (lrf == LogRankFilter::OnlyPrimary) {
-      return logging::trivial::severity >= loglevel & (expr::attr<int>("Rank").or_default(0) == 0);
+      return (logging::trivial::severity >= loglevel) & (expr::attr<int>("Rank").or_default(0) == 0);
     } else {
       return logging::trivial::severity >= loglevel;
     }
