@@ -69,7 +69,6 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     minMeshSize = std::max(minMeshSize, asteInterface.meshes.size());
   }
 
-  dt = preciceInterface.initialize();
   std::size_t round{0};
 
   ASTE_DEBUG << "Looking for dt = " << asteConfiguration.startdt;
@@ -111,7 +110,8 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     preciceInterface.markActionFulfilled(precice::constants::actionWriteInitialData());
   }
 
-  preciceInterface.initializeData();
+  dt = preciceInterface.initialize();
+
   const std::string &coric = precice::constants::actionReadIterationCheckpoint();
   const std::string &cowic = precice::constants::actionWriteIterationCheckpoint();
 
@@ -261,7 +261,6 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
   ASTE_INFO << "The loaded mesh " << asteInterface.meshes.front().filename() << " contains: " << asteInterface.mesh.summary();
   auto vertexIDs = aste::setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshID);
   ASTE_DEBUG << "Mesh setup completed on Rank " << context.rank;
-  double dt = preciceInterface.initialize();
 
   if (preciceInterface.isActionRequired(precice::constants::actionWriteInitialData())) {
     ASTE_DEBUG << "Write initial data for participant " << participantName;
@@ -300,7 +299,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     preciceInterface.markActionFulfilled(precice::constants::actionWriteInitialData());
   }
 
-  preciceInterface.initializeData();
+  double dt = preciceInterface.initialize();
 
   const std::string &coric = precice::constants::actionReadIterationCheckpoint();
   const std::string &cowic = precice::constants::actionWriteIterationCheckpoint();
