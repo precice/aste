@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <precice-configuration>
-  <log>
-    <sink
-      filter="%Severity% > debug and %Rank% = 0"
-      format="---[precice] %ColorizedSeverity% %Message%"
-      enabled="true" />
-  </log>
+  <log enabled="0" />
 
-  <solver-interface dimensions="3" experimental="true">
-    <data:vector name="Data" />
+  <solver-interface dimensions="3">
+    <data:scalar name="Data" />
 
     <mesh name="A-Mesh">
       <use-data name="Data" />
@@ -29,11 +24,16 @@
       <use-mesh name="A-Mesh" provide="no" from="A" />
       <use-mesh name="B-Mesh" provide="yes" />
       <read-data name="Data" mesh="B-Mesh" />
-      <mapping:nearest-neighbor-gradient
+      <mapping:nearest-neighbor
         constraint="consistent"
         direction="read"
         from="A-Mesh"
         to="B-Mesh" />
+      <!-- <mapping:nearest-projection constraint="consistent" direction="read" from="A-Mesh" to="B-Mesh" /> -->
+      <!-- <mapping:rbf-gaussian shape-parameter="4" constraint="consistent" direction="read" from="A-Mesh" to="B-Mesh" x-dead="false" y-dead="false" z-dead="false" /> -->
+      <!-- <mapping:rbf-gaussian shape-parameter="5600" solver-rtol="1e-9" constraint="consistent" direction="read" from="A-Mesh" to="B-Mesh" x-dead="true" y-dead="false" z-dead="false" polynomial="separate" preallocation="tree"/> -->
+      <!-- <mapping:rbf-volume-splines solver-rtol="1e-9" constraint="consistent" direction="read" from="A-Mesh" to="B-Mesh" x-dead="false" y-dead="false" z-dead="false" /> -->
+      <!-- <export:vtk every-n-time-windows="1" directory="vtkB/" normals="0"/> -->
     </participant>
 
     <coupling-scheme:parallel-explicit>

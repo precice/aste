@@ -33,7 +33,7 @@ struct asteInterface {
 };
 
 /**
- * @brief ASTE Configration class which contain current configuration for ASTE
+ * @brief ASTE Configuration class which contain current configuration for ASTE
  *
  */
 class asteConfig {

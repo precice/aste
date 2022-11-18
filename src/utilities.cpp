@@ -25,7 +25,8 @@ struct hash<Edge> {
 aste::ExecutionContext aste::initializeMPI(int argc, char *argv[])
 {
   MPI_Init(&argc, &argv);
-  int rank = 0, size = 0;
+  int rank = 0;
+  int size = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   return {rank, size};
@@ -40,7 +41,7 @@ std::vector<int> aste::setupVertexIDs(precice::SolverInterface &interface,
   std::vector<double> posData(dimension * nvertices);
   for (unsigned long i = 0; i < nvertices; ++i) {
     const auto &pos = mesh.positions[i];
-    assert(pos.size() == dimension);
+    assert(pos.size() == static_cast<unsigned int>(dimension));
     std::copy(pos.begin(), pos.end(), &posData[i * dimension]);
   }
 
@@ -121,7 +122,8 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
     } else {
       ASTE_DEBUG << "Mesh Setup: 4) No Quadrilaterals are found/required. Skipped";
     }
-#ifdef ASTE_NN_GRADIENT_MAPPING_AND_TETRA
+
+#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
     if (!mesh.tetrahedra.empty()) {
       ASTE_DEBUG << "Mesh Setup: 5) " << mesh.tetrahedra.size() << " Tetrahedra";
       for (auto const &tetra : mesh.tetrahedra) {

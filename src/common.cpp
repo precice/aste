@@ -7,7 +7,7 @@ OptionMap getOptions(int argc, char *argv[])
   namespace po = boost::program_options;
 
   po::options_description desc("ASTE: Artificial solver emulation tool");
-  desc.add_options()("help,h", "Print this help message")("aste-config", po::value<std::string>(), "ASTE Configration file for replay mode")(
+  desc.add_options()("help,h", "Print this help message")("aste-config", po::value<std::string>(), "ASTE Configuration file for replay mode")(
       "precice-config,c",
       po::value<std::string>()->default_value("precice-config.xml"),
       "preCICE configuratio file")(
@@ -22,9 +22,7 @@ OptionMap getOptions(int argc, char *argv[])
       "precice-aste-run will look for timeseries as well as distributed meshes (e.g. from preCICE exports) "
       "automatically and load them if required.")(
       "output", po::value<std::string>(),
-      "Output file name.")(
-      "vector", po::bool_switch(),
-      "Distinguish between vector valued data and scalar data")("verbose,v", po::bool_switch(), "Enable verbose output"); // not explicitely used, handled by easylogging
+      "Output file name.")("vector", po::bool_switch(), "Distinguish between vector valued data and scalar data")("verbose,v", po::bool_switch(), "Enable verbose output")("all,a", po::bool_switch(), "Enable output from secondary ranks");
 
   po::variables_map vm;
 

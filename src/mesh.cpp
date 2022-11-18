@@ -111,7 +111,7 @@ void readMesh(Mesh &mesh, const std::string &filename, const int dim, const bool
       }
     }
   } else {
-    ASTE_ERROR << "Connectivity information for " << mesh.fname << " skipped since connectivity is not required.\n";
+    ASTE_INFO << "Connectivity information for mesh \"" << mesh.fname << "\" skipped since connectivity is not required.\n";
   }
 };
 
@@ -194,7 +194,9 @@ void readData(Mesh &mesh, const std::string &filename)
 
       const int gradDim = data.gradDimension; // Number of components of gradient
       // Get Data and Add to Mesh
-      vtkDataArray *gradX, *gradY, *gradZ;
+      vtkDataArray *gradX;
+      vtkDataArray *gradY;
+      vtkDataArray *gradZ;
       if (dataDim == 1) // Scalar data
       {
         const std::string gradName = dataname + "_gradient";
@@ -211,7 +213,8 @@ void readData(Mesh &mesh, const std::string &filename)
       }
 
       if (gradX == nullptr || (dataDim > 1 && gradY == nullptr) || (dataDim == 3 && gradZ == nullptr)) {
-        std::cerr << "Error while parsing gradient data \"" << dataname << "\", please check your input mesh\n";
+        std::cerr << "Error while parsing gradient data for data called \"" << dataname << "\". ASTE searches in case of scalar data for \"" << dataname << "_gradient\", in case of vector-valued data for three gradient vectors called \"" << dataname << "_dx/dy/dz"
+                  << "\". Please ensure that the required gradient data fields are available on your input mesh. If you use the \"precice-aste-evaluate\" tool, you can add the \"--gradient\" flag when generating data in order to automatically add gradient data on the corresponding mesh.\n";
       }
 
       // Safety checks
@@ -235,7 +238,8 @@ void readData(Mesh &mesh, const std::string &filename)
       } break;
       case 2: // Vector Data with 2 component
       {
-        double *x, *y;
+        double *x;
+        double *y;
         for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
           x = gradX->GetTuple3(tupleIdx);
           std::copy_n(x, 2, std::back_inserter(data.dataVector));
@@ -246,7 +250,9 @@ void readData(Mesh &mesh, const std::string &filename)
       } break;
       case 3: // Vector Data with 3 component
       {
-        double *x, *y, *z;
+        double *x;
+        double *y;
+        double *z;
         for (vtkIdType tupleIdx = 0; tupleIdx < NumPoints; tupleIdx++) {
           x = gradX->GetTuple3(tupleIdx);
           std::copy_n(x, 3, std::back_inserter(data.dataVector));
@@ -308,7 +314,7 @@ void MeshName::save(const Mesh &mesh, const std::string &outputFileName) const
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
-  for (const auto meshdata : mesh.meshdata) {
+  for (const auto &meshdata : mesh.meshdata) {
     vtkSmartPointer<vtkDoubleArray>
         vtkdata = vtkDoubleArray::New();
     vtkdata->SetName(meshdata.name.c_str());
@@ -316,7 +322,7 @@ void MeshName::save(const Mesh &mesh, const std::string &outputFileName) const
 
     std::vector<double> pointData;
     pointData.reserve(3);
-    for (size_t i = 0; i < grid->GetNumberOfPoints(); i++) {
+    for (vtkIdType i = 0; i < grid->GetNumberOfPoints(); i++) {
       for (int j = 0; j < meshdata.numcomp; j++) {
         pointData.push_back(meshdata.dataVector[i * meshdata.numcomp + j]);
       }
@@ -371,7 +377,7 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
     // Check single timestep/meshfiles first
     std::vector<std::string> extensions{".vtk", ".vtu"};
     // Case: a single mesh
-    for (const auto ext : extensions) {
+    for (const auto &ext : extensions) {
       if (fs::is_regular_file(_bname + ext)) {
         return {MeshName{_bname, ext, context}};
       }
@@ -381,16 +387,16 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
       {
         auto initMeshName = std::string{_bname + ".init"};
         if (fs::is_regular_file(initMeshName + ext))
-          meshNames.emplace_back(MeshName{initMeshName, ext, context});
+          meshNames.emplace_back(initMeshName, ext, context);
       }
       for (int t = 1; true; ++t) {
         std::string stepMeshName = _bname + ".dt" + std::to_string(t);
         if (!fs::is_regular_file(stepMeshName + ext))
           break;
-        meshNames.emplace_back(MeshName{stepMeshName, ext, context});
+        meshNames.emplace_back(stepMeshName, ext, context);
       }
       if (!meshNames.empty()) {
-        ASTE_ERROR << "Total number of detected meshes: " << meshNames.size() << '\n';
+        ASTE_INFO << "Total number of detected meshes: " << meshNames.size() << '\n';
         return meshNames;
       }
     }
@@ -407,7 +413,7 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
     {
       auto initMeshName = std::string{_bname + ".init" + "_" + std::to_string(context.rank)};
       if (fs::is_regular_file(initMeshName + ext))
-        meshNames.emplace_back(MeshName{initMeshName, ext, context});
+        meshNames.emplace_back(initMeshName, ext, context);
     }
     for (int t = 1; true; ++t) {
       std::string rankMeshName{_bname + ".dt" + std::to_string(t) + "_" + std::to_string(context.rank)};
@@ -415,7 +421,7 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
         break;
       meshNames.emplace_back(rankMeshName, ext, context);
     }
-    ASTE_ERROR << "Total number of detected meshes: " << meshNames.size() << '\n';
+    ASTE_INFO << "Total number of detected meshes: " << meshNames.size() << '\n';
     return meshNames;
   }
   ASTE_ERROR << "Unable to handle basename " << _bname << " no meshes found";
@@ -430,7 +436,7 @@ std::string Mesh::previewData(std::size_t max) const
     return "<nothing>";
 
   std::stringstream oss;
-  for (const auto data : meshdata) {
+  for (const auto &data : meshdata) {
     oss << data.name;
     oss << data.dataVector.front();
     for (size_t i = 1; i < std::min(max, data.dataVector.size()); ++i)

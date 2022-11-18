@@ -10,7 +10,8 @@ void partitionMetis(idx_t cell_count, idx_t point_count, idx_t *cellptr, idx_t *
   METIS_SetDefaultOptions(options);
   std::vector<idx_t> cell_partition(cell_count);
   idx_t              objval;
-  int                result = METIS_PartMeshNodal(&cell_count, &point_count, cellptr, celldata, 0, 0, &nparts, 0, options, &objval, cell_partition.data(), point_partition);
+  // TODO: Check return value of the function (and potentially add an assert)
+  METIS_PartMeshNodal(&cell_count, &point_count, cellptr, celldata, 0, 0, &nparts, 0, options, &objval, cell_partition.data(), point_partition);
 }
 
 int typewidth()

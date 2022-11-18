@@ -2,9 +2,7 @@
 
 <precice-configuration>
 
-  <log enabled="1">
-    <sink filter="%Severity% > debug" output="stdout" type="stream" enabled="1"/>
-  </log>
+  <log enabled="0" />
 
   <solver-interface dimensions="3">
 
