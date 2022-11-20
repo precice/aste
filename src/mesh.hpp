@@ -1,8 +1,7 @@
 #pragma once
 
 #include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/operations.hpp>
+#include <filesystem>
 
 #include <mpi.h>
 
@@ -39,7 +38,7 @@
 
 namespace aste {
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 class BaseName;
 struct Mesh;
 class MeshName;
