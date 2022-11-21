@@ -22,7 +22,7 @@ find_package (Threads REQUIRED)
 
 find_package(precice REQUIRED CONFIG)
 
-find_package(Boost 1.71.0 REQUIRED COMPONENTS log log_setup system program_options filesystem unit_test_framework)
+find_package(Boost 1.71.0 REQUIRED COMPONENTS log log_setup system program_options unit_test_framework)
 
 option(ASTE_USE_VTK_COMPONENTS "Find VTK with components" OFF)
 if(ASTE_USE_VTK_COMPONENTS)

@@ -2,7 +2,7 @@
 
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include <algorithm>
 #include <cassert>
@@ -22,7 +22,7 @@
 
 #include "precice/SolverInterface.hpp"
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 using VertexID = int;
 using EdgeID   = int;
