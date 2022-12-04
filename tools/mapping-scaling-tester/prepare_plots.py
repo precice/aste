@@ -4,33 +4,7 @@ import argparse
 import math
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas
-
-
-def parseArguments(args):
-    parser = argparse.ArgumentParser(
-        description="Creates convergence plots from gathered stats"
-    )
-    parser.add_argument(
-        "-f",
-        "--file",
-        type=argparse.FileType("r"),
-        default="stats.csv",
-        help="The CSV file containing the gathered stats.",
-    )
-    parser.add_argument(
-        "-p",
-        "--prefix",
-        default="result",
-        help="The prefix for all generated PDF plots.",
-    )
-    return parser.parse_args(args)
-
-
-def lavg(l):
-    return math.exp(sum(map(math.log, l)) / len(l))
-
 
 # seaborn.color_palette("colorblind", 10).as_hex()
 style_colours = [
@@ -49,7 +23,36 @@ style_markers = ["o", "D", "s"]
 styles = [(c, m) for m in style_markers for c in style_colours]
 
 
-def plotConv(ax, df, yname):
+def parse_arguments(args):
+    parser = argparse.ArgumentParser(description="Creates plots from gathered stats")
+    parser.add_argument(
+        "-f",
+        "--file",
+        type=argparse.FileType("r"),
+        default="stats.csv",
+        help="The CSV file containing the gathered stats.",
+    )
+    parser.add_argument(
+        "-p",
+        "--prefix",
+        default="result",
+        help="The prefix for all generated PDF plots.",
+    )
+    parser.add_argument(
+        "-m",
+        "--mode",
+        default="mapping",
+        choices=["weak_scale", "mapping"],
+        help="The test mode to plot",
+    )
+    return parser.parse_args(args)
+
+
+def lavg(l):
+    return math.exp(sum(map(math.log, l)) / len(l))
+
+
+def plot_convergence(ax, df, yname):
     xmin = df["mesh A"].min()
     xmax = df["mesh A"].max()
     ymin = df[yname].min()
@@ -73,14 +76,13 @@ def plotConv(ax, df, yname):
     soy1 = ymin
     soy2 = soy1 * ((sox[1] / sox[0]) ** 2)
     soy = [soy1, soy2]
-    print(sox, soy)
     ax.axline(
         (sox[0], soy[0]), (sox[1], soy[1]), color="lightgray", linewidth=1.0, zorder=-1
     )
     ax.annotate("2nd order", xy=(lavg(sox), lavg(soy)), color="gray", zorder=-1)
 
 
-def plotError(df, prefix):
+def plot_error(df, prefix):
     yname = "relative-l2"
     fig, ax = plt.subplots(sharex=True, sharey=True)
     series = df.groupby("mapping")
@@ -102,14 +104,14 @@ def plotError(df, prefix):
     ax.set_xlabel("edge length(h) of mesh A")
     ax.set_ylabel("relative-l2 error mapping to mesh B")
 
-    plotConv(ax, df, yname)
+    plot_convergence(ax, df, yname)
 
     plt.gca().invert_xaxis()
     plt.grid()
     plt.savefig(prefix + "-error.pdf")
 
 
-def plotMemory(df, prefix):
+def plot_memory(df, prefix):
     yname = "peakMemB"
     fig, ax = plt.subplots(sharex=True, sharey=True)
     series = df.groupby("mapping")
@@ -138,7 +140,7 @@ def plotMemory(df, prefix):
     plt.savefig(prefix + "-peakMemB.pdf")
 
 
-def plotComputeMappingTime(df, prefix):
+def plot_compute_mapping_time(df, prefix):
     yname = "computeMappingTime"
     fig, ax = plt.subplots(sharex=True, sharey=True)
     series = df.groupby("mapping")
@@ -168,7 +170,7 @@ def plotComputeMappingTime(df, prefix):
     plt.savefig(prefix + "-computet.pdf")
 
 
-def plotMapDataTime(df, prefix):
+def plot_map_data_time(df, prefix):
     yname = "mapDataTime"
     fig, ax = plt.subplots(sharex=True, sharey=True)
     series = df.groupby("mapping")
@@ -198,23 +200,108 @@ def plotMapDataTime(df, prefix):
     plt.savefig(prefix + "-mapt.pdf")
 
 
+def plot_scale_memory(df, prefix, participant):
+    yname = "peakMem" + participant
+    _, ax = plt.subplots(sharex=True, sharey=True)
+    series = df.groupby("mapping")
+
+    for grouped, style in zip(series, styles):
+        name, group = grouped
+        if group[yname].max() == 0:
+            print(f"Dropping {yname}-series {name} as all 0")
+            continue
+        color, marker = style
+        group.plot(
+            ax=ax,
+            x=f"mesh {participant}",
+            y=yname,
+            label=name,
+            marker=marker,
+            color=color,
+        )
+    ax.set_xlabel(f"ranks {participant}")
+    ax.set_ylabel(f"peak memory of participant {participant} [bytes]")
+
+    plt.grid()
+    plt.savefig(f"{prefix}-peakMem{participant}.pdf")
+
+
+def plot_scale_map_time(df, prefix, participant):
+    yname = "mapDataTime"
+    _, ax = plt.subplots(sharex=True, sharey=True)
+    series = df.groupby("mapping")
+    for grouped, style in zip(series, styles):
+        name, group = grouped
+        if group[yname].max() == 0:
+            print(f"Dropping {yname}-series {name} as all 0")
+            continue
+        color, marker = style
+        group.plot(
+            ax=ax,
+            x=f"ranks {participant}",
+            y=yname,
+            label=name,
+            marker=marker,
+            color=color,
+        )
+
+    ax.set_xlabel(f"ranks {participant}")
+    ax.set_ylabel("time to map Data [ms]")
+
+    plt.grid()
+    plt.savefig(f"{prefix}-mapt-{participant}.pdf")
+
+
+def plot_scale_compute_mapping_time(df, prefix, participant):
+    yname = "computeMappingTime"
+    _, ax = plt.subplots(sharex=True, sharey=True)
+    series = df.groupby("mapping")
+    for grouped, style in zip(series, styles):
+        name, group = grouped
+        if group[yname].max() == 0:
+            print(f"Dropping {yname}-series {name} as all 0")
+            continue
+        color, marker = style
+        group.plot(
+            ax=ax,
+            x=f"ranks {participant}",
+            y=yname,
+            label=name,
+            marker=marker,
+            color=color,
+        )
+
+    ax.set_xlabel(f"ranks {participant}")
+    ax.set_ylabel("time to compute mapping [ms]")
+
+    plt.grid()
+    plt.savefig(f"{prefix}-computet-{participant}.pdf")
+
+
 def main(argv):
-    args = parseArguments(argv[1:])
+    args = parse_arguments(argv[1:])
 
     plt.rcParams["legend.fontsize"] = "small"
     plt.rcParams["figure.figsize"] = "8, 8"
     plt.rcParams["figure.autolayout"] = "true"
 
     df = pandas.read_csv(args.file)
-    toMeshes = df["mesh B"].unique()
-    assert (
-        len(toMeshes) == 1
-    ), f"There are {len(toMeshes)} to-meshes but only 1 is allowed. Fix your dataset!"
-    df.sort_values("mesh A", inplace=True)
-    plotError(df, args.prefix)
-    plotMemory(df, args.prefix)
-    plotMapDataTime(df, args.prefix)
-    plotComputeMappingTime(df, args.prefix)
+    if args.mode == "mapping":
+        to_meshes = df["mesh B"].unique()
+        assert (
+            len(to_meshes) == 1
+        ), f"There are {len(to_meshes)} to-meshes but only 1 is allowed. Fix your dataset!"
+        df.sort_values("mesh A", inplace=True)
+        plot_error(df, args.prefix)
+        plot_memory(df, args.prefix)
+        plot_map_data_time(df, args.prefix)
+        plot_compute_mapping_time(df, args.prefix)
+    elif args.mode == "weak_scale":
+        for participant in ["A", "B"]:
+            df.sort_values(f"ranks {participant}", inplace=True)
+            plot_scale_memory(df, args.prefix, participant)
+            plot_scale_map_time(df, args.prefix, participant)
+            plot_scale_compute_mapping_time(df, args.prefix, participant)
     return 0
 
 
