@@ -23,7 +23,9 @@ def parseArguments(args):
         default="setup.json",
         help="The test setup file to use.",
     )
-    parser.add_argument("-f", "--force", action="store_true", help="Remove existing meshes.")
+    parser.add_argument(
+        "-f", "--force", action="store_true", help="Remove existing meshes."
+    )
     parser.add_argument("-g", "--generator", help="The generator to use.")
     parser.add_argument("-d", "--dim", default=3, help="The dimension of the mesh.")
     parser.add_argument("--seed", default=0, help="The seed for the mesh generator.")
@@ -84,7 +86,7 @@ def preparePartMesh(meshdir, name, p, force=False):
             return
 
     os.makedirs(partDir, exist_ok=True)
-    [pathName, tmpfilename] = os.path.split(os.path.normpath(partMesh))
+    [pathName, _] = os.path.split(os.path.normpath(partMesh))
     subprocess.run(
         [
             "precice-aste-partition",
@@ -111,7 +113,7 @@ def createMesh(haltonGeneratorScript, file, points, dim=3, seed=0):
     subprocess.run(
         [
             "python3",
-            os.path.abspath(os.getcwd() + haltonGeneratorScript),
+            os.path.abspath(haltonGeneratorScript),
             "--mesh",
             file,
             "--numpoints",
@@ -134,7 +136,9 @@ def main(argv):
     meshdir = os.path.join(outdir, "meshes")
     function = setup["general"]["function"]
 
-    partitions = set([int(rank) for pranks in setup["general"]["ranks"].values() for rank in pranks])
+    partitions = set(
+        [int(rank) for pranks in setup["general"]["ranks"].values() for rank in pranks]
+    )
     for points in set(
         [
             setup["general"]["numberofpointsperrank"]["A"],

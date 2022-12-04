@@ -1,6 +1,6 @@
 {
     "general": {
-        "testlocation": "${TEST_LOCATION}", 
+        "testlocation": "${TEST_LOCATION}",
         "function": "x+y^2+z^3",
         "ranks": {
             "A": [
