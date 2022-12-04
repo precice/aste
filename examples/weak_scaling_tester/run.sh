@@ -17,7 +17,7 @@ TEST_CASE_LOCATION="${TEST_LOCATION}"/case
 python3 "${WEAK_SCALING_TESTER}"/generate_scale_test.py --setup "${TEST_LOCATION}"/setup-test.json --outdir "${TEST_CASE_LOCATION}" --template "${WEAK_SCALING_TESTER}"/config-template.xml
 
 # Prepare the meshes
-python3 "${WEAK_SCALING_TESTER}"/prepare-scale-meshes.py --setup "${TEST_LOCATION}"/setup-test.json --outdir "${TEST_CASE_LOCATION}" --force -g "${GENERATOR}"
+python3 "${WEAK_SCALING_TESTER}"/prepare_scale_meshes.py --setup "${TEST_LOCATION}"/setup-test.json --outdir "${TEST_CASE_LOCATION}" --force -g "${GENERATOR}"
 export ASTE_A_MPIARGS=""
 export ASTE_B_MPIARGS=""
 
@@ -30,4 +30,7 @@ bash ./postprocessall.sh
 cd "${TEST_LOCATION}"
 
 # Gather the generated statistics
-python3 "${WEAK_SCALING_TESTER}"/gatherstats.py --outdir "${TEST_CASE_LOCATION}" --file test-statistics.csv
+python3 "${WEAK_SCALING_TESTER}"/gather_stats.py --outdir "${TEST_CASE_LOCATION}" --file test-statistics.csv
+
+# Plot the results
+python3 "${WEAK_SCALING_TESTER}"/prepare_plots.py --file test-statistics.csv --mode weak_scale
