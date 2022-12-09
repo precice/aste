@@ -32,7 +32,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, dim, dataname, dataID);
 
 #if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
-      if (preciceInterface.isGradientDataRequired(dataID)) {
+      if (preciceInterface.requiresGradientDataFor(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
         asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, dim, dataname, dataID, dim);
       }
@@ -49,7 +49,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, 1, dataname, dataID);
 
 #if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
-      if (preciceInterface.isGradientDataRequired(dataID)) {
+      if (preciceInterface.requiresGradientDataFor(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
         asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, 1, dataname, dataID, dim);
       }
@@ -61,7 +61,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     }
 
     ASTE_INFO << "Loading mesh from " << asteInterface.meshes.front().filename();
-    const bool requireConnectivity = preciceInterface.isMeshConnectivityRequired(asteInterface.meshID);
+    const bool requireConnectivity = preciceInterface.requiresMeshConnectivityFor(asteInterface.meshID);
     asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim, requireConnectivity);
     ASTE_INFO << "The loaded mesh " << asteInterface.meshes.front().filename() << " contains: " << asteInterface.mesh.summary();
     vertexIDs = setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshID);
@@ -82,7 +82,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
   ASTE_INFO << "ASTE Start mesh is " << asteConfiguration.asteInterfaces.front().meshes[round].filename();
   ASTE_INFO << "ASTE Final mesh is " << asteConfiguration.asteInterfaces.front().meshes.back().filename();
 
-  if (preciceInterface.isActionRequired(precice::constants::actionWriteInitialData())) {
+  if (preciceInterface.requiresInitialData()) {
     if (round == 0) {
       ASTE_ERROR << "Starting from dt = " << std::to_string(asteConfiguration.startdt) << " but previous timestep \".init\" or " << std::to_string(asteConfiguration.startdt - 1) << " was not found. Please make sure the relevant Mesh exists.";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
@@ -107,16 +107,12 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
       }
       ASTE_DEBUG << "Data written: " << asteInterface.mesh.previewData();
     }
-    preciceInterface.markActionFulfilled(precice::constants::actionWriteInitialData());
   }
 
   dt = preciceInterface.initialize();
 
-  const std::string &coric = precice::constants::actionReadIterationCheckpoint();
-  const std::string &cowic = precice::constants::actionWriteIterationCheckpoint();
-
   while (preciceInterface.isCouplingOngoing() && (round < minMeshSize)) {
-    if (preciceInterface.isActionRequired(cowic)) {
+    if (preciceInterface.requiresWritingCheckpoint()) {
       ASTE_ERROR << "Implicit coupling schemes cannot be used with ASTE";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
@@ -158,7 +154,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
       }
     }
     dt = preciceInterface.advance(dt);
-    if (preciceInterface.isActionRequired(coric)) {
+    if (preciceInterface.requiresReadingCheckpoint()) {
       ASTE_ERROR << "Implicit coupling schemes cannot be used with ASTE";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
@@ -216,7 +212,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, dim, dataname, dataID);
 
 #if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
-      if (preciceInterface.isGradientDataRequired(dataID)) {
+      if (preciceInterface.requiresGradientDataFor(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
         asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, dim, dataname, dataID, dim);
       }
@@ -226,7 +222,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, 1, dataname, dataID);
 
 #if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
-      if (preciceInterface.isGradientDataRequired(dataID)) {
+      if (preciceInterface.requiresGradientDataFor(dataID)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
         asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, 1, dataname, dataID, dim);
       }
@@ -255,14 +251,14 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
 
   auto asteInterface = asteConfiguration.asteInterfaces.front();
   ASTE_INFO << "Loading mesh from " << asteInterface.meshes.front().filename();
-  const bool requireConnectivity = preciceInterface.isMeshConnectivityRequired(asteInterface.meshID);
+  const bool requireConnectivity = preciceInterface.requiresMeshConnectivityFor(asteInterface.meshID);
   asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim, requireConnectivity);
   asteInterface.meshes.front().loadData(asteInterface.mesh);
   ASTE_INFO << "The loaded mesh " << asteInterface.meshes.front().filename() << " contains: " << asteInterface.mesh.summary();
   auto vertexIDs = aste::setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshID);
   ASTE_DEBUG << "Mesh setup completed on Rank " << context.rank;
 
-  if (preciceInterface.isActionRequired(precice::constants::actionWriteInitialData())) {
+  if (preciceInterface.requiresInitialData()) {
     ASTE_DEBUG << "Write initial data for participant " << participantName;
     for (auto const &asteInterface : asteConfiguration.asteInterfaces) {
       for (const auto &meshdata : asteInterface.mesh.meshdata) {
@@ -296,17 +292,14 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
       }
       ASTE_DEBUG << "Data written: " << asteInterface.mesh.previewData();
     }
-    preciceInterface.markActionFulfilled(precice::constants::actionWriteInitialData());
   }
 
   double dt = preciceInterface.initialize();
 
-  const std::string &coric = precice::constants::actionReadIterationCheckpoint();
-  const std::string &cowic = precice::constants::actionWriteIterationCheckpoint();
-  size_t             round = 0;
+  size_t round = 0;
 
   while (preciceInterface.isCouplingOngoing() && round < asteInterface.meshes.size()) {
-    if (preciceInterface.isActionRequired(cowic)) {
+    if (preciceInterface.requiresWritingCheckpoint()) {
       ASTE_ERROR << "Implicit coupling schemes cannot be used with ASTE";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
@@ -348,7 +341,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
       }
     }
     dt = preciceInterface.advance(dt);
-    if (preciceInterface.isActionRequired(coric)) {
+    if (preciceInterface.requiresReadingCheckpoint()) {
       ASTE_ERROR << "Implicit coupling schemes cannot be used with ASTE";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }

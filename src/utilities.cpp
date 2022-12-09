@@ -86,7 +86,7 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
 
   auto tconnectivity = std::chrono::steady_clock::now();
 
-  if (interface.isMeshConnectivityRequired(meshID)) {
+  if (interface.requiresMeshConnectivityFor(meshID)) {
     ASTE_DEBUG << "Mesh Setup: 2) Edges";
     const auto edgeMap = setupEdgeIDs(interface, mesh, meshID, vertexIDs);
     ASTE_DEBUG << "Total " << edgeMap.size() << " edges are configured";
