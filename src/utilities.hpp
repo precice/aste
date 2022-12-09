@@ -50,7 +50,7 @@ aste::ExecutionContext initializeMPI(int argc, char *argv[]);
 std::vector<int> setupVertexIDs(precice::SolverInterface &interface,
                                 const aste::Mesh &mesh, int meshID);
 
-EdgeIdMap setupEdgeIDs(precice::SolverInterface &interface, const aste::Mesh &mesh, int meshID, const std::vector<int> &vertexIDs);
+void setupEdgeIDs(precice::SolverInterface &interface, const aste::Mesh &mesh, int meshID, const std::vector<int> &vertexIDs);
 /**
  * @brief Setup mesh in preCICE (with connectivity information of provided).
  *
