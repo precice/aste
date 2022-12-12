@@ -23,7 +23,9 @@ def parse_arguments(args):
         default="setup.json",
         help="The test setup file to use.",
     )
-    parser.add_argument("-f", "--force", action="store_true", help="Remove existing meshes.")
+    parser.add_argument(
+        "-f", "--force", action="store_true", help="Remove existing meshes."
+    )
 
     return parser.parse_args(args)
 
@@ -110,7 +112,9 @@ def main(argv):
     meshdir = os.path.join(outdir, "meshes")
     function = setup["general"]["function"]
 
-    partitions = set([int(rank) for pranks in setup["general"]["ranks"].values() for rank in pranks])
+    partitions = set(
+        [int(rank) for pranks in setup["general"]["ranks"].values() for rank in pranks]
+    )
 
     for name, file in set(
         itertools.chain(

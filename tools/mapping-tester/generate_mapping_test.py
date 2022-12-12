@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import sys
+
 from jinja2 import Template
 
 
@@ -101,40 +102,60 @@ def create_master_run_scripts(casemap, dir):
     ]
 
     # Generate master runner script
-    content = common + ["${RUNNER} " + os.path.join(case, "runall.sh") for case in casemap.keys()]
-    open(os.path.join(dir, "runall.sh"), "w").writelines([line + "\n" for line in content])
+    content = common + [
+        "${RUNNER} " + os.path.join(case, "runall.sh") for case in casemap.keys()
+    ]
+    open(os.path.join(dir, "runall.sh"), "w").writelines(
+        [line + "\n" for line in content]
+    )
 
     # Generate master postprocessing script
-    post = common + ["${RUNNER} " + os.path.join(case, "postprocessall.sh") for case in casemap.keys()]
-    open(os.path.join(dir, "postprocessall.sh"), "w").writelines([line + "\n" for line in post])
+    post = common + [
+        "${RUNNER} " + os.path.join(case, "postprocessall.sh")
+        for case in casemap.keys()
+    ]
+    open(os.path.join(dir, "postprocessall.sh"), "w").writelines(
+        [line + "\n" for line in post]
+    )
 
     for case, instances in casemap.items():
         # Generate master runner script
-        content = common + ["${RUNNER} " + os.path.join(*instance, "run-wrapper.sh") for instance in instances]
-        open(os.path.join(dir, case, "runall.sh"), "w").writelines([line + "\n" for line in content])
+        content = common + [
+            "${RUNNER} " + os.path.join(*instance, "run-wrapper.sh")
+            for instance in instances
+        ]
+        open(os.path.join(dir, case, "runall.sh"), "w").writelines(
+            [line + "\n" for line in content]
+        )
 
         # Generate master postprocessing script
-        post = common + ["${RUNNER} " + os.path.join(*instance, "post.sh") for instance in instances]
-        open(os.path.join(dir, case, "postprocessall.sh"), "w").writelines([line + "\n" for line in post])
+        post = common + [
+            "${RUNNER} " + os.path.join(*instance, "post.sh") for instance in instances
+        ]
+        open(os.path.join(dir, case, "postprocessall.sh"), "w").writelines(
+            [line + "\n" for line in post]
+        )
 
 
 def create_run_script(outdir, path, case):
     amesh = case["A"]["mesh"]["name"]
     aranks = case["A"]["ranks"]
-    amesh_location = os.path.relpath(os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path)
+    amesh_location = os.path.relpath(
+        os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path
+    )
 
     # Generate runner script
-    acmd = (
-        '/usr/bin/time -f %M -a -o memory-A.log precice-aste-run -v -a -p A --data "{}" --mesh {} || kill 0 &'.format(
-            case["function"], amesh_location
-        )
+    acmd = '/usr/bin/time -f %M -a -o memory-A.log precice-aste-run -v -a -p A --data "{}" --mesh {} || kill 0 &'.format(
+        case["function"], amesh_location
     )
     if aranks > 1:
         acmd = "mpirun -n {} $ASTE_A_MPIARGS {}".format(aranks, acmd)
 
     bmesh = case["B"]["mesh"]["name"]
     branks = case["B"]["ranks"]
-    bmesh_location = os.path.relpath(os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path)
+    bmesh_location = os.path.relpath(
+        os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path
+    )
     mapped_data_name = case["function"] + "(mapped)"
     bcmd = '/usr/bin/time -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{}" --mesh {} --output mapped || kill 0 &'.format(
         mapped_data_name, bmesh_location
@@ -150,7 +171,9 @@ def create_run_script(outdir, path, case):
         "rm -f memory-A.log memory-B.log done running failed",
         "rm -fr mapped && mkdir mapped",
         "touch running",
-        "echo '= {} ({}) {} - {}'".format(case["mapping"]["name"], case["mapping"]["constraint"], amesh, bmesh),
+        "echo '= {} ({}) {} - {}'".format(
+            case["mapping"]["name"], case["mapping"]["constraint"], amesh, bmesh
+        ),
         "echo '=========='",
         "",
         "set -m",
@@ -166,7 +189,9 @@ def create_run_script(outdir, path, case):
         "fi",
         "rm -f running",
     ]
-    open(os.path.join(path, "run.sh"), "w").writelines([line + "\n" for line in content])
+    open(os.path.join(path, "run.sh"), "w").writelines(
+        [line + "\n" for line in content]
+    )
 
     # Generate wrapper script for runner
     wrapper = [
@@ -174,14 +199,18 @@ def create_run_script(outdir, path, case):
         'cd "$( dirname "${BASH_SOURCE[0]}" )"',
         "/bin/bash run.sh 2>&1 | tee run.log",
     ]
-    open(os.path.join(path, "run-wrapper.sh"), "w").writelines([line + "\n" for line in wrapper])
+    open(os.path.join(path, "run-wrapper.sh"), "w").writelines(
+        [line + "\n" for line in wrapper]
+    )
 
     # Generate post processing script
     post_content = [
         "#!/bin/bash",
         "set -e -u",
         'cd "$( dirname "${BASH_SOURCE[0]}" )"',
-        "echo '= {} ({}) {} - {}'".format(case["mapping"]["name"], case["mapping"]["constraint"], amesh, bmesh),
+        "echo '= {} ({}) {} - {}'".format(
+            case["mapping"]["name"], case["mapping"]["constraint"], amesh, bmesh
+        ),
     ]
     if branks == 1:
         joincmd = "[ ! -f mapped.vtu ] || mv --update mapped.vtu mapped.vtk"
@@ -192,12 +221,16 @@ def create_run_script(outdir, path, case):
     else:
         [recovery_file_location, _] = os.path.split(os.path.normpath(bmesh_location))
         tmp_recovery_file = recovery_file_location + "/{}_recovery.json".format(bmesh)
-        joincmd = "precice-aste-join --mesh mapped -r {} -o result.vtk".format(tmp_recovery_file)
+        joincmd = "precice-aste-join --mesh mapped -r {} -o result.vtk".format(
+            tmp_recovery_file
+        )
         diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh result.vtk --function "{0}" | tee diff.log'.format(
             case["function"], mapped_data_name
         )
         post_content += [joincmd, diffcmd]
-    open(os.path.join(path, "post.sh"), "w").writelines([line + "\n" for line in post_content])
+    open(os.path.join(path, "post.sh"), "w").writelines(
+        [line + "\n" for line in post_content]
+    )
 
 
 def setup_cases(outdir, template, cases):

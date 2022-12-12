@@ -40,10 +40,14 @@ def stats_from_timings(dir):
             computeMappingName = [
                 x
                 for x in timings.keys()
-                if x.startswith("advance/map") and x.endswith("computeMapping.FromA-MeshToB-Mesh")
+                if x.startswith("advance/map")
+                and x.endswith("computeMapping.FromA-MeshToB-Mesh")
             ][0]
             mapDataName = [
-                x for x in timings.keys() if x.startswith("advance/map") and x.endswith("mapData.FromA-MeshToB-Mesh")
+                x
+                for x in timings.keys()
+                if x.startswith("advance/map")
+                and x.endswith("mapData.FromA-MeshToB-Mesh")
             ][0]
             stats["computeMappingTime"] = timings[computeMappingName]["Max"]
             stats["mapDataTime"] = timings[mapDataName]["Max"]
@@ -73,7 +77,10 @@ def main(argv):
     args = parse_arguments(argv[1:])
 
     globber = os.path.join(args.outdir, "**", "*.stats.json")
-    stat_files = [os.path.relpath(path, args.outdir) for path in glob.iglob(globber, recursive=True)]
+    stat_files = [
+        os.path.relpath(path, args.outdir)
+        for path in glob.iglob(globber, recursive=True)
+    ]
     allstats = []
     fields = []
     for file in stat_files:

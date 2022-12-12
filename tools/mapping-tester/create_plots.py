@@ -2,10 +2,10 @@
 
 import argparse
 import math
-import matplotlib.pyplot as plt
-import pandas
 import sys
 
+import matplotlib.pyplot as plt
+import pandas
 
 style_colours = [
     "#0173b2",
@@ -24,7 +24,9 @@ styles = [(c, m) for m in style_markers for c in style_colours]
 
 
 def parse_arguments(args):
-    parser = argparse.ArgumentParser(description="Creates convergence plots from gathered stats")
+    parser = argparse.ArgumentParser(
+        description="Creates convergence plots from gathered stats"
+    )
     parser.add_argument(
         "-f",
         "--file",
@@ -56,7 +58,9 @@ def plot_convergence(ax, df, yname):
     foy1 = ymax
     foy2 = foy1 * (fox[1] / fox[0])
     foy = [foy1, foy2]
-    ax.axline((fox[0], foy[0]), (fox[1], foy[1]), color="lightgray", linewidth=1.0, zorder=-1)
+    ax.axline(
+        (fox[0], foy[0]), (fox[1], foy[1]), color="lightgray", linewidth=1.0, zorder=-1
+    )
     ax.annotate("1st order", xy=(lavg(fox), lavg(foy)), color="gray", zorder=-1)
 
     # 2nd order line
@@ -65,7 +69,9 @@ def plot_convergence(ax, df, yname):
     soy2 = soy1 * ((sox[1] / sox[0]) ** 2)
     soy = [soy1, soy2]
     print(sox, soy)
-    ax.axline((sox[0], soy[0]), (sox[1], soy[1]), color="lightgray", linewidth=1.0, zorder=-1)
+    ax.axline(
+        (sox[0], soy[0]), (sox[1], soy[1]), color="lightgray", linewidth=1.0, zorder=-1
+    )
     ax.annotate("2nd order", xy=(lavg(sox), lavg(soy)), color="gray", zorder=-1)
 
 
@@ -190,7 +196,9 @@ def main(argv):
 
     df = pandas.read_csv(args.file)
     to_meshes = df["mesh B"].unique()
-    assert len(to_meshes) == 1, f"There are {len(to_meshes)} to-meshes but only 1 is allowed. Fix your dataset!"
+    assert (
+        len(to_meshes) == 1
+    ), f"There are {len(to_meshes)} to-meshes but only 1 is allowed. Fix your dataset!"
     df.sort_values("mesh A", inplace=True)
     plot_error(df, args.prefix)
     plot_memory_usage(df, args.prefix)
