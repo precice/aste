@@ -5,9 +5,10 @@ import csv
 import glob
 import json
 import os
+import sys
 
 
-def parseArguments(args):
+def parse_arguments(args):
     parser = argparse.ArgumentParser(description="Gathers stats after a run")
     parser.add_argument(
         "-o",
@@ -25,7 +26,7 @@ def parseArguments(args):
     return parser.parse_args(args)
 
 
-def statsFromTimings(dir):
+def stats_from_timings(dir):
     stats = {}
     assert os.path.isdir(dir)
     file = os.path.join(dir, "precice-B-events.json")
@@ -39,14 +40,10 @@ def statsFromTimings(dir):
             computeMappingName = [
                 x
                 for x in timings.keys()
-                if x.startswith("advance/map")
-                and x.endswith("computeMapping.FromA-MeshToB-Mesh")
+                if x.startswith("advance/map") and x.endswith("computeMapping.FromA-MeshToB-Mesh")
             ][0]
             mapDataName = [
-                x
-                for x in timings.keys()
-                if x.startswith("advance/map")
-                and x.endswith("mapData.FromA-MeshToB-Mesh")
+                x for x in timings.keys() if x.startswith("advance/map") and x.endswith("mapData.FromA-MeshToB-Mesh")
             ][0]
             stats["computeMappingTime"] = timings[computeMappingName]["Max"]
             stats["mapDataTime"] = timings[mapDataName]["Max"]
@@ -55,7 +52,7 @@ def statsFromTimings(dir):
     return stats
 
 
-def memoryStats(dir):
+def memory_stats(dir):
     stats = {}
     assert os.path.isdir(dir)
     for P in "A", "B":
@@ -73,23 +70,20 @@ def memoryStats(dir):
 
 
 def main(argv):
-    args = parseArguments(argv[1:])
+    args = parse_arguments(argv[1:])
 
     globber = os.path.join(args.outdir, "**", "*.stats.json")
-    statFiles = [
-        os.path.relpath(path, args.outdir)
-        for path in glob.iglob(globber, recursive=True)
-    ]
+    stat_files = [os.path.relpath(path, args.outdir) for path in glob.iglob(globber, recursive=True)]
     allstats = []
     fields = []
-    for file in statFiles:
+    for file in stat_files:
         print("Found: " + file)
         casedir = os.path.join(args.outdir, os.path.dirname(file))
         parts = os.path.normpath(file).split(os.sep)
         assert len(parts) >= 5
         mapping, constraint, meshes, ranks, _ = parts[-5:]
         meshA, meshB = meshes.split("-")
-        ranksA, ranksB = meshes.split("-")
+        ranksA, ranksB = ranks.split("-")
 
         with open(os.path.join(args.outdir, file), "r") as jsonfile:
             stats = json.load(jsonfile)
@@ -99,8 +93,8 @@ def main(argv):
             stats["mesh B"] = meshB
             stats["ranks A"] = ranksA
             stats["ranks B"] = ranksB
-            stats.update(statsFromTimings(casedir))
-            stats.update(memoryStats(casedir))
+            stats.update(stats_from_timings(casedir))
+            stats.update(memory_stats(casedir))
             allstats.append(stats)
             if not fields:
                 fields += stats.keys()
@@ -113,6 +107,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    import sys
-
     sys.exit(main(sys.argv))

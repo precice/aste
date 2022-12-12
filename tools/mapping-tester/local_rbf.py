@@ -46,9 +46,7 @@ def parseArguments(argv):
     parser.add_argument("-p", "--polynomials", default=default_polynomials, type=str)
     parser.add_argument("-t", "--types", default=default_types, type=str)
     parser.add_argument("-n", "--coverage", default="3,5,10,15", type=str)
-    parser.add_argument(
-        "-o", "--output", default=sys.stdout, type=argparse.FileType("w")
-    )
+    parser.add_argument("-o", "--output", default=sys.stdout, type=argparse.FileType("w"))
     parser.add_argument("-r", "--solver-rtol", default=1e-9, type=float)
 
     args = parser.parse_args(argv[1:])
@@ -56,9 +54,7 @@ def parseArguments(argv):
     # Sanitize arguments
     args.a = [float(e.strip()) for e in args.a.split(",")]
     args.b = [float(e.strip()) for e in args.b.split(",")]
-    args.polynomials = [
-        sanitize(e, valid_polynomials) for e in args.polynomials.split(",")
-    ]
+    args.polynomials = [sanitize(e, valid_polynomials) for e in args.polynomials.split(",")]
     args.types = [sanitize(e, valid_types) for e in args.types.split(",")]
     args.coverage = [int(e.strip()) for e in args.coverage.split(",")]
 
@@ -104,9 +100,7 @@ def main(argv):
     # of mesh a.
     for a in args.a:
         cases = {}
-        for polynomial, coverage, type in itertools.product(
-            args.polynomials, args.coverage, args.types
-        ):
+        for polynomial, coverage, type in itertools.product(args.polynomials, args.coverage, args.types):
             name = f"{type}-n{coverage}-{polynomial}"
             assert name not in cases
             config = getConfigurator(type)(a, coverage)
