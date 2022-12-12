@@ -4,23 +4,23 @@ import argparse
 import json
 import os
 import sys
-
 from common import *
 
 
 def generate_cases(setup):
-    meshes = setup["general"]["meshes"]
     network = setup["general"].get("network", "lo")
     syncmode = setup["general"].get("syncmode", "false")
-
+    test_location = setup["general"]["testlocation"]
     cases = []
     for group in setup["groups"]:
         for name, mapping in group["mapping"]["cases"].items():
             for constraint in group["mapping"]["constraints"]:
-                for inname in group["meshes"]["A"]:
-                    infile = meshes["A"][inname]
-                    for outname in group["meshes"]["B"]:
-                        outfile = meshes["B"][outname]
+                for number_of_points_per_rank_A in as_iter(
+                    setup["general"]["numberofpointsperrank"]["A"]
+                ):
+                    for number_of_points_per_rankB in as_iter(
+                        setup["general"]["numberofpointsperrank"]["B"]
+                    ):
                         for ranksA, ranksB in zip(
                             as_iter(setup["general"]["ranks"].get("A", 1)),
                             as_iter(setup["general"]["ranks"].get("B", 1)),
@@ -37,15 +37,25 @@ def generate_cases(setup):
                                     "A": {
                                         "ranks": ranksA,
                                         "mesh": {
-                                            "name": inname,
-                                            "file": infile,
+                                            "name": str(
+                                                number_of_points_per_rank_A * ranksA
+                                            ),
+                                            "file": os.path.join(
+                                                test_location,
+                                                f"meshA-{number_of_points_per_rank_A*ranksA}.vtk",
+                                            ),
                                         },
                                     },
                                     "B": {
                                         "ranks": ranksB,
                                         "mesh": {
-                                            "name": outname,
-                                            "file": outfile,
+                                            "name": str(
+                                                number_of_points_per_rankB * ranksB
+                                            ),
+                                            "file": os.path.join(
+                                                test_location,
+                                                f"meshB-{number_of_points_per_rankB*ranksB}.vtk",
+                                            ),
                                         },
                                     },
                                     "network": network,
