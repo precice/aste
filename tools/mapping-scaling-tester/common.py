@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+
 from jinja2 import Template
 
 
@@ -16,6 +17,7 @@ def as_iter(something):
     except TypeError:
         return [something]
 
+
 def get_case_folder(case):
     return [
         case["mapping"]["name"],
@@ -23,6 +25,7 @@ def get_case_folder(case):
         "{}-{}".format(case["A"]["mesh"]["name"], case["B"]["mesh"]["name"]),
         "{}-{}".format(case["A"]["ranks"], case["B"]["ranks"]),
     ]
+
 
 def case_to_sortable(case):
     parts = case.split(os.path.sep)
@@ -81,6 +84,7 @@ def create_master_run_scripts(casemap, dir):
         open(os.path.join(dir, case, "postprocessall.sh"), "w").writelines(
             [line + "\n" for line in post]
         )
+
 
 def create_run_script(outdir, path, case):
     amesh = case["A"]["mesh"]["name"]
@@ -176,6 +180,7 @@ def create_run_script(outdir, path, case):
     open(os.path.join(path, "post.sh"), "w").writelines(
         [line + "\n" for line in post_content]
     )
+
 
 def setup_cases(outdir, template, cases):
     casemap = {}
