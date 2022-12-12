@@ -1,0 +1,35 @@
+{
+    "general": {
+        "testlocation": "${TEST_LOCATION}",
+        "function": "x+y^2+z^3",
+        "ranks": {
+            "A": [
+                1,2,3,4
+            ],
+            "B": [
+                1,2,3,4
+            ]
+        },
+        "network": "lo0",
+        "syncmode": false,
+        "numberofpointsperrank": {
+            "A": 1000,
+            "B": 1200
+        }
+    },
+    "groups": [
+        {
+            "mapping": {
+                "constraints": [
+                    "consistent"
+                ],
+                "cases": {
+                    "tps": {
+                        "kind": "rbf-thin-plate-splines",
+                        "options": "use-qr-decomposition=\"1\""
+                    }
+                }
+            }
+        }
+    ]
+}
