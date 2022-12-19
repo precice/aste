@@ -21,11 +21,11 @@ jobs:
       - uses: actions/checkout@v3
       - name: install preCICE
         run: |
-          . /etc/os-release \
-          export UBUNTU_CODENAME="jammy" \
           wget https://github.com/precice/precice/releases/download/v2.5.0/libprecice2_2.5.0_${{ env.UBUNTU_CODENAME }}.deb && \
           sudo apt-get -y update && \
           sudo apt-get -y install ./libprecice2_2.5.0_${{ env.UBUNTU_CODENAME }}.deb
+          env:
+            UBUNTU_CODENAME: jammy
       - name: install VTK
         run: |
           sudo apt-get -y install libvtk7-dev
