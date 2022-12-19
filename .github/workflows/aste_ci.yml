@@ -22,7 +22,7 @@ jobs:
       - name: install preCICE
         run: |
           . /etc/os-release \
-          export UBUNTU_CODENAME="jammy"
+          export UBUNTU_CODENAME="jammy" \
           wget https://github.com/precice/precice/releases/download/v2.5.0/libprecice2_2.5.0_${{ env.UBUNTU_CODENAME }}.deb && \
           sudo apt-get -y update && \
           sudo apt-get -y install ./libprecice2_2.5.0_${{ env.UBUNTU_CODENAME }}.deb
