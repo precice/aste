@@ -18,7 +18,7 @@ jobs:
       CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
       CTEST_OUTPUT_ON_FAILURE: "Yes"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: install preCICE
         run: |
           wget https://github.com/precice/precice/releases/download/v2.5.0/libprecice2_2.5.0_focal.deb && \
