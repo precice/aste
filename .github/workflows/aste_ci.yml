@@ -17,13 +17,14 @@ jobs:
     env:
       CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
       CTEST_OUTPUT_ON_FAILURE: "Yes"
+      UBUNTU_CODENAME: "jammy"
     steps:
       - uses: actions/checkout@v3
       - name: install preCICE
         run: |
-          wget https://github.com/precice/precice/releases/download/v2.5.0/libprecice2_2.5.0_focal.deb && \
+          wget https://github.com/precice/precice/releases/download/v2.5.0/libprecice2_2.5.0_${UBUNTU_CODENAME}.deb && \
           sudo apt-get -y update && \
-          sudo apt-get -y install ./libprecice2_2.5.0_focal.deb
+          sudo apt-get -y install ./libprecice2_2.5.0_${UBUNTU_CODENAME}.deb
       - name: install VTK
         run: |
           sudo apt-get -y install libvtk7-dev
