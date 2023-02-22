@@ -52,7 +52,7 @@ In order to build ASTE, download the [latest release](https://github.com/precice
 
 ```bash
 git clone --branch master https://github.com/precice/aste.git
-mkdir build && cd build
+cd aste && mkdir build && cd build
 cmake .. && make
 ```
 
