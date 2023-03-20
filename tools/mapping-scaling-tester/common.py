@@ -1,13 +1,11 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 
-import argparse
-import json
 import os
 
 from jinja2 import Template
 
 
-def generateConfig(template, setup):
+def generate_config(template, setup):
     template = Template(template)
     return template.render(setup)
 
@@ -20,55 +18,7 @@ def as_iter(something):
         return [something]
 
 
-def generateCases(setup):
-    meshes = setup["general"]["meshes"]
-    network = setup["general"].get("network", "lo")
-    syncmode = setup["general"].get("syncmode", "false")
-
-    cases = []
-    for group in setup["groups"]:
-        for name, mapping in group["mapping"]["cases"].items():
-            for constraint in group["mapping"]["constraints"]:
-                for inname in group["meshes"]["A"]:
-                    infile = meshes["A"][inname]
-                    for outname in group["meshes"]["B"]:
-                        outfile = meshes["B"][outname]
-                        for ranksA, ranksB in zip(
-                            as_iter(setup["general"]["ranks"].get("A", 1)),
-                            as_iter(setup["general"]["ranks"].get("B", 1)),
-                        ):
-                            cases.append(
-                                {
-                                    "function": setup["general"]["function"],
-                                    "mapping": {
-                                        "name": name,
-                                        "kind": mapping["kind"],
-                                        "constraint": constraint,
-                                        "options": mapping.get("options", ""),
-                                    },
-                                    "A": {
-                                        "ranks": ranksA,
-                                        "mesh": {
-                                            "name": inname,
-                                            "file": infile,
-                                        },
-                                    },
-                                    "B": {
-                                        "ranks": ranksB,
-                                        "mesh": {
-                                            "name": outname,
-                                            "file": outfile,
-                                        },
-                                    },
-                                    "network": network,
-                                    "syncmode": syncmode,
-                                }
-                            )
-
-    return cases
-
-
-def getCaseFolders(case):
+def get_case_folder(case):
     return [
         case["mapping"]["name"],
         case["mapping"]["constraint"],
@@ -77,21 +27,21 @@ def getCaseFolders(case):
     ]
 
 
-def caseToSortable(case):
+def case_to_sortable(case):
     parts = case.split(os.path.sep)
     kind = parts[0]
     mesha, meshb = map(float, parts[-2].split("-"))
 
-    kindCost = 0
+    kind_cost = 0
     if kind.startswith("gaussian"):
-        kindCost = 1
+        kind_cost = 1
     elif kind.startswith("tps"):
-        kindCost = 2
+        kind_cost = 2
 
-    return (kindCost, -mesha, -meshb)
+    return (kind_cost, -mesha, -meshb)
 
 
-def createMasterRunScripts(casemap, dir):
+def create_master_run_scripts(casemap, dir):
     common = [
         "#!/bin/bash",
         "",
@@ -136,28 +86,28 @@ def createMasterRunScripts(casemap, dir):
         )
 
 
-def createRunScript(outdir, path, case):
+def create_run_script(outdir, path, case):
     amesh = case["A"]["mesh"]["name"]
     aranks = case["A"]["ranks"]
-    ameshLocation = os.path.relpath(
+    amesh_location = os.path.relpath(
         os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path
     )
 
     # Generate runner script
     acmd = '/usr/bin/time -f %M -a -o memory-A.log precice-aste-run -v -a -p A --data "{}" --mesh {} || kill 0 &'.format(
-        case["function"], ameshLocation
+        case["function"], amesh_location
     )
     if aranks > 1:
         acmd = "mpirun -n {} $ASTE_A_MPIARGS {}".format(aranks, acmd)
 
     bmesh = case["B"]["mesh"]["name"]
     branks = case["B"]["ranks"]
-    bmeshLocation = os.path.relpath(
+    bmesh_location = os.path.relpath(
         os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path
     )
     mapped_data_name = case["function"] + "(mapped)"
     bcmd = '/usr/bin/time -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{}" --mesh {} --output mapped || kill 0 &'.format(
-        mapped_data_name, bmeshLocation
+        mapped_data_name, bmesh_location
     )
     if branks > 1:
         bcmd = "mpirun -n {} $ASTE_B_MPIARGS {}".format(branks, bcmd)
@@ -218,12 +168,10 @@ def createRunScript(outdir, path, case):
         )
         post_content += [joincmd, diffcmd]
     else:
-        [recoveryFileLocation, tmpPrefix] = os.path.split(
-            os.path.normpath(bmeshLocation)
-        )
-        tmprecoveryFile = recoveryFileLocation + "/{}_recovery.json".format(bmesh)
+        [recovery_file_location, _] = os.path.split(os.path.normpath(bmesh_location))
+        tmp_recovery_file = recovery_file_location + "/{}_recovery.json".format(bmesh)
         joincmd = "precice-aste-join --mesh mapped -r {} -o result.vtk".format(
-            tmprecoveryFile
+            tmp_recovery_file
         )
         diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh result.vtk --function "{0}" | tee diff.log'.format(
             case["function"], mapped_data_name
@@ -234,10 +182,10 @@ def createRunScript(outdir, path, case):
     )
 
 
-def setupCases(outdir, template, cases):
+def setup_cases(outdir, template, cases):
     casemap = {}
     for case in cases:
-        folders = getCaseFolders(case)
+        folders = get_case_folder(case)
         casemap.setdefault(folders[0], []).append(folders[1:])
         name = [outdir] + folders
         path = os.path.join(*name)
@@ -246,58 +194,9 @@ def setupCases(outdir, template, cases):
         print(f"Generating {path}")
         os.makedirs(path, exist_ok=True)
         with open(config, "w") as config:
-            config.write(generateConfig(template, case))
-        createRunScript(outdir, path, case)
+            config.write(generate_config(template, case))
+        create_run_script(outdir, path, case)
     print(f"Generated {len(cases)} cases")
 
     print(f"Generating master scripts")
-    createMasterRunScripts(casemap, outdir)
-
-
-def parseArguments(args):
-    parser = argparse.ArgumentParser(description="Generator for a mapping test suite")
-    parser.add_argument(
-        "-o",
-        "--outdir",
-        default="cases",
-        help="Directory to generate the test suite in.",
-    )
-    parser.add_argument(
-        "-s",
-        "--setup",
-        type=argparse.FileType("r"),
-        default="setup.json",
-        help="The test setup file to use.",
-    )
-    parser.add_argument(
-        "-t",
-        "--template",
-        type=argparse.FileType("r"),
-        default="config-template.xml",
-        help="The precice config template to use.",
-    )
-    return parser.parse_args(args)
-
-
-def main(argv):
-    # Parse the input arguments
-    args = parseArguments(argv[1:])
-    # Parse the json file using the json module
-    setup = json.load(args.setup)
-    # Read the xml-template file
-    template = args.template.read()
-    # Generate the actual cases
-    cases = generateCases(setup)
-    outdir = os.path.normpath(args.outdir)
-    if os.path.isdir(outdir):
-        print('Warning: outdir "{}" already exisits.'.format(outdir))
-
-    setupCases(outdir, template, cases)
-
-    return 0
-
-
-if __name__ == "__main__":
-    import sys
-
-    sys.exit(main(sys.argv))
+    create_master_run_scripts(casemap, outdir)
