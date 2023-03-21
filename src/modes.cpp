@@ -25,46 +25,41 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
       ASTE_ERROR << "ERROR: Could not find meshes for name: " << meshname;
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
-    asteInterface.meshID = preciceInterface.getMeshID(asteInterface.meshName);
 
     for (const auto &dataname : asteInterface.writeVectorNames) {
-      const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
-      asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, dim, dataname, dataID);
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, dim, dataname);
 
 #if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
-      if (preciceInterface.requiresGradientDataFor(dataID)) {
+      if (preciceInterface.requiresGradientDataFor(asteInterface.meshName, dataname)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
-        asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, dim, dataname, dataID, dim);
+        asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, dim, dataname, dim);
       }
 #endif
     }
 
     for (const auto &dataname : asteInterface.readVectorNames) {
-      const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
-      asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, dim, dataname, dataID);
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, dim, dataname);
     }
 
     for (const auto &dataname : asteInterface.writeScalarNames) {
-      const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
-      asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, 1, dataname, dataID);
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, 1, dataname);
 
 #if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
-      if (preciceInterface.requiresGradientDataFor(dataID)) {
+      if (preciceInterface.requiresGradientDataFor(asteInterface.meshName, dataname)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
-        asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, 1, dataname, dataID, dim);
+        asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, 1, dataname, dim);
       }
 #endif
     }
     for (const auto &dataname : asteInterface.readScalarNames) {
-      const int dataID = preciceInterface.getDataID(dataname, asteInterface.meshID);
-      asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, 1, dataname, dataID);
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, 1, dataname);
     }
 
     ASTE_INFO << "Loading mesh from " << asteInterface.meshes.front().filename();
-    const bool requireConnectivity = preciceInterface.requiresMeshConnectivityFor(asteInterface.meshID);
+    const bool requireConnectivity = preciceInterface.requiresMeshConnectivityFor(asteInterface.meshName);
     asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim, requireConnectivity);
     ASTE_INFO << "The loaded mesh " << asteInterface.meshes.front().filename() << " contains: " << asteInterface.mesh.summary();
-    vertexIDs = setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshID);
+    vertexIDs = setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshName);
     ASTE_DEBUG << "Mesh setup completed on Rank " << context.rank;
     minMeshSize = std::max(minMeshSize, asteInterface.meshes.size());
   }
@@ -96,11 +91,11 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
           switch (meshdata.numcomp) {
           case 1:
             assert(meshdata.dataVector.size() == vertexIDs.size());
-            preciceInterface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockScalarData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           default:
             assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            preciceInterface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockVectorData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           }
         }
@@ -127,11 +122,11 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
           switch (meshdata.numcomp) {
           case 1:
             assert(meshdata.dataVector.size() == vertexIDs.size());
-            preciceInterface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockScalarData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           default:
             assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            preciceInterface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockVectorData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           }
         }
@@ -140,12 +135,12 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
           switch (meshdata.numcomp) {
           case 1:
             assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            // preciceInterface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            preciceInterface.writeBlockScalarGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            // preciceInterface.writeBlockScalarData(meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockScalarGradientData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           default:
             assert(meshdata.dataVector.size() == vertexIDs.size() * dim * dim);
-            preciceInterface.writeBlockVectorGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockVectorGradientData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           }
         }
@@ -164,11 +159,11 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
           switch (meshdata.numcomp) {
           case 1:
             meshdata.dataVector.resize(vertexIDs.size());
-            preciceInterface.readBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.readBlockScalarData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           default:
             meshdata.dataVector.resize(vertexIDs.size() * dim);
-            preciceInterface.readBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.readBlockVectorData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           }
           ASTE_DEBUG << "Data read: " << asteInterface.mesh.previewData(meshdata);
@@ -203,28 +198,26 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     aste::asteInterface asteInterface;
     asteInterface.meshName       = "A-Mesh";
     asteInterface.meshFilePrefix = meshname;
-    asteInterface.meshID         = preciceInterface.getMeshID(asteInterface.meshName);
     asteInterface.meshes         = aste::BaseName(meshname).findAll(context);
 
-    const int dataID = preciceInterface.getDataID("Data", asteInterface.meshID);
     if (isVector) {
-      asteInterface.writeVectorNames.push_back(dataname);
-      asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, dim, dataname, dataID);
+      asteInterface.writeVectorNames.push_back("Data");
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, dim, dataname);
 
 #if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
-      if (preciceInterface.requiresGradientDataFor(dataID)) {
+      if (preciceInterface.requiresGradientDataFor(asteInterface.meshName, "Data")) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
-        asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, dim, dataname, dataID, dim);
+        asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, dim, dataname, dim);
       }
 #endif
     } else {
-      asteInterface.writeScalarNames.push_back(dataname);
-      asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, 1, dataname, dataID);
+      asteInterface.writeScalarNames.push_back("Data");
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, 1, dataname);
 
 #if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
-      if (preciceInterface.requiresGradientDataFor(dataID)) {
+      if (preciceInterface.requiresGradientDataFor(asteInterface.meshName, "Data")) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
-        asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, 1, dataname, dataID, dim);
+        asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, 1, dataname, dim);
       }
 #endif
     }
@@ -235,27 +228,25 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     aste::asteInterface asteInterface;
     asteInterface.meshName       = "B-Mesh";
     asteInterface.meshFilePrefix = meshname;
-    asteInterface.meshID         = preciceInterface.getMeshID(asteInterface.meshName);
     asteInterface.meshes         = aste::BaseName(meshname).findAll(context);
 
-    const int dataID = preciceInterface.getDataID("Data", asteInterface.meshID);
     if (isVector) {
-      asteInterface.writeVectorNames.push_back(dataname);
-      asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, dim, dataname, dataID);
+      asteInterface.writeVectorNames.push_back("Data");
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, dim, dataname);
     } else {
-      asteInterface.writeScalarNames.push_back(dataname);
-      asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, 1, dataname, dataID);
+      asteInterface.writeScalarNames.push_back("Data");
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, 1, dataname);
     }
     asteConfiguration.asteInterfaces.push_back(asteInterface);
   }
 
   auto asteInterface = asteConfiguration.asteInterfaces.front();
   ASTE_INFO << "Loading mesh from " << asteInterface.meshes.front().filename();
-  const bool requireConnectivity = preciceInterface.requiresMeshConnectivityFor(asteInterface.meshID);
+  const bool requireConnectivity = preciceInterface.requiresMeshConnectivityFor(asteInterface.meshName);
   asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim, requireConnectivity);
   asteInterface.meshes.front().loadData(asteInterface.mesh);
   ASTE_INFO << "The loaded mesh " << asteInterface.meshes.front().filename() << " contains: " << asteInterface.mesh.summary();
-  auto vertexIDs = aste::setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshID);
+  auto vertexIDs = aste::setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshName);
   ASTE_DEBUG << "Mesh setup completed on Rank " << context.rank;
 
   if (preciceInterface.requiresInitialData()) {
@@ -266,11 +257,11 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
           switch (meshdata.numcomp) {
           case 1:
             assert(meshdata.dataVector.size() == vertexIDs.size());
-            preciceInterface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockScalarData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           default:
             assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            preciceInterface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockVectorData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           }
         }
@@ -279,12 +270,12 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
           switch (meshdata.numcomp) {
           case 1:
             assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            // preciceInterface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            preciceInterface.writeBlockScalarGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            // preciceInterface.writeBlockScalarData(meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockScalarGradientData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           default:
             assert(meshdata.dataVector.size() == vertexIDs.size() * dim * dim);
-            preciceInterface.writeBlockVectorGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockVectorGradientData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           }
         }
@@ -314,11 +305,11 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
           switch (meshdata.numcomp) {
           case 1:
             assert(meshdata.dataVector.size() == vertexIDs.size());
-            preciceInterface.writeBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockScalarData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           default:
             assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            preciceInterface.writeBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockVectorData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           }
           ASTE_DEBUG << "Data written: " << asteInterface.mesh.previewData(meshdata);
@@ -328,11 +319,11 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
           switch (meshdata.numcomp) {
           case 1:
             assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            preciceInterface.writeBlockScalarGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockScalarGradientData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           default:
             assert(meshdata.dataVector.size() == vertexIDs.size() * dim * dim);
-            preciceInterface.writeBlockVectorGradientData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.writeBlockVectorGradientData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           }
           ASTE_DEBUG << "Gradient data written: " << asteInterface.mesh.previewData(meshdata);
@@ -351,11 +342,11 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
           switch (meshdata.numcomp) {
           case 1:
             meshdata.dataVector.resize(vertexIDs.size());
-            preciceInterface.readBlockScalarData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.readBlockScalarData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           default:
             meshdata.dataVector.resize(vertexIDs.size() * dim);
-            preciceInterface.readBlockVectorData(meshdata.dataID, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.readBlockVectorData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
             break;
           }
           ASTE_DEBUG << "Data read: " << asteInterface.mesh.previewData(meshdata);

@@ -33,7 +33,7 @@ aste::ExecutionContext aste::initializeMPI(int argc, char *argv[])
 }
 
 std::vector<int> aste::setupVertexIDs(precice::SolverInterface &interface,
-                                      const aste::Mesh &mesh, int meshID)
+                                      const aste::Mesh &mesh, const std::string &meshName)
 {
 #ifdef ASTE_SET_MESH_BLOCK
   const auto          dimension = interface.getDimensions();
@@ -46,7 +46,7 @@ std::vector<int> aste::setupVertexIDs(precice::SolverInterface &interface,
   }
 
   std::vector<int> vertexIDs(nvertices);
-  interface.setMeshVertices(meshID, nvertices, posData.data(), vertexIDs.data());
+  interface.setMeshVertices(meshName, nvertices, posData.data(), vertexIDs.data());
   return vertexIDs;
 #else
   std::vector<int> vertexIDs;
@@ -57,7 +57,7 @@ std::vector<int> aste::setupVertexIDs(precice::SolverInterface &interface,
 #endif
 }
 
-void aste::setupEdgeIDs(precice::SolverInterface &interface, const aste::Mesh &mesh, int meshID, const std::vector<int> &vertexIDs)
+void aste::setupEdgeIDs(precice::SolverInterface &interface, const aste::Mesh &mesh, const std::string &meshName, const std::vector<int> &vertexIDs)
 {
   ASTE_DEBUG << "Mesh Setup: 2.1) Gather Unique Edges";
   const auto unique_edges{gather_unique_edges(mesh)};
@@ -68,23 +68,23 @@ void aste::setupEdgeIDs(precice::SolverInterface &interface, const aste::Mesh &m
     const auto a = vertexIDs.at(edge[0]);
     const auto b = vertexIDs.at(edge[1]);
     assert(a != b);
-    interface.setMeshEdge(meshID, a, b);
+    interface.setMeshEdge(meshName, a, b);
   }
 }
 
-std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste::Mesh &mesh, int meshID)
+std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste::Mesh &mesh, const std::string &meshName)
 {
   auto tstart = std::chrono::steady_clock::now();
 
   ASTE_DEBUG << "Mesh Setup started for mesh: " << mesh.fname;
   ASTE_DEBUG << "Mesh Setup: 1) Vertices";
-  const auto vertexIDs = setupVertexIDs(interface, mesh, meshID);
+  const auto vertexIDs = setupVertexIDs(interface, mesh, meshName);
 
   auto tconnectivity = std::chrono::steady_clock::now();
 
-  if (interface.requiresMeshConnectivityFor(meshID)) {
+  if (interface.requiresMeshConnectivityFor(meshName)) {
     ASTE_DEBUG << "Mesh Setup: 2) Edges";
-    setupEdgeIDs(interface, mesh, meshID, vertexIDs);
+    setupEdgeIDs(interface, mesh, meshName, vertexIDs);
     // ASTE_DEBUG << "Total " << edgeMap.size() << " edges are configured";
     if (!mesh.triangles.empty()) {
       ASTE_DEBUG << "Mesh Setup: 3) " << mesh.triangles.size() << " Triangles";
@@ -93,7 +93,7 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
         const auto b = vertexIDs[triangle[1]];
         const auto c = vertexIDs[triangle[2]];
 
-        interface.setMeshTriangle(meshID, a, b, c);
+        interface.setMeshTriangle(meshName, a, b, c);
       }
     } else {
       ASTE_DEBUG << "Mesh Setup: 3) No Triangles are found/required. Skipped";
@@ -106,7 +106,7 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
         const auto c = vertexIDs[quadrilateral[2]];
         const auto d = vertexIDs[quadrilateral[3]];
 
-        interface.setMeshQuad(meshID, a, b, c, d);
+        interface.setMeshQuad(meshName, a, b, c, d);
       }
     } else {
       ASTE_DEBUG << "Mesh Setup: 4) No Quadrilaterals are found/required. Skipped";
@@ -121,7 +121,7 @@ std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste
         const auto c = vertexIDs[tetra[2]];
         const auto d = vertexIDs[tetra[3]];
 
-        interface.setMeshTetrahedron(meshID, a, b, c, d);
+        interface.setMeshTetrahedron(meshName, a, b, c, d);
       }
     } else {
       ASTE_DEBUG << "Mesh Setup: 5) No Tetrahedra are found/required. Skipped";

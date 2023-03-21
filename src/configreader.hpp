@@ -28,7 +28,6 @@ struct asteInterface {
   std::vector<std::string> writeScalarNames; // Datanames of write type scalars
   std::vector<std::string> readScalarNames;  // Datanames of read type scalars
   std::vector<MeshName>    meshes;           // A list of meshfiles
-  int                      meshID;           // MeshID of this mesh in preCICE
   Mesh                     mesh;             // Mesh data structure in ASTE
 };
 
