@@ -20,13 +20,17 @@ jobs:
       CTEST_OUTPUT_ON_FAILURE: "Yes"
     steps:
       - uses: actions/checkout@v3
+      - name: setup system
+        run: |
+          apt-get -y update
+          apt-get install -y python3-pip pkg-config
+          pip3 install --upgrade --user pip
       - name: install VTK
         run: |
-          apt-get -y update && \
           apt-get -y install libvtk7-dev
       - name: install example dependencies
         run: |
-          python3 -m pip install sympy scipy jinja2
+          python3 -m pip install --user sympy scipy jinja2
       - name: prepare directories
         run: |
           mkdir build_gcc build_clang
