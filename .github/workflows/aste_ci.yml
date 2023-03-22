@@ -14,7 +14,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: precice/precice:develop
-      options: --user precice
     timeout-minutes: 30
     env:
       CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
@@ -23,12 +22,12 @@ jobs:
       - uses: actions/checkout@v3
       - name: setup system
         run: |
-          sudo apt-get -y update
-          sudo apt-get install -y python3-pip pkg-config
+          apt-get -y update
+          apt-get install -y python3-pip pkg-config
           pip3 install --upgrade --user pip
       - name: install VTK
         run: |
-          sudo apt-get -y install libvtk7-dev
+          apt-get -y install libvtk7-dev
       - name: install example dependencies
         run: |
           python3 -m pip install --user sympy scipy jinja2
@@ -46,10 +45,10 @@ jobs:
       - name: run test gcc
         working-directory: build_gcc
         run: |
-          ctest
+          su -c "ctest" $PRECICE_USER
       - name: install clang
         run: |
-          sudo apt-get -y install clang
+          apt-get -y install clang
       - name: build aste clang
         working-directory: build_clang
         env:
@@ -58,8 +57,8 @@ jobs:
         run: |
           cmake ..
           cmake --build .
-          sudo cmake --install .
+          cmake --install .
       - name: run test clang
         working-directory: build_clang
         run: |
-          ctest
+          su -c "ctest" $PRECICE_USER
