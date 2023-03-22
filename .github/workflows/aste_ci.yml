@@ -23,7 +23,7 @@ jobs:
       - name: setup system
         run: |
           apt-get -y update
-          apt-get install -y python3-pip pkg-config
+          apt-get install -y python3-pip pkg-config time
           pip3 install --upgrade pip
       - name: install VTK
         run: |
