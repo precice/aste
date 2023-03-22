@@ -43,7 +43,7 @@ jobs:
           cmake ..
           cmake --build .
       - name: Adjust user rights
-        run: chown -R $PRECICE_USER build_gcc
+        run: chown -R $PRECICE_USER .
       - name: run test gcc
         working-directory: build_gcc
         run: |
@@ -61,7 +61,7 @@ jobs:
           cmake --build .
           cmake --install .
       - name: Adjust user rights
-        run: chown -R $PRECICE_USER build_clang
+        run: chown -R $PRECICE_USER .
       - name: run test clang
         working-directory: build_clang
         run: |
