@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: setup system
         run: |
-          su user
+          su precice
           sudo apt-get -y update
           sudo apt-get install -y python3-pip pkg-config
           pip3 install --upgrade --user pip
