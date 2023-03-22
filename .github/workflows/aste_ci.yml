@@ -22,8 +22,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: install VTK
         run: |
-          sudo apt-get -y update && \
-          sudo apt-get -y install libvtk7-dev
+          apt-get -y update && \
+          apt-get -y install libvtk7-dev
       - name: install example dependencies
         run: |
           python3 -m pip install sympy scipy jinja2
@@ -44,7 +44,7 @@ jobs:
           ctest
       - name: install clang
         run: |
-          sudo apt-get -y install clang
+          apt-get -y install clang
       - name: build aste clang
         working-directory: build_clang
         env:
@@ -53,7 +53,7 @@ jobs:
         run: |
           cmake ..
           cmake --build .
-          sudo cmake --install .
+          cmake --install .
       - name: run test clang
         working-directory: build_clang
         run: |
