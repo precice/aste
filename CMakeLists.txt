@@ -96,7 +96,7 @@ install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-partition ${CMAKE_
 
 enable_testing()
 
-add_test(NAME read_write_test  COMMAND testing WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests")
+add_test(NAME read_write_test  COMMAND precice-aste-test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests")
 
 # Detect and register examples as tests
 
