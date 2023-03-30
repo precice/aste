@@ -28,7 +28,8 @@
         "cases": {
           "tps": {
             "kind": "rbf",
-            "options": ""
+            "options": "",
+            "basis-function": "thin-plate-splines"
           },
          "np": {
             "kind": "nearest-projection"
