@@ -29,7 +29,11 @@
       {% if mapping.constraint == "conservative" %}
       <receive-mesh name="B-Mesh" from="B" />
 
-      <mapping:{{ mapping.kind }} {{ mapping.options }} constraint="conservative" direction="write" from="A-Mesh" to="B-Mesh" />
+      <mapping:{{ mapping.kind }} {{ mapping.options }} constraint="conservative" direction="write" from="A-Mesh" to="B-Mesh" >
+        {% if mapping.kind.startswith("rbf") %}
+        <basis-function:{{ mapping.basis }} {{ mapping.basisoptions }} />
+        {% endif %}
+      </mapping:{{ mapping.kind }} >
       {% endif %}
     </participant>
 
@@ -40,7 +44,11 @@
       {% if mapping.constraint == "consistent" %}
       <receive-mesh name="A-Mesh" from="A" />
 
-      <mapping:{{ mapping.kind }} {{ mapping.options }} constraint="consistent" direction="read" from="A-Mesh" to="B-Mesh" />
+      <mapping:{{ mapping.kind }} {{ mapping.options }} constraint="consistent" direction="read" from="A-Mesh" to="B-Mesh" >
+        {% if mapping.kind.startswith("rbf") %}
+        <basis-function:{{ mapping.basis }} {{ mapping.basisoptions }} />
+        {% endif %}
+      </mapping:{{ mapping.kind }} >
       {% endif %}
     </participant>
 
