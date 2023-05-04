@@ -12,7 +12,6 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
   ASTE_INFO << "ASTE Running in replay mode";
 
   precice::SolverInterface preciceInterface(participantName, asteConfiguration.preciceConfigFilename, context.rank, context.size);
-  const int                dim = preciceInterface.getDimensions();
 
   size_t           minMeshSize{0};
   std::vector<int> vertexIDs;
@@ -27,6 +26,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     }
 
     for (const auto &dataname : asteInterface.writeVectorNames) {
+      const int dim = preciceInterface.getDataDimensions(asteInterface.meshName, dataname);
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, dim, dataname);
 
 #if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
@@ -38,6 +38,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     }
 
     for (const auto &dataname : asteInterface.readVectorNames) {
+      const int dim = preciceInterface.getDataDimensions(asteInterface.meshName, dataname);
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, dim, dataname);
     }
 
@@ -46,6 +47,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
 
 #if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
       if (preciceInterface.requiresGradientDataFor(asteInterface.meshName, dataname)) {
+        const int dim = preciceInterface.getMeshDimensions(asteInterface.meshName);
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
         asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, 1, dataname, dim);
       }
@@ -57,6 +59,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
 
     ASTE_INFO << "Loading mesh from " << asteInterface.meshes.front().filename();
     const bool requireConnectivity = preciceInterface.requiresMeshConnectivityFor(asteInterface.meshName);
+    const int  dim                 = preciceInterface.getMeshDimensions(asteInterface.meshName);
     asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim, requireConnectivity);
     ASTE_INFO << "The loaded mesh " << asteInterface.meshes.front().filename() << " contains: " << asteInterface.mesh.summary();
     vertexIDs = setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshName);
@@ -190,7 +193,6 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
 
   // Create and configure solver interface
   precice::SolverInterface preciceInterface(participantName, preciceConfig, context.rank, context.size);
-  const int                dim = preciceInterface.getDimensions();
 
   if (participantName == "A") {
     asteConfiguration.participantName       = "A";
@@ -202,6 +204,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
 
     if (isVector) {
       asteInterface.writeVectorNames.push_back("Data");
+      const int dim = preciceInterface.getDataDimensions(meshname, dataname);
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, dim, dataname);
 
 #if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
@@ -212,6 +215,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
 #endif
     } else {
       asteInterface.writeScalarNames.push_back("Data");
+      const int dim = preciceInterface.getMeshDimensions(meshname);
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, 1, dataname);
 
 #if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
@@ -243,6 +247,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
   auto asteInterface = asteConfiguration.asteInterfaces.front();
   ASTE_INFO << "Loading mesh from " << asteInterface.meshes.front().filename();
   const bool requireConnectivity = preciceInterface.requiresMeshConnectivityFor(asteInterface.meshName);
+  const int  dim                 = preciceInterface.getMeshDimensions(asteInterface.meshName);
   asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim, requireConnectivity);
   asteInterface.meshes.front().loadData(asteInterface.mesh);
   ASTE_INFO << "The loaded mesh " << asteInterface.meshes.front().filename() << " contains: " << asteInterface.mesh.summary();

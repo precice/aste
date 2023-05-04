@@ -36,7 +36,7 @@ std::vector<int> aste::setupVertexIDs(precice::SolverInterface &interface,
                                       const aste::Mesh &mesh, const std::string &meshName)
 {
 #ifdef ASTE_SET_MESH_BLOCK
-  const auto          dimension = interface.getDimensions();
+  const auto          dimension = interface.getMeshDimensions(meshName);
   const auto          nvertices = mesh.positions.size();
   std::vector<double> posData(dimension * nvertices);
   for (unsigned long i = 0; i < nvertices; ++i) {
