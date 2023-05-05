@@ -107,7 +107,8 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     }
   }
 
-  dt = preciceInterface.initialize();
+  preciceInterface.initialize();
+  dt = preciceInterface.getMaxTimeStepSize();
 
   while (preciceInterface.isCouplingOngoing() && (round < minMeshSize)) {
     if (preciceInterface.requiresWritingCheckpoint()) {
@@ -151,7 +152,8 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
         ASTE_DEBUG << "Data written: " << asteInterface.mesh.previewData(meshdata);
       }
     }
-    dt = preciceInterface.advance(dt);
+    preciceInterface.advance(dt);
+    dt = preciceInterface.getMaxTimeStepSize();
     if (preciceInterface.requiresReadingCheckpoint()) {
       ASTE_ERROR << "Implicit coupling schemes cannot be used with ASTE";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
@@ -162,11 +164,11 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
           switch (meshdata.numcomp) {
           case 1:
             meshdata.dataVector.resize(vertexIDs.size());
-            preciceInterface.readBlockScalarData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.readBlockScalarData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), dt, meshdata.dataVector.data());
             break;
           default:
-            meshdata.dataVector.resize(vertexIDs.size() * dim);
-            preciceInterface.readBlockVectorData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            meshdata.dataVector.resize(vertexIDs.size() * meshdata.numcomp);
+            preciceInterface.readBlockVectorData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), dt, meshdata.dataVector.data());
             break;
           }
           ASTE_DEBUG << "Data read: " << asteInterface.mesh.previewData(meshdata);
@@ -204,7 +206,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
 
     if (isVector) {
       asteInterface.writeVectorNames.push_back("Data");
-      const int dim = preciceInterface.getDataDimensions(meshname, dataname);
+      const int dim = preciceInterface.getDataDimensions(asteInterface.meshName, "Data");
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, dim, dataname);
 
 #if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
@@ -215,7 +217,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
 #endif
     } else {
       asteInterface.writeScalarNames.push_back("Data");
-      const int dim = preciceInterface.getMeshDimensions(meshname);
+      const int dim = preciceInterface.getMeshDimensions(asteInterface.meshName);
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, 1, dataname);
 
 #if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
@@ -236,7 +238,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
 
     if (isVector) {
       asteInterface.writeVectorNames.push_back("Data");
-      asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, dim, dataname);
+      asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, preciceInterface.getDataDimensions(asteInterface.meshName, "Data"), dataname);
     } else {
       asteInterface.writeScalarNames.push_back("Data");
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, 1, dataname);
@@ -290,7 +292,8 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     }
   }
 
-  double dt = preciceInterface.initialize();
+  preciceInterface.initialize();
+  double dt = preciceInterface.getMaxTimeStepSize();
 
   size_t round = 0;
 
@@ -336,7 +339,8 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
 #endif
       }
     }
-    dt = preciceInterface.advance(dt);
+    preciceInterface.advance(dt);
+    double dt = preciceInterface.getMaxTimeStepSize();
     if (preciceInterface.requiresReadingCheckpoint()) {
       ASTE_ERROR << "Implicit coupling schemes cannot be used with ASTE";
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
@@ -347,11 +351,11 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
           switch (meshdata.numcomp) {
           case 1:
             meshdata.dataVector.resize(vertexIDs.size());
-            preciceInterface.readBlockScalarData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.readBlockScalarData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), dt, meshdata.dataVector.data());
             break;
           default:
             meshdata.dataVector.resize(vertexIDs.size() * dim);
-            preciceInterface.readBlockVectorData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
+            preciceInterface.readBlockVectorData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), dt, meshdata.dataVector.data());
             break;
           }
           ASTE_DEBUG << "Data read: " << asteInterface.mesh.previewData(meshdata);
