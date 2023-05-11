@@ -46,7 +46,7 @@ std::vector<int> aste::setupVertexIDs(precice::SolverInterface &interface,
   }
 
   std::vector<int> vertexIDs(nvertices);
-  interface.setMeshVertices(meshName, nvertices, posData.data(), vertexIDs.data());
+  interface.setMeshVertices(meshName, posData, vertexIDs);
   return vertexIDs;
 #else
   std::vector<int> vertexIDs;

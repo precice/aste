@@ -29,12 +29,10 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
       const int dim = preciceInterface.getDataDimensions(asteInterface.meshName, dataname);
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, dim, dataname);
 
-#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
       if (preciceInterface.requiresGradientDataFor(asteInterface.meshName, dataname)) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
         asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, dim, dataname, dim);
       }
-#endif
     }
 
     for (const auto &dataname : asteInterface.readVectorNames) {
@@ -45,13 +43,11 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     for (const auto &dataname : asteInterface.writeScalarNames) {
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, 1, dataname);
 
-#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
       if (preciceInterface.requiresGradientDataFor(asteInterface.meshName, dataname)) {
         const int dim = preciceInterface.getMeshDimensions(asteInterface.meshName);
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
         asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, 1, dataname, dim);
       }
-#endif
     }
     for (const auto &dataname : asteInterface.readScalarNames) {
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::READ, 1, dataname);
@@ -91,16 +87,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
       ASTE_INFO << "The mesh contains: " << asteInterface.mesh.summary();
       for (const auto &meshdata : asteInterface.mesh.meshdata) {
         if (meshdata.type == aste::datatype::WRITE) {
-          switch (meshdata.numcomp) {
-          case 1:
-            assert(meshdata.dataVector.size() == vertexIDs.size());
-            preciceInterface.writeBlockScalarData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          default:
-            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            preciceInterface.writeBlockVectorData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          }
+          preciceInterface.writeData(asteInterface.meshName, meshdata.name, vertexIDs, meshdata.dataVector);
         }
       }
       ASTE_DEBUG << "Data written: " << asteInterface.mesh.previewData();
@@ -123,32 +110,10 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
 
       for (const auto &meshdata : asteInterface.mesh.meshdata) {
         if (meshdata.type == aste::datatype::WRITE) {
-          switch (meshdata.numcomp) {
-          case 1:
-            assert(meshdata.dataVector.size() == vertexIDs.size());
-            preciceInterface.writeBlockScalarData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          default:
-            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            preciceInterface.writeBlockVectorData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          }
+          preciceInterface.writeData(asteInterface.meshName, meshdata.name, vertexIDs, meshdata.dataVector);
+        } else if (meshdata.type == aste::datatype::GRADIENT) {
+          preciceInterface.writeGradientData(asteInterface.meshName, meshdata.name, vertexIDs, meshdata.dataVector);
         }
-#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
-        else if (meshdata.type == aste::datatype::GRADIENT) {
-          switch (meshdata.numcomp) {
-          case 1:
-            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            // preciceInterface.writeBlockScalarData(meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            preciceInterface.writeBlockScalarGradientData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          default:
-            assert(meshdata.dataVector.size() == vertexIDs.size() * dim * dim);
-            preciceInterface.writeBlockVectorGradientData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          }
-        }
-#endif
         ASTE_DEBUG << "Data written: " << asteInterface.mesh.previewData(meshdata);
       }
     }
@@ -161,16 +126,8 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
     for (auto &asteInterface : asteConfiguration.asteInterfaces) {
       for (auto &meshdata : asteInterface.mesh.meshdata) {
         if (meshdata.type == aste::datatype::READ) {
-          switch (meshdata.numcomp) {
-          case 1:
-            meshdata.dataVector.resize(vertexIDs.size());
-            preciceInterface.readBlockScalarData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), dt, meshdata.dataVector.data());
-            break;
-          default:
-            meshdata.dataVector.resize(vertexIDs.size() * meshdata.numcomp);
-            preciceInterface.readBlockVectorData(asteInterface.meshName, meshdata.name, vertexIDs.size(), vertexIDs.data(), dt, meshdata.dataVector.data());
-            break;
-          }
+          meshdata.dataVector.resize(vertexIDs.size() * meshdata.numcomp);
+          preciceInterface.readData(asteInterface.meshName, meshdata.name, vertexIDs, dt, meshdata.dataVector);
           ASTE_DEBUG << "Data read: " << asteInterface.mesh.previewData(meshdata);
         }
       }
@@ -209,23 +166,19 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
       const int dim = preciceInterface.getDataDimensions(asteInterface.meshName, "Data");
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, dim, dataname);
 
-#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
       if (preciceInterface.requiresGradientDataFor(asteInterface.meshName, "Data")) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
         asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, dim, dataname, dim);
       }
-#endif
     } else {
       asteInterface.writeScalarNames.push_back("Data");
       const int dim = preciceInterface.getMeshDimensions(asteInterface.meshName);
       asteInterface.mesh.meshdata.emplace_back(aste::datatype::WRITE, 1, dataname);
 
-#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
       if (preciceInterface.requiresGradientDataFor(asteInterface.meshName, "Data")) {
         asteInterface.writeVectorNames.push_back(dataname + "_gradient");
         asteInterface.mesh.meshdata.emplace_back(aste::datatype::GRADIENT, 1, dataname, dim);
       }
-#endif
     }
     asteConfiguration.asteInterfaces.push_back(asteInterface);
   } else if (participantName == "B") {
@@ -261,32 +214,10 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     for (auto const &asteInterface : asteConfiguration.asteInterfaces) {
       for (const auto &meshdata : asteInterface.mesh.meshdata) {
         if (meshdata.type == aste::datatype::WRITE) {
-          switch (meshdata.numcomp) {
-          case 1:
-            assert(meshdata.dataVector.size() == vertexIDs.size());
-            preciceInterface.writeBlockScalarData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          default:
-            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            preciceInterface.writeBlockVectorData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          }
+          preciceInterface.writeData(asteInterface.meshName, "Data", vertexIDs, meshdata.dataVector);
+        } else if (meshdata.type == aste::datatype::GRADIENT) {
+          preciceInterface.writeGradientData(asteInterface.meshName, "Data", vertexIDs, meshdata.dataVector);
         }
-#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
-        else if (meshdata.type == aste::datatype::GRADIENT) {
-          switch (meshdata.numcomp) {
-          case 1:
-            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            // preciceInterface.writeBlockScalarData(meshdata.name, vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            preciceInterface.writeBlockScalarGradientData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          default:
-            assert(meshdata.dataVector.size() == vertexIDs.size() * dim * dim);
-            preciceInterface.writeBlockVectorGradientData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          }
-        }
-#endif
       }
       ASTE_DEBUG << "Data written: " << asteInterface.mesh.previewData();
     }
@@ -310,33 +241,12 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
 
       for (const auto &meshdata : asteInterface.mesh.meshdata) {
         if (meshdata.type == aste::datatype::WRITE) {
-          switch (meshdata.numcomp) {
-          case 1:
-            assert(meshdata.dataVector.size() == vertexIDs.size());
-            preciceInterface.writeBlockScalarData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          default:
-            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            preciceInterface.writeBlockVectorData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          }
+          preciceInterface.writeData(asteInterface.meshName, "Data", vertexIDs, meshdata.dataVector);
           ASTE_DEBUG << "Data written: " << asteInterface.mesh.previewData(meshdata);
-        }
-#if PRECICE_VERSION_GREATER_EQUAL(2, 5, 0)
-        else if (meshdata.type == aste::datatype::GRADIENT) {
-          switch (meshdata.numcomp) {
-          case 1:
-            assert(meshdata.dataVector.size() == vertexIDs.size() * dim);
-            preciceInterface.writeBlockScalarGradientData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          default:
-            assert(meshdata.dataVector.size() == vertexIDs.size() * dim * dim);
-            preciceInterface.writeBlockVectorGradientData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), meshdata.dataVector.data());
-            break;
-          }
+        } else if (meshdata.type == aste::datatype::GRADIENT) {
+          preciceInterface.writeGradientData(asteInterface.meshName, "Data", vertexIDs, meshdata.dataVector);
           ASTE_DEBUG << "Gradient data written: " << asteInterface.mesh.previewData(meshdata);
         }
-#endif
       }
     }
     preciceInterface.advance(dt);
@@ -348,16 +258,8 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     for (auto &asteInterface : asteConfiguration.asteInterfaces) {
       for (auto &meshdata : asteInterface.mesh.meshdata) {
         if (meshdata.type == aste::datatype::READ) {
-          switch (meshdata.numcomp) {
-          case 1:
-            meshdata.dataVector.resize(vertexIDs.size());
-            preciceInterface.readBlockScalarData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), dt, meshdata.dataVector.data());
-            break;
-          default:
-            meshdata.dataVector.resize(vertexIDs.size() * dim);
-            preciceInterface.readBlockVectorData(asteInterface.meshName, "Data", vertexIDs.size(), vertexIDs.data(), dt, meshdata.dataVector.data());
-            break;
-          }
+          meshdata.dataVector.resize(vertexIDs.size() * meshdata.numcomp);
+          preciceInterface.readData(asteInterface.meshName, "Data", vertexIDs, dt, meshdata.dataVector);
           ASTE_DEBUG << "Data read: " << asteInterface.mesh.previewData(meshdata);
         }
       }
