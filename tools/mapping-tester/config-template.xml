@@ -6,6 +6,8 @@
     <sink type="file" output="debug.log" filter="" format='%TimeStamp(format="%H:%M:%S.%f")%|%Participant%|%Rank%|%Module%|l%Line%|%Function%|%Severity%%Message%' />
   </log>
 
+  <profiling mode="all" flush-every="0" />
+
   <solver-interface dimensions="3">
 
     <!-- Data fields that are exchanged between the solvers -->

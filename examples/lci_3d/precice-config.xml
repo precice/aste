@@ -2,6 +2,8 @@
 <precice-configuration>
   <log enabled="0" />
 
+  <profiling mode="all" />
+
   <solver-interface dimensions="3">
     <data:scalar name="Data" />
 
