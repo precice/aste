@@ -32,7 +32,7 @@ aste::ExecutionContext aste::initializeMPI(int argc, char *argv[])
   return {rank, size};
 }
 
-std::vector<int> aste::setupVertexIDs(precice::SolverInterface &interface,
+std::vector<int> aste::setupVertexIDs(precice::Participant &interface,
                                       const aste::Mesh &mesh, const std::string &meshName)
 {
 #ifdef ASTE_SET_MESH_BLOCK
@@ -57,7 +57,7 @@ std::vector<int> aste::setupVertexIDs(precice::SolverInterface &interface,
 #endif
 }
 
-void aste::setupEdgeIDs(precice::SolverInterface &interface, const aste::Mesh &mesh, const std::string &meshName, const std::vector<int> &vertexIDs)
+void aste::setupEdgeIDs(precice::Participant &interface, const aste::Mesh &mesh, const std::string &meshName, const std::vector<int> &vertexIDs)
 {
   ASTE_DEBUG << "Mesh Setup: 2.1) Gather Unique Edges";
   const auto unique_edges{gather_unique_edges(mesh)};
@@ -72,7 +72,7 @@ void aste::setupEdgeIDs(precice::SolverInterface &interface, const aste::Mesh &m
   }
 }
 
-std::vector<int> aste::setupMesh(precice::SolverInterface &interface, const aste::Mesh &mesh, const std::string &meshName)
+std::vector<int> aste::setupMesh(precice::Participant &interface, const aste::Mesh &mesh, const std::string &meshName)
 {
   auto tstart = std::chrono::steady_clock::now();
 

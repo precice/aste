@@ -11,7 +11,7 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
   addLogIdentity(participantName, context.rank);
   ASTE_INFO << "ASTE Running in replay mode";
 
-  precice::SolverInterface preciceInterface(participantName, asteConfiguration.preciceConfigFilename, context.rank, context.size);
+  precice::Participant preciceInterface(participantName, asteConfiguration.preciceConfigFilename, context.rank, context.size);
 
   size_t           minMeshSize{0};
   std::vector<int> vertexIDs;
@@ -151,7 +151,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
   aste::asteConfig asteConfiguration;
 
   // Create and configure solver interface
-  precice::SolverInterface preciceInterface(participantName, preciceConfig, context.rank, context.size);
+  precice::Participant preciceInterface(participantName, preciceConfig, context.rank, context.size);
 
   if (participantName == "A") {
     asteConfiguration.participantName       = "A";
