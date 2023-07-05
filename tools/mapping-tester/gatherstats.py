@@ -44,7 +44,7 @@ def statsFromTimings(dir):
                         stats["globalTime"] = row[-1]
                     if row[0] == "initialize":
                         stats["initializeTime"] = row[-1]
-                    if row[0].startswith("advance/map") and row[0].endswith(
+                    if row[0].startswith("initialize/map") and row[0].endswith(
                         "computeMapping.FromA-MeshToB-Mesh"
                     ):
                         computeMappingName = row[0]
