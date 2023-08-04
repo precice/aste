@@ -46,7 +46,7 @@
     </participant>
 
     <!-- Communication method, use TCP sockets, Change network to "ib0" on SuperMUC -->
-    <m2n:sockets from="FLUID" to="STRUCTURE" />
+    <m2n:sockets acceptor="FLUID" connector="STRUCTURE" />
 
     <coupling-scheme:serial-explicit>
       <participants first="FLUID" second="STRUCTURE"/>

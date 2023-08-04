@@ -13,21 +13,21 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: precice/precice:develop
     timeout-minutes: 30
     env:
       CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
       CTEST_OUTPUT_ON_FAILURE: "Yes"
-      UBUNTU_CODENAME: "jammy"
     steps:
       - uses: actions/checkout@v3
-      - name: install preCICE
+      - name: setup system
         run: |
-          wget https://github.com/precice/precice/releases/download/v2.5.0/libprecice2_2.5.0_${UBUNTU_CODENAME}.deb && \
-          sudo apt-get -y update && \
-          sudo apt-get -y install ./libprecice2_2.5.0_${UBUNTU_CODENAME}.deb
+          apt-get -y update && apt-get -y upgrade
+          apt-get install -y python3-pip pkg-config time
+          pip3 install --upgrade pip
       - name: install VTK
         run: |
-          sudo apt-get -y install libvtk7-dev
+          apt-get -y install libvtk9-dev libvtk9-qt-dev
       - name: install example dependencies
         run: |
           python3 -m pip install sympy scipy jinja2
@@ -42,13 +42,15 @@ jobs:
         run: |
           cmake ..
           cmake --build .
+      - name: Adjust user rights
+        run: chown -R $PRECICE_USER .
       - name: run test gcc
         working-directory: build_gcc
         run: |
-          ctest
+          su -c "ctest" $PRECICE_USER
       - name: install clang
         run: |
-          sudo apt-get -y install clang
+          apt-get -y install clang
       - name: build aste clang
         working-directory: build_clang
         env:
@@ -57,8 +59,9 @@ jobs:
         run: |
           cmake ..
           cmake --build .
-          sudo cmake --install .
+      - name: Adjust user rights
+        run: chown -R $PRECICE_USER .
       - name: run test clang
         working-directory: build_clang
         run: |
-          ctest
+          su -c "ctest" $PRECICE_USER

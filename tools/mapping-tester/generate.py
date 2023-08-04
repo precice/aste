@@ -45,6 +45,10 @@ def generateCases(setup):
                                         "kind": mapping["kind"],
                                         "constraint": constraint,
                                         "options": mapping.get("options", ""),
+                                        "basis": mapping.get("basis-function", ""),
+                                        "basisoptions": mapping.get(
+                                            "basis-function-options", ""
+                                        ),
                                     },
                                     "A": {
                                         "ranks": ranksA,

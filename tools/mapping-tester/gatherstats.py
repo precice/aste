@@ -28,28 +28,32 @@ def parseArguments(args):
 def statsFromTimings(dir):
     stats = {}
     assert os.path.isdir(dir)
-    file = os.path.join(dir, "precice-B-events.json")
+    event_dir = os.path.join(dir, "precice-events")
+    json_file = os.path.join(dir, "events.json")
+    timings_file = os.path.join(dir, "timings.csv")
+    os.system("precice-events merge --output {} {}".format(json_file, event_dir))
+    os.system("precice-events analyze --output {} B {}".format(timings_file, json_file))
+    file = timings_file
     if os.path.isfile(file):
         try:
             timings = {}
-            with open(file, "r") as jsonfile:
-                timings = json.load(jsonfile)["Ranks"][0]["Timings"]
-            stats["globalTime"] = timings["_GLOBAL"]["Max"]
-            stats["initializeTime"] = timings["initialize"]["Max"]
-            computeMappingName = [
-                x
-                for x in timings.keys()
-                if x.startswith("advance/map")
-                and x.endswith("computeMapping.FromA-MeshToB-Mesh")
-            ][0]
-            mapDataName = [
-                x
-                for x in timings.keys()
-                if x.startswith("advance/map")
-                and x.endswith("mapData.FromA-MeshToB-Mesh")
-            ][0]
-            stats["computeMappingTime"] = timings[computeMappingName]["Max"]
-            stats["mapDataTime"] = timings[mapDataName]["Max"]
+            with open(file, "r") as csvfile:
+                timings = csv.reader(csvfile)
+                for row in timings:
+                    if row[0] == "_GLOBAL":
+                        stats["globalTime"] = row[-1]
+                    if row[0] == "initialize":
+                        stats["initializeTime"] = row[-1]
+                    if row[0].startswith("initialize/map") and row[0].endswith(
+                        "computeMapping.FromA-MeshToB-Mesh"
+                    ):
+                        computeMappingName = row[0]
+                        stats["computeMappingTime"] = row[-1]
+                    if row[0].startswith("advance/map") and row[0].endswith(
+                        "mapData.FromA-MeshToB-Mesh"
+                    ):
+                        mapDataName = row[0]
+                        stats["mapDataTime"] = row[-1]
         except BaseException:
             pass
     return stats

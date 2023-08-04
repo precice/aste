@@ -27,8 +27,9 @@
         ],
         "cases": {
           "tps": {
-            "kind": "rbf-thin-plate-splines",
-            "options": "use-qr-decomposition=\"1\""
+            "kind": "rbf",
+            "options": "",
+            "basis-function": "thin-plate-splines"
           },
          "np": {
             "kind": "nearest-projection"
