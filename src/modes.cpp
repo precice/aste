@@ -224,8 +224,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
   }
 
   preciceInterface.initialize();
-  double dt = preciceInterface.getMaxTimeStepSize();
-
+  double dt    = preciceInterface.getMaxTimeStepSize();
   size_t round = 0;
 
   while (preciceInterface.isCouplingOngoing() && round < asteInterface.meshes.size()) {
