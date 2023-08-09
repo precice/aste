@@ -9,7 +9,7 @@
         2
       ]
     },
-    "syncmode": false,
+    "synchronize": false,
     "meshes": {
       "A": {
         "coarse_mesh": "${TEST_LOCATION}/coarse_mesh.vtk"
