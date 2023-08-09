@@ -138,7 +138,7 @@ def plotComputeMappingTime(df, prefix):
         )
 
     ax.set_xlabel("edge length(h) of mesh A")
-    ax.set_ylabel("time to compute mapping [ms]")
+    ax.set_ylabel("time to compute mapping [us]")
 
     # plotConv(ax, df, yname)
 
@@ -168,7 +168,7 @@ def plotMapDataTime(df, prefix):
         )
 
     ax.set_xlabel("edge length(h) of mesh A")
-    ax.set_ylabel("time to map Data [ms]")
+    ax.set_ylabel("time to map Data [us]")
 
     # plotConv(ax, df, yname)
 
