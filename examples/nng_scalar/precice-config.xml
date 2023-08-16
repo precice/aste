@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<precice-configuration dimensions="3" experimental="true">
+<precice-configuration experimental="true">
   <log enabled="false" />
 
   <profiling mode="all" />
 
   <data:scalar name="Data" />
 
-  <mesh name="A-Mesh">
+  <mesh name="A-Mesh" dimensions="3">
     <use-data name="Data" />
   </mesh>
 
-  <mesh name="B-Mesh">
+  <mesh name="B-Mesh" dimensions="3">
     <use-data name="Data" />
   </mesh>
 

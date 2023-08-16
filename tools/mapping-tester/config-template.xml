@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<precice-configuration dimensions="3">
+<precice-configuration>
 
   <log>
     <sink type="file" output="debug.log" filter="" format='%TimeStamp(format="%H:%M:%S.%f")%|%Participant%|%Rank%|%Module%|l%Line%|%Function%|%Severity%%Message%' />
@@ -12,11 +12,11 @@
     <data:scalar name="Data" />
 
     <!-- A common mesh that uses these data fields -->
-    <mesh name="A-Mesh">
+    <mesh name="A-Mesh" dimensions="3">
       <use-data name="Data" />
     </mesh>
 
-    <mesh name="B-Mesh">
+    <mesh name="B-Mesh" dimensions="3">
       <use-data name="Data" />
     </mesh>
 
