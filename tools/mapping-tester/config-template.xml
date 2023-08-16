@@ -46,6 +46,7 @@
 
       <mapping:{{ mapping.kind }} {{ mapping.options }} constraint="consistent" direction="read" from="A-Mesh" to="B-Mesh" >
         {% if mapping.kind.startswith("rbf") %}
+        <executor:{{ mapping.executor }} {{ mapping.executoroptions }} />
         <basis-function:{{ mapping.basis }} {{ mapping.basisoptions }} />
         {% endif %}
       </mapping:{{ mapping.kind }} >

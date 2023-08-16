@@ -49,6 +49,10 @@ def generateCases(setup):
                                         "basisoptions": mapping.get(
                                             "basis-function-options", ""
                                         ),
+                                        "executor": mapping.get("executor", ""),
+                                        "executoroptions": mapping.get(
+                                            "executor-options", ""
+                                        ),
                                     },
                                     "A": {
                                         "ranks": ranksA,

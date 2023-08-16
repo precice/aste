@@ -30,6 +30,8 @@
             "kind": "rbf",
             "options": "",
             "basis-function": "thin-plate-splines"
+            "executor": "cpu",
+            "executor-options": ""
           },
          "np": {
             "kind": "nearest-projection"
