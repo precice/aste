@@ -28,6 +28,9 @@ def parseArguments(args):
 def statsFromTimings(dir):
     stats = {}
     assert os.path.isdir(dir)
+    assert (
+        os.system("command -v precice-events > /dev/null") == 0
+    ), 'Could not find the profiling tool "precice-events", which is part of the preCICE installation.'
     event_dir = os.path.join(dir, "precice-events")
     json_file = os.path.join(dir, "events.json")
     timings_file = os.path.join(dir, "timings.csv")
