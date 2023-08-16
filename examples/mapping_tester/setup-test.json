@@ -29,7 +29,7 @@
           "tps": {
             "kind": "rbf",
             "options": "",
-            "basis-function": "thin-plate-splines"
+            "basis-function": "thin-plate-splines",
             "executor": "cpu",
             "executor-options": ""
           },
