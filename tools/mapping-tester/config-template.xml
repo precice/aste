@@ -31,6 +31,9 @@
 
       <mapping:{{ mapping.kind }} {{ mapping.options }} constraint="conservative" direction="write" from="A-Mesh" to="B-Mesh" >
         {% if mapping.kind.startswith("rbf") %}
+          {% if mapping.executor %}
+        <executor:{{ mapping.executor }} {{ mapping.executoroptions }} />
+          {% endif %}
         <basis-function:{{ mapping.basis }} {{ mapping.basisoptions }} />
         {% endif %}
       </mapping:{{ mapping.kind }} >
@@ -46,7 +49,9 @@
 
       <mapping:{{ mapping.kind }} {{ mapping.options }} constraint="consistent" direction="read" from="A-Mesh" to="B-Mesh" >
         {% if mapping.kind.startswith("rbf") %}
+          {% if mapping.executor %}
         <executor:{{ mapping.executor }} {{ mapping.executoroptions }} />
+          {% endif %}
         <basis-function:{{ mapping.basis }} {{ mapping.basisoptions }} />
         {% endif %}
       </mapping:{{ mapping.kind }} >
