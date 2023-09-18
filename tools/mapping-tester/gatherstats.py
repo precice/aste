@@ -96,7 +96,7 @@ def main(argv):
         assert len(parts) >= 5
         mapping, constraint, meshes, ranks, _ = parts[-5:]
         meshA, meshB = meshes.split("-")
-        ranksA, ranksB = meshes.split("-")
+        ranksA, ranksB = ranks.split("-")
 
         with open(os.path.join(args.outdir, file), "r") as jsonfile:
             stats = json.load(jsonfile)
