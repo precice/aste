@@ -152,7 +152,7 @@ def createRunScript(outdir, path, case):
     )
 
     # Generate runner script
-    acmd = '/usr/bin/time -f %M -a -o memory-A.log precice-aste-run -v -a -p A --data "{}" --mesh {} || kill 0 &'.format(
+    acmd = 'env time -f %M -a -o memory-A.log precice-aste-run -v -a -p A --data "{}" --mesh {} || kill 0 &'.format(
         case["function"], ameshLocation
     )
     if aranks > 1:
@@ -164,7 +164,7 @@ def createRunScript(outdir, path, case):
         os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path
     )
     mapped_data_name = case["function"] + "(mapped)"
-    bcmd = '/usr/bin/time -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{}" --mesh {} --output mapped || kill 0 &'.format(
+    bcmd = 'env time -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{}" --mesh {} --output mapped || kill 0 &'.format(
         mapped_data_name, bmeshLocation
     )
     if branks > 1:
