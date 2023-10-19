@@ -29,13 +29,15 @@ def statsFromTimings(dir):
     stats = {}
     assert os.path.isdir(dir)
     assert (
-        os.system("command -v precice-events > /dev/null") == 0
-    ), 'Could not find the profiling tool "precice-events", which is part of the preCICE installation.'
-    event_dir = os.path.join(dir, "precice-events")
-    json_file = os.path.join(dir, "events.json")
+        os.system("command -v precice-profiling > /dev/null") == 0
+    ), 'Could not find the profiling tool "precice-profiling", which is part of the preCICE installation.'
+    event_dir = os.path.join(dir, "precice-profiling")
+    json_file = os.path.join(dir, "profiling.json")
     timings_file = os.path.join(dir, "timings.csv")
-    os.system("precice-events merge --output {} {}".format(json_file, event_dir))
-    os.system("precice-events analyze --output {} B {}".format(timings_file, json_file))
+    os.system("precice-profiling merge --output {} {}".format(json_file, event_dir))
+    os.system(
+        "precice-profiling analyze --output {} B {}".format(timings_file, json_file)
+    )
     file = timings_file
     if os.path.isfile(file):
         try:
