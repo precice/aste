@@ -99,7 +99,7 @@ def caseToSortable(case):
     return (kindCost, -mesha, -meshb)
 
 
-def createMasterRunScripts(casemap, dir):
+def createMasterRunScripts(casemap, dir, exit):
     common = [
         "#!/bin/bash",
         "",
@@ -109,18 +109,32 @@ def createMasterRunScripts(casemap, dir):
     ]
 
     # Generate master runner script
-    content = common + [
-        "${RUNNER} " + os.path.join(case, "runall.sh") for case in casemap.keys()
-    ]
+    if exit:
+        content = common + [
+            "${RUNNER} " + os.path.join(case, "runall.sh || exit 1")
+            for case in casemap.keys()
+        ]
+    else:
+        content = common + [
+            "${RUNNER} " + os.path.join(case, "runall.sh") for case in casemap.keys()
+        ]
+
     open(os.path.join(dir, "runall.sh"), "w").writelines(
         [line + "\n" for line in content]
     )
 
     # Generate master postprocessing script
-    post = common + [
-        "${RUNNER} " + os.path.join(case, "postprocessall.sh")
-        for case in casemap.keys()
-    ]
+    if exit:
+        post = common + [
+            "${RUNNER} " + os.path.join(case, "postprocessall.sh || exit 1")
+            for case in casemap.keys()
+        ]
+    else:
+        post = common + [
+            "${RUNNER} " + os.path.join(case, "postprocessall.sh")
+            for case in casemap.keys()
+        ]
+
     open(os.path.join(dir, "postprocessall.sh"), "w").writelines(
         [line + "\n" for line in post]
     )
@@ -204,7 +218,10 @@ def createRunScript(outdir, path, case):
     wrapper = [
         "#!/bin/bash",
         'cd "$( dirname "${BASH_SOURCE[0]}" )"',
+        "set -o pipefail",
+        "(",
         "/bin/bash run.sh 2>&1 | tee run.log",
+        ")",
     ]
     open(os.path.join(path, "run-wrapper.sh"), "w").writelines(
         [line + "\n" for line in wrapper]
@@ -242,7 +259,7 @@ def createRunScript(outdir, path, case):
     )
 
 
-def setupCases(outdir, template, cases):
+def setupCases(outdir, template, cases, exit):
     casemap = {}
     for case in cases:
         folders = getCaseFolders(case)
@@ -259,7 +276,7 @@ def setupCases(outdir, template, cases):
     print(f"Generated {len(cases)} cases")
 
     print(f"Generating master scripts")
-    createMasterRunScripts(casemap, outdir)
+    createMasterRunScripts(casemap, outdir, exit)
 
 
 def parseArguments(args):
@@ -284,6 +301,12 @@ def parseArguments(args):
         default="config-template.xml",
         help="The precice config template to use.",
     )
+    parser.add_argument(
+        "-e",
+        "--exit",
+        action="store_true",
+        help="Generate run scripts, which exit immediately, if one of the cases fails.",
+    )
     return parser.parse_args(args)
 
 
@@ -300,7 +323,7 @@ def main(argv):
     if os.path.isdir(outdir):
         print('Warning: outdir "{}" already exisits.'.format(outdir))
 
-    setupCases(outdir, template, cases)
+    setupCases(outdir, template, cases, args.exit)
 
     return 0
 
