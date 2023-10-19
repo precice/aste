@@ -12,7 +12,7 @@ MAPPING_TESTER="${TEST_LOCATION}"/../../tools/mapping-tester/
 TEST_CASE_LOCATION="${TEST_LOCATION}"/case
 
 # Generate the run scripts
-python3 "${MAPPING_TESTER}"/generate.py --setup "${TEST_LOCATION}"/setup-test.json --outdir "${TEST_CASE_LOCATION}" --template "${MAPPING_TESTER}"/config-template.xml
+python3 "${MAPPING_TESTER}"/generate.py --setup "${TEST_LOCATION}"/setup-test.json --outdir "${TEST_CASE_LOCATION}" --template "${MAPPING_TESTER}"/config-template.xml --exit
 
 # Prepare the meshes
 python3 "${MAPPING_TESTER}"/preparemeshes.py --setup "${TEST_LOCATION}"/setup-test.json --outdir "${TEST_CASE_LOCATION}" --force

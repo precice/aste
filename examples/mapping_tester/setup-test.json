@@ -27,7 +27,7 @@
         ],
         "cases": {
           "tps": {
-            "kind": "rbf",
+            "kind": "rbf-global-direct",
             "options": "",
             "basis-function": "thin-plate-splines",
             "executor": "cpu",
