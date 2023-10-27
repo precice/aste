@@ -232,6 +232,7 @@ class MeshJoiner:
         # Initialize Joined Mesh
         joined_mesh = vtk.vtkUnstructuredGrid()
         joined_points = vtk.vtkPoints()
+        joined_points.SetDataTypeToDouble()
         joined_points.SetNumberOfPoints(size)
         joined_data_arrays = None
         joined_cells = vtk.vtkCellArray()
