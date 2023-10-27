@@ -496,6 +496,7 @@ class MeshPartitioner:
 
         vtk_grid = vtk.vtkUnstructuredGrid()
         vtkpoints = vtk.vtkPoints()
+        vtkpoints.SetDataTypeToDouble()
         vtkpoints.SetNumberOfPoints(len(points))
         for id, point in enumerate(points):
             vtkpoints.SetPoint(id, point)
