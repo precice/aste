@@ -113,6 +113,7 @@ void writeMesh(const std::string &filename, const std::string &directory, vtkSma
     vtkSmartPointer<vtkUnstructuredGridWriter> writer = vtkSmartPointer<vtkUnstructuredGridWriter>::New();
     writer->SetFileName(output_filename);
     writer->SetInputData(mesh);
+    writer->SetFileTypeToBinary();
     writer->Write();
   } else {
     std::cerr << "Error: " << filename << " is not a valid output file." << std::endl;
@@ -122,9 +123,10 @@ void writeMesh(const std::string &filename, const std::string &directory, vtkSma
 
 auto partitionwiseMerge(const std::string &prefix, size_t numparts) -> vtkSmartPointer<vtkUnstructuredGrid>
 {
-  auto             joinedMesh   = vtkSmartPointer<vtkUnstructuredGrid>::New();
-  auto             joinedPoints = vtkSmartPointer<vtkPoints>::New();
-  auto             joinedCells  = vtkSmartPointer<vtkCellArray>::New();
+  auto joinedMesh   = vtkSmartPointer<vtkUnstructuredGrid>::New();
+  auto joinedPoints = vtkSmartPointer<vtkPoints>::New();
+  joinedPoints->SetDataTypeToDouble();
+  auto             joinedCells = vtkSmartPointer<vtkCellArray>::New();
   std::vector<int> joinedCellTypes;
 
   std::vector<vtkSmartPointer<vtkDoubleArray>> joinedDataVec;
@@ -181,9 +183,10 @@ auto partitionwiseMerge(const std::string &prefix, size_t numparts) -> vtkSmartP
 
 auto recoveryMerge(const std::string &prefix, std::size_t numparts, int size, const std::vector<int> &cellTypes, const std::vector<std::vector<int>> &cells) -> vtkSmartPointer<vtkUnstructuredGrid>
 {
-  auto             joinedMesh   = vtkSmartPointer<vtkUnstructuredGrid>::New();
-  auto             joinedPoints = vtkSmartPointer<vtkPoints>::New();
-  auto             joinedCells  = vtkSmartPointer<vtkCellArray>::New();
+  auto joinedMesh   = vtkSmartPointer<vtkUnstructuredGrid>::New();
+  auto joinedPoints = vtkSmartPointer<vtkPoints>::New();
+  joinedPoints->SetDataTypeToDouble();
+  auto             joinedCells = vtkSmartPointer<vtkCellArray>::New();
   std::vector<int> joinedCellTypes;
 
   joinedPoints->SetNumberOfPoints(size);
