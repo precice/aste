@@ -73,7 +73,7 @@ def memoryStats(dir):
         if os.path.isfile(memfile):
             try:
                 with open(memfile, "r") as file:
-                    total = sum([float(e) / 1024.0 for e in file.readlines()])
+                    total = sum([float(e) / 1.0 for e in file.readlines()])
             except BaseException:
                 pass
         stats[f"peakMem{P}"] = total
