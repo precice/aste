@@ -41,7 +41,7 @@ void readRecoveryFile(const std::string &recoveryFile, int &size, std::vector<in
   try {
     size = recoveryData["size"].get<int>();
   } catch (nlohmann::detail::parse_error &) {
-    std::cerr << "Error while parsing recovery file \"size\" is missing";
+    std::cerr << "Error while parsing the recovery file: \"size\" attribute is missing";
     std::exit(EXIT_FAILURE);
   } catch (nlohmann::detail::type_error &) {
     std::cerr << "Error while parsing recovery file \"size\" is missing";
