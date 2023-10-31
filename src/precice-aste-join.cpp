@@ -51,7 +51,7 @@ void readRecoveryFile(const std::string &recoveryFile, int &size, std::vector<in
   try {
     cellTypes = recoveryData["cell_types"].get<std::vector<int>>();
   } catch (nlohmann::detail::parse_error &) {
-    std::cerr << "Error while parsing recovery file \"cell_types\" is missing";
+    std::cerr << "Error while parsing the recovery file: \"cell_types\" attribute is missing";
     std::exit(EXIT_FAILURE);
   } catch (nlohmann::detail::type_error &) {
     std::cerr << "Error while parsing recovery file \"cell_types\" is missing";
