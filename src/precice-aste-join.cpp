@@ -266,7 +266,7 @@ auto recoveryMerge(const std::string &prefix, std::size_t numparts, int size, co
     joinedCellTypes.push_back(cellTypes[i]);
   }
 
-  // Assembly final mesh
+  // Assemble final mesh
   for (const auto &data : joinedDataVec) {
     joinedMesh->GetPointData()->AddArray(data);
   }
@@ -302,7 +302,7 @@ void join(int argc, char *argv[])
 
   vtkSmartPointer<vtkUnstructuredGrid> joinedMesh = nullptr;
   if (fs::exists(recovery)) {
-    std::cout << "Recovery file found. Will try to recover the state." << std::endl;
+    std::cout << "Recovery file found. Recovering the connectivity information of the mesh." << std::endl;
     int                           size;
     std::vector<int>              cellTypes;
     std::vector<std::vector<int>> cells;

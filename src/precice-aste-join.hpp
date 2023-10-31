@@ -39,7 +39,7 @@ void readRecoveryFile(const std::string &recoveryFile, int &size, std::vector<in
 auto countPartitions(const std::string &prefix) -> size_t;
 
 /**
- * @ brief Write the joined mesh to a VTK file
+ * @brief Write the joined mesh to a VTK file
  *
  * @param filename
  * @param directory
