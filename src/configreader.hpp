@@ -11,7 +11,7 @@
 #include "logger.hpp"
 #include "mesh.hpp"
 
-#include "precice/Participant.hpp"
+#include "precice/precice.hpp"
 
 using json = nlohmann::json;
 

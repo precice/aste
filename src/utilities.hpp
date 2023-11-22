@@ -20,7 +20,7 @@
 #include "mesh.hpp"
 #include "modes.hpp"
 
-#include "precice/Participant.hpp"
+#include "precice/precice.hpp"
 
 namespace fs = std::filesystem;
 
