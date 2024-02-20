@@ -18,17 +18,13 @@
 
   <participant name="A">
     <provide-mesh name="A-Mesh" />
-
     <write-data name="Data" mesh="A-Mesh" />
   </participant>
 
   <participant name="B">
     <receive-mesh name="A-Mesh" from="A" />
-
     <provide-mesh name="B-Mesh" />
-
     <read-data name="Data" mesh="B-Mesh" />
-
     <mapping:nearest-neighbor-gradient
       constraint="consistent"
       direction="read"
@@ -38,11 +34,8 @@
 
   <coupling-scheme:parallel-explicit>
     <participants first="A" second="B" />
-
     <max-time value="1.0" />
-
     <time-window-size value="1" />
-
     <exchange data="Data" mesh="A-Mesh" from="A" to="B" />
   </coupling-scheme:parallel-explicit>
 </precice-configuration>
