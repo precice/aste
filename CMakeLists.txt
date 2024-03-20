@@ -64,9 +64,9 @@ if(METIS_FOUND)
 endif()
 
 
-add_executable(test-aste tests/testing.cpp tests/read_test.cpp tests/write_test.cpp src/mesh.cpp src/logger.cpp)
-target_include_directories(test-aste PRIVATE src thirdparty)
-target_link_libraries(test-aste
+add_executable(test-precice-aste tests/testing.cpp tests/read_test.cpp tests/write_test.cpp src/mesh.cpp src/logger.cpp)
+target_include_directories(test-precice-aste PRIVATE src thirdparty)
+target_link_libraries(test-precice-aste
   ${Boost_LIBRARIES}
   MPI::MPI_CXX
   ${VTK_LIBRARIES}
@@ -78,7 +78,7 @@ if (VTK_VERSION VERSION_LESS "8.90.0")
 else ()
   # vtk_module_autoinit is needed
   vtk_module_autoinit(
-    TARGETS precice-aste-run test-aste
+    TARGETS precice-aste-run test-precice-aste
     MODULES ${VTK_LIBRARIES}
     )
 endif()
@@ -96,7 +96,7 @@ install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-partition ${CMAKE_
 
 enable_testing()
 
-add_test(NAME read_write_test  COMMAND test-aste WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests")
+add_test(NAME read_write_test  COMMAND test-precice-aste WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests")
 
 # Detect and register examples as tests
 
