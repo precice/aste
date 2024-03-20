@@ -30,7 +30,17 @@ repos:
       - id: requirements-txt-fixer
   # Custom repo for the preCICE configuration formatter
   - repo: https://github.com/precice/precice-pre-commit-hooks
-    rev: "v2.1"
+    rev: "v3.2"
     hooks:
       - id: format-precice-config
         exclude: "tools"
+      - id: check-image-prefix
+        files: "^docs/images/.*"
+        args: [ --prefix=docs-tooling-aste- ]
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.39.0
+    hooks:
+      - id: markdownlint
+        exclude: changelog-entries
+      - id: markdownlint-fix
+        exclude: changelog-entries

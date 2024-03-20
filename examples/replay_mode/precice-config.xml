@@ -19,13 +19,9 @@
 
   <participant name="Fluid">
     <provide-mesh name="Fluid-Mesh" />
-
     <receive-mesh name="Solid-Mesh" from="Solid" />
-
     <read-data name="Displacement" mesh="Fluid-Mesh" />
-
     <write-data name="Force" mesh="Fluid-Mesh" />
-
     <mapping:rbf-global-direct
       direction="read"
       from="Solid-Mesh"
@@ -33,7 +29,6 @@
       constraint="consistent">
       <basis-function:thin-plate-splines />
     </mapping:rbf-global-direct>
-
     <mapping:rbf-global-direct
       direction="write"
       from="Fluid-Mesh"
@@ -45,11 +40,8 @@
 
   <participant name="Solid">
     <provide-mesh name="Solid-Mesh" />
-
     <read-data name="Force" mesh="Solid-Mesh" />
-
     <write-data name="Displacement" mesh="Solid-Mesh" />
-
     <watch-point mesh="Solid-Mesh" name="Flap-Tip" coordinate="0.25;0.0" />
   </participant>
 
@@ -57,11 +49,8 @@
 
   <coupling-scheme:serial-explicit>
     <time-window-size value="2.5e-1" />
-
     <max-time value="2.5" />
-
     <participants first="Fluid" second="Solid" />
-
     <exchange data="Force" mesh="Solid-Mesh" from="Fluid" to="Solid" />
     <exchange data="Displacement" mesh="Solid-Mesh" from="Solid" to="Fluid" />
   </coupling-scheme:serial-explicit>
