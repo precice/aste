@@ -23,7 +23,7 @@ def as_iter(something):
 def generateCases(setup):
     meshes = setup["general"]["meshes"]
     network = setup["general"].get("network", "lo")
-    syncmode = setup["general"].get("syncmode", "false")
+    syncmode = setup["general"].get("synchronize", "false")
 
     cases = []
     for group in setup["groups"]:
@@ -45,6 +45,14 @@ def generateCases(setup):
                                         "kind": mapping["kind"],
                                         "constraint": constraint,
                                         "options": mapping.get("options", ""),
+                                        "basis": mapping.get("basis-function", ""),
+                                        "basisoptions": mapping.get(
+                                            "basis-function-options", ""
+                                        ),
+                                        "executor": mapping.get("executor", ""),
+                                        "executoroptions": mapping.get(
+                                            "executor-options", ""
+                                        ),
                                     },
                                     "A": {
                                         "ranks": ranksA,
@@ -61,7 +69,7 @@ def generateCases(setup):
                                         },
                                     },
                                     "network": network,
-                                    "syncmode": syncmode,
+                                    "synchronize": syncmode,
                                 }
                             )
 
@@ -91,7 +99,7 @@ def caseToSortable(case):
     return (kindCost, -mesha, -meshb)
 
 
-def createMasterRunScripts(casemap, dir):
+def createMasterRunScripts(casemap, dir, exit):
     common = [
         "#!/bin/bash",
         "",
@@ -101,18 +109,32 @@ def createMasterRunScripts(casemap, dir):
     ]
 
     # Generate master runner script
-    content = common + [
-        "${RUNNER} " + os.path.join(case, "runall.sh") for case in casemap.keys()
-    ]
+    if exit:
+        content = common + [
+            "${RUNNER} " + os.path.join(case, "runall.sh || exit 1")
+            for case in casemap.keys()
+        ]
+    else:
+        content = common + [
+            "${RUNNER} " + os.path.join(case, "runall.sh") for case in casemap.keys()
+        ]
+
     open(os.path.join(dir, "runall.sh"), "w").writelines(
         [line + "\n" for line in content]
     )
 
     # Generate master postprocessing script
-    post = common + [
-        "${RUNNER} " + os.path.join(case, "postprocessall.sh")
-        for case in casemap.keys()
-    ]
+    if exit:
+        post = common + [
+            "${RUNNER} " + os.path.join(case, "postprocessall.sh || exit 1")
+            for case in casemap.keys()
+        ]
+    else:
+        post = common + [
+            "${RUNNER} " + os.path.join(case, "postprocessall.sh")
+            for case in casemap.keys()
+        ]
+
     open(os.path.join(dir, "postprocessall.sh"), "w").writelines(
         [line + "\n" for line in post]
     )
@@ -144,7 +166,7 @@ def createRunScript(outdir, path, case):
     )
 
     # Generate runner script
-    acmd = '/usr/bin/time -f %M -a -o memory-A.log precice-aste-run -v -p A --data "{}" --mesh {} || kill 0 &'.format(
+    acmd = 'env time -f %M -a -o memory-A.log precice-aste-run -v -a -p A --data "{}" --mesh {} || kill 0 &'.format(
         case["function"], ameshLocation
     )
     if aranks > 1:
@@ -156,7 +178,7 @@ def createRunScript(outdir, path, case):
         os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path
     )
     mapped_data_name = case["function"] + "(mapped)"
-    bcmd = '/usr/bin/time -f %M -a -o memory-B.log precice-aste-run -v -p B --data "{}" --mesh {} --output mapped || kill 0 &'.format(
+    bcmd = 'env time -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{}" --mesh {} --output mapped || kill 0 &'.format(
         mapped_data_name, bmeshLocation
     )
     if branks > 1:
@@ -196,7 +218,10 @@ def createRunScript(outdir, path, case):
     wrapper = [
         "#!/bin/bash",
         'cd "$( dirname "${BASH_SOURCE[0]}" )"',
+        "set -o pipefail",
+        "(",
         "/bin/bash run.sh 2>&1 | tee run.log",
+        ")",
     ]
     open(os.path.join(path, "run-wrapper.sh"), "w").writelines(
         [line + "\n" for line in wrapper]
@@ -234,7 +259,7 @@ def createRunScript(outdir, path, case):
     )
 
 
-def setupCases(outdir, template, cases):
+def setupCases(outdir, template, cases, exit):
     casemap = {}
     for case in cases:
         folders = getCaseFolders(case)
@@ -251,7 +276,7 @@ def setupCases(outdir, template, cases):
     print(f"Generated {len(cases)} cases")
 
     print(f"Generating master scripts")
-    createMasterRunScripts(casemap, outdir)
+    createMasterRunScripts(casemap, outdir, exit)
 
 
 def parseArguments(args):
@@ -276,6 +301,12 @@ def parseArguments(args):
         default="config-template.xml",
         help="The precice config template to use.",
     )
+    parser.add_argument(
+        "-e",
+        "--exit",
+        action="store_true",
+        help="Generate run scripts, which exit immediately, if one of the cases fails.",
+    )
     return parser.parse_args(args)
 
 
@@ -292,7 +323,7 @@ def main(argv):
     if os.path.isdir(outdir):
         print('Warning: outdir "{}" already exisits.'.format(outdir))
 
-    setupCases(outdir, template, cases)
+    setupCases(outdir, template, cases, args.exit)
 
     return 0
 

@@ -48,11 +48,11 @@ pip3 install -r requirements.txt
 
 ### Building and installation
 
-In order to build ASTE, clone the project repository and use the usual `CMake` steps to steer the installation procedure:
+In order to build ASTE, download the [latest release](https://github.com/precice/aste/releases/latest) (or clone the `master` branch of the project repository) and use the usual `CMake` steps to steer the installation procedure:
 
 ```bash
-git clone https://github.com/precice/aste.git
-mkdir build && cd build
+git clone --branch master https://github.com/precice/aste.git
+cd aste && mkdir build && cd build
 cmake .. && make
 ```
 
@@ -95,6 +95,7 @@ The following subsections explain each part of ASTE in more detail. All ASTE mod
 | --------------- | ---------------------------------------------------------------------- |
 | `--aste-config` | ASTE configuration file (only used for replay mode)                    |
 | `-v`            | Enables verbose logging output from preCICE                            |
+| `-a`            | Enables additional logging from all secondary ranks                    |
 | `-c`            | To specify preCICE configuration file (default=`"precice-config.xml"`) |
 | `-p`            | Participant name, which can take the arguments `A` or `B`              |
 | `--vector`      | A bool switch to specify vector data (default=`False`)                 |
@@ -110,7 +111,7 @@ precice-aste-run -p A --mesh fine_mesh --data "dummyData"
 precice-aste-run -p B --mesh coarse_mesh --data "mappedData" --output mappedMesh
 ```
 
-While the example above exexutes the mapping in serial, `precice-aste-run` can be executed in parallel (using MPI). However, this requires a partitioned mesh (one per parallel rank). In order to decompose a single mesh appropriately, the tools `precice-aste-partition` and `precice-aste-join` can be used.
+While the example above executes the mapping in serial, `precice-aste-run` can be executed in parallel (using MPI). However, this requires a partitioned mesh (one per parallel rank). In order to decompose a single mesh appropriately, the tools `precice-aste-partition` and `precice-aste-join` can be used.
 
 {% tip %}
 If you want to reproduce a specific setup of your solvers, you can use the [export functionality](https://precice.org/configuration-export.html#enabling-exporters) of preCICE and use the generated meshes directly in `precice-aste-run`. If you run your solver in parallel, preCICE exports the decomposed meshes directly, so that no further partitioning is required.

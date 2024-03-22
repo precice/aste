@@ -1,8 +1,7 @@
 #pragma once
 
 #include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/operations.hpp>
+#include <filesystem>
 
 #include <mpi.h>
 
@@ -39,7 +38,7 @@
 
 namespace aste {
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 class BaseName;
 struct Mesh;
 class MeshName;
@@ -108,16 +107,15 @@ enum datatype { READ,
  * Data ID in preCICE
  */
 struct MeshData {
-  MeshData(datatype type, int numcomp, std::string name, int dataID)
-      : type(type), numcomp(numcomp), name(std::move(name)), dataID(dataID){};
-  MeshData(datatype type, int numcomp, std::string name, int dataID, int gradDimension)
-      : type(type), numcomp(numcomp), name(std::move(name)), dataID(dataID), gradDimension(gradDimension){};
+  MeshData(datatype type, int numcomp, std::string name)
+      : type(type), numcomp(numcomp), name(std::move(name)){};
+  MeshData(datatype type, int numcomp, std::string name, int gradDimension)
+      : type(type), numcomp(numcomp), name(std::move(name)), gradDimension(gradDimension){};
 
   datatype            type;
   int                 numcomp;
   std::string         name; // name of data
   std::vector<double> dataVector;
-  int                 dataID;        // preCICE dataID
   int                 gradDimension; // Dimensions for gradient data
 };
 

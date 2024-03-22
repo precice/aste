@@ -28,28 +28,37 @@ def parseArguments(args):
 def statsFromTimings(dir):
     stats = {}
     assert os.path.isdir(dir)
-    file = os.path.join(dir, "precice-B-events.json")
+    assert (
+        os.system("command -v precice-profiling > /dev/null") == 0
+    ), 'Could not find the profiling tool "precice-profiling", which is part of the preCICE installation.'
+    event_dir = os.path.join(dir, "precice-profiling")
+    json_file = os.path.join(dir, "profiling.json")
+    timings_file = os.path.join(dir, "timings.csv")
+    os.system("precice-profiling merge --output {} {}".format(json_file, event_dir))
+    os.system(
+        "precice-profiling analyze --output {} B {}".format(timings_file, json_file)
+    )
+    file = timings_file
     if os.path.isfile(file):
         try:
             timings = {}
-            with open(file, "r") as jsonfile:
-                timings = json.load(jsonfile)["Ranks"][0]["Timings"]
-            stats["globalTime"] = timings["_GLOBAL"]["Max"]
-            stats["initializeTime"] = timings["initialize"]["Max"]
-            computeMappingName = [
-                x
-                for x in timings.keys()
-                if x.startswith("advance/map")
-                and x.endswith("computeMapping.FromA-MeshToB-Mesh")
-            ][0]
-            mapDataName = [
-                x
-                for x in timings.keys()
-                if x.startswith("advance/map")
-                and x.endswith("mapData.FromA-MeshToB-Mesh")
-            ][0]
-            stats["computeMappingTime"] = timings[computeMappingName]["Max"]
-            stats["mapDataTime"] = timings[mapDataName]["Max"]
+            with open(file, "r") as csvfile:
+                timings = csv.reader(csvfile)
+                for row in timings:
+                    if row[0] == "_GLOBAL":
+                        stats["globalTime"] = row[-1]
+                    if row[0] == "initialize":
+                        stats["initializeTime"] = row[-1]
+                    if row[0].startswith("initialize/map") and row[0].endswith(
+                        "computeMapping.FromA-MeshToB-Mesh"
+                    ):
+                        computeMappingName = row[0]
+                        stats["computeMappingTime"] = row[-1]
+                    if row[0].startswith("advance/map") and row[0].endswith(
+                        "mapData.FromA-MeshToB-Mesh"
+                    ):
+                        mapDataName = row[0]
+                        stats["mapDataTime"] = row[-1]
         except BaseException:
             pass
     return stats
@@ -64,7 +73,7 @@ def memoryStats(dir):
         if os.path.isfile(memfile):
             try:
                 with open(memfile, "r") as file:
-                    total = sum([float(e) / 1024.0 for e in file.readlines()])
+                    total = sum([float(e) / 1.0 for e in file.readlines()])
             except BaseException:
                 pass
         stats[f"peakMem{P}"] = total
@@ -89,7 +98,7 @@ def main(argv):
         assert len(parts) >= 5
         mapping, constraint, meshes, ranks, _ = parts[-5:]
         meshA, meshB = meshes.split("-")
-        ranksA, ranksB = meshes.split("-")
+        ranksA, ranksB = ranks.split("-")
 
         with open(os.path.join(args.outdir, file), "r") as jsonfile:
             stats = json.load(jsonfile)

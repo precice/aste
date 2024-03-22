@@ -3,7 +3,7 @@
 all: mesh scale
 
 mesh: mesh.cpp
-	g++ -lgmsh mesh.cpp -o mesh
+	g++ mesh.cpp -o mesh -lgmsh
 
 scale: scale.cpp
-	g++ -lgmsh scale.cpp -o scale
+	g++ scale.cpp -o scale -lgmsh

@@ -9,7 +9,7 @@
         2
       ]
     },
-    "syncmode": false,
+    "synchronize": false,
     "meshes": {
       "A": {
         "coarse_mesh": "${TEST_LOCATION}/coarse_mesh.vtk"
@@ -27,8 +27,11 @@
         ],
         "cases": {
           "tps": {
-            "kind": "rbf-thin-plate-splines",
-            "options": "use-qr-decomposition=\"1\""
+            "kind": "rbf-global-direct",
+            "options": "",
+            "basis-function": "thin-plate-splines",
+            "executor": "cpu",
+            "executor-options": ""
           },
          "np": {
             "kind": "nearest-projection"

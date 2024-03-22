@@ -58,27 +58,6 @@ def plotConv(ax, df, yname):
     print(xmin, xmax)
     print(ymin, ymax)
 
-    # 1st order line
-    fox = [xmax, xmin]
-    foy1 = ymax
-    foy2 = foy1 * (fox[1] / fox[0])
-    foy = [foy1, foy2]
-    ax.axline(
-        (fox[0], foy[0]), (fox[1], foy[1]), color="lightgray", linewidth=1.0, zorder=-1
-    )
-    ax.annotate("1st order", xy=(lavg(fox), lavg(foy)), color="gray", zorder=-1)
-
-    # # 2nd order line
-    sox = [xmin, xmax]
-    soy1 = ymin
-    soy2 = soy1 * ((sox[1] / sox[0]) ** 2)
-    soy = [soy1, soy2]
-    print(sox, soy)
-    ax.axline(
-        (sox[0], soy[0]), (sox[1], soy[1]), color="lightgray", linewidth=1.0, zorder=-1
-    )
-    ax.annotate("2nd order", xy=(lavg(sox), lavg(soy)), color="gray", zorder=-1)
-
 
 def plotError(df, prefix):
     yname = "relative-l2"
@@ -129,7 +108,7 @@ def plotMemory(df, prefix):
             color=color,
         )
     ax.set_xlabel("edge length(h) of mesh A")
-    ax.set_ylabel("peak memory of participant B [bytes]")
+    ax.set_ylabel("peak memory of participant B [Kbytes]")
 
     # plotConv(ax, df, yname)
 
@@ -159,7 +138,7 @@ def plotComputeMappingTime(df, prefix):
         )
 
     ax.set_xlabel("edge length(h) of mesh A")
-    ax.set_ylabel("time to compute mapping [ms]")
+    ax.set_ylabel("time to compute mapping [us]")
 
     # plotConv(ax, df, yname)
 
@@ -189,7 +168,7 @@ def plotMapDataTime(df, prefix):
         )
 
     ax.set_xlabel("edge length(h) of mesh A")
-    ax.set_ylabel("time to map Data [ms]")
+    ax.set_ylabel("time to map Data [us]")
 
     # plotConv(ax, df, yname)
 

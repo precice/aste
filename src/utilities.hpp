@@ -2,7 +2,7 @@
 
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include <algorithm>
 #include <cassert>
@@ -20,9 +20,9 @@
 #include "mesh.hpp"
 #include "modes.hpp"
 
-#include "precice/SolverInterface.hpp"
+#include "precice/precice.hpp"
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 using VertexID = int;
 using EdgeID   = int;
@@ -47,10 +47,10 @@ aste::ExecutionContext initializeMPI(int argc, char *argv[]);
  * @param meshID Mesh ID of the Mesh in preCICE
  * @return std::vector<int> a vector of vertexIDs in preCICE
  */
-std::vector<int> setupVertexIDs(precice::SolverInterface &interface,
-                                const aste::Mesh &mesh, int meshID);
+std::vector<int> setupVertexIDs(precice::Participant &interface,
+                                const aste::Mesh &mesh, const std::string &meshName);
 
-EdgeIdMap setupEdgeIDs(precice::SolverInterface &interface, const aste::Mesh &mesh, int meshID, const std::vector<int> &vertexIDs);
+void setupEdgeIDs(precice::Participant &interface, const aste::Mesh &mesh, const std::string &meshName, const std::vector<int> &vertexIDs);
 /**
  * @brief Setup mesh in preCICE (with connectivity information of provided).
  *
@@ -59,5 +59,5 @@ EdgeIdMap setupEdgeIDs(precice::SolverInterface &interface, const aste::Mesh &me
  * @param meshID ID of the Mesh in preCICE
  * @return std::vector<int> a vector of vertexIDs in preCICE
  */
-std::vector<int> setupMesh(precice::SolverInterface &interface, const aste::Mesh &mesh, int meshID);
+std::vector<int> setupMesh(precice::Participant &interface, const aste::Mesh &mesh, const std::string &meshName);
 } // namespace aste

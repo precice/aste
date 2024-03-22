@@ -1,10 +1,9 @@
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/operations.hpp>
 #include <cstdlib>
+#include <filesystem>
 
 #include "testing.hpp"
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 void writetest(const WriteCase &current_case)
 {

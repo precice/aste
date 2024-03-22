@@ -10,7 +10,7 @@
 #include "mesh.hpp"
 #include "utilities.hpp"
 
-#include "precice/SolverInterface.hpp"
+#include "precice/precice.hpp"
 
 #ifndef PRECICE_VERSION_GREATER_EQUAL
 // compatibility with older versions
