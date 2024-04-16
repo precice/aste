@@ -153,6 +153,10 @@ class Calculator:
             "eggholder3d": "-x*sin(sqrt(abs(x-y-47)))-(y+47)*sin(sqrt(abs(0.5*x+y+47)))"
             "-y*sin(sqrt(abs(y-z-47)))-(z+47)*sin(sqrt(abs(0.5*y+z+47)))",
             "rosenbrock3d": "(100*(y-x^2)^2+(x-1)^2)+(100*(z-y^2)^2+(y-1)^2)",
+            "rosenbrock3d_rescaled": (
+                "100*((y - 13.3)/(20-13.3) - ((x - 6)/(10.5-6))^2)^2 + ((x - 6)/(10.5-6) - 1)^2 "
+                "+ 100*((z + 56.3)/(-41.5+56.3) - ((y - 13.3)/(20-13.3))^2)^2 + ((y - 13.3)/(20-13.3) - 1)^2"
+            ),
         }
 
         pre_def_functions.update(pre_def2d_functions)

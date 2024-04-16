@@ -85,6 +85,9 @@ def plotError(df, prefix):
 
     plt.gca().invert_xaxis()
     plt.grid()
+    import tikzplotlib
+
+    tikzplotlib.save("error.tex")
     plt.savefig(prefix + "-error.pdf")
 
 
@@ -114,6 +117,9 @@ def plotMemory(df, prefix):
 
     plt.gca().invert_xaxis()
     plt.grid()
+    import tikzplotlib
+
+    tikzplotlib.save("memory.tex")
     plt.savefig(prefix + "-peakMemB.pdf")
 
 
@@ -144,6 +150,9 @@ def plotComputeMappingTime(df, prefix):
 
     plt.gca().invert_xaxis()
     plt.grid()
+    import tikzplotlib
+
+    tikzplotlib.save("computet.tex")
     plt.savefig(prefix + "-computet.pdf")
 
 
@@ -174,6 +183,9 @@ def plotMapDataTime(df, prefix):
 
     plt.gca().invert_xaxis()
     plt.grid()
+    import tikzplotlib
+
+    tikzplotlib.save("mapt.tex")
     plt.savefig(prefix + "-mapt.pdf")
 
 
@@ -185,10 +197,10 @@ def main(argv):
     plt.rcParams["figure.autolayout"] = "true"
 
     df = pandas.read_csv(args.file)
-    toMeshes = df["mesh B"].unique()
-    assert (
-        len(toMeshes) == 1
-    ), f"There are {len(toMeshes)} to-meshes but only 1 is allowed. Fix your dataset!"
+    # toMeshes = df["mesh B"].unique()
+    # assert (
+    #     len(toMeshes) == 1
+    # ), f"There are {len(toMeshes)} to-meshes but only 1 is allowed. Fix your dataset!"
     df.sort_values("mesh A", inplace=True)
     plotError(df, args.prefix)
     plotMemory(df, args.prefix)
