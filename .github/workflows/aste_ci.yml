@@ -13,7 +13,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: precice/ci-ubuntu-2204:latest
+    container: precice/precice:develop
     timeout-minutes: 80
     env:
       CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
