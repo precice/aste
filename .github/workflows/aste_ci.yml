@@ -22,6 +22,10 @@ jobs:
         uses: precice/setup-precice-action@main
         with:
           precice-version: develop
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - uses: actions/checkout@v4
       - name: install VTK
         run: |
