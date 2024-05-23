@@ -25,15 +25,19 @@ find_package(precice 3.0 REQUIRED)
 
 find_package(Boost 1.71.0 REQUIRED COMPONENTS log log_setup system program_options unit_test_framework)
 
-option(ASTE_USE_VTK_COMPONENTS "Find VTK with components" OFF)
-if(ASTE_USE_VTK_COMPONENTS)
-  # This is broken on ubuntu 20.04
-  find_package(VTK REQUIRED COMPONENTS CommonCore CommonDataModel IOXML IOLegacy)
-else()
-  # This is broken on arch
-  find_package(VTK REQUIRED)
+# Initial attempt to find VTK without specifying components (only supported for VTK9)
+find_package(VTK QUIET)
+
+if(VTK_FOUND AND NOT "${VTK_VERSION}" VERSION_LESS "9.0")
+    # Attempt to find VTK with required components for VTK 9+
+    find_package(VTK 9.0 REQUIRED COMPONENTS CommonCore CommonDataModel IOXML IOLegacy CONFIG QUIET)
 endif()
-message (STATUS "VTK_VERSION: ${VTK_VERSION}")
+
+if(NOT VTK_FOUND)
+    message(FATAL_ERROR "Unable to locate a suitable version of VTK. Please check your VTK installation.")
+else()
+    message(STATUS "Using VTK version ${VTK_VERSION} from ${VTK_DIR}")
+endif()
 
 find_package(METIS)
 if (METIS_FOUND)
@@ -72,7 +76,7 @@ target_link_libraries(test-precice-aste
   ${VTK_LIBRARIES}
 )
 
-if (VTK_VERSION VERSION_LESS "8.90.0")
+if (VTK_VERSION VERSION_LESS "9.0")
   # old system
   include(${VTK_USE_FILE})
 else ()
