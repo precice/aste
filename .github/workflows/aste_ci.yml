@@ -12,14 +12,16 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container: precice/precice:nightly
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
       CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
       CTEST_OUTPUT_ON_FAILURE: "Yes"
     steps:
       - uses: actions/checkout@v4
+      - uses: precice/setup-precice-action@main # needs to be changed to main after merge
+        with:
+          precice-version: 'develop'
       - name: setup system
         run: |
           apt-get -y update && apt-get -y upgrade
