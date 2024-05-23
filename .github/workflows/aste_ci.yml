@@ -18,11 +18,11 @@ jobs:
       CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
       CTEST_OUTPUT_ON_FAILURE: "Yes"
     steps:
-      - uses: actions/checkout@v4
       - name: build preCICE
         uses: precice/setup-precice-action@main
         with:
           precice-version: develop
+      - uses: actions/checkout@v4
       - name: install VTK
         run: |
           sudo apt-get -y install libvtk9-dev
