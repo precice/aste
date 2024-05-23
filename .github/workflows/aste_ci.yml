@@ -27,7 +27,7 @@ jobs:
           pip3 install --upgrade pip
       - name: install VTK
         run: |
-          apt-get -y install libvtk9-dev libvtk9-qt-dev
+          apt-get -y install libvtk9-dev
       - name: install example dependencies
         run: |
           python3 -m pip install sympy scipy jinja2
