@@ -32,7 +32,7 @@ jobs:
           sudo apt-get -y install libvtk9-dev
       - name: install example dependencies
         run: |
-          python3 -m pip install sympy scipy jinja2
+          python3 -m pip install sympy scipy jinja2 vtk
       - name: prepare directories
         run: |
           mkdir build_gcc build_clang
