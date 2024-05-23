@@ -12,25 +12,27 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container: precice/precice:nightly
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
       CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
       CTEST_OUTPUT_ON_FAILURE: "Yes"
     steps:
+      - name: build preCICE
+        uses: precice/setup-precice-action@main
+        with:
+          precice-version: develop
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - uses: actions/checkout@v4
-      - name: setup system
-        run: |
-          apt-get -y update && apt-get -y upgrade
-          apt-get install -y python3-pip pkg-config time
-          pip3 install --upgrade pip
       - name: install VTK
         run: |
-          apt-get -y install libvtk9-dev
+          sudo apt-get -y install libvtk9-dev
       - name: install example dependencies
         run: |
-          python3 -m pip install sympy scipy jinja2
+          python3 -m pip install sympy scipy jinja2 vtk
       - name: prepare directories
         run: |
           mkdir build_gcc build_clang
@@ -42,15 +44,13 @@ jobs:
         run: |
           cmake ..
           cmake --build .
-      - name: Adjust user rights
-        run: chown -R $PRECICE_USER .
       - name: run test gcc
         working-directory: build_gcc
         run: |
-          su -c "ctest" $PRECICE_USER
+          ctest
       - name: install clang
         run: |
-          apt-get -y install clang
+          sudo apt-get -y install clang
       - name: build aste clang
         working-directory: build_clang
         env:
@@ -59,9 +59,7 @@ jobs:
         run: |
           cmake ..
           cmake --build .
-      - name: Adjust user rights
-        run: chown -R $PRECICE_USER .
       - name: run test clang
         working-directory: build_clang
         run: |
-          su -c "ctest" $PRECICE_USER
+          ctest
