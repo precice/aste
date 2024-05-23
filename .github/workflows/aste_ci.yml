@@ -14,12 +14,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: precice/ci-ubuntu-2204:latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     env:
       CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
       CTEST_OUTPUT_ON_FAILURE: "Yes"
     steps:
-      - uses: actions/checkout@v4
       - name: setup system
         run: |
           apt-get -y update && apt-get -y upgrade
@@ -27,7 +26,13 @@ jobs:
           pip3 install --upgrade pip
       - name: install VTK
         run: |
-          apt-get -y install libvtk9-dev
+          git clone https://gitlab.kitware.com/vtk/vtk.git && cd vtk
+          git checkout v9.3.0
+          mkdir build && cd build
+          cmake -DVTK_WRAP_PYTHON="ON" -DVTK_USE_MPI="ON" -DCMAKE_BUILD_TYPE=Release ..
+          cmake --build . -j 2 && cmake --install .
+          cd
+      - uses: actions/checkout@v4
       - name: install example dependencies
         run: |
           python3 -m pip install sympy scipy jinja2
