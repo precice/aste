@@ -19,7 +19,7 @@ The core module, which interfaces with preCICE, is called `precice-aste-run` and
 
 ### Dependencies
 
-The C++ core module of ASTE uses similar dependencies as preCICE itself. In particular, ASTE requires a C++ compiler, CMake, MPI and Boost. Have a look at the [corresponding preCICE documentation](https://precice.org/installation-source-dependencies.html) for required versions and on how to install these dependencies if needed. In addition, ASTE relies on preCICE (version >= 2.0) and the VTK library (version >= 7) in order to handle mesh files. The VTK library can be installed using the package manager (`libvtk<VERSION>-dev`), e.g., on Ubuntu
+The C++ core module of ASTE uses similar dependencies as preCICE itself. In particular, ASTE requires a C++ compiler, CMake, MPI and Boost. Have a look at the [corresponding preCICE documentation](https://precice.org/installation-source-dependencies.html) for required versions and on how to install these dependencies if needed. In addition, ASTE relies on preCICE (version >= 3.0) and the VTK library (version >= 7) in order to handle mesh files. The VTK library can be installed using the package manager (`libvtk<VERSION>-dev`), e.g., on Ubuntu
 
 ```bash
 sudo apt install libvtk9-dev
@@ -28,6 +28,23 @@ sudo apt install libvtk9-dev
 {% important %}
 The VTK package also installs a compatible python interface to VTK, which is used in ASTE. If you already have a python VTK installation on your system (e.g. through pip), make sure that your python-vtk version is compatible with your C++ VTK version.
 {% endimportant %}
+
+However, a packaged VTK version combined with the python interface is known to be rather fragile:
+
+- For VTK 9, particularly the [vtkXMLParser](https://github.com/precice/aste/pull/182#issuecomment-2012144407) is broken.
+- For VTK 7, the python interface is incompatible with more recent versions of numpy (messages like `np.bool` was a deprecated alias for the builtin `bool`...) and the `xmlParser` might not work either.
+
+Therefore, a [manual installation of VTK](https://docs.vtk.org/en/latest/build_instructions/build.html#obtaining-the-sources) is the safest way to install VTK on your operating system. Once the sources are downloaded, you can use `cmake` to configure and build the project as follows:
+
+```bash
+cmake -DCMAKE_INSTALL_PREFIX="/path/to/install" -DVTK_WRAP_PYTHON="ON" -DVTK_USE_MPI="ON" -DCMAKE_BUILD_TYPE=Release ..
+```
+
+This configuration installs the required python bindings along with VTK. The python bindings will be installed in your `CMAKE_INSTALL_PREFIX/lib/<PYTHON-VERSION>/site-packages` (as opposed to the pip packages, which are typically installed in the `dist-packages` directory). You might need to add the `site-package` directory to your `PYTHONPATH` to make it discoverable for python:
+
+```bash
+export PYTHONPATH="CMAKE_INSTALL_PREFIX/lib/<PYTHON-VERSION>/site-packages:$PYTHONPATH"
+```
 
 As an optional dependency for pre-processing, METIS can be installed. METIS is a graph partitioning library used for topological partitioning in the mesh partitioner and can be installed similarly via apt
 
@@ -57,7 +74,7 @@ cmake .. && make
 ```
 
 {% tip %}
-You can use `ctest` in order to check that the building procedure succeeded: Run `make test`.
+You can use `ctest` in order to check that the building procedure succeeded: Run `ctest`. If you face failing tests, `ctest --output-on-failure` helps to boil down the issue. Make sure you read the [notes on VTK](https://precice.org/tooling-aste.html#dependencies).
 {% endtip %}
 
 In order to install ASTE and the associated tools system-wide, execute
