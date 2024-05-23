@@ -23,12 +23,6 @@ jobs:
         uses: precice/setup-precice-action@main
         with:
           precice-version: develop
-          install-prefix: /usr/local
-      - name: setup system
-        run: |
-          sudo apt-get -y update && sudo apt-get -y upgrade
-          sudo apt-get install -y python3-pip pkg-config time
-          pip3 install --upgrade pip
       - name: install VTK
         run: |
           sudo apt-get -y install libvtk9-dev
