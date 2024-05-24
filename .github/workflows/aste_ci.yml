@@ -31,7 +31,7 @@ jobs:
           mkdir build && cd build
           cmake -DVTK_WRAP_PYTHON="ON" -DVTK_USE_MPI="ON" -DCMAKE_BUILD_TYPE=Release ..
           cmake --build . -j 2 && cmake --install .
-          export PYTHONPATH="/usr/local/lib/python3.10/site-packages/:${PYTHONPATH}"
+          echo "PYTHONPATH=/usr/local/lib/python3.10/site-packages/:${PYTHONPATH}" >> $GITHUB_ENV
           cd
       - uses: actions/checkout@v4
       - name: install example dependencies
