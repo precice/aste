@@ -31,12 +31,18 @@ bibliography: paper.bib
 # Summary
 
 TODO: Make sure we don't exceed 35 lines in the markdown file
+A summary describing the high-level functionality and purpose of the software for a diverse, non-specialist audience.
 
 # Statement of need
 
 [@precice-reference]
 
+A Statement of need section that clearly illustrates the research purpose of the software and places it in the context of related work.
+
 # Functionality & Use
+
+Mention (if applicable) a representative set of past or ongoing research projects using the software and recent scholarly publications enabled by it. (Here?)
+Given this format, a “full length” paper is not permitted, and software documentation such as API (Application Programming Interface) functionality should not be in the paper and instead should be outlined in the software documentation.
 
 # Acknowledgements
 
