@@ -43,13 +43,29 @@ The artificial solver testing environment (ASTE) allows to replace models couple
 
 # Statement of need
 
-Configuring preCICE from the user perspective might become a challenging task, especially for large-scale scenarios, where executing the individual models becomes prohibitevly expensive.
+ASTE fits a variety of use cases.
+
+- configuration of a specific scenario [@ExaFSA2020]
+- adapter development
+- preCICE development [e.g., @Lindner2019; @Totounferoush2021] [@Schneider2023] [@Martin2022] [Ariguib2022]
+- reproducibility [@preciceDistribution]
+
+Configuring a coupled simulation and the options offered by preCICE from the user perspective might become a challenging task.
+ especially for large-scale scenarios, where executing the individual models becomes prohibitevly expensive.
 A Statement of need section that clearly illustrates the research purpose of the software and places it in the context of related work.
 
 # Functionality & Use
 
+[@vtkBook] [@METIS]
+JSON[@lohmann2023]
+MPI
+[Boost](https://boost.org/).
 Mention (if applicable) a representative set of past or ongoing research projects using the software and recent scholarly publications enabled by it. (Here?)
 Given this format, a “full length” paper is not permitted, and software documentation such as API (Application Programming Interface) functionality should not be in the paper and instead should be outlined in the software documentation.
+
+via [GitHub releases](https://github.com/precice/aste/releases)
+[documentation](https://precice.org/tooling-aste.html)
+written in C++ and Python, hosted on [GitHub](https://github.com/precice/aste), uses [CMake](https://cmake.org/)
 
 # Acknowledgements
 
