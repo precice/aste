@@ -28,15 +28,22 @@ bibliography: paper.bib
 # https://blog.joss.theoj.org/2018/12/a-new-collaboration-with-aas-publishing
 ---
 
+<!-- TODO: Make sure we don't exceed 35 lines in the markdown file -->
+<!-- A summary describing the high-level functionality and purpose of the software for a diverse, non-specialist audience. -->
+
 # Summary
 
-TODO: Make sure we don't exceed 35 lines in the markdown file
-A summary describing the high-level functionality and purpose of the software for a diverse, non-specialist audience.
+Simulating multi-physics phenomenon for real-world applications states various challenges in scientific computing.
+The behavior of individual physical domains involved is described through distinct partial-differential equations, which need to be solved in each subdomain.
+Their interaction is then achieved through the bidirectional exchange of suitable boundary conditions between all subdomains.
+Partitioned coupling tackles multi-physics simulations by glueing together separate models, typically implemented in a separate software environemnt, which solve one subdomain.
+Coupling libraries offer common functionality to facilitate such partitioned multi-phyics simulations.
+We focus in particular on the coupling library preCICE [@precice-reference], which offers functionality for data communication, data mapping, coupling schemes and more.
+The artificial solver testing environment (ASTE) allows to replace models coupled via preCICE by artificial ones, giving users insight into performance and accuracy metrics of their coupled simulation as well as helping in development.
 
 # Statement of need
 
-[@precice-reference]
-
+Configuring preCICE from the user perspective might become a challenging task, especially for large-scale scenarios, where executing the individual models becomes prohibitevly expensive.
 A Statement of need section that clearly illustrates the research purpose of the software and places it in the context of related work.
 
 # Functionality & Use
