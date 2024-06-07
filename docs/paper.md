@@ -33,26 +33,25 @@ bibliography: paper.bib
 
 # Summary
 
-Simulating multi-physics phenomenon for real-world applications states various challenges in scientific computing.
+Simulating multi-physics phenomena for real-world applications states various challenges in scientific computing.
 The behavior of individual physical domains involved is described through distinct partial-differential equations, which need to be solved in each subdomain.
 Their interaction is then achieved through the bidirectional exchange of suitable boundary conditions between all subdomains.
-Partitioned coupling tackles multi-physics simulations by glueing together separate models, typically implemented in a separate software environemnt, which solve one subdomain.
-Coupling libraries offer common functionality to facilitate such partitioned multi-phyics simulations.
+Partitioned coupling tackles multi-physics simulations by glueing together separate models, typically implemented in a separate software environment, which solve one subdomain.
+Coupling libraries offer common functionality to facilitate such partitioned multi-physics simulations.
 We focus in particular on the coupling library preCICE [@precice-reference], which offers functionality for data communication, data mapping, coupling schemes and more.
 The artificial solver testing environment (ASTE) allows to replace models coupled via preCICE by artificial ones, giving users insight into performance and accuracy metrics of their coupled simulation as well as helping in development.
 
 # Statement of need
 
-ASTE fits a variety of use cases.
-
-- configuration of a specific scenario [@ExaFSA2020]
-- adapter development
-- preCICE development [e.g., @Lindner2019; @Totounferoush2021] [@Schneider2023] [@Martin2022] [Ariguib2022]
-- reproducibility [@preciceDistribution]
-
-Configuring a coupled simulation and the options offered by preCICE from the user perspective might become a challenging task.
- especially for large-scale scenarios, where executing the individual models becomes prohibitevly expensive.
-A Statement of need section that clearly illustrates the research purpose of the software and places it in the context of related work.
+ASTE fits a variety of use cases for users as well as developers.
+From the user perspective, configuring a coupled simulation and the options offered by preCICE might become a challenging task.
+The main computational load is typical carried by the models instead of the coupling, such that for large-scale scenarios, executing the individual models to tune the coupling becomes prohibitevly expensive.
+ASTE abstracts the computational complexity of the models away by emulating the original model behavior, potentially in parallel on distributed memory.
+Furthermore, the entire tool chain of ASTE enables to easily alter the simulation setup through different partitioning schemes or different configuration settings of preCICE.
+Combined with the performance instrumentation of preCICE itself, users can find appropriate setting for their own scenarios (e.g. as demonstrated in the large-scale example in [@ExaFSA2020]).
+In addition, replacing participants of a coupled simulation fosters the development of new adapter codes to be coupled via preCICE, as it aids in debugging, but also for efficiency reasons.
+However, ASTE is also a valuable tool for preCICE developer to test new features in an artificial solver-like setup, e.g., for developing new communication algorithms [@Lindner2019; @Totounferoush2021] or to develop new mapping methods [e.g. @Schneider2023, @Schrader2023, @Martin2022, @Ariguib2022].
+Lastly, ASTE bridges the gap between users, who reporting malicious behavior of preCICE (e.g. through the [preCICE forum](https://precice.discourse.group/)), and developers by providing a reproducible environment.
 
 # Functionality & Use
 
