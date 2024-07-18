@@ -15,7 +15,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: precice/ci-ubuntu-2204:latest
+    container: precice/precice:nightly
     timeout-minutes: 30
     env:
       CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
@@ -45,11 +45,11 @@ jobs:
           cmake ..
           cmake --build .
       - name: Adjust user rights
-        run: chown -R $PRECICE_USER .
+        run: chown -R precice .
       - name: run test gcc
         working-directory: build_gcc
         run: |
-          su -c "ctest" $PRECICE_USER
+          su -c "ctest" precice
       - name: install clang
         run: |
           apt-get -y install clang
@@ -62,8 +62,8 @@ jobs:
           cmake ..
           cmake --build .
       - name: Adjust user rights
-        run: chown -R $PRECICE_USER .
+        run: chown -R precice .
       - name: run test clang
         working-directory: build_clang
         run: |
-          su -c "ctest" $PRECICE_USER
+          su -c "ctest" precice
