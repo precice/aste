@@ -5,6 +5,8 @@ on:
     branches: [master, develop]
   pull_request:
     branches: [master, develop]
+  schedule:
+    - cron: '0 8 * * 2'  # run once in a week (here Tue at 8am)
 
 concurrency:
   group: ${ {github.event_name }}-${{ github.workflow }}-${{ github.ref }}
