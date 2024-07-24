@@ -11,16 +11,20 @@ authors:
     orcid: 0000-0002-3487-9688
     corresponding: true # (This is how to denote the corresponding author)
     affiliation: "1" # (Multiple affiliations must be quoted)
+  - name: Kürşat Yurt
+    orcid: xxxxxxxxxxxxx
+    affiliation: "2"
+  - name: Frédéric Simonis
+    orcid: 0000-0003-3390-157X
+    affiliation: "1"
   - name: Benjamin Uekermann
     orcid: 0000-0002-1314-9969
     affiliation: "1" # (Multiple affiliations must be quoted)
 affiliations:
  - name: Institute for Parallel and Distributed Systems, University of Stuttgart, Germany
    index: 1
- - name: Institution Name, Country
+ - name: TUM School of Engineering and Design, Technical University of Munich, Germany
    index: 2
- - name: Independent Researcher, Country
-   index: 3
 date: 13 August 2017
 bibliography: paper.bib
 
@@ -28,7 +32,6 @@ bibliography: paper.bib
 # https://blog.joss.theoj.org/2018/12/a-new-collaboration-with-aas-publishing
 ---
 
-<!-- TODO: Make sure we don't exceed 35 lines in the markdown file -->
 <!-- A summary describing the high-level functionality and purpose of the software for a diverse, non-specialist audience. -->
 
 # Summary
