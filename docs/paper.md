@@ -1,5 +1,5 @@
 ---
-title: 'ASTE: An artificial solver testing environment for partitioned coupling'
+title: 'ASTE: An artificial solver testing environment for partitioned coupling with preCICE'
 tags:
   - C++
   - Python
