@@ -38,11 +38,16 @@ bibliography: paper.bib
 
 Simulating multi-physics phenomena for real-world applications states various challenges in scientific computing.
 The behavior of individual physical domains involved is described through distinct partial-differential equations, which need to be solved in each subdomain.
-Their interaction is then achieved through the bidirectional exchange of suitable boundary conditions between all subdomains.
-Partitioned coupling tackles multi-physics simulations by glueing together separate models, typically implemented in a separate software environment, which solve one subdomain.
-Coupling libraries offer common functionality to facilitate such partitioned multi-physics simulations.
-We focus in particular on the coupling library preCICE [@precice-reference], which offers functionality for data communication, data mapping, coupling schemes and more.
-The artificial solver testing environment (ASTE) allows to replace models coupled via preCICE by artificial ones, giving users insight into performance and accuracy metrics of their coupled simulation as well as helping in development.
+Their interaction is then achieved through the bidirectional exchange of suitable coupling data between all subdomains.
+Partitioned coupling tackles multi-physics simulations by glueing together separate models, typically implemented in separate software environments.
+To facilitate such partitioned multi-physics simulations effectively, so-called coupling libraries offer commonly required functionality.
+We focus in particular on coupling through the open-source library preCICE [@precice-reference], which offers functionality for data communication, data mapping, coupling schemes and more.
+In the most basic setup, at least two executables call preCICE to perform a coupled simulation.
+As an additional software component, a so-called adapter bridges the gap between the preCICE API and the software environment used by the coupled models.
+Creating and using this setup for development purposes is not only cumbersome, but also very inefficient.
+The artificial solver testing environment (ASTE) allows to replace and imitate models coupled via preCICE by artificial ones, potentially in parallel distributed across multiple ranks on distributed memory.
+This helps in the development of preCICE, adapters or simulation setups by reducing the necessary software components and simplifying execution workflows.
+In addition, ASTE provides performance and accuracy metrics of the configured simulation setup.
 
 # Statement of need
 
