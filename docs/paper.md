@@ -54,15 +54,15 @@ In addition, ASTE provides performance and accuracy metrics of the configured si
 <!-- We need to put the figure first, otherwise the reference won't be rendered correctly -->
 ![Dependency graph for a coupled simulation at the example of FEniCS and OpenFOAM compared to a dependency graph using ASTE.\label{fig:dependency-graph}](dependency-graph.pdf)
 
-\autoref{fig:dependency-graph} illustrates the software stack required for a coupled simulation setup using FEniCS and OpenFOAM as an example, and compares it to a simulation setup using ASTE.
-Despite preCICE itself, core ingredients for practical applications are preCICE API language bindings, a preCICE adapter, the simulation framework and its dependencies.
-Note that the framework dependencies are usually heavy by itself, e.g., packages such as PETSc or Trilinos.
+\autoref{fig:dependency-graph} illustrates the software stack required for a coupled simulation setup using FEniCS and OpenFOAM as examples, and compares it to a simulation setup using ASTE.
+Beside preCICE itself, core ingredients for practical applications are preCICE API language bindings, a preCICE adapter, the simulation framework and its dependencies.
+Note that the framework dependencies are usually heavy by themselves, e.g., packages such as PETSc or Trilinos.
 ASTE, on the other hand, replaces coupled models and only requires a reduced set of dependencies.
 It abstracts the computational complexity of the models away by extracting the relevant information from VTK files instead and passing extracted data to preCICE, potentially in parallel on distributed memory.
 While the VTK files may stem from actual simulations, ASTE can also generate artificial VTK files with prescribed coupling data.
 This makes ASTE a lightweight and valuable tool for the development of preCICE to test new features on real-world applications in an artificial solver-like setup, e.g., for developing new communication algorithms [@Lindner2019; @Totounferoush2021] or to develop new mapping methods [e.g. @Schneider2023; @Schrader2023; @Martin2022; @Ariguib2022].
 In fact, this was the use case behind the first prototype developed as part of [@Lindner2019].
-Beyond the development in preCICE, ASTE also fosters the development of new adapter codes to be coupled via preCICE, as it aids in debugging and enhances transparency of the data flow.
+Beyond the development in preCICE, ASTE also fosters the development of new adapter codes to be coupled via preCICE, as it aids in debugging and enhances the transparency of the data flow.
 
 Another crucial argument for emulating models is computational efficiency.
 For coupled simulations, the main computational load is typically carried by the models instead of the coupling library.
@@ -70,7 +70,7 @@ Hence, running the original models repeatedly for development purposes of preCIC
 However, this does not only hold for software development, but also for parameter tuning for real-world applications, where the execution of involved models might become prohibitively expensive already due to the problem size.
 In this regard, the entire tool chain of ASTE enables to easily alter the simulation setup through different partitioning schemes or different configuration settings of preCICE.
 For the configuration of data mappings particularly, ASTE can evaluate additional accuracy metrics.
-Combined with the performance instrumentation of preCICE itself, this enables to find appropriate setting for specific scenarios (e.g. as demonstrated in the large-scale example in [@ExaFSA2020]).
+Combined with the performance instrumentation of preCICE itself, this enables finding appropriate settings for specific scenarios (e.g. as demonstrated in the large-scale example in [@ExaFSA2020]).
 
 Lastly, ASTE provides a reproducible environment which enables to share and rerun scenarios, regardless of the availability of involved software components (e.g. through the [preCICE forum](https://precice.discourse.group/)).
 
