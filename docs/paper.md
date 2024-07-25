@@ -64,6 +64,7 @@ Given the VTK file, ASTE offers different algorithms to repartition them (e.g., 
 Moreover, ASTE can generate artificial data on the geometry and store them in the VTK file format.
 The core module of ASTE then reads the VTK file and passes the data to preCICE, potentially in every time step of the coupled simulation.
 Once the simulation is finished, the generated data is stored on a VTK file and can be compared against an analytic solution via ASTE.
+Performance metrics are accessible through the [preCICE performance framework](https://precice.org/tooling-performance-analysis.html).
 
 While the core module of ASTE is written in C++, the pre- and postprocessing scripts are implemented in Python.
 The core module relies on VTK [@vtkBook], [Boost](https://boost.org/) and MPI for parallel execution.
