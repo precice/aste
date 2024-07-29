@@ -136,7 +136,7 @@ If you want to reproduce a specific setup of your solvers, you can use the [expo
 
 ### precice-aste-partition
 
-Reads a single mesh file (either `.vtk` or `.vtu` extension) and partitions it into several mesh files. The resulting mesh files are are stored as `output_1.vtu, output_2.vtu, ...`. There are there algorithms available in order to execute the partitioning. The `meshfree` and `uniform` algorithm are rather simple algorithms, which don't require any mesh topology information. The `topological` algorithm relies on the optional dependency METIS and is more powerful, but needs topology information.
+Reads a single mesh file (either `.vtk` or `.vtu` extension) and partitions it into several mesh files. The resulting mesh files are are stored as `output_1.vtu, output_2.vtu, ...`. There are three algorithms available in order to execute the partitioning. The `meshfree` and `uniform` algorithm are rather simple algorithms, which don't require any mesh topology information. The `topological` algorithm relies on the optional dependency METIS and is more powerful, but needs topology information.
 
 | Flag          | Explanation                                                                                 |
 | ------------- | ------------------------------------------------------------------------------------------- |
@@ -161,7 +161,7 @@ METIS is written in C++ and used through a library interface called `libMetisAPI
 ### precice-aste-join
 
 Reads a partitioned mesh from a given prefix (looking for `<prefix>_<#filerank>.vtu)`) and saves it to a single `.vtk` or `.vtu` file.
-The `-r` flag also recovers the connectivity information across several ranks from a mesh.
+The `-r` flag also recovers the connectivity information across several ranks from a mesh, partitioned using `precice-aste-partition`.
 
 | Flag         | Explanation                                                                           |
 | ------------ | ------------------------------------------------------------------------------------- |
@@ -190,7 +190,7 @@ While the previous two tools of ASTE handled the meshes for parallel runs, `prec
 | `--stat`           | Store statistics of the difference calculation in a separate file called `mesh.stats.json` |
 | `--gradient`       | Calculate and store gradient data in addition to the given input function on the mesh.|
 
-The predefined functions are a collection of common interpolation functions, which are usuually too cumbersome for the command line:
+The predefined functions are a collection of common interpolation functions, which are usually too cumbersome for the command line:
 
 | Function   | Explanation                                                                             |
 | ---------- | --------------------------------------------------------------------------------------- |
