@@ -73,7 +73,7 @@ In this regard, the entire tool chain of ASTE enables to easily alter the simula
 For the configuration of data mappings particularly, ASTE can evaluate additional accuracy metrics.
 Combined with the performance instrumentation of preCICE itself, this enables finding appropriate settings for specific scenarios (e.g. as demonstrated in the large-scale example in @ExaFSA2020).
 
-Lastly, ASTE provides a reproducible environment which enables to share and rerun scenarios, regardless of the availability of involved software components (e.g. through the [preCICE forum](https://precice.discourse.group/)).
+Lastly, ASTE provides a reproducible environment which enables to share and rerun scenarios, regardless of the availability of involved software components. This capability is particularly useful for debugging issues reported by users of preCICE, who can share their scenarios (e.g. through the [preCICE forum](https://precice.discourse.group/)) for developers to analyze, even in case the involved software is closed-source.
 
 # Functionality & Use
 
