@@ -56,23 +56,21 @@ Beside preCICE itself, core ingredients for practical applications are preCICE A
 ASTE, on the other hand, replaces coupled models and only requires a reduced set of dependencies.
 It abstracts the computational complexity of the models away by extracting the relevant information from VTK files instead and passing extracted data to preCICE, potentially in parallel on distributed memory.
 While the VTK files may stem from actual simulations, ASTE can also generate artificial VTK files with prescribed coupling data.
+On top of that, the entire tool chain of ASTE enables to easily alter the simulation setup through different mesh partitionings, and specifically for the configuration of data mappings in preCICE, ASTE can evaluate additional accuracy metrics.
 
-<!-- We need to put the figure first, otherwise the reference won't be rendered correctly -->
 ![Dependency graph for a coupled simulation with FEniCS and OpenFOAM compared to a dependency graph using ASTE.\label{fig:dependency-graph}](dependency-graph.pdf)
 
-This makes ASTE a lightweight and valuable tool for the development of preCICE to test new features on real-world applications in an artificial solver-like setup, e.g., for developing new communication algorithms [@Lindner2019; @Totounferoush2021] or to develop new mapping methods, e.g., [@Ariguib2022; @precice-reference; @Martin2022; @Schneider2023].
-In fact, testing and developing preCICE was the use case behind the first prototype of ASTE, which was developed as part of @Lindner2019.
-Beyond the development in preCICE, ASTE also fosters the development of new adapter codes to be coupled via preCICE, as it aids in debugging and enhances the transparency of data flow.
+First of all, ASTE provides a reproducible environment which enables to share and rerun scenarios, regardless of the availability of involved software components. This capability is particularly useful for debugging issues reported by users of preCICE, who can share their scenarios (e.g. through the [preCICE forum](https://precice.discourse.group/)) for developers to analyze, even in case the involved software is unavailable due to licensing terms or being closed-source.
 
 Another crucial argument for emulating models is computational efficiency.
 For coupled simulations, the main computational load is typically carried by the models instead of the coupling library.
 Hence, running the original models repeatedly for development purposes of preCICE or adapter components is inefficient.
 However, this does not only hold for software development, but also for parameter tuning for real-world applications, where the execution of involved models might become prohibitively expensive already due to the problem size.
-In this regard, the entire tool chain of ASTE enables to easily alter the simulation setup through different partitioning schemes or different configuration settings of preCICE.
-For the configuration of data mappings particularly, ASTE can evaluate additional accuracy metrics.
-Combined with the performance instrumentation of preCICE itself, this enables finding appropriate settings for specific scenarios (e.g. as demonstrated in the large-scale example in @ExaFSA2020).
+In this regard, ASTE constitutes a lightweight and valuable tool for the development of preCICE to test new features on real-world applications in an artificial solver-like setup, e.g., for developing new communication algorithms [@Lindner2019; @Totounferoush2021] or to develop new mapping methods, e.g., [@Ariguib2022; @precice-reference; @Martin2022; @Schneider2023].
+In fact, testing and developing preCICE was the use case behind the first prototype of ASTE, which was developed as part of @Lindner2019.
+Beyond the development in preCICE, ASTE also fosters the development of new adapter codes to be coupled via preCICE, as it aids in debugging and enhances the transparency of data flow.
+Combining the capabilities of ASTE with the performance instrumentation of preCICE itself, it also enables finding appropriate settings for specific scenarios, as demonstrated in the large-scale example in @ExaFSA2020.
 
-Lastly, ASTE provides a reproducible environment which enables to share and rerun scenarios, regardless of the availability of involved software components. This capability is particularly useful for debugging issues reported by users of preCICE, who can share their scenarios (e.g. through the [preCICE forum](https://precice.discourse.group/)) for developers to analyze, even in case the involved software is unavailable due to licensing terms or being closed-source.
 
 # Functionality & Use
 
