@@ -53,7 +53,6 @@ In addition, ASTE provides performance and accuracy metrics of the configured si
 
 \autoref{fig:dependency-graph} illustrates the software stack required for a coupled simulation setup using FEniCS and OpenFOAM as examples, and compares it to a simulation setup using ASTE.
 Beside preCICE itself, core ingredients for practical applications are preCICE API language bindings, preCICE adapters, the simulation frameworks and their dependencies.
-Note that the framework dependencies are usually heavy by themselves, e.g., packages such as Dune or Trilinos.
 ASTE, on the other hand, replaces coupled models and only requires a reduced set of dependencies.
 It abstracts the computational complexity of the models away by extracting the relevant information from VTK files instead and passing extracted data to preCICE, potentially in parallel on distributed memory.
 While the VTK files may stem from actual simulations, ASTE can also generate artificial VTK files with prescribed coupling data.
@@ -78,7 +77,7 @@ Lastly, ASTE provides a reproducible environment which enables to share and reru
 # Functionality & Use
 
 The central interface of ASTE is given through a VTK mesh file, which contains information about the geometric shape of the model we emulate.
-The VTK files can be generated from mesh generation tools (e.g., GMSH [@gmsh]), [Python scripts](https://github.com/precice/aste/tree/develop/tools/mesh-generators) or directly reused from [preCICE exports of a simulation](https://precice.org/configuration-export.html).
+The VTK files can be generated from mesh generation tools (e.g., GMSH [@gmsh]), [Python scripts](https://github.com/precice/aste/tree/develop/tools/mesh-generators) or directly reused from a [completed preCICE simulation](https://precice.org/configuration-export.html).
 Given a VTK file, ASTE offers different algorithms to repartition them (e.g., through METIS [@METIS]) for parallel runs.
 Moreover, ASTE can generate artificial data using pre- or user-defined functions on the mesh and store them in the VTK file format.
 The core module of ASTE then reads the VTK file and passes the data to preCICE, potentially in every time step of the coupled simulation.
