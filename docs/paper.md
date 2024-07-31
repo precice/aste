@@ -11,7 +11,7 @@ authors:
     orcid: 0000-0002-3487-9688
     corresponding: true # (This is how to denote the corresponding author)
     affiliation: "1" # (Multiple affiliations must be quoted)
-  - name: Kürşat Yurt
+  - name: Muhammed Kürşat Yurt
     orcid: 0000-0001-6497-3184
     affiliation: "2"
   - name: Frédéric Simonis
