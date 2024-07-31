@@ -46,14 +46,13 @@ In the most basic setup, at least two executables call preCICE to perform a coup
 As additional software components, so-called adapters bridge the gap between the preCICE API and the software environments used by the coupled models.
 Creating and using this overall setup for early development purposes is not only cumbersome, but also very inefficient.
 The artificial solver testing environment (ASTE) allows to replace and imitate models coupled via preCICE by artificial ones, potentially in parallel distributed across multiple ranks on distributed memory.
-This helps in the development of preCICE, adapters, or simulation setups by reducing the necessary software components and simplifying execution workflows.
+This helps in the development of preCICE, adapters, or simulation setups by reducing the necessary software components, simplifying execution workflows, and reducing runtime of the case.
 In addition, ASTE provides performance and accuracy metrics of the configured simulation setup.
 
 # Statement of need
 
 \autoref{fig:dependency-graph} illustrates the software stack required for a coupled simulation setup using FEniCS and OpenFOAM as examples, and compares it to a simulation setup using ASTE.
 Beside preCICE itself, core ingredients for practical applications are preCICE API language bindings, preCICE adapters, the simulation frameworks and their dependencies.
-Note that the framework dependencies are usually heavy by themselves, e.g., packages such as PETSc or Trilinos.
 ASTE, on the other hand, replaces coupled models and only requires a reduced set of dependencies.
 It abstracts the computational complexity of the models away by extracting the relevant information from VTK files instead and passing extracted data to preCICE, potentially in parallel on distributed memory.
 While the VTK files may stem from actual simulations, ASTE can also generate artificial VTK files with prescribed coupling data.
@@ -73,16 +72,16 @@ In this regard, the entire tool chain of ASTE enables to easily alter the simula
 For the configuration of data mappings particularly, ASTE can evaluate additional accuracy metrics.
 Combined with the performance instrumentation of preCICE itself, this enables finding appropriate settings for specific scenarios (e.g. as demonstrated in the large-scale example in @ExaFSA2020).
 
-Lastly, ASTE provides a reproducible environment which enables to share and rerun scenarios, regardless of the availability of involved software components. This capability is particularly useful for debugging issues reported by users of preCICE, who can share their scenarios (e.g. through the [preCICE forum](https://precice.discourse.group/)) for developers to analyze, even in case the involved software is closed-source.
+Lastly, ASTE provides a reproducible environment which enables to share and rerun scenarios, regardless of the availability of involved software components. This capability is particularly useful for debugging issues reported by users of preCICE, who can share their scenarios (e.g. through the [preCICE forum](https://precice.discourse.group/)) for developers to analyze, even in case the involved software is unavailable due to licensing terms or being closed-source.
 
 # Functionality & Use
 
 The central interface of ASTE is given through a VTK mesh file, which contains information about the geometric shape of the model we emulate.
-The VTK files can be generated from mesh generation tools (e.g., GMSH [@gmsh]), [Python scripts](https://github.com/precice/aste/tree/develop/tools/mesh-generators) or directly [retrieved from preCICE](https://precice.org/configuration-export.html).
+The VTK files can be generated from mesh generation tools (e.g., GMSH [@gmsh]), [Python scripts](https://github.com/precice/aste/tree/develop/tools/mesh-generators) or directly reused from a [completed preCICE simulation](https://precice.org/configuration-export.html).
 Given a VTK file, ASTE offers different algorithms to repartition them (e.g., through METIS [@METIS]) for parallel runs.
-Moreover, ASTE can generate artificial data on the geometry and store them in the VTK file format.
+Moreover, ASTE can generate artificial data using pre- or user-defined functions on the mesh and store them in the VTK file format.
 The core module of ASTE then reads the VTK file and passes the data to preCICE, potentially in every time step of the coupled simulation.
-Once the simulation is finished, the generated data is stored in another VTK file and can be compared against the originial artificial data.
+Once the simulation is finished, the generated data is stored in another VTK file and can be compared against the original artificial data.
 Performance metrics are accessible through the [preCICE performance framework](https://precice.org/tooling-performance-analysis.html).
 
 While the core module of ASTE is written in C++, the pre- and postprocessing scripts are implemented in Python.
