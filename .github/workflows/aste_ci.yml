@@ -38,7 +38,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: install example dependencies
         run: |
-          python3 -m pip install sympy scipy jinja2
+          python3 -m pip install -r requirements.txt
       - name: prepare directories
         run: |
           mkdir build_gcc build_clang
