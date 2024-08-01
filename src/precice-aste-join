@@ -151,7 +151,7 @@ class MeshJoiner:
         offset = 0
 
         for i in range(partitions):
-            fname = prefix + "_" + str(i) + ".vtu"
+            fname = prefix + "_" + str(i) + ".vtk"
             logger.info(f"Merging mesh from {fname}")
             reader = vtk.vtkXMLUnstructuredGridReader()
             reader.SetFileName(fname)
@@ -241,7 +241,7 @@ class MeshJoiner:
         for i in range(partitions):
             global_ids = []
 
-            fname = prefix + "_" + str(i) + ".vtu"
+            fname = prefix + "_" + str(i) + ".vtk"
             logger.info(f"Merging mesh from {fname}")
             reader = vtk.vtkXMLUnstructuredGridReader()
             reader.SetFileName(fname)
@@ -335,7 +335,7 @@ class MeshJoiner:
         """
         detected = 0
         while True:
-            partition_file = prefix + "_" + str(detected) + ".vtu"
+            partition_file = prefix + "_" + str(detected) + ".vtk"
             if not os.path.isfile(partition_file):
                 break
             detected += 1

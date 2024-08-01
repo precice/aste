@@ -334,8 +334,8 @@ void MeshName::save(const Mesh &mesh, const std::string &outputFileName) const
 
   // Write file
   if (_context.isParallel()) {
-    vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer =
-        vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
+    vtkSmartPointer<vtkUnstructuredGridWriter> writer =
+        vtkSmartPointer<vtkUnstructuredGridWriter>::New();
     writer->SetInputData(grid);
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -364,7 +364,7 @@ std::ostream &operator<<(std::ostream &out, const MeshName &mname)
 MeshName BaseName::with(const ExecutionContext &context) const
 {
   if (context.isParallel()) {
-    return {_bname + "_" + std::to_string(context.rank), ".vtu", context};
+    return {_bname + "_" + std::to_string(context.rank), ".vtk", context};
   } else {
     return {_bname, ".vtk", context};
   }
@@ -402,7 +402,7 @@ std::vector<MeshName> BaseName::findAll(const ExecutionContext &context) const
 
   } else { // Parallel Case
     // Check if there is a single mesh
-    std::string ext{".vtu"};
+    std::string ext{".vtk"};
     std::string rankMeshName{_bname + "_" + std::to_string(context.rank)};
     if (fs::is_regular_file(rankMeshName + ext)) {
       return {MeshName{rankMeshName, ext, context}};

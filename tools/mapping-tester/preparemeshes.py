@@ -32,7 +32,7 @@ def parseArguments(args):
 
 def prepareMainMesh(meshdir, name, file, function, force=False):
     mainDir = os.path.join(meshdir, name, "1")
-    mainMesh = os.path.join(mainDir, name + ".vtu")
+    mainMesh = os.path.join(mainDir, name + ".vtk")
     print("Preparing Mesh {} in {}".format(name, mainDir))
 
     if os.path.isdir(mainDir):
@@ -69,7 +69,7 @@ def preparePartMesh(meshdir, name, p, force=False):
     if p == 1:
         return
 
-    mainMesh = os.path.join(meshdir, name, "1", name + ".vtu")
+    mainMesh = os.path.join(meshdir, name, "1", name + ".vtk")
     partDir = os.path.join(meshdir, name, str(p))
     partMesh = os.path.join(partDir, name)
     print("Preparing Mesh {} with {} paritions in {}".format(name, p, partDir))
@@ -91,7 +91,7 @@ def preparePartMesh(meshdir, name, p, force=False):
             "--mesh",
             mainMesh,
             "--algorithm",
-            "meshfree",
+            "topology",
             "-o",
             partMesh,
             "--directory",
