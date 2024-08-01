@@ -93,6 +93,6 @@ Building is handled via [CMake](https://cmake.org/) and, as part of the preCICE 
 
 # Acknowledgements
 
-The authors are funded by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) under project number 515015468 and under Germany's Excellence Strategy - EXC 2075 -- 390740016. We acknowledge the support of the Stuttgart Center for Simulation Science (SimTech).
+The authors are funded by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) under project numbers 515015468 and 528693298, and under Germany's Excellence Strategy - EXC 2075 -- 390740016. We acknowledge the support of the Stuttgart Center for Simulation Science (SimTech).
 
 # References
