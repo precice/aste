@@ -62,15 +62,16 @@ On top of that, the entire tool chain of ASTE enables to easily alter the simula
 
 From an application standpoint, ASTE provides a reproducible environment which enables to share and rerun scenarios, regardless of the availability of involved software components. This capability is particularly useful for debugging issues reported by users of preCICE, who can share their scenarios (e.g. through the [preCICE forum](https://precice.discourse.group/)) for developers to analyze, even in case the involved software is unavailable due to licensing terms or being closed-source.
 
-Another crucial argument for emulating models is computational efficiency.
+A further crucial argument for emulating models with ASTE is computational efficiency.
 For coupled simulations, the main computational load is typically carried by the models instead of the coupling library.
-Hence, running the original models repeatedly for development purposes of preCICE or adapter components is inefficient.
-However, this does not only hold for software development, but also for parameter tuning for real-world applications, where the execution of involved models might become prohibitively expensive already due to the problem size.
-In this regard, ASTE constitutes a lightweight and valuable tool for the development of preCICE to test new features on real-world applications in an artificial solver-like setup, e.g., for developing new communication algorithms [@Lindner2019; @Totounferoush2021] or to develop new mapping methods, e.g., [@Ariguib2022; @precice-reference; @Martin2022; @Schneider2023].
+Hence, running the original models repeatedly for development purposes of preCICE or adapter components is both time-consuming and inefficient.
+This inefficiency not only complicates software development, but also applies to parameter tuning for real-world applications, where the execution of involved models might become prohibitively expensive already due to the problem size.
+
+In this regard, ASTE provides a lightweight and valuable tool.
+It enables the efficient development of preCICE by testing new features on real-world applications in an artificial solver-like setup, e.g., for developing new communication algorithms [@Lindner2019; @Totounferoush2021] or to develop new mapping methods, e.g., [@Ariguib2022; @precice-reference; @Martin2022; @Schneider2023].
 In fact, testing and developing preCICE was the use case behind the first prototype of ASTE, which was developed as part of @Lindner2019.
 Beyond the development in preCICE, ASTE also fosters the development of new adapter codes to be coupled via preCICE, as it aids in debugging and enhances the transparency of data flow.
-Combining the capabilities of ASTE with the performance instrumentation of preCICE itself, it also enables finding appropriate settings for specific scenarios, as demonstrated in the large-scale example in @ExaFSA2020.
-
+Moreover, combining preCICE's performance instrumentation with the ASTE's flexibility and insight, it enables finding appropriate settings for specific scenarios, as effectively demonstrated in the large-scale example in @ExaFSA2020.
 
 # Functionality & Use
 
