@@ -96,12 +96,13 @@ def main(argv):
         casedir = os.path.join(args.outdir, os.path.dirname(file))
         parts = os.path.normpath(file).split(os.sep)
         assert len(parts) >= 5
-        mapping, constraint, meshes, ranks, _ = parts[-5:]
+        mapping, constraint, meshes, ranks, run, _ = parts[-6:]
         meshA, meshB = meshes.split("-")
         ranksA, ranksB = ranks.split("-")
 
         with open(os.path.join(args.outdir, file), "r") as jsonfile:
             stats = json.load(jsonfile)
+            stats["run"] = int(run)
             stats["mapping"] = mapping
             stats["constraint"] = constraint
             stats["mesh A"] = meshA

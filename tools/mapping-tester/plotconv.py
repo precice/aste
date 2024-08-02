@@ -190,6 +190,16 @@ def main(argv):
         len(toMeshes) == 1
     ), f"There are {len(toMeshes)} to-meshes but only 1 is allowed. Fix your dataset!"
     df.sort_values("mesh A", inplace=True)
+
+    df = df.group_by(["mapping", "meshA"]).agg("avg")
+    # yname = "relative-l2"
+    # yname = "peakMemB"
+    # yname = "computeMappingTime"
+    # yname = "mapDataTime"
+
+    # mapping
+    # meshA
+
     plotError(df, args.prefix)
     plotMemory(df, args.prefix)
     plotMapDataTime(df, args.prefix)

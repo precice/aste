@@ -584,7 +584,7 @@ class MeshPartitioner:
             mesh = meshes[i]
             if directory:
                 MeshPartitioner.write_mesh(
-                    os.path.join(directory, mesh_prefix) + "_" + str(i) + ".vtu",
+                    os.path.join(directory, mesh_prefix) + "_" + str(i) + ".vtk",
                     mesh.points,
                     mesh.data_index,
                     mesh.cells,
@@ -593,7 +593,7 @@ class MeshPartitioner:
                 )
             else:
                 MeshPartitioner.write_mesh(
-                    mesh_prefix + "_" + str(i) + ".vtu",
+                    mesh_prefix + "_" + str(i) + ".vtk",
                     mesh.points,
                     mesh.data_index,
                     mesh.cells,

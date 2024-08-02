@@ -153,7 +153,7 @@ class MeshJoiner:
         for i in range(partitions):
             fname = prefix + "_" + str(i) + ".vtk"
             logger.info(f"Merging mesh from {fname}")
-            reader = vtk.vtkXMLUnstructuredGridReader()
+            reader = vtk.vtkUnstructuredGridReader()
             reader.SetFileName(fname)
             reader.Update()
             part_mesh = reader.GetOutput()
@@ -243,7 +243,7 @@ class MeshJoiner:
 
             fname = prefix + "_" + str(i) + ".vtk"
             logger.info(f"Merging mesh from {fname}")
-            reader = vtk.vtkXMLUnstructuredGridReader()
+            reader = vtk.vtkUnstructuredGridReader()
             reader.SetFileName(fname)
             reader.Update()
             part_mesh = reader.GetOutput()
