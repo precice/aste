@@ -31,3 +31,4 @@ examples/replay_mode/precice-Fluid-events.json
 examples/replay_mode/precice-Solid-events-summary.log
 examples/replay_mode/precice-Solid-events.json
 examples/replay_mode/precice-Solid-watchpoint-Flap-Tip.log
+precice-profiling
