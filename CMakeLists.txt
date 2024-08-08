@@ -120,7 +120,7 @@ add_test(NAME read_write_test  COMMAND test-precice-aste WORKING_DIRECTORY "${CM
 
 # Detect and register examples as tests
 
-set(_examples lci_2d lci_3d nn nng_scalar nng_vector mapping_tester replay_mode)
+set(_examples lci_2d lci_3d nn nng_scalar nng_vector mapping_tester mapping_tester_runtime replay_mode)
 
 foreach(example IN LISTS _examples)
   add_test(NAME aste.example.${example}.setup
