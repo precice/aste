@@ -27,7 +27,7 @@ find_package (Threads REQUIRED)
 
 find_package(precice 3.0 REQUIRED)
 
-find_package(Boost 1.71.0 REQUIRED COMPONENTS log log_setup system program_options unit_test_framework)
+find_package(Boost 1.71.0 CONFIG REQUIRED COMPONENTS log log_setup system program_options unit_test_framework)
 
 # Initial attempt to find VTK without specifying components (only supported for VTK9)
 find_package(VTK QUIET)
