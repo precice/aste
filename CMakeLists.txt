@@ -58,8 +58,14 @@ target_include_directories(precice-aste-run PRIVATE src thirdparty)
 target_link_libraries(precice-aste-run
   precice::precice
   Threads::Threads
+  Boost::boost
+  Boost::log
+  Boost::log_setup
+  Boost::program_options
+  Boost::system
+  Boost::thread
+  Boost::unit_test_framework
   MPI::MPI_CXX
-  ${Boost_LIBRARIES}
   ${VTK_LIBRARIES}
 )
 
@@ -75,7 +81,13 @@ endif()
 add_executable(test-precice-aste tests/testing.cpp tests/read_test.cpp tests/write_test.cpp src/mesh.cpp src/logger.cpp)
 target_include_directories(test-precice-aste PRIVATE src thirdparty)
 target_link_libraries(test-precice-aste
-  ${Boost_LIBRARIES}
+  Boost::boost
+  Boost::log
+  Boost::log_setup
+  Boost::program_options
+  Boost::system
+  Boost::thread
+  Boost::unit_test_framework
   MPI::MPI_CXX
   ${VTK_LIBRARIES}
 )
