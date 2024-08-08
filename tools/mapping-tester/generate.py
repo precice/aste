@@ -264,21 +264,25 @@ def createRunScript(outdir, path, case):
     )
 
 
-def setupCases(outdir, template, cases, exit):
+def setupCases(outdir, template, cases, exit, repetitions):
     casemap = {}
     for case in cases:
-        folders = getCaseFolders(case)
-        casemap.setdefault(folders[0], []).append(folders[1:])
-        name = [outdir] + folders
-        path = os.path.join(*name)
-        config = os.path.join(path, "precice-config.xml")
+        for rep in range(repetitions):
+            folders = getCaseFolders(case) + [str(rep)]
+            casemap.setdefault(folders[0], []).append(folders[1:])
+            name = [outdir] + folders
+            path = os.path.join(*name)
+            config = os.path.join(path, "precice-config.xml")
 
-        print(f"Generating {path}")
-        os.makedirs(path, exist_ok=True)
-        with open(config, "w") as config:
-            config.write(generateConfig(template, case))
-        createRunScript(outdir, path, case)
-    print(f"Generated {len(cases)} cases")
+            print(f"Generating {path}")
+            os.makedirs(path, exist_ok=True)
+            with open(config, "w") as config:
+                config.write(generateConfig(template, case))
+            createRunScript(outdir, path, case)
+
+    print(
+        f"Generated {len(cases)} cases with {repetitions} repetitions (total {repetitions*len(cases)} cases)"
+    )
 
     print(f"Generating master scripts")
     createMasterRunScripts(casemap, outdir, exit)
@@ -328,7 +332,9 @@ def main(argv):
     if os.path.isdir(outdir):
         print('Warning: outdir "{}" already exisits.'.format(outdir))
 
-    setupCases(outdir, template, cases, args.exit)
+    # Optional repetions default to 1
+    repetitions = setup["general"].get("repetitions", 1)
+    setupCases(outdir, template, cases, args.exit, repetitions)
 
     return 0
 

@@ -117,11 +117,12 @@ def gatherCaseStats(casedir):
     assert os.path.exists(casedir)
     parts = os.path.normpath(casedir).split(os.sep)
     assert len(parts) >= 5
-    mapping, constraint, meshes, ranks = parts[-4:]
+    mapping, constraint, meshes, ranks, run = parts[-5:]
     meshA, meshB = meshes.split("-")
     ranksA, ranksB = ranks.split("-")
 
     stats = {
+        "run": int(run),
         "mapping": mapping,
         "constraint": constraint,
         "mesh A": meshA,
