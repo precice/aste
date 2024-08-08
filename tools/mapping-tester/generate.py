@@ -100,7 +100,7 @@ def caseToSortable(case):
     return (kindCost, -mesha, -meshb)
 
 
-def createMasterRunScripts(casemap, dir, exit):
+def createMasterRunScripts(casemap, dir, exit, writeMapped):
     common = [
         "#!/bin/bash",
         "",
@@ -124,21 +124,22 @@ def createMasterRunScripts(casemap, dir, exit):
         [line + "\n" for line in content]
     )
 
-    # Generate master postprocessing script
-    if exit:
-        post = common + [
-            "${RUNNER} " + os.path.join(case, "postprocessall.sh || exit 1")
-            for case in casemap.keys()
-        ]
-    else:
-        post = common + [
-            "${RUNNER} " + os.path.join(case, "postprocessall.sh")
-            for case in casemap.keys()
-        ]
+    # Generate master postprocessing script for mapped meshes
+    if writeMapped:
+        if exit:
+            post = common + [
+                "${RUNNER} " + os.path.join(case, "postprocessall.sh || exit 1")
+                for case in casemap.keys()
+            ]
+        else:
+            post = common + [
+                "${RUNNER} " + os.path.join(case, "postprocessall.sh")
+                for case in casemap.keys()
+            ]
 
-    open(os.path.join(dir, "postprocessall.sh"), "w").writelines(
-        [line + "\n" for line in post]
-    )
+        open(os.path.join(dir, "postprocessall.sh"), "w").writelines(
+            [line + "\n" for line in post]
+        )
 
     for case, instances in casemap.items():
         # Generate master runner script
@@ -150,16 +151,18 @@ def createMasterRunScripts(casemap, dir, exit):
             [line + "\n" for line in content]
         )
 
-        # Generate master postprocessing script
-        post = common + [
-            "${RUNNER} " + os.path.join(*instance, "post.sh") for instance in instances
-        ]
-        open(os.path.join(dir, case, "postprocessall.sh"), "w").writelines(
-            [line + "\n" for line in post]
-        )
+        # Generate master postprocessing script for mapped meshes
+        if writeMapped:
+            post = common + [
+                "${RUNNER} " + os.path.join(*instance, "post.sh")
+                for instance in instances
+            ]
+            open(os.path.join(dir, case, "postprocessall.sh"), "w").writelines(
+                [line + "\n" for line in post]
+            )
 
 
-def createRunScript(outdir, path, case):
+def createRunScript(outdir, path, case, writeMapped):
     amesh = case["A"]["mesh"]["name"]
     aranks = case["A"]["ranks"]
     ameshLocation = os.path.relpath(
@@ -184,8 +187,8 @@ def createRunScript(outdir, path, case):
         os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path
     )
     mapped_data_name = case["function"] + "(mapped)"
-    bcmd = f'env {time_command} -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{mapped_data_name}" --mesh {bmeshLocation} --output mapped || kill 0 &'
-
+    out_mesh = "--output mapped" if writeMapped else ""
+    bcmd = f'env {time_command} -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{mapped_data_name}" --mesh {bmeshLocation} {out_mesh} || kill 0 &'
     if branks > 1:
         bcmd = "mpirun -n {} $ASTE_B_MPIARGS {}".format(branks, bcmd)
 
@@ -232,39 +235,40 @@ def createRunScript(outdir, path, case):
         [line + "\n" for line in wrapper]
     )
 
-    # Generate post processing script
-    post_content = [
-        "#!/bin/bash",
-        "set -e -u",
-        'cd "$( dirname "${BASH_SOURCE[0]}" )"',
-        "echo '= {} ({}) {} - {}'".format(
-            case["mapping"]["name"], case["mapping"]["constraint"], amesh, bmesh
-        ),
-    ]
-    if branks == 1:
-        joincmd = "[ ! -f mapped.vtu ] || mv --update mapped.vtu mapped.vtk"
-        diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh mapped.vtk --function "{0}" | tee diff.log'.format(
-            case["function"], mapped_data_name
+    # Generate post processing script for mapped meshes
+    if writeMapped:
+        post_content = [
+            "#!/bin/bash",
+            "set -e -u",
+            'cd "$( dirname "${BASH_SOURCE[0]}" )"',
+            "echo '= {} ({}) {} - {}'".format(
+                case["mapping"]["name"], case["mapping"]["constraint"], amesh, bmesh
+            ),
+        ]
+        if branks == 1:
+            joincmd = "[ ! -f mapped.vtu ] || mv --update mapped.vtu mapped.vtk"
+            diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh mapped.vtk --function "{0}" | tee diff.log'.format(
+                case["function"], mapped_data_name
+            )
+            post_content += [joincmd, diffcmd]
+        else:
+            [recoveryFileLocation, tmpPrefix] = os.path.split(
+                os.path.normpath(bmeshLocation)
+            )
+            tmprecoveryFile = recoveryFileLocation + "/{}_recovery.json".format(bmesh)
+            joincmd = "precice-aste-join --mesh mapped -r {} -o result.vtk".format(
+                tmprecoveryFile
+            )
+            diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh result.vtk --function "{0}" | tee diff.log'.format(
+                case["function"], mapped_data_name
+            )
+            post_content += [joincmd, diffcmd]
+        open(os.path.join(path, "post.sh"), "w").writelines(
+            [line + "\n" for line in post_content]
         )
-        post_content += [joincmd, diffcmd]
-    else:
-        [recoveryFileLocation, tmpPrefix] = os.path.split(
-            os.path.normpath(bmeshLocation)
-        )
-        tmprecoveryFile = recoveryFileLocation + "/{}_recovery.json".format(bmesh)
-        joincmd = "precice-aste-join --mesh mapped -r {} -o result.vtk".format(
-            tmprecoveryFile
-        )
-        diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh result.vtk --function "{0}" | tee diff.log'.format(
-            case["function"], mapped_data_name
-        )
-        post_content += [joincmd, diffcmd]
-    open(os.path.join(path, "post.sh"), "w").writelines(
-        [line + "\n" for line in post_content]
-    )
 
 
-def setupCases(outdir, template, cases, exit, repetitions):
+def setupCases(outdir, template, cases, exit, repetitions, writeMapped):
     casemap = {}
     for case in cases:
         for rep in range(repetitions):
@@ -278,14 +282,14 @@ def setupCases(outdir, template, cases, exit, repetitions):
             os.makedirs(path, exist_ok=True)
             with open(config, "w") as config:
                 config.write(generateConfig(template, case))
-            createRunScript(outdir, path, case)
+            createRunScript(outdir, path, case, writeMapped)
 
     print(
         f"Generated {len(cases)} cases with {repetitions} repetitions (total {repetitions*len(cases)} cases)"
     )
 
     print(f"Generating master scripts")
-    createMasterRunScripts(casemap, outdir, exit)
+    createMasterRunScripts(casemap, outdir, exit, writeMapped)
 
 
 def parseArguments(args):
@@ -334,7 +338,8 @@ def main(argv):
 
     # Optional repetions default to 1
     repetitions = setup["general"].get("repetitions", 1)
-    setupCases(outdir, template, cases, args.exit, repetitions)
+    writeMapped = setup["general"].get("write-mapped", True)
+    setupCases(outdir, template, cases, args.exit, repetitions, writeMapped)
 
     return 0
 
