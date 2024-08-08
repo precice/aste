@@ -9,6 +9,10 @@ set (CMAKE_CXX_STANDARD_REQUIRED YES)
 set (CMAKE_CXX_EXTENSIONS NO)
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
+endif()
+
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build." FORCE)
   # Set the possible values of build type for cmake-gui
@@ -23,7 +27,7 @@ find_package (Threads REQUIRED)
 
 find_package(precice 3.0 REQUIRED)
 
-find_package(Boost 1.71.0 REQUIRED COMPONENTS log log_setup system program_options unit_test_framework)
+find_package(Boost 1.71.0 CONFIG REQUIRED COMPONENTS log log_setup system program_options unit_test_framework)
 
 # Initial attempt to find VTK without specifying components (only supported for VTK9)
 find_package(VTK QUIET)
@@ -54,8 +58,14 @@ target_include_directories(precice-aste-run PRIVATE src thirdparty)
 target_link_libraries(precice-aste-run
   precice::precice
   Threads::Threads
+  Boost::boost
+  Boost::log
+  Boost::log_setup
+  Boost::program_options
+  Boost::system
+  Boost::thread
+  Boost::unit_test_framework
   MPI::MPI_CXX
-  ${Boost_LIBRARIES}
   ${VTK_LIBRARIES}
 )
 
@@ -71,7 +81,13 @@ endif()
 add_executable(test-precice-aste tests/testing.cpp tests/read_test.cpp tests/write_test.cpp src/mesh.cpp src/logger.cpp)
 target_include_directories(test-precice-aste PRIVATE src thirdparty)
 target_link_libraries(test-precice-aste
-  ${Boost_LIBRARIES}
+  Boost::boost
+  Boost::log
+  Boost::log_setup
+  Boost::program_options
+  Boost::system
+  Boost::thread
+  Boost::unit_test_framework
   MPI::MPI_CXX
   ${VTK_LIBRARIES}
 )
