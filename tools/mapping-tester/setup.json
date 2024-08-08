@@ -1,5 +1,6 @@
 {
     "general": {
+        "repetitions": 5,
         "function": "cos(0.1*(x+y+z))",
         "ranks": {
             "A": [1, 2],
