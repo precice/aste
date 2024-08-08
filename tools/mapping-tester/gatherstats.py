@@ -5,6 +5,8 @@ import csv
 import glob
 import json
 import os
+import subprocess
+from concurrent.futures import ThreadPoolExecutor
 
 
 def parseArguments(args):
@@ -26,7 +28,6 @@ def parseArguments(args):
 
 
 def statsFromTimings(dir):
-    stats = {}
     assert os.path.isdir(dir)
     assert (
         os.system("command -v precice-profiling > /dev/null") == 0
@@ -34,11 +35,10 @@ def statsFromTimings(dir):
     event_dir = os.path.join(dir, "precice-profiling")
     json_file = os.path.join(dir, "profiling.json")
     timings_file = os.path.join(dir, "timings.csv")
-    os.system("precice-profiling merge --output {} {}".format(json_file, event_dir))
-    os.system(
-        "precice-profiling analyze --output {} B {}".format(timings_file, json_file)
-    )
+    subprocess.run(["precice-profiling", "merge", "--output", json_file, event_dir], check=True, capture_output=True)
+    subprocess.run(["precice-profiling", "analyze", "--output", timings_file, "B", json_file], check=True, capture_output=True)
     file = timings_file
+    stats = {}
     if os.path.isfile(file):
         try:
             timings = {}
@@ -81,42 +81,63 @@ def memoryStats(dir):
     return stats
 
 
+def mappingStats(dir):
+
+    globber = os.path.join(dir, "*.stats.json")
+    statFiles = list(glob.iglob(globber))
+    if len(statFiles) == 0:
+        return {}
+
+    statFile = statFiles[0]
+    assert os.path.exists(statFile)
+    with open(os.path.join(dir, statFile), "r") as jsonfile:
+        return dict(json.load(jsonfile))
+
+
+def gatherCaseStats(casedir):
+    assert os.path.exists(casedir)
+    parts = os.path.normpath(casedir).split(os.sep)
+    assert len(parts) >= 5
+    mapping, constraint, meshes, ranks, run = parts[-5:]
+    meshA, meshB = meshes.split("-")
+    ranksA, ranksB = ranks.split("-")
+
+    stats = {
+          "run": int(run),
+          "mapping": mapping,
+          "constraint": constraint,
+          "mesh A": meshA,
+          "mesh B": meshB,
+          "ranks A": ranksA,
+          "ranks B": ranksB
+          }
+    stats.update(statsFromTimings(casedir))
+    stats.update(memoryStats(casedir))
+    stats.update(mappingStats(casedir))
+    return stats
+
+
 def main(argv):
     args = parseArguments(argv[1:])
 
-    globber = os.path.join(args.outdir, "**", "*.stats.json")
-    statFiles = [
-        os.path.relpath(path, args.outdir)
+    globber = os.path.join(args.outdir, "**", "done")
+    cases = [
+        os.path.dirname(path)
         for path in glob.iglob(globber, recursive=True)
     ]
     allstats = []
-    fields = []
-    for file in statFiles:
-        print("Found: " + file)
-        casedir = os.path.join(args.outdir, os.path.dirname(file))
-        parts = os.path.normpath(file).split(os.sep)
-        assert len(parts) >= 5
-        mapping, constraint, meshes, ranks, run, _ = parts[-6:]
-        meshA, meshB = meshes.split("-")
-        ranksA, ranksB = ranks.split("-")
 
-        with open(os.path.join(args.outdir, file), "r") as jsonfile:
-            stats = json.load(jsonfile)
-            stats["run"] = int(run)
-            stats["mapping"] = mapping
-            stats["constraint"] = constraint
-            stats["mesh A"] = meshA
-            stats["mesh B"] = meshB
-            stats["ranks A"] = ranksA
-            stats["ranks B"] = ranksB
-            stats.update(statsFromTimings(casedir))
-            stats.update(memoryStats(casedir))
-            allstats.append(stats)
-            if not fields:
-                fields += stats.keys()
+    def dispatcher(case):
+        print("Found: " + os.path.relpath(case, args.outdir))
+        return gatherCaseStats(case)
 
+    with ThreadPoolExecutor() as pool:
+        for stat in pool.map(dispatcher, cases):
+            allstats.append(stat)
+
+    fields = {key for s in allstats for key in s.keys()}
     assert fields
-    writer = csv.DictWriter(args.file, fieldnames=fields)
+    writer = csv.DictWriter(args.file, fieldnames=sorted(fields))
     writer.writeheader()
     writer.writerows(allstats)
     return 0
