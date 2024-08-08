@@ -200,6 +200,11 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
   }
 
   auto asteInterface = asteConfiguration.asteInterfaces.front();
+  if (asteInterface.meshes.empty()) {
+    ASTE_ERROR << "ERROR: Could not find meshes for name: " << meshname;
+    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+  }
+
   ASTE_INFO << "Loading mesh from " << asteInterface.meshes.front().filename();
   const bool requireConnectivity = preciceInterface.requiresMeshConnectivityFor(asteInterface.meshName);
   const int  dim                 = preciceInterface.getMeshDimensions(asteInterface.meshName);
