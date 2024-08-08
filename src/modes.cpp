@@ -273,21 +273,25 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
 
   // Write out results in same format as data was read
   if (asteConfiguration.participantName == "B") {
-    auto meshname = asteConfiguration.asteInterfaces.front().meshes.front();
-    auto filename = fs::path(options["output"].as<std::string>());
-    if (context.rank == 0 && fs::exists(filename)) {
-      if (context.isParallel() && !filename.parent_path().empty()) {
-        auto dir = filename.parent_path();
-        fs::remove_all(dir);
-        fs::create_directory(dir);
-      } else if (!context.isParallel()) {
-        fs::remove(filename);
+    if (options["output"].empty()) {
+      ASTE_INFO << "Not writing results as no output was provided";
+    } else {
+      auto meshname = asteConfiguration.asteInterfaces.front().meshes.front();
+      auto filename = fs::path(options["output"].as<std::string>());
+      if (context.rank == 0 && fs::exists(filename)) {
+        if (context.isParallel() && !filename.parent_path().empty()) {
+          auto dir = filename.parent_path();
+          fs::remove_all(dir);
+          fs::create_directory(dir);
+        } else if (!context.isParallel()) {
+          fs::remove(filename);
+        }
       }
+      MPI_Barrier(MPI_COMM_WORLD);
+      //
+      ASTE_INFO << "Writing results to " << options["output"].as<std::string>();
+      meshname.save(asteConfiguration.asteInterfaces.front().mesh, options["output"].as<std::string>());
     }
-    MPI_Barrier(MPI_COMM_WORLD);
-    //
-    ASTE_INFO << "Writing results to " << options["output"].as<std::string>();
-    meshname.save(asteConfiguration.asteInterfaces.front().mesh, options["output"].as<std::string>());
   }
   preciceInterface.finalize();
   return;
