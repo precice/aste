@@ -72,6 +72,51 @@ void aste::setupEdgeIDs(precice::Participant &interface, const aste::Mesh &mesh,
   }
 }
 
+std::vector<double> aste::setupDirectMeshAccess(precice::Participant &interface, const aste::Mesh &mesh, const std::string &meshName, const aste::ExecutionContext &exec)
+{
+  ASTE_DEBUG << "Setting up direct access for: " << meshName;
+  ASTE_DEBUG << "Setting up coordinates vector for mesh...";
+
+  const auto          dim       = interface.getMeshDimensions(meshName);
+  const auto          nvertices = mesh.positions.size();
+  std::vector<double> coordinates(dim * nvertices);
+  for (unsigned long i = 0; i < nvertices; ++i) {
+    const auto &pos = mesh.positions[i];
+    assert(pos.size() == static_cast<unsigned int>(dim));
+    std::copy(pos.begin(), pos.end(), &coordinates[i * dim]);
+  }
+
+  ASTE_DEBUG << "Computing the (rank-local) bounding box:";
+
+  std::vector<double> bb(2 * dim);
+
+  // for parallel runs, we define a proper bounding box
+  if (exec.isParallel()) {
+    // Initialize min and max values
+    for (int i = 0; i < dim; ++i) {
+      bb[2 * i]     = std::numeric_limits<double>::max();    // min values
+      bb[2 * i + 1] = std::numeric_limits<double>::lowest(); // max values
+    }
+
+    // Iterate through the coordinates
+    for (size_t i = 0; i < coordinates.size(); i += dim) {
+      for (int j = 0; j < dim; ++j) {
+        double coord  = coordinates[i + j];
+        bb[2 * j]     = std::min(coord - 1e-12, bb[2 * j]);     // Update min
+        bb[2 * j + 1] = std::max(coord + 1e-12, bb[2 * j + 1]); // Update max
+      }
+    }
+  } else {
+    // for serial runs, we just take everything (to account for potential discretization imbalances)
+    for (int i = 0; i < dim; ++i) {
+      bb[2 * i]     = std::numeric_limits<double>::lowest(); // min values
+      bb[2 * i + 1] = std::numeric_limits<double>::max();    // max values
+    }
+  }
+  interface.setMeshAccessRegion(meshName, bb);
+  return coordinates;
+}
+
 std::vector<int> aste::setupMesh(precice::Participant &interface, const aste::Mesh &mesh, const std::string &meshName)
 {
   auto tstart = std::chrono::steady_clock::now();

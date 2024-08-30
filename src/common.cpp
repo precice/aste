@@ -22,7 +22,7 @@ OptionMap getOptions(int argc, char *argv[])
       "precice-aste-run will look for timeseries as well as distributed meshes (e.g. from preCICE exports) "
       "automatically and load them if required.")(
       "output", po::value<std::string>(),
-      "Output file name.")("vector", po::bool_switch(), "Distinguish between vector valued data and scalar data")("verbose,v", po::bool_switch(), "Enable verbose output")("all,a", po::bool_switch(), "Enable output from secondary ranks");
+      "Output file name.")("vector", po::bool_switch(), "Distinguish between vector valued data and scalar data")("verbose,v", po::bool_switch(), "Enable verbose output")("all,a", po::bool_switch(), "Enable output from secondary ranks")("indirect-read,ir", po::value<int>(), "Instead of the conventional mapping in preCICE, make use of an indirect mapping, where values are read in batches of <int> values.");
 
   po::variables_map vm;
 
