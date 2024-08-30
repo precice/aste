@@ -150,6 +150,9 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
   const int batchSize = options.count("indirect-read")
                             ? options["indirect-read"].as<int>()
                             : conventionalReadData;
+  if (batchSize < -1) {
+    ASTE_ERROR << "Batch size needs to be greater or equal to zero.";
+  }
 
   addLogIdentity(participantName, context.rank);
   ASTE_INFO << "ASTE Running in mapping test mode";
@@ -283,8 +286,23 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
             meshdata.dataVector.resize(vertexIDs.size() * meshdata.numcomp);
             preciceInterface.readData(asteInterface.meshName, "Data", vertexIDs, dt, meshdata.dataVector);
           } else {
-            meshdata.dataVector.resize((coordinates.size() / preciceInterface.getMeshDimensions(asteInterface.meshName)) * meshdata.numcomp);
-            preciceInterface.mapAndreadData(asteInterface.meshName, "Data", coordinates, dt, meshdata.dataVector);
+            int dim       = preciceInterface.getMeshDimensions(asteInterface.meshName);
+            int nVertices = coordinates.size() / dim;
+            meshdata.dataVector.resize(nVertices * meshdata.numcomp);
+
+            for (int i = 0; i < nVertices; i += batchSize) {
+              int batchEnd   = std::min(i + batchSize, nVertices);
+              int coordStart = i * dim;
+              int coordEnd   = batchEnd * dim;
+              int dataStart  = i * meshdata.numcomp;
+              int dataEnd    = batchEnd * meshdata.numcomp;
+
+              ::precice::span<const double> coordinateBatch(coordinates.data() + coordStart, coordEnd - coordStart);
+              ::precice::span<double>       dataBatch(meshdata.dataVector.data() + dataStart, dataEnd - dataStart);
+
+              // Call the API function with the current batch
+              preciceInterface.mapAndreadData(asteInterface.meshName, "Data", coordinateBatch, dt, dataBatch);
+            }
           }
           ASTE_DEBUG << "Data read: " << asteInterface.mesh.previewData(meshdata);
         }
