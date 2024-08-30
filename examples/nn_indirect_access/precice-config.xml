@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <precice-configuration>
-  <log enabled="0" />
+  <log>
+    <sink
+      filter="%Severity% > info and %Participant% contains B"
+      format="---[%Participant%] %Function% %Message%"
+      type="file"
+      output="debug.log"
+      enabled="true" />
+  </log>
 
   <profiling mode="all" />
 
@@ -22,11 +29,10 @@
   </participant>
 
   <participant name="B">
-    <receive-mesh name="A-Mesh" from="A" />
-    <provide-mesh name="B-Mesh" />
-    <read-data name="Data" mesh="B-Mesh" />
-    <mapping:nearest-neighbor constraint="consistent" direction="read" from="A-Mesh" to="B-Mesh" />
-    <!--mapping:rbf constraint="consistent" direction="read" from="A-Mesh" to="B-Mesh" >
+    <receive-mesh name="A-Mesh" from="A" direct-access="true" />
+    <read-data name="Data" mesh="A-Mesh" />
+    <mapping:nearest-neighbor constraint="consistent" direction="read" from="A-Mesh" />
+    <!--mapping:rbf constraint="consistent" direction="read" from="A-Mesh" >
      <basis-function:compact-polynomial-c4 support-radius="0.1" />
     </mapping:rbf -->
     <!-- <mapping:nearest-projection constraint="consistent" direction="read" from="A-Mesh" to="B-Mesh" /> -->
