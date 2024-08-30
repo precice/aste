@@ -60,4 +60,6 @@ void setupEdgeIDs(precice::Participant &interface, const aste::Mesh &mesh, const
  * @return std::vector<int> a vector of vertexIDs in preCICE
  */
 std::vector<int> setupMesh(precice::Participant &interface, const aste::Mesh &mesh, const std::string &meshName);
+
+std::vector<double> setupDirectMeshAccess(precice::Participant &interface, const aste::Mesh &mesh, const std::string &meshName, const aste::ExecutionContext &exec);
 } // namespace aste
