@@ -283,7 +283,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
             meshdata.dataVector.resize(vertexIDs.size() * meshdata.numcomp);
             preciceInterface.readData(asteInterface.meshName, "Data", vertexIDs, dt, meshdata.dataVector);
           } else {
-            meshdata.dataVector.resize((coordinates.size() / preciceInterface.getMeshDimensions(meshname)) * meshdata.numcomp);
+            meshdata.dataVector.resize((coordinates.size() / preciceInterface.getMeshDimensions(asteInterface.meshName)) * meshdata.numcomp);
             preciceInterface.mapAndreadData(asteInterface.meshName, "Data", coordinates, dt, meshdata.dataVector);
           }
           ASTE_DEBUG << "Data read: " << asteInterface.mesh.previewData(meshdata);
