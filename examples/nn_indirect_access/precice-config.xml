@@ -17,10 +17,6 @@
     <use-data name="Data" />
   </mesh>
 
-  <mesh name="B-Mesh" dimensions="3">
-    <use-data name="Data" />
-  </mesh>
-
   <m2n:sockets acceptor="A" connector="B" exchange-directory="." />
 
   <participant name="A">
