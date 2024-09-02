@@ -35,6 +35,10 @@
           },
          "np": {
             "kind": "nearest-projection"
+          },
+         "nn": {
+            "kind": "nearest-neighbor",
+            "batch-size": "5"
           }
         }
       },

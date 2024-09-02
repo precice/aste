@@ -53,6 +53,7 @@ def generateCases(setup):
                                         "executoroptions": mapping.get(
                                             "executor-options", ""
                                         ),
+                                        "batch-size": mapping.get("batch-size", "-1"),
                                     },
                                     "A": {
                                         "ranks": ranksA,
@@ -178,8 +179,15 @@ def createRunScript(outdir, path, case):
         os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path
     )
     mapped_data_name = case["function"] + "(mapped)"
-    bcmd = 'env time -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{}" --mesh {} --output mapped || kill 0 &'.format(
-        mapped_data_name, bmeshLocation
+
+    # Handle batch_size condition
+    batch_size_flag = ""
+    if case["mapping"]["batch-size"] != "-1":
+        batch_size_flag = "--indirect-read {}".format(case["mapping"]["batch-size"])
+
+    # Generate runner script for participant B
+    bcmd = 'env time -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{}" --mesh {} --output mapped {} || kill 0 &'.format(
+        mapped_data_name, bmeshLocation, batch_size_flag
     )
     if branks > 1:
         bcmd = "mpirun -n {} $ASTE_B_MPIARGS {}".format(branks, bcmd)
