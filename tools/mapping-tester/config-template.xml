@@ -15,10 +15,12 @@
     <mesh name="A-Mesh" dimensions="3">
       <use-data name="Data" />
     </mesh>
-
+    <!-- batch size option works only for consistent mappings -->
+    {% if mapping.get('batch-size') == "-1" %}
     <mesh name="B-Mesh" dimensions="3">
       <use-data name="Data" />
     </mesh>
+    {% endif %}
 
     <m2n:sockets acceptor="A" connector="B" network="{{ network }}" exchange-directory="." />
 
@@ -41,13 +43,16 @@
     </participant>
 
     <participant name="B">
+    {% if mapping.get('batch-size') == "-1" %}
       <provide-mesh name="B-Mesh" />
-      <read-data name="Data" mesh="B-Mesh" />
+    {% endif %}
+
+      <read-data name="Data" {% if mapping.get('batch-size') == "-1" %} mesh="B-Mesh" {% else %} mesh="A-Mesh" {% endif %} />
 
       {% if mapping.constraint == "consistent" %}
-      <receive-mesh name="A-Mesh" from="A" />
+      <receive-mesh name="A-Mesh" from="A" {% if not mapping.get('batch-size') == "-1" %}direct-access="true"{% endif %} />
 
-      <mapping:{{ mapping.kind }} {{ mapping.options }} constraint="consistent" direction="read" from="A-Mesh" to="B-Mesh" >
+      <mapping:{{ mapping.kind }} {{ mapping.options }} constraint="consistent" direction="read" from="A-Mesh" {% if mapping.get('batch-size') == "-1" %} to="B-Mesh" {% endif %} >
         {% if mapping.kind.startswith("rbf") %}
           {% if mapping.executor %}
         <executor:{{ mapping.executor }} {{ mapping.executoroptions }} />

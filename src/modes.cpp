@@ -145,6 +145,15 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
   const bool        isVector        = options["vector"].as<bool>();
   const std::string preciceConfig   = options["precice-config"].as<std::string>();
 
+  constexpr int conventionalReadData = -1;
+  // potentially make use of a indirect mapping using a prescribed batch size
+  const int batchSize = options.count("indirect-read")
+                            ? options["indirect-read"].as<int>()
+                            : conventionalReadData;
+  if (batchSize < -1) {
+    ASTE_ERROR << "Batch size needs to be greater or equal to zero.";
+  }
+
   addLogIdentity(participantName, context.rank);
   ASTE_INFO << "ASTE Running in mapping test mode";
 
@@ -185,7 +194,11 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     asteConfiguration.participantName       = "B";
     asteConfiguration.preciceConfigFilename = preciceConfig;
     aste::asteInterface asteInterface;
-    asteInterface.meshName       = "B-Mesh";
+    if (batchSize == conventionalReadData) {
+      asteInterface.meshName = "B-Mesh";
+    } else {
+      asteInterface.meshName = "A-Mesh";
+    }
     asteInterface.meshFilePrefix = meshname;
     asteInterface.meshes         = aste::BaseName(meshname).findAll(context);
 
@@ -211,7 +224,14 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
   asteInterface.meshes.front().loadMesh(asteInterface.mesh, dim, requireConnectivity);
   asteInterface.meshes.front().loadData(asteInterface.mesh);
   ASTE_INFO << "The loaded mesh " << asteInterface.meshes.front().filename() << " contains: " << asteInterface.mesh.summary();
-  auto vertexIDs = aste::setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshName);
+
+  std::vector<int>    vertexIDs;
+  std::vector<double> coordinates;
+  if (batchSize == conventionalReadData) {
+    vertexIDs = aste::setupMesh(preciceInterface, asteInterface.mesh, asteInterface.meshName);
+  } else {
+    coordinates = aste::setupDirectMeshAccess(preciceInterface, asteInterface.mesh, asteInterface.meshName, context);
+  }
   ASTE_DEBUG << "Mesh setup completed on Rank " << context.rank;
 
   if (preciceInterface.requiresInitialData()) {
@@ -262,8 +282,33 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
     for (auto &asteInterface : asteConfiguration.asteInterfaces) {
       for (auto &meshdata : asteInterface.mesh.meshdata) {
         if (meshdata.type == aste::datatype::READ) {
-          meshdata.dataVector.resize(vertexIDs.size() * meshdata.numcomp);
-          preciceInterface.readData(asteInterface.meshName, "Data", vertexIDs, dt, meshdata.dataVector);
+          if (batchSize == conventionalReadData) {
+            meshdata.dataVector.resize(vertexIDs.size() * meshdata.numcomp);
+            preciceInterface.readData(asteInterface.meshName, "Data", vertexIDs, dt, meshdata.dataVector);
+          } else {
+            int dim       = preciceInterface.getMeshDimensions(asteInterface.meshName);
+            int nVertices = coordinates.size() / dim;
+            meshdata.dataVector.resize(nVertices * meshdata.numcomp);
+
+            // pass everything in one go
+            if (batchSize == 0) {
+              preciceInterface.mapAndreadData(asteInterface.meshName, "Data", coordinates, dt, meshdata.dataVector);
+            } else { // pass in batches
+              for (int i = 0; i < nVertices; i += batchSize) {
+                int availableVertices = std::min(i + batchSize, nVertices);
+                int coordStart        = i * dim;
+                int coordEnd          = availableVertices * dim;
+                int dataStart         = i * meshdata.numcomp;
+                int dataEnd           = availableVertices * meshdata.numcomp;
+
+                ::precice::span<const double> coordinateBatch(coordinates.data() + coordStart, coordEnd - coordStart);
+                ::precice::span<double>       dataBatch(meshdata.dataVector.data() + dataStart, dataEnd - dataStart);
+
+                // Call the API function with the current batch
+                preciceInterface.mapAndreadData(asteInterface.meshName, "Data", coordinateBatch, dt, dataBatch);
+              }
+            }
+          }
           ASTE_DEBUG << "Data read: " << asteInterface.mesh.previewData(meshdata);
         }
       }
