@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e -u
 
+if ! command -v precice-aste-run &> /dev/null || ! command -v precice-aste-evaluate &> /dev/null; then
+    echo "Error: It seems that ASTE is not installed or not discoverable in your PATH."
+    exit 1
+fi
+
 # Get the absolute directory of where the script is located (execution from anywhere)
 script_dir=$(dirname "$(readlink -f "$0")")
 
