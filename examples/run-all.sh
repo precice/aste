@@ -2,7 +2,7 @@
 set -e -u
 
 if ! command -v precice-aste-run &> /dev/null || ! command -v precice-aste-evaluate &> /dev/null; then
-    echo "Error: It seems that ASTE is not installed or not discoverable in your PATH."
+    echo "Error: It seems that ASTE is not installed or not discoverable in your PATH. See https://precice.org/tooling-aste.html#installation for more information."
     exit 1
 fi
 
