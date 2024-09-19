@@ -23,7 +23,7 @@ jobs:
       - name: Setup system
         run: |
           brew update
-          brew install cmake eigen boost openmpi pkg-config ninja vtk
+          brew install cmake eigen boost openmpi pkg-config ninja gnu-time vtk
       - name: Install preCICE
         run: |
           git clone https://github.com/precice/precice.git

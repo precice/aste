@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import sys
 
 from jinja2 import Template
 
@@ -165,10 +166,15 @@ def createRunScript(outdir, path, case):
         os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path
     )
 
+    # Detect the operating system and set the time command (brew install gnu-time)
+    if sys.platform.startswith("darwin"):
+        time_command = "gtime"
+    else:
+        time_command = "time"
+
     # Generate runner script
-    acmd = 'env time -f %M -a -o memory-A.log precice-aste-run -v -a -p A --data "{}" --mesh {} || kill 0 &'.format(
-        case["function"], ameshLocation
-    )
+    acmd = f'env {time_command} -f %M -a -o memory-A.log precice-aste-run -v -a -p A --data "{case["function"]}" --mesh {ameshLocation} || kill 0 &'
+
     if aranks > 1:
         acmd = "mpirun -n {} $ASTE_A_MPIARGS {}".format(aranks, acmd)
 
@@ -178,9 +184,8 @@ def createRunScript(outdir, path, case):
         os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path
     )
     mapped_data_name = case["function"] + "(mapped)"
-    bcmd = 'env time -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{}" --mesh {} --output mapped || kill 0 &'.format(
-        mapped_data_name, bmeshLocation
-    )
+    bcmd = f'env {time_command} -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{mapped_data_name}" --mesh {bmeshLocation} --output mapped || kill 0 &'
+
     if branks > 1:
         bcmd = "mpirun -n {} $ASTE_B_MPIARGS {}".format(branks, bcmd)
 
