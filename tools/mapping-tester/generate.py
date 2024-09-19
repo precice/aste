@@ -23,7 +23,7 @@ def as_iter(something):
 
 def generateCases(setup):
     meshes = setup["general"]["meshes"]
-    network = setup["general"].get("network", "lo")
+    network = setup["general"].get("network")
     syncmode = setup["general"].get("synchronize", "false")
 
     cases = []
