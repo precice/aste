@@ -39,15 +39,14 @@ jobs:
           sudo ninja install
           cd ../..
       - uses: actions/checkout@v4
-      - name: Set up Python virtual environment
+      - name: Set up environment and install dependencies
         run: |
           python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
           echo "VIRTUAL_ENV=$(pwd)/venv" >> $GITHUB_ENV
           echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
-      - name: Install example dependencies
-        run: |
-          source $VIRTUAL_ENV/bin/activate
-          python -m pip install -r requirements.txt
+
       - name: Prepare build directory
         run: mkdir build
       - name: Build project with clang
@@ -55,13 +54,11 @@ jobs:
         env:
           CC: clang
           CXX: clang++
-          PATH: ${{ env.VIRTUAL_ENV }}/bin:${{ env.PATH }}
         run: |
           cmake ..
           cmake --build .
       - name: Run tests
         working-directory: build
-        env:
-          PATH: ${{ env.VIRTUAL_ENV }}/bin:${{ env.PATH }}
         run: |
+          source ${{ env.VIRTUAL_ENV }}/bin/activate
           ctest
