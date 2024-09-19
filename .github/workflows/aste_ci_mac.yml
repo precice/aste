@@ -1,0 +1,73 @@
+name: ASTE macOS CI
+
+on:
+  push:
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+  schedule:
+    - cron: '0 8 * * 2'  # run once in a week (here Tue at 8am)
+
+concurrency:
+  group: ${ {github.event_name }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{github.event_name == 'pull_request'}}
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    env:
+      CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
+      CTEST_OUTPUT_ON_FAILURE: "Yes"
+    steps:
+      - name: Setup system
+        run: |
+          brew update
+          brew install cmake eigen boost openmpi pkg-config ninja gnu-time vtk
+      - name: Install preCICE
+        run: |
+          git clone https://github.com/precice/precice.git
+          cd precice
+          mkdir build && cd build
+          cmake -DCMAKE_INSTALL_PREFIX=/usr/local \
+                -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+                -DPRECICE_FEATURE_MPI_COMMUNICATION=ON \
+                -DPRECICE_FEATURE_PETSC_MAPPING=OFF \
+                -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
+                -DBUILD_TESTING=OFF \
+                -G Ninja ..
+          ninja
+          sudo ninja install
+          cd ../..
+      - uses: actions/checkout@v4
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+         python-version: '3.12'
+         check-latest: true
+
+      - name: Set up environment and install dependencies
+        run: |
+          python3 -m venv --system-site-packages venv
+          source venv/bin/activate
+          python3 -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install numpy polars vtk
+          echo "VIRTUAL_ENV=$(pwd)/venv" >> $GITHUB_ENV
+          echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
+
+      - name: Prepare build directory
+        run: mkdir build
+      - name: Build project with clang
+        working-directory: build
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          cmake ..
+          cmake --build .
+      - name: Run tests
+        working-directory: build
+        run: |
+          source ${{ env.VIRTUAL_ENV }}/bin/activate
+          ctest

@@ -20,7 +20,7 @@
       <use-data name="Data" />
     </mesh>
 
-    <m2n:sockets acceptor="A" connector="B" network="{{ network }}" exchange-directory="." />
+    <m2n:sockets acceptor="A" connector="B"{% if network %} network="{{ network }}"{% endif %} exchange-directory="." />
 
     <participant name="A">
       <provide-mesh name="A-Mesh" />
