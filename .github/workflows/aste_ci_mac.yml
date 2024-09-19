@@ -34,6 +34,7 @@ jobs:
                 -DPRECICE_FEATURE_MPI_COMMUNICATION=ON \
                 -DPRECICE_FEATURE_PETSC_MAPPING=OFF \
                 -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
+                -DBUILD_TESTING=OFF \
                 -G Ninja ..
           ninja
           sudo ninja install
@@ -47,7 +48,7 @@ jobs:
 
       - name: Set up environment and install dependencies
         run: |
-          python3 -m venv venv
+          python3 -m venv --system-site-packages venv
           source venv/bin/activate
           python3 -m pip install --upgrade pip
           pip install -r requirements.txt
