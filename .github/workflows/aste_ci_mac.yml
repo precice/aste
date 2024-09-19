@@ -23,7 +23,7 @@ jobs:
       - name: Setup system
         run: |
           brew update
-          brew install cmake eigen libxml2 boost petsc openmpi pkg-config ninja vtk
+          brew install cmake eigen boost openmpi pkg-config ninja vtk
           python3 -m pip install --upgrade pip
       - name: Install preCICE
         run: |
