@@ -19,7 +19,15 @@ The core module, which interfaces with preCICE, is called `precice-aste-run` and
 
 ### Dependencies
 
-The C++ core module of ASTE uses similar dependencies as preCICE itself. In particular, ASTE requires a C++ compiler, CMake, MPI and Boost. Have a look at the [corresponding preCICE documentation](https://precice.org/installation-source-dependencies.html) for required versions and on how to install these dependencies if needed. In addition, ASTE relies on preCICE (version >= 3.0) and the VTK library (version >= 7) in order to handle mesh files. The VTK library can be installed using the package manager (`libvtk<VERSION>-dev`), e.g., on Ubuntu
+The C++ core module of ASTE uses similar dependencies as preCICE itself. In particular, ASTE requires a C++ compiler, `CMake`, `MPI` and `Boost`. Have a look at the [corresponding preCICE documentation](https://precice.org/installation-source-dependencies.html) for required versions and on how to install these dependencies if needed. In addition, ASTE relies on `preCICE` (version >= 3.0) and the `VTK` library (version >= 7) to handle mesh files.
+
+Detailed installation instructions for the preCICE library are available in the preCICE [installation documentation](https://precice.org/installation-overview.html). On [Ubuntu](https://precice.org/installation-packages.html#ubuntu), e.g., system packages are availble and can be downloaded from [GitHub releases](https://github.com/precice/precice/releases) and installed through the package manager
+
+```bash
+sudo apt install ./libprecice<VERSION>.deb
+```
+
+The VTK library can be installed using the package manager (`libvtk<VERSION>-dev`), e.g., on Ubuntu
 
 ```bash
 sudo apt install libvtk9-dev
