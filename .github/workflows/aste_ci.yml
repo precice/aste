@@ -32,7 +32,7 @@ jobs:
       - name: setup system
         run: |
           apt-get -y update && apt-get -y upgrade
-          apt-get install -y python3-pip pkg-config time
+          apt-get install -y python3-pip pkg-config time clang
           pip3 install --upgrade pip
       - uses: actions/checkout@v4
       - name: install example dependencies
