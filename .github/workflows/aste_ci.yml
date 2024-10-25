@@ -14,10 +14,18 @@ concurrency:
 
 jobs:
   build:
+    name: ${{ format('{0} {1}', matrix.CXX, matrix.TYPE) }}
     runs-on: ubuntu-latest
-    container: precice/precice:nightly
-    timeout-minutes: 80
+    container:
+      image: precice/ci-aste:latest
+      options: --shm-size=2gb
+    strategy:
+      fail-fast: false
+      matrix:
+        CXX: ["clang++", "g++"]
+        TYPE: ["Debug", "Release"]
     env:
+      CXX: ${{ matrix.CXX }}
       CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
       CTEST_OUTPUT_ON_FAILURE: "Yes"
     steps:
@@ -26,50 +34,21 @@ jobs:
           apt-get -y update && apt-get -y upgrade
           apt-get install -y python3-pip pkg-config time
           pip3 install --upgrade pip
-      - name: install VTK
-        run: |
-          git clone https://gitlab.kitware.com/vtk/vtk.git && cd vtk
-          git checkout v9.3.0
-          mkdir build && cd build
-          cmake -DVTK_WRAP_PYTHON="ON" -DVTK_USE_MPI="ON" -DCMAKE_BUILD_TYPE=Release ..
-          cmake --build . -j 2 && cmake --install .
-          echo "PYTHONPATH=/usr/local/lib/python3.10/site-packages/:${PYTHONPATH}" >> $GITHUB_ENV
-          cd
       - uses: actions/checkout@v4
       - name: install example dependencies
         run: |
           python3 -m pip install -r requirements.txt
-      - name: prepare directories
+      - name: prepare build directory
         run: |
-          mkdir build_gcc build_clang
-      - name: build aste gcc
-        working-directory: build_gcc
-        env:
-          CC: gcc
-          CXX: g++
+          mkdir build
+      - name: build aste
+        working-directory: build
         run: |
-          cmake ..
+          cmake -DCMAKE_BUILD_TYPE=${{ matrix.TYPE }} ..
           cmake --build .
       - name: Adjust user rights
         run: chown -R precice .
-      - name: run test gcc
-        working-directory: build_gcc
-        run: |
-          su -c "ctest" precice
-      - name: install clang
-        run: |
-          apt-get -y install clang
-      - name: build aste clang
-        working-directory: build_clang
-        env:
-          CC: clang
-          CXX: clang++
-        run: |
-          cmake ..
-          cmake --build .
-      - name: Adjust user rights
-        run: chown -R precice .
-      - name: run test clang
-        working-directory: build_clang
+      - name: run test
+        working-directory: build
         run: |
           su -c "ctest" precice
