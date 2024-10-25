@@ -19,6 +19,9 @@ jobs:
     container:
       image: precice/ci-aste:latest
       options: --shm-size=2gb
+    defaults:
+      run:
+        shell: "bash --login -eo pipefail {0}"
     strategy:
       fail-fast: false
       matrix:
