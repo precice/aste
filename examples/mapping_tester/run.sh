@@ -30,3 +30,5 @@ cd "${TEST_LOCATION}"
 
 # Gather the generated statistics
 python3 "${MAPPING_TESTER}"/gatherstats.py --outdir "${TEST_CASE_LOCATION}" --file test-statistics.csv
+
+python3 "${MAPPING_TESTER}"/compare.py reference-statistics.csv test-statistics.csv
