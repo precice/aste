@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [master, develop]
   schedule:
-    - cron: '0 8 * * 2'  # run once in a week (here Tue at 8am)
+    - cron: '0 8 * * 2'  # run once in a week
 
 concurrency:
   group: ${ {github.event_name }}-${{ github.workflow }}-${{ github.ref }}
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container: precice/precice:nightly
     timeout-minutes: 80
     env:
