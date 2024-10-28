@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.16.3)
+cmake_minimum_required (VERSION 3.22)
 
 project(ASTE)
 
@@ -134,7 +134,7 @@ foreach(example IN LISTS _examples)
   set_tests_properties(aste.example.${example} aste.example.${example}.setup
     PROPERTIES
     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/examples/${example}"
-    ENVIRONMENT "PATH=$ENV{PATH}:${CMAKE_BINARY_DIR}"
+    ENVIRONMENT_MODIFICATION "PATH=path_list_append:${CMAKE_BINARY_DIR}"
     LABELS example
     RUN_SERIAL ON)
 endforeach()
