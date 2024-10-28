@@ -13,11 +13,44 @@ concurrency:
   cancel-in-progress: ${{github.event_name == 'pull_request'}}
 
 jobs:
+  vtk:
+    name: Build VTK from source
+    runs-on: ubuntu-latest
+    container:
+      image: precice/precice:nightly
+      options: --shm-size=2gb
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
+    steps:
+      - name: Check VTK cache
+        id: cache-vtk
+        uses: actions/cache@v4
+        with:
+          key: ${{ os.runner }}-aste-vtk
+          path: |
+            /usr/local/include/vtk-*/
+            /usr/local/lib/libvtk*
+            /usr/local/lib/cmake/vtk-*/
+            /usr/local/bin/vtk*
+            /usr/local/lib/python*/site-packages/vtk.py
+            /usr/local/lib/python*/site-packages/vtkmodules/*
+            /etc/profile.d/99-vtk.sh
+      - name: Build VTK
+        if: steps.cache-vtk.outputs.cache-hit != 'true'
+        run: |
+          git clone https://gitlab.kitware.com/vtk/vtk.git && cd vtk
+          git checkout v9.3.0
+          mkdir build && cd build
+          cmake -DVTK_WRAP_PYTHON="ON" -DVTK_USE_MPI="ON" -DCMAKE_BUILD_TYPE=Release ..
+          cmake --build . && cmake --install .
+          echo 'export PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python3.10/site-packages/"' > /etc/profile.d/99-vtk.sh
+
   build:
+    needs: vtk
     name: ${{ format('{0} {1}', matrix.CXX, matrix.TYPE) }}
     runs-on: ubuntu-latest
     container:
-      image: precice/ci-aste:latest
+      image: precice/precice:nightly
       options: --shm-size=2gb
     defaults:
       run:
@@ -33,11 +66,23 @@ jobs:
       CTEST_OUTPUT_ON_FAILURE: "Yes"
       CMAKE_BUILD_PARALLEL_LEVEL: 4
     steps:
+      - name: Restore VTK from cache
+        uses: actions/cache@v4
+        with:
+          fail-on-cache-miss: true
+          key: ${{ os.runner }}-aste-vtk
+          path: |
+            /usr/local/include/vtk-*/
+            /usr/local/lib/libvtk*
+            /usr/local/lib/cmake/vtk-*/
+            /usr/local/bin/vtk*
+            /usr/local/lib/python*/site-packages/vtk.py
+            /usr/local/lib/python*/site-packages/vtkmodules/*
+            /etc/profile.d/99-vtk.sh
       - name: setup system
         run: |
           apt-get -y update && apt-get -y upgrade
-          apt-get install -y python3-pip pkg-config time clang
-          pip3 install --upgrade pip
+          apt-get install -qq -y python3-pip python3-jinja2 python3-scipy python3-sympy libmetis-dev time clang
       - uses: actions/checkout@v4
       - name: install example dependencies
         run: |
