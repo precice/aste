@@ -32,6 +32,7 @@ jobs:
             /usr/local/lib/libvtk*
             /usr/local/lib/cmake/vtk-*/
             /usr/local/bin/vtk*
+            /usr/local/bin/pvtkpython
             /usr/local/lib/python*/site-packages/vtk.py
             /usr/local/lib/python*/site-packages/vtkmodules/*
             /etc/profile.d/99-vtk.sh
@@ -76,6 +77,7 @@ jobs:
             /usr/local/lib/libvtk*
             /usr/local/lib/cmake/vtk-*/
             /usr/local/bin/vtk*
+            /usr/local/bin/pvtkpython
             /usr/local/lib/python*/site-packages/vtk.py
             /usr/local/lib/python*/site-packages/vtkmodules/*
             /etc/profile.d/99-vtk.sh
