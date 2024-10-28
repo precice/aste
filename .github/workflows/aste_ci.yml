@@ -26,7 +26,7 @@ jobs:
         id: cache-vtk
         uses: actions/cache@v4
         with:
-          key: ${{ os.runner }}-aste-vtk
+          key: ${{ runner.os }}-aste-vtk
           path: |
             /usr/local/include/vtk-*/
             /usr/local/lib/libvtk*
@@ -70,7 +70,7 @@ jobs:
         uses: actions/cache@v4
         with:
           fail-on-cache-miss: true
-          key: ${{ os.runner }}-aste-vtk
+          key: ${{ runner.os }}-aste-vtk
           path: |
             /usr/local/include/vtk-*/
             /usr/local/lib/libvtk*
