@@ -13,63 +13,93 @@ concurrency:
   cancel-in-progress: ${{github.event_name == 'pull_request'}}
 
 jobs:
-  build:
+  vtk:
+    name: Build VTK from source
     runs-on: ubuntu-latest
-    container: precice/precice:nightly
-    timeout-minutes: 80
+    container:
+      image: precice/precice:nightly
+      options: --shm-size=2gb
     env:
-      CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
-      CTEST_OUTPUT_ON_FAILURE: "Yes"
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
     steps:
-      - name: setup system
-        run: |
-          apt-get -y update && apt-get -y upgrade
-          apt-get install -y python3-pip pkg-config time
-          pip3 install --upgrade pip
-      - name: install VTK
+      - name: Check VTK cache
+        id: cache-vtk
+        uses: actions/cache@v4
+        with:
+          key: ${{ runner.os }}-aste-vtk
+          path: |
+            /usr/local/include/vtk-*/
+            /usr/local/lib/libvtk*
+            /usr/local/lib/cmake/vtk-*/
+            /usr/local/bin/vtk*
+            /usr/local/bin/pvtkpython
+            /usr/local/lib/python*/site-packages/vtk.py
+            /usr/local/lib/python*/site-packages/vtkmodules/*
+            /etc/profile.d/99-vtk.sh
+      - name: Build VTK
+        if: steps.cache-vtk.outputs.cache-hit != 'true'
         run: |
           git clone https://gitlab.kitware.com/vtk/vtk.git && cd vtk
           git checkout v9.3.0
           mkdir build && cd build
           cmake -DVTK_WRAP_PYTHON="ON" -DVTK_USE_MPI="ON" -DCMAKE_BUILD_TYPE=Release ..
-          cmake --build . -j 2 && cmake --install .
-          echo "PYTHONPATH=/usr/local/lib/python3.10/site-packages/:${PYTHONPATH}" >> $GITHUB_ENV
-          cd
+          cmake --build . && cmake --install .
+          echo 'export PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python3.10/site-packages/"' > /etc/profile.d/99-vtk.sh
+
+  build:
+    needs: vtk
+    name: ${{ format('{0} {1}', matrix.CXX, matrix.TYPE) }}
+    runs-on: ubuntu-latest
+    container:
+      image: precice/precice:nightly
+      options: --shm-size=2gb
+    defaults:
+      run:
+        shell: "bash --login -eo pipefail {0}"
+    strategy:
+      fail-fast: false
+      matrix:
+        CXX: ["clang++", "g++"]
+        TYPE: ["Debug", "Release"]
+    env:
+      CXX: ${{ matrix.CXX }}
+      CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
+      CTEST_OUTPUT_ON_FAILURE: "Yes"
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
+    steps:
+      - name: Restore VTK from cache
+        uses: actions/cache@v4
+        with:
+          fail-on-cache-miss: true
+          key: ${{ runner.os }}-aste-vtk
+          path: |
+            /usr/local/include/vtk-*/
+            /usr/local/lib/libvtk*
+            /usr/local/lib/cmake/vtk-*/
+            /usr/local/bin/vtk*
+            /usr/local/bin/pvtkpython
+            /usr/local/lib/python*/site-packages/vtk.py
+            /usr/local/lib/python*/site-packages/vtkmodules/*
+            /etc/profile.d/99-vtk.sh
+      - name: setup system
+        run: |
+          apt-get -y update && apt-get -y upgrade
+          apt-get install -qq -y python3-pip python3-jinja2 python3-scipy python3-sympy libmetis-dev time clang
       - uses: actions/checkout@v4
       - name: install example dependencies
         run: |
           python3 -m pip install -r requirements.txt
-      - name: prepare directories
+      - name: prepare build directory
         run: |
-          mkdir build_gcc build_clang
-      - name: build aste gcc
-        working-directory: build_gcc
-        env:
-          CC: gcc
-          CXX: g++
+          mkdir build
+      - name: build aste
+        working-directory: build
         run: |
-          cmake ..
+          cmake -DCMAKE_BUILD_TYPE=${{ matrix.TYPE }} ..
           cmake --build .
       - name: Adjust user rights
         run: chown -R precice .
-      - name: run test gcc
-        working-directory: build_gcc
-        run: |
-          su -c "ctest" precice
-      - name: install clang
-        run: |
-          apt-get -y install clang
-      - name: build aste clang
-        working-directory: build_clang
-        env:
-          CC: clang
-          CXX: clang++
-        run: |
-          cmake ..
-          cmake --build .
-      - name: Adjust user rights
-        run: chown -R precice .
-      - name: run test clang
-        working-directory: build_clang
+      - name: run test
+        working-directory: build
         run: |
           su -c "ctest" precice
