@@ -189,7 +189,12 @@ def main(argv):
     assert (
         len(toMeshes) == 1
     ), f"There are {len(toMeshes)} to-meshes but only 1 is allowed. Fix your dataset!"
+
+    df = df.group_by(["mapping", "constraint", "mesh A", "ranks A", "ranks B"]).agg(
+        "avg"
+    )
     df.sort_values("mesh A", inplace=True)
+
     plotError(df, args.prefix)
     plotMemory(df, args.prefix)
     plotMapDataTime(df, args.prefix)
