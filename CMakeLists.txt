@@ -1,7 +1,8 @@
 cmake_minimum_required (VERSION 3.16.3)
 
-project(ASTE)
+project(ASTE VERSION 3.3.0)
 
+message(STATUS "ASTE version: ${ASTE_VERSION_MAJOR}.${ASTE_VERSION_MINOR}.${ASTE_VERSION_PATCH}")
 list (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 set (CMAKE_CXX_STANDARD 17)

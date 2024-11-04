@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.3.0] - 2024-11-XX
+
+### Added
+
+- Added a code of conduct from Covenant (see `CODE_OF_CONDUCT.md`). [#205](https://github.com/precice/aste/pull/205)
+- Added contributing guidelines (see `docs/CONTRIBUTING.md`). [#205](https://github.com/precice/aste/pull/205)
+- Added documentation to the mapping tester. [#209](https://github.com/precice/aste/pull/209)
+- Added scoping support to gathering events. [#207](https://github.com/precice/aste/pull/207)
+- Added macOS continuous integration support for ASTE. [#202](https://github.com/precice/aste/pull/202)
+- Added a cached VTK build in ASTE CI for faster build times. [#211](https://github.com/precice/aste/pull/211)
+
+### Changed
+
+- Changed CMake to always find Boost using its CMake Config. [#194](https://github.com/precice/aste/pull/194)
+- Highlighted ASTE's dependency on preCICE more clearly in the documentation. [#206](https://github.com/precice/aste/pull/206)
+- Made `run-all` script for examples more robust. [#201](https://github.com/precice/aste/pull/201)
+
+### Fixed
+
+- Fixed linker errors when FindBoost uses the CMake Config. [#194](https://github.com/precice/aste/pull/194)
+- Fixed SEGFAULT in `precice-aste-run` if no mesh is found for the given name. [#196](https://github.com/precice/aste/pull/196)
+
 ## [v3.2.0] - 2024-07-31
 
 ### Fixed
