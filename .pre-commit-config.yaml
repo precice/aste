@@ -41,6 +41,6 @@ repos:
     rev: v0.39.0
     hooks:
       - id: markdownlint
-        exclude: changelog-entries
+        exclude: 'changelog-entries|^CHANGELOG\.md$'
       - id: markdownlint-fix
-        exclude: changelog-entries
+        exclude: 'changelog-entries|^CHANGELOG\.md$'
