@@ -73,6 +73,10 @@ In fact, testing and developing preCICE was the use case behind the first protot
 Beyond the development in preCICE, ASTE also fosters the development of new adapter codes to be coupled via preCICE, as it aids in debugging and enhances the transparency of data flow.
 Moreover, combining preCICE's performance instrumentation with the ASTE's flexibility and insight, it enables finding appropriate settings for specific scenarios, as effectively demonstrated in the large-scale example in @ExaFSA2020.
 
+Although coupling libraries like MUI offer their own testing and benchmarking infrastructure, e.g., [MUI's testing framework](https://github.com/MxUI/MUI-Testing), many tools do not provide such testing environments at all.
+Instead, evaluating, testing and benchmarking of these libraries relies on hard-coded solutions tailored to individual test setups, e.g., the benchmarking performed by @Valcke2022.
+ASTE covers a comprehensive, flexible and resuable toolchain for development, testing, and parameter tuning.
+
 # Functionality & Use
 
 The central interface of ASTE is given through a VTK mesh file, which contains information about the geometric shape of the model we emulate.
