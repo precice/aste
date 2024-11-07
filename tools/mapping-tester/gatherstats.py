@@ -49,15 +49,19 @@ def statsFromTimings(dir):
                         stats["globalTime"] = row[-1]
                     if row[0] == "initialize":
                         stats["initializeTime"] = row[-1]
-                    if row[0].startswith("initialize/map") and row[0].endswith(
-                        "computeMapping.FromA-MeshToB-Mesh"
+                    parts = row[0].split("/")
+                    event = parts[-1]
+                    if (
+                        parts[0] == "initialize"
+                        and event.startswith("map")
+                        and event.endswith("computeMapping.FromA-MeshToB-Mesh")
                     ):
-                        computeMappingName = row[0]
                         stats["computeMappingTime"] = row[-1]
-                    if row[0].startswith("advance/map") and row[0].endswith(
-                        "mapData.FromA-MeshToB-Mesh"
+                    if (
+                        parts[0] == "advance"
+                        and event.startswith("map")
+                        and event.endswith("mapData.FromA-MeshToB-Mesh")
                     ):
-                        mapDataName = row[0]
                         stats["mapDataTime"] = row[-1]
         except BaseException:
             pass
