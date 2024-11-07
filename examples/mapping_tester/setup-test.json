@@ -35,6 +35,9 @@
           },
          "np": {
             "kind": "nearest-projection"
+          },
+         "nn": {
+            "kind": "nearest-neighbor"
           }
         }
       },
