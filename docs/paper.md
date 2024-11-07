@@ -83,7 +83,7 @@ The core module of ASTE then reads the VTK file and passes the data to preCICE, 
 Once the simulation is finished, the generated data is stored in another VTK file and can be compared against the original artificial data.
 Performance metrics are accessible through the [preCICE performance framework](https://precice.org/tooling-performance-analysis.html).
 
-While the core module of ASTE is written in C++, the pre- and postprocessing scripts are implemented in Python.
+While the core module of ASTE is written in `C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\tiny\bf ++}`{=latex}, the pre- and postprocessing scripts are implemented in Python.
 The core module relies on VTK [@vtkBook], [Boost](https://boost.org/) and MPI for parallel execution.
 It provides a command line interface for simple simulations and can be configured in JSON [@lohmann2023] for more complex scenarios.
 
