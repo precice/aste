@@ -103,9 +103,9 @@ else ()
     )
 endif()
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-partition      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-join           DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/precice-aste-evaluate      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+configure_file(src/precice-aste-partition . COPYONLY)
+configure_file(src/precice-aste-join . COPYONLY)
+configure_file(src/precice-aste-evaluate . COPYONLY)
 
 include(GNUInstallDirs)
 install(TARGETS precice-aste-run DESTINATION ${CMAKE_INSTALL_BINDIR})
