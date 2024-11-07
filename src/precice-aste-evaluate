@@ -287,7 +287,8 @@ class Calculator:
             np.nanmax(abs_diff),
             np.nanmax(difference),
         )
-        p99, p95, p90, median = np.percentile(abs_diff, [99, 95, 90, 50])
+        p99, p95, p90 = np.percentile(abs_diff, [99, 95, 90])
+        median = np.median(abs_diff)
         relative = np.sqrt(np.nansum(np.square(abs_diff)) / abs_diff.size)
         decorator = 15 * "*"
         spaces = 5 * " "
