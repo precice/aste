@@ -91,7 +91,7 @@ def preparePartMesh(meshdir, name, p, force=False):
             "--mesh",
             mainMesh,
             "--algorithm",
-            "meshfree",
+            "topology",
             "-o",
             partMesh,
             "--directory",

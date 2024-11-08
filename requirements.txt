@@ -1,4 +1,5 @@
 jinja2
 numpy
+polars
 scipy
 sympy>=1.9
