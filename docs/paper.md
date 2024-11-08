@@ -80,7 +80,7 @@ ASTE covers a comprehensive, flexible and resuable toolchain for development, te
 # Functionality & Use
 
 The central interface of ASTE is given through a VTK mesh file, which contains information about the geometric shape of the model we emulate.
-The VTK files can be generated from mesh generation tools (e.g., GMSH [@gmsh]), [Python scripts](https://github.com/precice/aste/tree/develop/tools/mesh-generators), other simulation software, or directly reused from a [completed preCICE simulation](https://precice.org/configuration-export.html).
+The VTK files can be generated from mesh generation tools (e.g., GMSH [@gmsh]), included [Python scripts](https://github.com/precice/aste/tree/develop/tools/mesh-generators), other simulation software, or directly reused from a [completed preCICE simulation](https://precice.org/configuration-export.html).
 Given a VTK file, ASTE offers different algorithms to repartition them (e.g., through METIS [@METIS]) for parallel runs.
 Moreover, ASTE can generate artificial data using pre- or user-defined functions on the mesh and store them in the VTK file format.
 The core module of ASTE then reads the VTK file and passes the data to preCICE, potentially in every time step of the coupled simulation.
