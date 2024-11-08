@@ -1,6 +1,7 @@
 {
   "general": {
     "function": "0.78 + cos(10*(x+y+z))",
+    "partitioning": "topology",
     "ranks": {
       "A": [
         2
