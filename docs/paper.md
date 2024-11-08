@@ -55,8 +55,7 @@ In addition, ASTE provides performance and accuracy metrics of the configured si
 Besides preCICE itself, core ingredients for practical applications are preCICE API language bindings, preCICE adapters, the simulation frameworks and their dependencies.
 ASTE, on the other hand, replaces coupled models and only requires a reduced set of dependencies.
 It abstracts the computational complexity of the models away by extracting the relevant information from VTK files instead and passing extracted data to preCICE, potentially in parallel on distributed memory.
-VTK files can be produced from existing preCICE simulations without recompilation.
-ASTE can also generate artificial VTK files with prescribed coupling data.
+These VTK files can be artificially generated or imported from an existing preCICE simulation.
 On top of that, the entire tool chain of ASTE enables to easily alter the simulation setup through different mesh partitionings, and specifically for the configuration of data mappings in preCICE, ASTE can evaluate additional accuracy metrics of used mappings.
 
 ![Dependency graph between models, applications, and libraries for a coupled simulation with FEniCS and OpenFOAM compared to a dependency graph using ASTE.\label{fig:dependency-graph}](dependency-graph.pdf)
