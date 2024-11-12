@@ -58,7 +58,7 @@ It abstracts the computational complexity of the models away by extracting the r
 While the VTK files may stem from actual simulations, ASTE can also generate artificial VTK files with prescribed coupling data.
 On top of that, the entire tool chain of ASTE enables to easily alter the simulation setup through different mesh partitionings, and specifically for the configuration of data mappings in preCICE, ASTE can evaluate additional accuracy metrics of used mappings.
 
-![Dependency graph for a coupled simulation with FEniCS and OpenFOAM compared to a dependency graph using ASTE.\label{fig:dependency-graph}](dependency-graph.pdf)
+![Dependency graph between models, applications, and libraries for a coupled simulation with FEniCS and OpenFOAM compared to a dependency graph using ASTE.\label{fig:dependency-graph}](dependency-graph.pdf)
 
 From an application standpoint, ASTE provides a reproducible environment which enables to share and rerun scenarios, regardless of the availability of involved software components. This capability is particularly useful for debugging issues reported by users of preCICE, who can share their scenarios (e.g. through the [preCICE forum](https://precice.discourse.group/)) for developers to analyze, even in case the involved software is unavailable due to licensing terms or being closed-source.
 
@@ -80,7 +80,7 @@ ASTE covers a comprehensive, flexible and resuable toolchain for development, te
 # Functionality & Use
 
 The central interface of ASTE is given through a VTK mesh file, which contains information about the geometric shape of the model we emulate.
-The VTK files can be generated from mesh generation tools (e.g., GMSH [@gmsh]), [Python scripts](https://github.com/precice/aste/tree/develop/tools/mesh-generators) or directly reused from a [completed preCICE simulation](https://precice.org/configuration-export.html).
+The VTK files can be generated from mesh generation tools (e.g., GMSH [@gmsh]), included [Python scripts](https://github.com/precice/aste/tree/develop/tools/mesh-generators), other simulation software, or directly reused from a [completed preCICE simulation](https://precice.org/configuration-export.html).
 Given a VTK file, ASTE offers different algorithms to repartition them (e.g., through METIS [@METIS]) for parallel runs.
 Moreover, ASTE can generate artificial data using pre- or user-defined functions on the mesh and store them in the VTK file format.
 The core module of ASTE then reads the VTK file and passes the data to preCICE, potentially in every time step of the coupled simulation.
