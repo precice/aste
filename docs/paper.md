@@ -37,8 +37,8 @@ bibliography: paper.bib
 # Summary
 
 Simulating multi-physics phenomena for real-world applications states various challenges in scientific computing.
-The behavior of individual physical domains involved are often described through distinct partial-differential equations, which need to be solved in a certain subdomain.
-Their interaction is then achieved through bidirectional exchange of suitable coupling data between all subdomains.
+Each individual physical domain has behavior that is often described through a distinct set of partial-differential equations that needs to be solved in that domain.
+Their interaction is then achieved through bidirectional exchange of suitable coupling data between all involved domains.
 Partitioned coupling tackles multi-physics simulations by glueing together separate models, typically implemented in separate software environments.
 To facilitate such partitioned multi-physics simulations effectively, so-called coupling libraries offer commonly required functionality.
 We focus in particular on coupling through the open-source library preCICE [@precice-reference], which offers functionality for data communication, data mapping, coupling schemes, and more.
