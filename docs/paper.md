@@ -37,30 +37,30 @@ bibliography: paper.bib
 # Summary
 
 Simulating multi-physics phenomena for real-world applications states various challenges in scientific computing.
-The behavior of individual physical domains involved is often described through distinct partial-differential equations, which need to be solved in a certain subdomain.
-Their interaction is then achieved through bidirectional exchange of suitable coupling data between all subdomains.
+Each individual physical domain has behavior that is often described through a distinct set of partial-differential equations that needs to be solved in that domain.
+Their interaction is then achieved through bidirectional exchange of suitable coupling data between all involved domains.
 Partitioned coupling tackles multi-physics simulations by glueing together separate models, typically implemented in separate software environments.
 To facilitate such partitioned multi-physics simulations effectively, so-called coupling libraries offer commonly required functionality.
 We focus in particular on coupling through the open-source library preCICE [@precice-reference], which offers functionality for data communication, data mapping, coupling schemes, and more.
 In the most basic setup, at least two executables call preCICE to perform a coupled simulation.
 As additional software components, so-called adapters bridge the gap between the preCICE API and the software environments used by the coupled models.
 Creating and using this overall setup for early development purposes is not only cumbersome, but also very inefficient.
-The artificial solver testing environment (ASTE) allows to replace and imitate models coupled via preCICE by artificial ones, potentially in parallel distributed across multiple ranks on distributed memory.
+The artificial solver testing environment (ASTE) allows for replacing models coupled via preCICE with artificial ones, potentially in parallel distributed across multiple ranks on distributed memory.
 This helps in the development of preCICE, adapters, or simulation setups by reducing the necessary software components, simplifying execution workflows, and reducing runtime of the case.
 In addition, ASTE provides performance and accuracy metrics of the configured simulation setup.
 
 # Statement of need
 
 \autoref{fig:dependency-graph} illustrates the software stack required for a coupled simulation setup using FEniCS and OpenFOAM as examples, and compares it to a simulation setup using ASTE.
-Besides preCICE itself, core ingredients for practical applications are preCICE API language bindings, preCICE adapters, the simulation frameworks and their dependencies.
+Besides preCICE itself, core ingredients for practical applications are preCICE API language bindings, preCICE adapters, the simulation frameworks, and their dependencies.
 ASTE, on the other hand, replaces coupled models and only requires a reduced set of dependencies.
 It abstracts the computational complexity of the models away by extracting the relevant information from VTK files instead and passing extracted data to preCICE, potentially in parallel on distributed memory.
 While the VTK files may stem from actual simulations, ASTE can also generate artificial VTK files with prescribed coupling data.
-On top of that, the entire tool chain of ASTE enables to easily alter the simulation setup through different mesh partitionings, and specifically for the configuration of data mappings in preCICE, ASTE can evaluate additional accuracy metrics of used mappings.
+On top of that, the entire tool chain of ASTE enables easily altering the simulation setup through different mesh partitionings, and specifically for the configuration of data mappings in preCICE, ASTE can evaluate additional accuracy metrics of used mappings.
 
 ![Dependency graph between models, applications, and libraries for a coupled simulation with FEniCS and OpenFOAM compared to a dependency graph using ASTE.\label{fig:dependency-graph}](dependency-graph.pdf)
 
-From an application standpoint, ASTE provides a reproducible environment which enables to share and rerun scenarios, regardless of the availability of involved software components. This capability is particularly useful for debugging issues reported by users of preCICE, who can share their scenarios (e.g. through the [preCICE forum](https://precice.discourse.group/)) for developers to analyze, even in case the involved software is unavailable due to licensing terms or being closed-source.
+From an application standpoint, ASTE provides a reproducible environment which enables sharing and rerunning of scenarios, regardless of the availability of involved software components. This capability is particularly useful for debugging issues reported by users of preCICE, who can share their scenarios (e.g., through the [preCICE forum](https://precice.discourse.group/)) for developers to analyze, even when the involved software is unavailable due to licensing terms or being closed-source.
 
 A further crucial argument for emulating models with ASTE is computational efficiency.
 For coupled simulations, the main computational load is typically carried by the models instead of the coupling library.
@@ -88,7 +88,7 @@ Once the simulation is finished, the generated data is stored in another VTK fil
 Performance metrics are accessible through the [preCICE performance framework](https://precice.org/tooling-performance-analysis.html).
 
 While the core module of ASTE is written in `C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\tiny\bf ++}`{=latex}, the pre- and postprocessing scripts are implemented in Python.
-The core module relies on VTK [@vtkBook], [Boost](https://boost.org/) and MPI for parallel execution.
+The core module relies on VTK [@vtkBook], [Boost](https://boost.org/), and MPI for parallel execution.
 It provides a command line interface for simple simulations and can be configured in JSON [@lohmann2023] for more complex scenarios.
 
 ASTE is hosted on [GitHub](https://github.com/precice/aste) and releases are published using [GitHub releases](https://github.com/precice/aste/releases).
