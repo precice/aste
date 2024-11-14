@@ -13,6 +13,14 @@ ASTE is a collection of tools that can be used to reproduce and evaluate particu
 
 2. Replay mode, where we replace a participant in a coupled setup with ASTE resulting in a uni-directional coupling. This is useful for debugging, for developing new adapters, but also for efficiency reasons (explicit instead of implicit coupling, no computationally demanding solver needs to be executed).
 
+## Citing
+
+If you use this software, please cite our article in the Journal of Open Source Software:
+
+DOI: [10.21105/joss.07127](https://doi.org/10.21105/joss.07127)
+
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.07127/status.svg)](https://doi.org/10.21105/joss.07127)
+
 ## Installation
 
 The core module, which interfaces with preCICE, is called `precice-aste-run` and written in C++. In addition, ASTE offers several tools for pre- and post-processing purposes written in python.
