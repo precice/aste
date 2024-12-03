@@ -67,7 +67,8 @@ void aste::runReplayMode(const aste::ExecutionContext &context, const std::strin
 
   ASTE_DEBUG << "Looking for dt = " << asteConfiguration.startdt;
   for (const auto &mesh : asteConfiguration.asteInterfaces.front().meshes) {
-    if (mesh.filename().find(std::to_string(asteConfiguration.startdt)) == std::string::npos)
+    auto meshfilename = std::filesystem::path(mesh.filename()).filename().string();
+    if (meshfilename.find(".dt" + std::to_string(asteConfiguration.startdt)) == std::string::npos)
       round++;
     else
       break;
@@ -200,11 +201,6 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
   }
 
   auto asteInterface = asteConfiguration.asteInterfaces.front();
-  if (asteInterface.meshes.empty()) {
-    ASTE_ERROR << "ERROR: Could not find meshes for name: " << meshname;
-    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-  }
-
   ASTE_INFO << "Loading mesh from " << asteInterface.meshes.front().filename();
   const bool requireConnectivity = preciceInterface.requiresMeshConnectivityFor(asteInterface.meshName);
   const int  dim                 = preciceInterface.getMeshDimensions(asteInterface.meshName);
