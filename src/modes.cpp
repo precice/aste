@@ -293,7 +293,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
 
             // pass everything in one go
             if (batchSize == 0) {
-              preciceInterface.mapAndreadData(asteInterface.meshName, "Data", coordinates, dt, meshdata.dataVector);
+              preciceInterface.mapAndReadData(asteInterface.meshName, "Data", coordinates, dt, meshdata.dataVector);
             } else { // pass in batches
               for (int i = 0; i < nVertices; i += batchSize) {
                 int availableVertices = std::min(i + batchSize, nVertices);
@@ -306,7 +306,7 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
                 ::precice::span<double>       dataBatch(meshdata.dataVector.data() + dataStart, dataEnd - dataStart);
 
                 // Call the API function with the current batch
-                preciceInterface.mapAndreadData(asteInterface.meshName, "Data", coordinateBatch, dt, dataBatch);
+                preciceInterface.mapAndReadData(asteInterface.meshName, "Data", coordinateBatch, dt, dataBatch);
               }
             }
           }
