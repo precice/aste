@@ -242,7 +242,7 @@ def createRunScript(outdir, path, case):
         ),
     ]
     if branks == 1:
-        joincmd = "[ ! -f mapped.vtu ] || mv --update mapped.vtu mapped.vtk"
+        joincmd = "[ ! -f mapped.vtu ] || mv mapped.vtu mapped.vtk"
         diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh mapped.vtk --function "{0}" | tee diff.log'.format(
             case["function"], mapped_data_name
         )
