@@ -75,6 +75,7 @@ The python tools require
 - sympy (optional)
 - jinja2 (optional)
 - scipy (optional)
+- polars (optional)
 
 which can be installed directly using pip and the `requirements.txt` file in the repository
 
