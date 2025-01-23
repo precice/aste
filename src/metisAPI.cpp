@@ -8,6 +8,9 @@ void partitionMetis(idx_t cell_count, idx_t point_count, idx_t *cellptr, idx_t *
 {
   idx_t options[METIS_NOPTIONS];
   METIS_SetDefaultOptions(options);
+  // Make it deterministic
+  // TODO: Pass via interface
+  options[METIS_OPTION_SEED] = 2025;
   std::vector<idx_t> cell_partition(cell_count);
   idx_t              objval;
   // TODO: Check return value of the function (and potentially add an assert)
