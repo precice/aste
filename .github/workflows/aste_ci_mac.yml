@@ -29,8 +29,8 @@ jobs:
           git clone https://github.com/precice/precice.git
           cd precice
           mkdir build && cd build
-          cmake -DCMAKE_INSTALL_PREFIX=/usr/local \
-                -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          cmake --preset=production \
+                -DCMAKE_INSTALL_PREFIX=/usr/local \
                 -DPRECICE_FEATURE_MPI_COMMUNICATION=ON \
                 -DPRECICE_FEATURE_PETSC_MAPPING=OFF \
                 -DPRECICE_FEATURE_PYTHON_ACTIONS=OFF \
