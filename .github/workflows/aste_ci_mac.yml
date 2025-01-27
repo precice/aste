@@ -70,4 +70,4 @@ jobs:
         working-directory: build
         run: |
           source ${{ env.VIRTUAL_ENV }}/bin/activate
-          ctest
+          ctest -E mapping_tester_serial # see #212
