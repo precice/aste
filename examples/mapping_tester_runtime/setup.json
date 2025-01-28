@@ -1,0 +1,52 @@
+{
+  "general": {
+    "function": "0.78 + cos(10*(x+y+z))",
+    "ranks": {
+      "A": [
+        2
+      ],
+      "B": [
+        2
+      ]
+    },
+    "synchronize": false,
+    "writeMapped": false,
+    "meshes": {
+      "A": {
+        "coarse_mesh": "coarse_mesh.vtk"
+      },
+      "B": {
+        "fine_mesh": "fine_mesh.vtk"
+      }
+    }
+  },
+  "groups": [
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "tps": {
+            "kind": "rbf-global-direct",
+            "options": "",
+            "basis-function": "thin-plate-splines",
+            "executor": "cpu",
+            "executor-options": ""
+          },
+         "nn": {
+            "kind": "nearest-neighbor"
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "coarse_mesh"
+        ],
+        "B": [
+          "fine_mesh"
+        ]
+      }
+    }
+  ]
+}
