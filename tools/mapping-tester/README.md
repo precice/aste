@@ -21,7 +21,7 @@ General information includes, repetitions, the function to generate data, the ra
 Each execution group specifies which mapping and constraint to run using which meshes.
 This is necessary for running a range of RBFs with mesh-specific configurations.
 
-If you are not interested in mapping accuracy, then you may want to disable the writing out mapped data by setting `general` > `writeMapped` to `false`.
+If you are not interested in mapping accuracy, setting `general` > `computeAccuracy` to `false` disables exporting and analysing mapped data.
 
 ## generate.py
 

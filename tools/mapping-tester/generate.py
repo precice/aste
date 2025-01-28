@@ -25,7 +25,7 @@ def generateCases(setup):
     meshes = setup["general"]["meshes"]
     network = setup["general"].get("network")
     syncmode = setup["general"].get("synchronize", "false")
-    writeMapped = setup["general"].get("writeMapped", "true")
+    computeAccuracy = setup["general"].get("computeAccuracy", "true")
 
     cases = []
     for group in setup["groups"]:
@@ -72,7 +72,7 @@ def generateCases(setup):
                                     },
                                     "network": network,
                                     "synchronize": syncmode,
-                                    "writeMapped": writeMapped,
+                                    "computeAccuracy": computeAccuracy,
                                 }
                             )
 
@@ -186,7 +186,7 @@ def createRunScript(outdir, path, case):
         os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path
     )
     mapped_data_name = case["function"] + "(mapped)"
-    output = "--output mapped" if case["writeMapped"] else ""
+    output = "--output mapped" if case["computeAccuracy"] else ""
     bcmd = f'env {time_command} -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{mapped_data_name}" --mesh {bmeshLocation} {output} || kill 0 &'
 
     if branks > 1:
@@ -244,7 +244,7 @@ def createRunScript(outdir, path, case):
             case["mapping"]["name"], case["mapping"]["constraint"], amesh, bmesh
         ),
     ]
-    if case["writeMapped"]:
+    if case["computeAccuracy"]:
         if branks == 1:
             joincmd = "[ ! -f mapped.vtu ] || mv mapped.vtu mapped.vtk"
             diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh mapped.vtk --function "{0}" | tee diff.log'.format(
