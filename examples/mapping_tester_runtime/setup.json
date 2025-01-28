@@ -10,7 +10,7 @@
       ]
     },
     "synchronize": false,
-    "writeMapped": false,
+    "computeAccuracy": false,
     "meshes": {
       "A": {
         "coarse_mesh": "coarse_mesh.vtk"
