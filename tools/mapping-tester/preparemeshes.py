@@ -111,11 +111,14 @@ def main(argv):
         print('Warning: outdir "{}" already exisits.'.format(outdir))
     meshdir = os.path.join(outdir, "meshes")
     function = setup["general"]["function"]
-    if "partitioning" not in setup["general"]:
+    algorithm = setup["general"].get("partitioning", "meshfree")
+
+    if "partitioning" in setup["general"]:
+        print(f"Using partitioning algorithm {algorithm}")
+    else:
         print(
             "You haven't specified a partitioning algorihm in the general section of the setup.json. This defaults to meshfree, which uses a non-deterministic k-means clusterting. Partitionings will be non-reproducible."
         )
-    algorithm = setup["general"].get("partitioning", "meshfree")
 
     partitions = set(
         [int(rank) for pranks in setup["general"]["ranks"].values() for rank in pranks]
