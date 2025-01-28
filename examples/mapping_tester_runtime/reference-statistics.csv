@@ -1,3 +1,11 @@
-computeMappingTime,constraint,globalTime,initializeTime,mapDataTime,mapping,mesh A,mesh B,peakMemA,peakMemB,ranks A,ranks B
-969.0,consistent,117814.0,90445.0,2.0,nn,coarse_mesh,fine_mesh,117276.0,116088.0,2,2
-312.0,consistent,142285.0,114217.0,371.0,tps,coarse_mesh,fine_mesh,118044.0,129236.0,2,2
+computeMappingTime,constraint,globalTime,initializeTime,mapDataTime,mapping,mesh A,mesh B,peakMemA,peakMemB,ranks A,ranks B,run
+958.0,consistent,115315.0,87333.0,2.0,nn,coarse_mesh,fine_mesh,115668.0,116996.0,2,2,0
+324.0,consistent,146370.0,118212.0,298.0,tps,coarse_mesh,fine_mesh,118200.0,129740.0,2,2,0
+959.0,consistent,115990.0,88043.0,2.0,nn,coarse_mesh,fine_mesh,115064.0,117284.0,2,2,1
+311.0,consistent,140914.0,113093.0,323.0,tps,coarse_mesh,fine_mesh,116232.0,128676.0,2,2,1
+960.0,consistent,114335.0,86142.0,2.0,nn,coarse_mesh,fine_mesh,115476.0,117288.0,2,2,2
+315.0,consistent,139689.0,111733.0,379.0,tps,coarse_mesh,fine_mesh,115204.0,131552.0,2,2,2
+961.0,consistent,114121.0,86120.0,1.0,nn,coarse_mesh,fine_mesh,115164.0,115672.0,2,2,3
+318.0,consistent,142488.0,114608.0,310.0,tps,coarse_mesh,fine_mesh,116672.0,131804.0,2,2,3
+966.0,consistent,114178.0,86872.0,2.0,nn,coarse_mesh,fine_mesh,115724.0,117572.0,2,2,4
+303.0,consistent,146331.0,118273.0,400.0,tps,coarse_mesh,fine_mesh,116300.0,130928.0,2,2,4
