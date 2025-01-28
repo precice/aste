@@ -25,6 +25,7 @@ def generateCases(setup):
     meshes = setup["general"]["meshes"]
     network = setup["general"].get("network")
     syncmode = setup["general"].get("synchronize", "false")
+    writeMapped = setup["general"].get("writeMapped", "true")
 
     cases = []
     for group in setup["groups"]:
@@ -71,6 +72,7 @@ def generateCases(setup):
                                     },
                                     "network": network,
                                     "synchronize": syncmode,
+                                    "writeMapped": writeMapped,
                                 }
                             )
 
@@ -184,7 +186,8 @@ def createRunScript(outdir, path, case):
         os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path
     )
     mapped_data_name = case["function"] + "(mapped)"
-    bcmd = f'env {time_command} -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{mapped_data_name}" --mesh {bmeshLocation} --output mapped || kill 0 &'
+    output = "--output mapped" if case["writeMapped"] else ""
+    bcmd = f'env {time_command} -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{mapped_data_name}" --mesh {bmeshLocation} {output} || kill 0 &'
 
     if branks > 1:
         bcmd = "mpirun -n {} $ASTE_B_MPIARGS {}".format(branks, bcmd)
@@ -241,24 +244,26 @@ def createRunScript(outdir, path, case):
             case["mapping"]["name"], case["mapping"]["constraint"], amesh, bmesh
         ),
     ]
-    if branks == 1:
-        joincmd = "[ ! -f mapped.vtu ] || mv mapped.vtu mapped.vtk"
-        diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh mapped.vtk --function "{0}" | tee diff.log'.format(
-            case["function"], mapped_data_name
-        )
-        post_content += [joincmd, diffcmd]
-    else:
-        [recoveryFileLocation, tmpPrefix] = os.path.split(
-            os.path.normpath(bmeshLocation)
-        )
-        tmprecoveryFile = recoveryFileLocation + "/{}_recovery.json".format(bmesh)
-        joincmd = "precice-aste-join --mesh mapped -r {} -o result.vtk".format(
-            tmprecoveryFile
-        )
-        diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh result.vtk --function "{0}" | tee diff.log'.format(
-            case["function"], mapped_data_name
-        )
-        post_content += [joincmd, diffcmd]
+    if case["writeMapped"]:
+        if branks == 1:
+            joincmd = "[ ! -f mapped.vtu ] || mv mapped.vtu mapped.vtk"
+            diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh mapped.vtk --function "{0}" | tee diff.log'.format(
+                case["function"], mapped_data_name
+            )
+            post_content += [joincmd, diffcmd]
+        else:
+            [recoveryFileLocation, tmpPrefix] = os.path.split(
+                os.path.normpath(bmeshLocation)
+            )
+            tmprecoveryFile = recoveryFileLocation + "/{}_recovery.json".format(bmesh)
+            joincmd = "precice-aste-join --mesh mapped -r {} -o result.vtk".format(
+                tmprecoveryFile
+            )
+            diffcmd = 'precice-aste-evaluate --data error --diffdata "{1}" --diff --stats --mesh result.vtk --function "{0}" | tee diff.log'.format(
+                case["function"], mapped_data_name
+            )
+            post_content += [joincmd, diffcmd]
+
     open(os.path.join(path, "post.sh"), "w").writelines(
         [line + "\n" for line in post_content]
     )
