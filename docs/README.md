@@ -148,7 +148,14 @@ precice-aste-run -p A --mesh fine_mesh --data "dummyData"
 precice-aste-run -p B --mesh coarse_mesh --data "mappedData" --output mappedMesh
 ```
 
-While the example above executes the mapping in serial, `precice-aste-run` can be executed in parallel (using MPI). However, this requires a partitioned mesh (one per parallel rank). In order to decompose a single mesh appropriately, the tools `precice-aste-partition` and `precice-aste-join` can be used.
+Exporting output mesh on participant B is optional and can be disabled by omitting the `--output` and `--data` flags from the command line. This is useful for repeatedly running the appication to collect multiple runtime measurements as it speeds up the process and avoids wear of the storage.
+
+```bash
+precice-aste-run -p A --mesh fine_mesh --data "dummyData"
+precice-aste-run -p B --mesh coarse_mesh # no output mesh
+```
+
+While the examples above execute the mapping in serial, `precice-aste-run` can be executed in parallel (using MPI). However, this requires a partitioned mesh (one per parallel rank). In order to decompose a single mesh appropriately, the tools `precice-aste-partition` and `precice-aste-join` can be used.
 
 {% tip %}
 If you want to reproduce a specific setup of your solvers, you can use the [export functionality](https://precice.org/configuration-export.html#enabling-exporters) of preCICE and use the generated meshes directly in `precice-aste-run`. If you run your solver in parallel, preCICE exports the decomposed meshes directly, so that no further partitioning is required.
