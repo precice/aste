@@ -1,0 +1,3 @@
+mapping,constraint,mesh A,mesh B,ranks A,ranks B,computeMappingTime,globalTime,initializeTime,mapDataTime,peakMemA,peakMemB
+nn,consistent,coarse_mesh,fine_mesh,2,2,968.0,117537.33333333333,89569.66666666667,1.6666666666666667,116752.0,116426.66666666667
+tps,consistent,coarse_mesh,fine_mesh,2,2,316.6666666666667,143683.0,115327.33333333333,483.6666666666667,115870.66666666667,129608.0
