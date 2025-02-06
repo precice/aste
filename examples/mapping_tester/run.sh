@@ -32,3 +32,5 @@ cd "${TEST_LOCATION}"
 python3 "${MAPPING_TESTER}"/gatherstats.py --outdir "${TEST_CASE_LOCATION}" --file test-statistics.csv
 
 python3 "${MAPPING_TESTER}"/compare.py reference-statistics.csv test-statistics.csv
+
+python3 "${MAPPING_TESTER}"/plotconv.py -f test-statistics.csv
