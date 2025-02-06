@@ -87,7 +87,7 @@ def plotBack(
     plt.savefig(filename + ".pdf")
 
 
-def plotConv(df: pl.DataFrame, yname: str, ylabel: str, filename: str):
+def plotVariable(df: pl.DataFrame, yname: str, ylabel: str, filename: str):
     plotBack(
         df,
         yname=yname,
@@ -125,25 +125,25 @@ def main(argv):
     if not df["mesh A"].dtype.is_numeric():
         print("Note: 'mesh A' isn't numeric. The x-axis will not use log scaling.")
 
-    plotConv(
+    plotVariable(
         df,
         yname="relative-l2",
         ylabel="relative-l2 error mapping to mesh B",
         filename=f"{args.prefix}-error",
     )
-    plotConv(
+    plotVariable(
         df,
         yname="peakMemB",
         ylabel="peak memory of participant B [Kbytes]",
         filename=f"{args.prefix}-peakMemB",
     )
-    plotConv(
+    plotVariable(
         df,
         yname="computeMappingTime",
         ylabel="time to compute mapping [us]",
         filename=f"{args.prefix}-computet",
     )
-    plotConv(
+    plotVariable(
         df,
         yname="mapDataTime",
         ylabel="time to map Data [us]",
