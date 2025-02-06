@@ -66,6 +66,12 @@ Use the saved time to cite the project.
 
 This generates various statistics for each case and aggregates them into a single CSV file.
 
+## Runtime measurements
+
+Runtime measurements require multiple samples to get meaningful results.
+For this purpose the, `repeat.py` script reruns the above running, postprocessing, and gathering steps for the given amount of repetitions.
+The N output CSV files can then be aggregated using `aggregate.py`.
+
 ## plotconv.py
 
 This reads the stats file, averages the runs and plots various convergence statistics.
