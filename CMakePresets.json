@@ -1,0 +1,46 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build"
+    },
+    {
+      "name": "production",
+      "inherits": "base",
+      "displayName": "Production release",
+      "description": "Release configuration for preCICE used in production.",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_INTERPROCEDURAL_OPTIMIZATION": "ON"
+      }
+    },
+    {
+      "name": "development",
+      "inherits": "base",
+      "displayName": "Development",
+      "description": "Development config with default settings",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wno-unused-parameter"
+      },
+      "warnings": {
+        "dev": true,
+        "deprecated": true,
+        "uninitialized": true
+      }
+    },
+    {
+      "name": "profiling",
+      "inherits": "development",
+      "displayName": "Profiling",
+      "description": "Profiling configuration",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_INTERPROCEDURAL_OPTIMIZATION": "ON",
+        "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wno-unused-parameter -fno-omit-frame-pointer"
+      }
+    }
+  ]
+}
