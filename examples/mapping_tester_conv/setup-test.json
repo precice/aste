@@ -1,0 +1,71 @@
+{
+  "general": {
+    "function": "0.78 + cos(10*(x+y+z))",
+    "ranks": {
+      "A": [
+        1
+      ],
+      "B": [
+        1
+      ]
+    },
+    "synchronize": false,
+    "meshes": {
+      "A": {
+        "0.1": "${TEST_LOCATION}/meshes/0.1.vtk",
+        "0.0775": "${TEST_LOCATION}/meshes/0.0775.vtk",
+        "0.055": "${TEST_LOCATION}/meshes/0.055.vtk",
+        "0.0325": "${TEST_LOCATION}/meshes/0.0325.vtk",
+        "0.01": "${TEST_LOCATION}/meshes/0.01.vtk"
+      },
+      "B": {
+        "0.06": "${TEST_LOCATION}/meshes/0.06.vtk"
+      }
+    }
+  },
+  "groups": [
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+         "nn": {
+            "kind": "nearest-neighbor"
+          },
+         "np": {
+            "kind": "nearest-projection"
+          },
+          "tps-c2-0.1": {
+            "kind": "rbf-pum-direct",
+            "options": "",
+            "basis-function": "compact-tps-c2",
+            "basis-function-options": "support-radius=\"0.1\"",
+            "executor": "cpu",
+            "executor-options": ""
+          },
+          "tps-c2-0.05": {
+            "kind": "rbf-pum-direct",
+            "options": "",
+            "basis-function": "compact-tps-c2",
+            "basis-function-options": "support-radius=\"0.05\"",
+            "executor": "cpu",
+            "executor-options": ""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.1",
+          "0.0775",
+          "0.055",
+          "0.0325",
+          "0.01"
+        ],
+        "B": [
+          "0.06"
+        ]
+      }
+    }
+  ]
+}
