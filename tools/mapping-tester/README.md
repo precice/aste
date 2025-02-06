@@ -68,7 +68,7 @@ This generates various statistics for each case and aggregates them into a singl
 
 ## Runtime measurements
 
-Runtime measurements require multiple samples to get meaningful results.
+Runtime measurements require multiple runs to get meaningful results.
 For this purpose the, `repeat.py` script reruns the above running, postprocessing, and gathering steps for the given amount of repetitions.
 The N output CSV files can then be aggregated using `aggregate.py`.
 
