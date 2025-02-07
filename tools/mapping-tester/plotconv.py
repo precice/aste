@@ -5,7 +5,7 @@ import math
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas
+import polars as pl
 
 
 def parseArguments(args):
@@ -28,10 +28,6 @@ def parseArguments(args):
     return parser.parse_args(args)
 
 
-def lavg(l):
-    return math.exp(sum(map(math.log, l)) / len(l))
-
-
 # seaborn.color_palette("colorblind", 10).as_hex()
 style_colours = [
     "#0173b2",
@@ -49,132 +45,68 @@ style_markers = ["o", "D", "s"]
 styles = [(c, m) for m in style_markers for c in style_colours]
 
 
-def plotConv(ax, df, yname):
-    xmin = df["mesh A"].min()
-    xmax = df["mesh A"].max()
-    ymin = df[yname].min()
-    ymax = df[yname].max()
+def plotBack(
+    df: pl.DataFrame, yname: str, ylabel: str, xname: str, xlabel: str, filename: str
+):
+    if xname not in df.columns:
+        print(f"Skipping {xname}-{yname} plot as {xname} not found in dataset.")
+        return
 
-    print(xmin, xmax)
-    print(ymin, ymax)
+    if yname not in df.columns:
+        print(f"Skipping {xname}-{yname} plot as {yname} not found in dataset.")
+        return
 
-
-def plotError(df, prefix):
-    yname = "relative-l2"
     fig, ax = plt.subplots(sharex=True, sharey=True)
-    series = df.groupby("mapping")
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+
+    if df[xname].dtype.is_numeric():
+        ax.set_xscale("log")
+
+    if df[yname].dtype.is_numeric():
+        ax.set_yscale("log")
+
+    series = df.group_by("mapping")
     for grouped, style in zip(series, styles):
         name, group = grouped
         if group[yname].max() == 0:
             print(f"Dropping {yname}-series {name} as all 0")
             continue
         color, marker = style
-        group.plot(
-            ax=ax,
-            loglog=True,
-            x="mesh A",
-            y=yname,
-            label=name,
-            marker=marker,
-            color=color,
-        )
-    ax.set_xlabel("edge length(h) of mesh A")
-    ax.set_ylabel("relative-l2 error mapping to mesh B")
-
-    plotConv(ax, df, yname)
-
-    plt.gca().invert_xaxis()
-    plt.grid()
-    plt.savefig(prefix + "-error.pdf")
-
-
-def plotMemory(df, prefix):
-    yname = "peakMemB"
-    fig, ax = plt.subplots(sharex=True, sharey=True)
-    series = df.groupby("mapping")
-    for grouped, style in zip(series, styles):
-        name, group = grouped
-        if group[yname].max() == 0:
-            print(f"Dropping {yname}-series {name} as all 0")
-            continue
-        color, marker = style
-        group.plot(
-            ax=ax,
-            loglog=True,
-            x="mesh A",
-            y=yname,
-            label=name,
-            marker=marker,
-            color=color,
-        )
-    ax.set_xlabel("edge length(h) of mesh A")
-    ax.set_ylabel("peak memory of participant B [Kbytes]")
-
-    # plotConv(ax, df, yname)
-
-    plt.gca().invert_xaxis()
-    plt.grid()
-    plt.savefig(prefix + "-peakMemB.pdf")
-
-
-def plotComputeMappingTime(df, prefix):
-    yname = "computeMappingTime"
-    fig, ax = plt.subplots(sharex=True, sharey=True)
-    series = df.groupby("mapping")
-    for grouped, style in zip(series, styles):
-        name, group = grouped
-        if group[yname].max() == 0:
-            print(f"Dropping {yname}-series {name} as all 0")
-            continue
-        color, marker = style
-        group.plot(
-            ax=ax,
-            loglog=True,
-            x="mesh A",
-            y=yname,
+        ax.plot(
+            group[xname],
+            group[yname],
             label=name,
             marker=marker,
             color=color,
         )
 
-    ax.set_xlabel("edge length(h) of mesh A")
-    ax.set_ylabel("time to compute mapping [us]")
-
-    # plotConv(ax, df, yname)
-
     plt.gca().invert_xaxis()
     plt.grid()
-    plt.savefig(prefix + "-computet.pdf")
+    plt.legend()
+    plt.savefig(filename + ".pdf")
 
 
-def plotMapDataTime(df, prefix):
-    yname = "mapDataTime"
-    fig, ax = plt.subplots(sharex=True, sharey=True)
-    series = df.groupby("mapping")
-    for grouped, style in zip(series, styles):
-        name, group = grouped
-        if group[yname].max() == 0:
-            print(f"Dropping {yname}-series {name} as all 0")
-            continue
-        color, marker = style
-        group.plot(
-            ax=ax,
-            loglog=True,
-            x="mesh A",
-            y=yname,
-            label=name,
-            marker=marker,
-            color=color,
-        )
+def plotVariable(df: pl.DataFrame, yname: str, ylabel: str, filename: str):
+    plotBack(
+        df,
+        yname=yname,
+        ylabel=ylabel,
+        xname="mesh A",
+        xlabel="edge length(h) of mesh A",
+        filename=filename,
+    )
 
-    ax.set_xlabel("edge length(h) of mesh A")
-    ax.set_ylabel("time to map Data [us]")
 
-    # plotConv(ax, df, yname)
-
-    plt.gca().invert_xaxis()
-    plt.grid()
-    plt.savefig(prefix + "-mapt.pdf")
+def plotRuntimeAccuracy(df: pl.DataFrame, yname: str, ylabel: str, filename: str):
+    plotBack(
+        df,
+        yname=yname,
+        ylabel=ylabel,
+        xname="relative-l2",
+        xlabel="relative l2-error",
+        filename=filename,
+    )
 
 
 def main(argv):
@@ -184,16 +116,52 @@ def main(argv):
     plt.rcParams["figure.figsize"] = "8, 8"
     plt.rcParams["figure.autolayout"] = "true"
 
-    df = pandas.read_csv(args.file)
+    df = pl.read_csv(args.file).sort("mesh A")
     toMeshes = df["mesh B"].unique()
     assert (
         len(toMeshes) == 1
     ), f"There are {len(toMeshes)} to-meshes but only 1 is allowed. Fix your dataset!"
-    df.sort_values("mesh A", inplace=True)
-    plotError(df, args.prefix)
-    plotMemory(df, args.prefix)
-    plotMapDataTime(df, args.prefix)
-    plotComputeMappingTime(df, args.prefix)
+
+    if not df["mesh A"].dtype.is_numeric():
+        print("Note: 'mesh A' isn't numeric. The x-axis will not use log scaling.")
+
+    plotVariable(
+        df,
+        yname="relative-l2",
+        ylabel="relative-l2 error mapping to mesh B",
+        filename=f"{args.prefix}-error",
+    )
+    plotVariable(
+        df,
+        yname="peakMemB",
+        ylabel="peak memory of participant B [Kbytes]",
+        filename=f"{args.prefix}-peakMemB",
+    )
+    plotVariable(
+        df,
+        yname="computeMappingTime",
+        ylabel="time to compute mapping [us]",
+        filename=f"{args.prefix}-computet",
+    )
+    plotVariable(
+        df,
+        yname="mapDataTime",
+        ylabel="time to map Data [us]",
+        filename=f"{args.prefix}-mapt",
+    )
+    plotRuntimeAccuracy(
+        df,
+        yname="computeMappingTime",
+        ylabel="time to compute mapping [us]",
+        filename=f"{args.prefix}-computetAccuracy",
+    )
+    plotRuntimeAccuracy(
+        df,
+        yname="mapDataTime",
+        ylabel="time to map Data [us]",
+        filename=f"{args.prefix}-maptAccuracy",
+    )
+
     return 0
 
 

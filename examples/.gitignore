@@ -1,3 +1,5 @@
 **/precice-*-*-*.json
 **/fine_mesh_*.vtk
 **/map_*.vtk
+**/*.pdf
+**/precice-profiling
