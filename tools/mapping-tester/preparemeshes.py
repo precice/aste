@@ -64,7 +64,7 @@ def prepareMainMesh(meshdir, name, file, function, force=False):
     )
 
 
-def preparePartMesh(meshdir, name, p, force=False):
+def preparePartMesh(meshdir, name, p, force, algorithm):
 
     if p == 1:
         return
@@ -91,7 +91,7 @@ def preparePartMesh(meshdir, name, p, force=False):
             "--mesh",
             mainMesh,
             "--algorithm",
-            "topology",
+            algorithm,
             "-o",
             partMesh,
             "--directory",
@@ -111,6 +111,14 @@ def main(argv):
         print('Warning: outdir "{}" already exisits.'.format(outdir))
     meshdir = os.path.join(outdir, "meshes")
     function = setup["general"]["function"]
+    algorithm = setup["general"].get("partitioning", "meshfree")
+
+    if "partitioning" in setup["general"]:
+        print(f"Using partitioning algorithm {algorithm}")
+    else:
+        print(
+            "You haven't specified a partitioning algorihm in the general section of the setup.json. This defaults to meshfree, which uses a non-deterministic k-means clusterting. Partitionings will be non-reproducible."
+        )
 
     partitions = set(
         [int(rank) for pranks in setup["general"]["ranks"].values() for rank in pranks]
@@ -128,7 +136,7 @@ def main(argv):
         prepareMainMesh(meshdir, name, file, function, args.force)
 
         for p in partitions:
-            preparePartMesh(meshdir, name, p, args.force)
+            preparePartMesh(meshdir, name, p, args.force, algorithm)
 
     return 0
 

@@ -85,13 +85,11 @@ class MeshPartitioner:
     def run(args) -> None:
         logger = MeshPartitioner.get_logger()
         mesh_name = args.in_meshname
-        algorithm = args.algorithm
-        if not algorithm:
-            logger.info('No algorithm given. Defaulting to "meshfree"')
-            algorithm = "meshfree"
         mesh = MeshPartitioner.read_mesh(mesh_name)
         if args.numparts > 1:
-            part = MeshPartitioner.partition(mesh, args.numparts, algorithm)
+            part = MeshPartitioner.partition(
+                mesh, args.numparts, args.algorithm, args.seed
+            )
         else:
             if args.directory:
                 # Get the absolute directory where we want to store the mesh
@@ -160,11 +158,21 @@ class MeshPartitioner:
             "-a",
             dest="algorithm",
             choices=["meshfree", "topology", "uniform"],
+            default="meshfree",
             help="""Change the algorithm used for determining a partition.
                 A meshfree algorithm works on arbitrary meshes without needing topological information.
                 A topology-based algorithm needs topology information
                 and is therefore useless on point clouds.
                 A uniform algorithm will assume a uniform 2d mesh laid out somehow in 3d and partition accordingly.""",
+        )
+        parser.add_argument(
+            "--seed",
+            "-s",
+            type=int,
+            default=2025,  # arbitrary default seed
+            help="""Seed to pass on to partitioning algorithms which may use it to end up with deterministic behaviour.
+            Not all algorithms may use it though.
+            """,
         )
         parser.add_argument(
             "--log",
@@ -192,30 +200,36 @@ class MeshPartitioner:
         return logging.getLogger("---[ASTE-Partition]")
 
     @staticmethod
-    def partition(mesh: Mesh, numparts: int, algorithm):
+    def partition(mesh: Mesh, numparts: int, algorithm: str, seed: int):
         """
         Partitions a mesh using METIS or kmeans. This does not call METIS directly,
         but instead uses a small C++ Wrapper around shared library libmetisAPI for convenience.
         This shared library must be provided if this function should be called.
         """
         if algorithm == "meshfree":
-            return MeshPartitioner.partition_kmeans(mesh, numparts)
+            return MeshPartitioner.partition_kmeans(mesh, numparts, seed)
         elif algorithm == "topology":
-            return MeshPartitioner.partition_metis(mesh, numparts)
+            return MeshPartitioner.partition_metis(mesh, numparts, seed)
         elif algorithm == "uniform":
             labels = MeshPartitioner.partition_uniform(mesh, numparts)
             if labels is None:
-                return MeshPartitioner.partition(mesh, numparts, "meshfree")
+                return MeshPartitioner.partition(mesh, numparts, "meshfree", seed)
             return labels
 
     @staticmethod
-    def partition_kmeans(mesh: Mesh, numparts: int):
+    def partition_kmeans(mesh: Mesh, numparts: int, seed: int):
         """Partitions a mesh using k-means. This is a meshfree algorithm and requires scipy"""
+        import scipy
         from scipy.cluster.vq import kmeans2
 
         points = np.copy(mesh.points)
         points = MeshPartitioner.reduce_dimension(points)
-        _, label = kmeans2(points, numparts)
+        # scipy 1.15 renamed seed to rng
+        major, minor = map(int, scipy.__version__.split(".")[:2])
+        if major == 1 and minor < 15:
+            _, label = kmeans2(points, numparts, rng=seed)
+        else:
+            _, label = kmeans2(points, numparts, seed=seed)
         return label
 
     @staticmethod
@@ -296,7 +310,7 @@ class MeshPartitioner:
             return mesh[:, :-1]
 
     @staticmethod
-    def partition_metis(mesh: Mesh, numparts: int):
+    def partition_metis(mesh: Mesh, numparts: int, seed: int):
         """
         Partitions a mesh using METIS. This does not call METIS directly,
         but instead uses a small C++ Wrapper libmetisAPI.so for convenience.
@@ -339,8 +353,9 @@ class MeshPartitioner:
         partition = (idx_t * len(mesh.points))()
         cell_ptr = (idx_t * len(cellPtr))(*cellPtr)
         cell_data = (idx_t * len(cellData))(*cellData)
+        the_seed = idx_t(seed)
         libmetis.partitionMetis(
-            cell_count, point_count, cell_ptr, cell_data, num_parts, partition
+            cell_count, point_count, cell_ptr, cell_data, num_parts, seed, partition
         )
         return np.ctypeslib.as_array(partition)
 
