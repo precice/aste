@@ -109,7 +109,7 @@ def mappingStats(dir):
 
     statFile = statFiles[0]
     assert os.path.exists(statFile)
-    with open(os.path.join(dir, statFile), "r") as jsonfile:
+    with open(statFile, "r") as jsonfile:
         return dict(json.load(jsonfile))
 
 
