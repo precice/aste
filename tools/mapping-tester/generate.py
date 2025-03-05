@@ -2,7 +2,7 @@
 
 import argparse
 import json
-import os
+import pathlib
 import sys
 
 from jinja2 import Template
@@ -88,21 +88,7 @@ def getCaseFolders(case):
     ]
 
 
-def caseToSortable(case):
-    parts = case.split(os.path.sep)
-    kind = parts[0]
-    mesha, meshb = map(float, parts[-2].split("-"))
-
-    kindCost = 0
-    if kind.startswith("gaussian"):
-        kindCost = 1
-    elif kind.startswith("tps"):
-        kindCost = 2
-
-    return (kindCost, -mesha, -meshb)
-
-
-def createMasterRunScripts(casemap, dir, exit):
+def createMasterRunScripts(casemap, dir: pathlib.Path, exit):
     common = [
         "#!/bin/bash",
         "",
@@ -112,60 +98,46 @@ def createMasterRunScripts(casemap, dir, exit):
     ]
 
     # Generate master runner script
-    if exit:
-        content = common + [
-            "${RUNNER} " + os.path.join(case, "runall.sh || exit 1")
-            for case in casemap.keys()
-        ]
-    else:
-        content = common + [
-            "${RUNNER} " + os.path.join(case, "runall.sh") for case in casemap.keys()
-        ]
+    content = common + [
+        f"${{RUNNER}} { case / 'runall.sh' }" + " || exit 1" if exit else ""
+        for case in map(pathlib.Path, casemap.keys())
+    ]
 
-    open(os.path.join(dir, "runall.sh"), "w").writelines(
-        [line + "\n" for line in content]
-    )
+    open(dir / "runall.sh", "w").writelines([line + "\n" for line in content])
 
     # Generate master postprocessing script
-    if exit:
-        post = common + [
-            "${RUNNER} " + os.path.join(case, "postprocessall.sh || exit 1")
-            for case in casemap.keys()
-        ]
-    else:
-        post = common + [
-            "${RUNNER} " + os.path.join(case, "postprocessall.sh")
-            for case in casemap.keys()
-        ]
+    post = common + [
+        f"${{RUNNER}} { case / 'postprocessall.sh' }" + " || exit 1" if exit else ""
+        for case in map(pathlib.Path, casemap.keys())
+    ]
 
-    open(os.path.join(dir, "postprocessall.sh"), "w").writelines(
-        [line + "\n" for line in post]
-    )
+    open(dir / "postprocessall.sh", "w").writelines([line + "\n" for line in post])
 
     for case, instances in casemap.items():
         # Generate master runner script
         content = common + [
-            "${RUNNER} " + os.path.join(*instance, "run-wrapper.sh")
+            f"${{RUNNER}} {pathlib.Path(*instance, 'run-wrapper.sh')}"
             for instance in instances
         ]
-        open(os.path.join(dir, case, "runall.sh"), "w").writelines(
+        open(dir / case / "runall.sh", "w").writelines(
             [line + "\n" for line in content]
         )
 
         # Generate master postprocessing script
         post = common + [
-            "${RUNNER} " + os.path.join(*instance, "post.sh") for instance in instances
+            f"${{RUNNER}} {pathlib.Path(*instance, 'post.sh')}"
+            for instance in instances
         ]
-        open(os.path.join(dir, case, "postprocessall.sh"), "w").writelines(
+        open(dir / case / "postprocessall.sh", "w").writelines(
             [line + "\n" for line in post]
         )
 
 
-def createRunScript(outdir, path, case):
+def createRunScript(outdir: pathlib.Path, path: pathlib.Path, case):
     amesh = case["A"]["mesh"]["name"]
     aranks = case["A"]["ranks"]
-    ameshLocation = os.path.relpath(
-        os.path.join(outdir, "meshes", amesh, str(aranks), amesh), path
+    ameshLocation = outdir.joinpath("meshes", amesh, str(aranks), amesh).relative_to(
+        path, walk_up=True
     )
 
     # Detect the operating system and set the time command (brew install gnu-time)
@@ -182,8 +154,8 @@ def createRunScript(outdir, path, case):
 
     bmesh = case["B"]["mesh"]["name"]
     branks = case["B"]["ranks"]
-    bmeshLocation = os.path.relpath(
-        os.path.join(outdir, "meshes", bmesh, str(branks), bmesh), path
+    bmeshLocation = outdir.joinpath("meshes", bmesh, str(branks), bmesh).relative_to(
+        path, walk_up=True
     )
     mapped_data_name = case["function"] + "(mapped)"
     output = "--output mapped" if case["computeAccuracy"] else ""
@@ -218,9 +190,7 @@ def createRunScript(outdir, path, case):
         "fi",
         "rm -f running",
     ]
-    open(os.path.join(path, "run.sh"), "w").writelines(
-        [line + "\n" for line in content]
-    )
+    open(path / "run.sh", "w").writelines([line + "\n" for line in content])
 
     # Generate wrapper script for runner
     wrapper = [
@@ -231,9 +201,7 @@ def createRunScript(outdir, path, case):
         "/bin/bash run.sh 2>&1 | tee run.log",
         ")",
     ]
-    open(os.path.join(path, "run-wrapper.sh"), "w").writelines(
-        [line + "\n" for line in wrapper]
-    )
+    open(path / "run-wrapper.sh", "w").writelines([line + "\n" for line in wrapper])
 
     # Generate post processing script
     post_content = [
@@ -252,10 +220,8 @@ def createRunScript(outdir, path, case):
             )
             post_content += [joincmd, diffcmd]
         else:
-            [recoveryFileLocation, tmpPrefix] = os.path.split(
-                os.path.normpath(bmeshLocation)
-            )
-            tmprecoveryFile = recoveryFileLocation + "/{}_recovery.json".format(bmesh)
+            tmprecoveryFile = bmeshLocation.parent / f"{bmesh}_recovery.json"
+
             joincmd = "precice-aste-join --mesh mapped -r {} -o result.vtk".format(
                 tmprecoveryFile
             )
@@ -264,24 +230,21 @@ def createRunScript(outdir, path, case):
             )
             post_content += [joincmd, diffcmd]
 
-    open(os.path.join(path, "post.sh"), "w").writelines(
-        [line + "\n" for line in post_content]
-    )
+    open(path / "post.sh", "w").writelines([line + "\n" for line in post_content])
 
 
-def setupCases(outdir, template, cases, exit):
+def setupCases(outdir: pathlib.Path, template, cases, exit):
     casemap = {}
     for case in cases:
         folders = getCaseFolders(case)
         casemap.setdefault(folders[0], []).append(folders[1:])
-        name = [outdir] + folders
-        path = os.path.join(*name)
-        config = os.path.join(path, "precice-config.xml")
+        path = outdir.joinpath(*folders)
+        config = path / "precice-config.xml"
 
         print(f"Generating {path}")
-        os.makedirs(path, exist_ok=True)
-        with open(config, "w") as config:
-            config.write(generateConfig(template, case))
+        path.mkdir(parents=True, exist_ok=True)
+        with open(config, "w") as cfile:
+            cfile.write(generateConfig(template, case))
         createRunScript(outdir, path, case)
     print(f"Generated {len(cases)} cases")
 
@@ -296,6 +259,7 @@ def parseArguments(args):
         "--outdir",
         default="cases",
         help="Directory to generate the test suite in.",
+        type=pathlib.Path,
     )
     parser.add_argument(
         "-s",
@@ -329,8 +293,8 @@ def main(argv):
     template = args.template.read()
     # Generate the actual cases
     cases = generateCases(setup)
-    outdir = os.path.normpath(args.outdir)
-    if os.path.isdir(outdir):
+    outdir = args.outdir
+    if outdir.is_dir():
         print('Warning: outdir "{}" already exisits.'.format(outdir))
 
     setupCases(outdir, template, cases, args.exit)
