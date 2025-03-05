@@ -4,6 +4,7 @@ import argparse
 import itertools
 import json
 import os
+import pathlib
 import shutil
 import subprocess
 
@@ -15,6 +16,7 @@ def parseArguments(args):
         "--outdir",
         default="cases",
         help="Directory to generate the test suite in.",
+        type=pathlib.Path,
     )
     parser.add_argument(
         "-s",
@@ -30,61 +32,59 @@ def parseArguments(args):
     return parser.parse_args(args)
 
 
-def prepareMainMesh(meshdir, name, file, function, force=False):
-    mainDir = os.path.join(meshdir, name, "1")
-    mainMesh = os.path.join(mainDir, name + ".vtu")
-    print("Preparing Mesh {} in {}".format(name, mainDir))
+def prepareMainMesh(
+    meshdir: pathlib.Path, name, file: pathlib.Path, function, force=False
+):
+    mainDir = meshdir / name / "1"
+    mainMesh = mainDir / f"{name}.vtu"
+    print(f"Preparing Mesh {name} in {mainDir}")
 
-    if os.path.isdir(mainDir):
+    if mainDir.is_dir():
         if force:
             print("  Regenerating the mesh.")
             shutil.rmtree(mainDir)
         else:
             print("  Mesh already exists.")
-
             return
 
-    os.makedirs(mainDir, exist_ok=True)
-    data_name = "{}".format(function)
-    [pathName, tmpfilename] = os.path.split(os.path.normpath(mainMesh))
+    mainDir.mkdir(exist_ok=True, parents=True)
+    data_name = f"{function}"
     subprocess.run(
         [
             "precice-aste-evaluate",
             "--mesh",
-            os.path.expandvars(file),
+            file,
             "--function",
             function,
             "--data",
             data_name,
             "--directory",
-            pathName,
+            mainMesh.parent,
             "-o",
-            tmpfilename,
+            mainMesh.name,
         ]
     )
 
 
-def preparePartMesh(meshdir, name, p, force=False):
+def preparePartMesh(meshdir: pathlib.Path, name, p, force=False):
 
     if p == 1:
         return
 
-    mainMesh = os.path.join(meshdir, name, "1", name + ".vtu")
-    partDir = os.path.join(meshdir, name, str(p))
-    partMesh = os.path.join(partDir, name)
+    mainMesh = meshdir / name / "1" / f"{name}.vtu"
+    partDir = meshdir / name / str(p)
+    partMesh = partDir / name
     print("Preparing Mesh {} with {} paritions in {}".format(name, p, partDir))
 
-    if os.path.isdir(partDir):
+    if partDir.is_dir():
         if force:
             print("  Regenerating the partitioned mesh.")
             shutil.rmtree(partDir)
         else:
             print("  Partitioned mesh already exists.")
-
             return
 
-    os.makedirs(partDir, exist_ok=True)
-    [pathName, tmpfilename] = os.path.split(os.path.normpath(partMesh))
+    partDir.mkdir(parents=True, exist_ok=True)
     subprocess.run(
         [
             "precice-aste-partition",
@@ -95,7 +95,7 @@ def preparePartMesh(meshdir, name, p, force=False):
             "-o",
             partMesh,
             "--directory",
-            pathName,
+            partMesh.parent,
             "-n",
             str(p),
         ]
@@ -105,11 +105,11 @@ def preparePartMesh(meshdir, name, p, force=False):
 def main(argv):
     args = parseArguments(argv[1:])
     setup = json.load(args.setup)
-    outdir = os.path.normpath(args.outdir)
+    outdir: pathlib.Path = args.outdir
 
-    if os.path.isdir(outdir):
-        print('Warning: outdir "{}" already exisits.'.format(outdir))
-    meshdir = os.path.join(outdir, "meshes")
+    if outdir.is_dir():
+        print(f'Warning: outdir "{outdir}" already exisits.')
+    meshdir = outdir / "meshes"
     function = setup["general"]["function"]
 
     partitions = set(
@@ -122,8 +122,9 @@ def main(argv):
             setup["general"]["meshes"]["B"].items(),
         )
     ):
+        file = pathlib.Path(os.path.expandvars(file))
 
-        if not os.path.isfile(os.path.expandvars(file)):
+        if not file.is_file():
             raise Exception(f'\033[91m Unable to open file called "{file}".\033[0m')
         prepareMainMesh(meshdir, name, file, function, args.force)
 
