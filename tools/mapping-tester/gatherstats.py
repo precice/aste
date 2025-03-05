@@ -2,9 +2,9 @@
 
 import argparse
 import csv
-import glob
 import json
 import os
+import pathlib
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 
@@ -16,6 +16,7 @@ def parseArguments(args):
         "--outdir",
         default="cases",
         help="Directory to generate the test suite in.",
+        type=pathlib.Path,
     )
     parser.add_argument(
         "-f",
@@ -36,14 +37,17 @@ def run_checked(args):
     r.check_returncode()
 
 
-def timingStats(dir):
-    assert os.path.isdir(dir)
+def timingStats(dir: pathlib.Path):
+    assert dir.is_dir()
     assert (
         os.system("command -v precice-profiling > /dev/null") == 0
     ), 'Could not find the profiling tool "precice-profiling", which is part of the preCICE installation.'
-    event_dir = os.path.join(dir, "precice-profiling")
-    json_file = os.path.join(dir, "profiling.json")
-    timings_file = os.path.join(dir, "timings.csv")
+    event_dir = dir / "precice-profiling"
+    json_file = dir / "profiling.json"
+    timings_file = dir / "timings.csv"
+
+    if not event_dir.is_dir():
+        return {}
 
     try:
         subprocess.run(
@@ -56,9 +60,8 @@ def timingStats(dir):
             check=True,
             capture_output=True,
         )
-        file = timings_file
         stats = {}
-        with open(file, "r") as csvfile:
+        with open(timings_file, "r") as csvfile:
             timings = csv.reader(csvfile)
             for row in timings:
                 if row[0] == "_GLOBAL":
@@ -84,13 +87,13 @@ def timingStats(dir):
         return {}
 
 
-def memoryStats(dir):
-    assert os.path.isdir(dir)
+def memoryStats(dir: pathlib.Path):
+    assert dir.is_dir()
     stats = {}
     for P in "A", "B":
-        memfile = os.path.join(dir, f"memory-{P}.log")
+        memfile = dir / f"memory-{P}.log"
         total = 0
-        if os.path.isfile(memfile):
+        if memfile.is_file():
             try:
                 with open(memfile, "r") as file:
                     total = sum([float(e) / 1.0 for e in file.readlines()])
@@ -101,23 +104,22 @@ def memoryStats(dir):
     return stats
 
 
-def mappingStats(dir):
-    globber = os.path.join(dir, "*.stats.json")
-    statFiles = list(glob.iglob(globber))
-    if len(statFiles) == 0:
+def mappingStats(dir: pathlib.Path):
+    statFiles = list(dir.glob("*.stats.json"))
+    if not statFiles:
         return {}
 
     statFile = statFiles[0]
-    assert os.path.exists(statFile)
+    assert statFile.is_file()
     with open(statFile, "r") as jsonfile:
         return dict(json.load(jsonfile))
 
 
-def gatherCaseStats(casedir):
-    assert os.path.exists(casedir)
-    parts = os.path.normpath(casedir).split(os.sep)
-    assert len(parts) >= 5
-    mapping, constraint, meshes, ranks = parts[-4:]
+def gatherCaseStats(casedir: pathlib.Path):
+    assert casedir.is_dir()
+    parts = [casedir.name] + [p.name for p in casedir.parents]
+    assert len(parts) >= 4
+    ranks, meshes, constraint, mapping = parts[:4]
     meshA, meshB = meshes.split("-")
     ranksA, ranksB = ranks.split("-")
 
@@ -138,12 +140,16 @@ def gatherCaseStats(casedir):
 def main(argv):
     args = parseArguments(argv[1:])
 
-    globber = os.path.join(args.outdir, "**", "done")
-    cases = [os.path.dirname(path) for path in glob.iglob(globber, recursive=True)]
+    cases = [d.parent for d in args.outdir.rglob("done")]
+
+    if not cases:
+        print(f"No cases found in {args.outdir.absolute()}")
+        return 1
+
     allstats = []
 
     def wrapper(case):
-        print("Found: " + os.path.relpath(case, args.outdir))
+        print(f"Found: {case.relative_to(args.outdir)}")
         return gatherCaseStats(case)
 
     with ThreadPoolExecutor() as pool:
