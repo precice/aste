@@ -84,7 +84,7 @@ jobs:
       - name: setup system
         run: |
           apt-get -y update && apt-get -y upgrade
-          apt-get install -qq -y python3-pip python3-jinja2 python3-scipy python3-sympy libmetis-dev time clang
+          apt-get install -qq -y python3-pip python3-venv python3-jinja2 python3-scipy python3-sympy libmetis-dev time clang
       - uses: actions/checkout@v4
       - name: install example dependencies
         run: |
