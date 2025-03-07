@@ -62,7 +62,7 @@ jobs:
         CXX: ["clang++", "g++"]
         TYPE: ["Debug", "Release"]
     env:
-      CXX: ${{ matrix.CXX }}Another effective strategy is to install your virtual environment as follows:
+      CXX: ${{ matrix.CXX }}
       CXX_FLAGS: "-Werror -Wall -Wextra -Wno-unused-parameter"
       CTEST_OUTPUT_ON_FAILURE: "Yes"
       CMAKE_BUILD_PARALLEL_LEVEL: 4
