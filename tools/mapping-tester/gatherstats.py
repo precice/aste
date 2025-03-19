@@ -56,33 +56,35 @@ def timingStats(dir: pathlib.Path):
             capture_output=True,
         )
         subprocess.run(
-            ["precice-profiling", "analyze", "--output", timings_file, "B", json_file],
+            ["precice-profiling", "export", "--output", timings_file, json_file],
             check=True,
             capture_output=True,
         )
-        stats = {}
-        with open(timings_file, "r") as csvfile:
-            timings = csv.reader(csvfile)
-            for row in timings:
-                if row[0] == "_GLOBAL":
-                    stats["globalTime"] = row[-1]
-                if row[0] == "initialize":
-                    stats["initializeTime"] = row[-1]
-                parts = row[0].split("/")
-                event = parts[-1]
-                if (
-                    parts[0] == "initialize"
-                    and event.startswith("map")
-                    and event.endswith("computeMapping.FromA-MeshToB-Mesh")
-                ):
-                    stats["computeMappingTime"] = row[-1]
-                if (
-                    parts[0] == "advance"
-                    and event.startswith("map")
-                    and event.endswith("mapData.FromA-MeshToB-Mesh")
-                ):
-                    stats["mapDataTime"] = row[-1]
-            return stats
+        import polars as pl
+
+        df = (
+            pl.read_csv(timings_file)
+            .filter(pl.col("participant") == "B")
+            .select("event", "duration")
+        )
+        return {
+            "globalTime": df.select(pl.col("event") == "_GLOBAL").max().item(),
+            "initializeTime": df.select(pl.col("event") == "initialize").max().item(),
+            "computeMappingTime": df.select(
+                pl.col("event").str.contains(
+                    "^initialize/map..*.computeMapping.FromA-MeshToB-Mesh$"
+                )
+            )
+            .max()
+            .item(),
+            "mapDataTime": df.select(
+                pl.col("event").str.contains(
+                    "^advance/map..*.mapData.FromA-MeshToB-Mesh$"
+                )
+            )
+            .max()
+            .item(),
+        }
     except:
         return {}
 
