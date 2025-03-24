@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<precice-configuration>
+<precice-configuration experimental="true">
 
   <log>
     <sink type="file" output="debug.log" filter="" format='%TimeStamp(format="%H:%M:%S.%f")%|%Participant%|%Rank%|%Module%|l%Line%|%Function%|%Severity%%Message%' />
