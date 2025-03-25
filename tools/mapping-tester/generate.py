@@ -99,7 +99,7 @@ def createMasterRunScripts(casemap, dir: pathlib.Path, exit):
 
     # Generate master runner script
     content = common + [
-        f"${{RUNNER}} { case / 'runall.sh' }" + " || exit 1" if exit else ""
+        f"${{RUNNER}} {case / 'runall.sh'}{' || exit 1' if exit else ''}"
         for case in map(pathlib.Path, casemap.keys())
     ]
 
@@ -107,7 +107,7 @@ def createMasterRunScripts(casemap, dir: pathlib.Path, exit):
 
     # Generate master postprocessing script
     post = common + [
-        f"${{RUNNER}} { case / 'postprocessall.sh' }" + " || exit 1" if exit else ""
+        f"${{RUNNER}} {case / 'postprocessall.sh'}{' || exit 1' if exit else ''}"
         for case in map(pathlib.Path, casemap.keys())
     ]
 
