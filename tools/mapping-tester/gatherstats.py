@@ -68,20 +68,28 @@ def timingStats(dir: pathlib.Path):
             .select("event", "duration")
         )
         return {
-            "globalTime": df.select(pl.col("event") == "_GLOBAL").max().item(),
-            "initializeTime": df.select(pl.col("event") == "initialize").max().item(),
-            "computeMappingTime": df.select(
+            "globalTime": df.filter(pl.col("event") == "_GLOBAL")
+            .select("duration")
+            .max()
+            .item(),
+            "initializeTime": df.filter(pl.col("event") == "initialize")
+            .select("duration")
+            .max()
+            .item(),
+            "computeMappingTime": df.filter(
                 pl.col("event").str.contains(
                     "^initialize/map..*.computeMapping.FromA-MeshToB-Mesh$"
                 )
             )
+            .select("duration")
             .max()
             .item(),
-            "mapDataTime": df.select(
+            "mapDataTime": df.filter(
                 pl.col("event").str.contains(
                     "^advance/map..*.mapData.FromA-MeshToB-Mesh$"
                 )
             )
+            .select("duration")
             .max()
             .item(),
         }
