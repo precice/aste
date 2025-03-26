@@ -164,8 +164,7 @@ def createRunScript(outdir: pathlib.Path, path: pathlib.Path, case):
     batch_size_flag = ""
     output = "--output mapped" if case["computeAccuracy"] else ""
     if case["mapping"]["batch-size"] != "-1":
-        batch_size_flag = "--indirect-read {}".format(case["mapping"]["batch-size"])
-
+        batch_size_flag = "--read-just-in-time {}".format(case["mapping"]["batch-size"])
 
     # Generate runner script for participant B
     bcmd = f'env {time_command} -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{mapped_data_name}" --mesh {bmeshLocation} {output} {batch_size_flag} || kill 0 &'

@@ -147,9 +147,9 @@ void aste::runMapperMode(const aste::ExecutionContext &context, const OptionMap 
   const std::string preciceConfig   = options["precice-config"].as<std::string>();
 
   constexpr int conventionalReadData = -1;
-  // potentially make use of a indirect mapping using a prescribed batch size
-  const int batchSize = options.count("indirect-read")
-                            ? options["indirect-read"].as<int>()
+  // potentially make use of a just-in-time mapping using a prescribed batch size
+  const int batchSize = options.count("read-just-in-time")
+                            ? options["read-just-in-time"].as<int>()
                             : conventionalReadData;
   if (batchSize < -1) {
     ASTE_ERROR << "Batch size needs to be greater or equal to zero.";
