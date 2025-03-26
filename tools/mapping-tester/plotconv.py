@@ -66,7 +66,9 @@ def plotBack(
     if df[yname].dtype.is_numeric():
         ax.set_yscale("log")
 
-    series = df.group_by("mapping")
+    series = list(df.group_by("mapping"))
+    series.sort(key=lambda x: x[0])
+
     for grouped, style in zip(series, styles):
         name, group = grouped
         if group[yname].max() == 0:
