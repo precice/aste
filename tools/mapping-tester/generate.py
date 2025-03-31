@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import os
 import pathlib
 import sys
 
@@ -136,8 +137,8 @@ def createMasterRunScripts(casemap, dir: pathlib.Path, exit):
 def createRunScript(outdir: pathlib.Path, path: pathlib.Path, case):
     amesh = case["A"]["mesh"]["name"]
     aranks = case["A"]["ranks"]
-    ameshLocation = outdir.joinpath("meshes", amesh, str(aranks), amesh).relative_to(
-        path, walk_up=True
+    ameshLocation = os.path.relpath(
+        outdir.joinpath("meshes", amesh, str(aranks), amesh), path
     )
 
     # Detect the operating system and set the time command (brew install gnu-time)
@@ -154,9 +155,10 @@ def createRunScript(outdir: pathlib.Path, path: pathlib.Path, case):
 
     bmesh = case["B"]["mesh"]["name"]
     branks = case["B"]["ranks"]
-    bmeshLocation = outdir.joinpath("meshes", bmesh, str(branks), bmesh).relative_to(
-        path, walk_up=True
+    bmeshLocation = os.path.relpath(
+        outdir.joinpath("meshes", bmesh, str(branks), bmesh), path
     )
+
     mapped_data_name = case["function"] + "(mapped)"
     output = "--output mapped" if case["computeAccuracy"] else ""
     bcmd = f'env {time_command} -f %M -a -o memory-B.log precice-aste-run -v -a -p B --data "{mapped_data_name}" --mesh {bmeshLocation} {output} || kill 0 &'
