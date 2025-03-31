@@ -222,7 +222,9 @@ def createRunScript(outdir: pathlib.Path, path: pathlib.Path, case):
             )
             post_content += [joincmd, diffcmd]
         else:
-            tmprecoveryFile = bmeshLocation.parent / f"{bmesh}_recovery.json"
+            tmprecoveryFile = (
+                pathlib.Path(bmeshLocation).parent / f"{bmesh}_recovery.json"
+            )
 
             joincmd = "precice-aste-join --mesh mapped -r {} -o result.vtk".format(
                 tmprecoveryFile
