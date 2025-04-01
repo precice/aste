@@ -53,7 +53,9 @@ if (METIS_FOUND)
 endif()
 
 find_package(MPI REQUIRED)
-
+s
+et(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+1
 add_executable(precice-aste-run src/precice-aste-run.cpp src/common.cpp src/mesh.cpp src/configreader.cpp src/modes.cpp src/utilities.cpp src/logger.cpp)
 target_include_directories(precice-aste-run PRIVATE src thirdparty)
 target_link_libraries(precice-aste-run
