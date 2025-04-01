@@ -58,7 +58,7 @@ if(POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
 
-set(CMAKE_BUILD_RPATH "${precice_DIR}")
+set(CMAKE_BUILD_RPATH "${_precice_lib_dir}")
 
 add_executable(precice-aste-run src/precice-aste-run.cpp src/common.cpp src/mesh.cpp src/configreader.cpp src/modes.cpp src/utilities.cpp src/logger.cpp)
 target_include_directories(precice-aste-run PRIVATE src thirdparty)
