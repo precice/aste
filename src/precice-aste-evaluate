@@ -340,7 +340,7 @@ class Calculator:
             raise ExtensionError(
                 'Unkown input file extension please check your input file or hype "--help" for more information.'
             )
-        reader.SetFileName(in_meshname)
+        reader.SetFileName(str(in_meshname))
         reader.Update()
         vtk_dataset = reader.GetOutput()
         logger.info("Mesh contains {} points.".format(vtk_dataset.GetNumberOfPoints()))
@@ -366,7 +366,7 @@ class Calculator:
             os.makedirs(directory, exist_ok=True)
             out_meshname = os.path.join(directory, out_meshname)
 
-        writer.SetFileName(out_meshname)
+        writer.SetFileName(str(out_meshname))
         writer.Write()
         logger.info(f'Written output to "{out_meshname}".')
 
