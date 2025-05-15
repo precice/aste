@@ -605,11 +605,11 @@ class MeshPartitioner:
     @staticmethod
     def vtu2vtk(inmesh, outmesh):
         reader = vtk.vtkXMLUnstructuredGridReader()
-        reader.SetFileName(inmesh)
+        reader.SetFileName(str(inmesh))
         reader.Update()
         mesh = reader.GetOutput()
         writer = vtk.vtkUnstructuredGridWriter()
-        writer.SetFileName(outmesh + ".vtk")
+        writer.SetFileName(str(outmesh) + ".vtk")
         writer.SetInputData(mesh)
         writer.SetFileTypeToBinary()
         writer.Write()
