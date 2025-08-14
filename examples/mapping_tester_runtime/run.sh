@@ -18,4 +18,8 @@ export ASTE_B_MPIARGS=""
 
 python3 "${MAPPING_TESTER}/repeat.py" 5 --file "test-statistics{}.csv"
 
+python3 "${MAPPING_TESTER}/aggregate.py" test-statistics.csv mean -x
+
 python3 "${MAPPING_TESTER}/compare.py" reference-statistics.csv test-statistics.csv
+
+python3 "${MAPPING_TESTER}/compare.py" reference-aggregated.csv aggregated.csv

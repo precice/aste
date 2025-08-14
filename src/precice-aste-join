@@ -3,7 +3,7 @@ import argparse
 import json
 import logging
 import os
-import os.path
+import pathlib
 
 import vtk
 
@@ -54,6 +54,7 @@ class MeshJoiner:
             "--recovery",
             dest="recovery",
             help="The path to the recovery file to fully recover it's state.",
+            type=pathlib.Path,
         )
         parser.add_argument(
             "--numparts",
@@ -68,6 +69,7 @@ class MeshJoiner:
             dest="directory",
             default=None,
             help="Directory for output files (optional)",
+            type=pathlib.Path,
         )
         parser.add_argument(
             "--log",
@@ -110,10 +112,17 @@ class MeshJoiner:
         num_points = joined_mesh.GetNumberOfPoints()
         num_cells = joined_mesh.GetNumberOfCells()
         logger.info(f"Final mesh contains {num_points} points, {num_cells} cells")
-        MeshJoiner.write_mesh(joined_mesh, out_meshname, args.directory)
+
+        filename = (
+            pathlib.Path(args.directory, out_meshname)
+            if args.directory
+            else pathlib.Path(out_meshname)
+        )
+
+        MeshJoiner.write_mesh(joined_mesh, filename)
 
     @staticmethod
-    def read_meshes(prefix: str, partitions=None, recovery_path=None):
+    def read_meshes(prefix: str, partitions: int, recovery_path: pathlib.Path):
         """
         Reads meshes with given prefix.
         """
@@ -126,7 +135,7 @@ class MeshJoiner:
         if partitions == 0:
             raise PartitionError("No partitions found")
 
-        if os.path.exists(recovery_path):
+        if recovery_path.is_file():
             logger.info("Recovery data found. Full recovery will be executed")
             return MeshJoiner.join_mesh_recovery(prefix, partitions, recovery_path)
         else:
@@ -213,12 +222,14 @@ class MeshJoiner:
         return joined_mesh
 
     @staticmethod
-    def join_mesh_recovery(prefix: str, partitions: int, recovery_path: str):
+    def join_mesh_recovery(prefix: str, partitions: int, recovery_path: pathlib.Path):
         """
         Partition merge with full recovery
 
         This recovers the original mesh.
         """
+        assert recovery_path.is_file()
+
         logger = MeshJoiner.get_logger()
         logger.info("Starting full mesh recovery")
         recovery = json.load(open(recovery_path, "r"))
@@ -335,30 +346,25 @@ class MeshJoiner:
         """
         detected = 0
         while True:
-            partition_file = prefix + "_" + str(detected) + ".vtu"
-            if not os.path.isfile(partition_file):
+            partition_file = pathlib.Path(f"{prefix}_{detected}.vtu")
+            if not partition_file.is_file():
                 break
             detected += 1
         return detected
 
     @staticmethod
-    def write_mesh(meshfile, filename, directory=None):
+    def write_mesh(meshfile, filename: pathlib.Path):
+        filename.parent.mkdir(exist_ok=True, parents=True)
 
-        filename = os.path.basename(os.path.normpath(filename))
-        if directory:
-            directory = os.path.abspath(directory)
-            os.makedirs(directory, exist_ok=True)
-            filename = os.path.join(directory, filename)
-
-        extension = os.path.splitext(filename)[1]
+        extension = filename.suffix
         if extension == ".vtk":  # VTK Legacy format
             writer = vtk.vtkUnstructuredGridWriter()
             writer.SetFileTypeToBinary()
         elif extension == ".vtu":  # VTK XML Unstructured Grid format
             writer = vtk.vtkXMLUnstructuredGridWriter()
         else:
-            raise ExtensionError("Unknown File extension: " + extension)
-        writer.SetFileName(filename)
+            raise ExtensionError(f"Unknown File extension: {extension}")
+        writer.SetFileName(str(filename))
         writer.SetInputData(meshfile)
         writer.Write()
 
