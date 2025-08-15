@@ -50,10 +50,14 @@ def run(file: pathlib.Path, kind: str, exclude: bool, dest: pathlib.Path):
     func = {
         "median": lambda c: pl.col(c).median(),
         "mean": lambda c: (
-            pl.col(c).map_batches(trim).mean() if exclude else pl.col(c).mean()
+            pl.col(c).map_batches(trim, return_dtype=pl.self_dtype()).mean()
+            if exclude
+            else pl.col(c).mean()
         ),
         "variance": lambda c: (
-            pl.col(c).map_batches(trim).var() if exclude else pl.col(c).var()
+            pl.col(c).map_batches(trim, return_dtype=pl.self_dtype()).var()
+            if exclude
+            else pl.col(c).var()
         ),
     }[kind]
 
