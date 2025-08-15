@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -e -x
 
-cd "$(basedir "$0")"
+cd "$(dirname "$0")"
 
 # The mapping-tester location
-export MAPPING_TESTER=../../tools/mapping-tester
+MAPPING_TESTER=../../tools/mapping-tester
 
 # Generate the run scripts
-python3 "${MAPPING_TESTER}/generate.py" --template "${MAPPING_TESTER}"/config-template.xml --exit
+python3 "${MAPPING_TESTER}/generate.py" --template "${MAPPING_TESTER}/config-template.xml" --exit
 
 # Prepare the meshes
 python3 "${MAPPING_TESTER}/preparemeshes.py" --force

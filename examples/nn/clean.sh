@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e -x
 
+cd "$(dirname "$0")"
+
 rm -f -r precice-run
 rm -f -r precice-profiling
 rm -f profiling.json
