@@ -51,13 +51,13 @@ def timingStats(dir: pathlib.Path):
 
     try:
         subprocess.run(
-            ["precice-profiling-merge", event_dir],
+            ["precice-profiling-merge", event_dir.absolute()],
             check=True,
             capture_output=True,
             cwd=dir,
         )
         subprocess.run(
-            ["precice-profiling-export", "--output", timings_file],
+            ["precice-profiling-export", "--output", timings_file.absolute()],
             check=True,
             capture_output=True,
             cwd=dir,
