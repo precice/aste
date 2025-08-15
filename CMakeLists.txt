@@ -124,13 +124,11 @@ add_test(NAME read_write_test  COMMAND test-precice-aste WORKING_DIRECTORY "${CM
 set(_examples lci_2d lci_3d nn nng_scalar nng_vector mapping_tester mapping_tester_serial mapping_tester_runtime mapping_tester_conv replay_mode)
 
 foreach(example IN LISTS _examples)
-  add_test(NAME aste.example.${example}.setup
-    COMMAND clean.sh
-    FIXTURE_SETUP ${example})
+  add_test(NAME aste.example.${example}.setup COMMAND clean.sh)
+  set_tests_properties(aste.example.${example}.setup PROPERTIES FIXTURE_SETUP ${example})
 
-  add_test(NAME aste.example.${example}
-    COMMAND run.sh
-    FIXTURE_REQUIRES ${example})
+  add_test(NAME aste.example.${example} COMMAND run.sh)
+  set_tests_properties(aste.example.${example} PROPERTIES FIXTURE_REQUIRED ${example})
 
   set_tests_properties(aste.example.${example} aste.example.${example}.setup
     PROPERTIES
