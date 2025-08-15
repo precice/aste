@@ -2,5 +2,6 @@ jinja2
 matplotlib
 numpy
 polars
+precice-profiling >= 2.0.2
 scipy
 sympy>=1.9
