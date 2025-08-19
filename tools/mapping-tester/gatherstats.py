@@ -39,11 +39,11 @@ def run_checked(args):
 
 def timingStats(dir: pathlib.Path):
     assert dir.is_dir()
-    assert (
-        os.system("command -v precice-profiling > /dev/null") == 0
-    ), 'Could not find the profiling tool "precice-profiling", which is part of the preCICE installation.'
+    for cmd in ["merge", "export"]:
+        assert (
+            os.system(f"command -v precice-profiling-{cmd} > /dev/null") == 0
+        ), 'Could not find the profiling tool "precice-profiling-{cmd}", which is part of the precice-profiling PiPy package.'
     event_dir = dir / "precice-profiling"
-    json_file = dir / "profiling.json"
     timings_file = dir / "timings.csv"
 
     if not event_dir.is_dir():
@@ -51,14 +51,16 @@ def timingStats(dir: pathlib.Path):
 
     try:
         subprocess.run(
-            ["precice-profiling", "merge", "--output", json_file, event_dir],
+            ["precice-profiling-merge", event_dir.absolute()],
             check=True,
             capture_output=True,
+            cwd=dir,
         )
         subprocess.run(
-            ["precice-profiling", "export", "--output", timings_file, json_file],
+            ["precice-profiling-export", "--output", timings_file.absolute()],
             check=True,
             capture_output=True,
+            cwd=dir,
         )
         import polars as pl
 

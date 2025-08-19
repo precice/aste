@@ -12,14 +12,14 @@
     "synchronize": false,
     "meshes": {
       "A": {
-        "0.1": "${TEST_LOCATION}/meshes/0.1.vtk",
-        "0.0775": "${TEST_LOCATION}/meshes/0.0775.vtk",
-        "0.055": "${TEST_LOCATION}/meshes/0.055.vtk",
-        "0.0325": "${TEST_LOCATION}/meshes/0.0325.vtk",
-        "0.01": "${TEST_LOCATION}/meshes/0.01.vtk"
+        "0.1": "meshes/0.1.vtk",
+        "0.0775": "meshes/0.0775.vtk",
+        "0.055": "meshes/0.055.vtk",
+        "0.0325": "meshes/0.0325.vtk",
+        "0.01": "meshes/0.01.vtk"
       },
       "B": {
-        "0.06": "${TEST_LOCATION}/meshes/0.06.vtk"
+        "0.06": "meshes/0.06.vtk"
       }
     }
   },

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e -x
 
+cd "$(dirname "$0")"
+
 # Calculate franke function on fine mesh
 precice-aste-evaluate -m ./fine_mesh.vtk -f "franke2d(xy)" -d "Franke Function" -o "fine_mesh_lci.vtk"
 

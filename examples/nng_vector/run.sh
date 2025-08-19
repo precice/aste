@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e -x
 
+cd "$(dirname "$0")"
+
 # Calculate distance from origin on fine mesh
 precice-aste-evaluate -m ../fine_mesh.vtk -f "sin(x)*iHat+cos(y)*jHat+z^2*kHat" -d "MyFunction" -o "fine_mesh_nng.vtk" --gradient
 

@@ -13,10 +13,10 @@
     "synchronize": false,
     "meshes": {
       "A": {
-        "coarse_mesh": "${TEST_LOCATION}/coarse_mesh.vtk"
+        "coarse_mesh": "coarse_mesh.vtk"
       },
       "B": {
-        "fine_mesh": "${TEST_LOCATION}/fine_mesh.vtk"
+        "fine_mesh": "fine_mesh.vtk"
       }
     }
   },
