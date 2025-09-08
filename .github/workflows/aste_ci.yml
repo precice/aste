@@ -44,7 +44,7 @@ jobs:
         with:
           precice-version: develop
           install-prefix: /usr/local
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: install example dependencies in a venv
         run: |
           python3 -m venv venv --system-site-packages
