@@ -37,7 +37,7 @@ def run_checked(args):
     r.check_returncode()
 
 
-def timingStats(dir: pathlib.Path):
+def timingStats(dir: pathlib.Path, constraint: str):
     assert dir.is_dir()
     for cmd in ["merge", "export"]:
         assert (
@@ -64,9 +64,11 @@ def timingStats(dir: pathlib.Path):
         )
         import polars as pl
 
+        participant = "A" if constraint == "conservative" else "B"
+
         df = (
             pl.read_csv(timings_file)
-            .filter(pl.col("participant") == "B")
+            .filter(pl.col("participant") == participant)
             .select("event", "duration")
         )
         return {
@@ -143,7 +145,7 @@ def gatherCaseStats(casedir: pathlib.Path):
         "ranks A": ranksA,
         "ranks B": ranksB,
     }
-    stats.update(timingStats(casedir))
+    stats.update(timingStats(casedir, constraint))
     stats.update(memoryStats(casedir))
     stats.update(mappingStats(casedir))
     return stats
