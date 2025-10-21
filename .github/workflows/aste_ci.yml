@@ -17,7 +17,7 @@ jobs:
     name: ${{ format('{0} {1}', matrix.CXX, matrix.TYPE) }}
     runs-on: ubuntu-latest
     container:
-      image: ubuntu:24.10
+      image: ubuntu:rolling
       options: --shm-size=2gb
     defaults:
       run:
