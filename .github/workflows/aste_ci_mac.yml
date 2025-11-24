@@ -39,7 +39,7 @@ jobs:
           ninja
           sudo ninja install
           cd ../..
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup python
         uses: actions/setup-python@v6
         with:
