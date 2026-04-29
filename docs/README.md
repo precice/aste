@@ -141,6 +141,10 @@ The following subsections explain each part of ASTE in more detail. All ASTE mod
 The input mesh filename passed with the `--mesh` option does not need to coincide with the mesh names defined in the preCICE configuration file.
 {% endnote %}
 
+{% warning %}
+For massively parallel runs, the logging configuration in ASTE can critically affect performance. In practice, this typically depends on the filesystem. In such cases, consider disabling logging entirely.
+{% endwarning %}
+
 For example, mapping the data "dummyData" from a mesh named `fine_mesh.vtk` to an output mesh `coarse_mesh.vtk` and saving the resulting mesh into the variable "mappedData" on the mesh `mappedMesh` would read as follows:
 
 ```bash
