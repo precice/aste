@@ -1,6 +1,8 @@
 ---
 title: Artificial Solver Testing Environment (ASTE)
 permalink: tooling-aste.html
+aliases:
+  - /tooling-aste.html
 keywords: tooling, aste
 summary: "ASTE is a lightweight wrapper around the preCICE API, which allows emulating participants to investigate simulation setups."
 ---
