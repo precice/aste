@@ -65,7 +65,6 @@
       <exchange data="CrossSectionLength" mesh="Structure_Nodes" from="STRUCTURE" to="FLUID" initialize="true"/>
       <relative-convergence-measure data="Pressure"        mesh="Fluid_Nodes" limit="1e-5"/>
       <relative-convergence-measure data="CrossSectionLength" mesh="Structure_Nodes" limit="1e-5"/>
-      <extrapolation-order value="2"/>
       <acceleration:IQN-ILS>
         PostProc always done on the second participant
         <data name="CrossSectionLength" mesh="Structure_Nodes"/>
