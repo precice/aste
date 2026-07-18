@@ -33,8 +33,12 @@
             "executor": "cpu",
             "executor-options": ""
           },
+         "np": {
+            "kind": "nearest-projection"
+          },
          "nn": {
-            "kind": "nearest-neighbor"
+            "kind": "nearest-neighbor",
+            "batch-size": "5"
           }
         }
       },
