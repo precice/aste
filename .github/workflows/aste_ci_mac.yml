@@ -26,7 +26,7 @@ jobs:
           brew install cmake eigen boost openmpi pkg-config ninja gnu-time vtk metis
       - name: Install preCICE
         run: |
-          git clone https://github.com/precice/precice.git
+          git clone --branch debug-np https://github.com/fsimonis/precice.git
           cd precice
           mkdir build && cd build
           cmake --preset=production \
@@ -70,4 +70,10 @@ jobs:
         working-directory: build
         run: |
           source ${{ env.VIRTUAL_ENV }}/bin/activate
-          ctest -E mapping_tester_serial # see #212
+          ctest
+      - name: UPUP
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: serialcase
+          path: examples/mapping_tester_serial/case
