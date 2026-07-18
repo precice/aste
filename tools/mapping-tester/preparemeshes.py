@@ -66,8 +66,7 @@ def prepareMainMesh(
     )
 
 
-def preparePartMesh(meshdir: pathlib.Path, name, p, force=False):
-
+def preparePartMesh(meshdir: pathlib.Path, name, p, force, algorithm):
     if p == 1:
         return
 
@@ -91,7 +90,7 @@ def preparePartMesh(meshdir: pathlib.Path, name, p, force=False):
             "--mesh",
             mainMesh,
             "--algorithm",
-            "topology",
+            algorithm,
             "-o",
             partMesh,
             "--directory",
@@ -111,6 +110,8 @@ def main(argv):
         print(f'Warning: outdir "{outdir}" already exisits.')
     meshdir = outdir / "meshes"
     function = setup["general"]["function"]
+    algorithm = setup["general"].get("partitioning", "meshfree")
+    print(f"Using partitioning algorithm {algorithm}")
 
     partitions = set(
         [int(rank) for pranks in setup["general"]["ranks"].values() for rank in pranks]
@@ -129,7 +130,7 @@ def main(argv):
         prepareMainMesh(meshdir, name, file, function, args.force)
 
         for p in partitions:
-            preparePartMesh(meshdir, name, p, args.force)
+            preparePartMesh(meshdir, name, p, args.force, algorithm)
 
     return 0
 
